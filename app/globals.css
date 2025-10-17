@@ -41,9 +41,13 @@
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
-	--color-txt-primary: var(--txt-primary);
-	--color-txt-secondary: var(--txt-secondary);
-	--color-txt-tertiary: var(--txt-tertiary);
+	--color-typo-primary: var(--typo-primary);
+	--color-typo-secondary: var(--typo-secondary);
+	--color-typo-tertiary: var(--typo-tertiary);
+	--breakpoint-xs: 375px;
+	--color-enhanced-blue: var(--enhanced-blue);
+	--color-stroke-secondary: var(--stroke-secondary);
+	--color-status-selected: var(--status-selected);
 }
 
 :root {
@@ -79,10 +83,12 @@
 	--sidebar-accent-foreground: oklch(0.205 0 0);
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
-	--txt-primary: #242629;
-	--txt-secondary: #4b5563;
-	--txt-tertiary: #8492a2;
+	--typo-primary: #242629;
+	--typo-secondary: #4b5563;
+	--typo-tertiary: #8492a2;
 	--enhanced-blue: #006ceb;
+	--stroke-secondary: #dde4ec;
+	--status-selected: #eaf1ff;
 }
 
 .dark {
@@ -125,5 +131,59 @@
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+
+	html {
+		font-size: 12px;
+	}
+
+	@media (min-width: 768px) {
+		html {
+			font-size: 16px;
+		}
+	}
+}
+
+@layer components {
+	.container-default {
+		@apply mx-4 md:mx-8 lg:mx-10 xl:mx-auto xl:max-w-[1200px];
+	}
+
+	.investment-card {
+		@apply border border-transparent rounded-lg; /* áp dụng utility cơ bản */
+
+		border-image-source: linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
+			linear-gradient(
+				90deg,
+				color(display-p3 0.886 0.941 1) 0%,
+				color(display-p3 1 1 1) 50.48%,
+				color(display-p3 0.886 0.941 1) 100%
+			);
+		border-image-slice: 1;
+	}
+}
+@utility investment-card {
+	position: relative;
+	background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+	border-radius: 12px;
+	overflow: hidden;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		padding: 1px;
+		/* Trắng -> Xanh nhạt -> Trắng, chéo 45 độ */
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.8) 0%,
+			#dff0ff 50.48%,
+			rgba(255, 255, 255, 0.8) 100%
+		);
+		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		mask-composite: exclude;
+		-webkit-mask-composite: xor;
+		pointer-events: none;
 	}
 }
