@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { IEventProps } from "@/types";
 
-
-const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
+const EventCarousel = ({ events }: { events: Array<IEventProps> }) => {
 	const showControls = events.length >= 4;
 
 	// Chỉ căn giữa khi ít items VÀ ở màn hình lớn
@@ -82,10 +82,10 @@ const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
 	);
 };
 const Events = () => {
-	const [events, setEvents] = useState<Array<EventProps> | null>([]); // Sửa ở đây
+	const [events, setEvents] = useState<Array<IEventProps> | null>([]); // Sửa ở đây
 
 	// Tạo danh sách event tạm thời, lặp lại theo số lượng yêu cầu
-	const generateTempEvents = (count: number): Array<EventProps> => {
+	const generateTempEvents = (count: number): Array<IEventProps> => {
 		return Array.from({ length: count }, (_, index) => ({
 			id: `temp-${index + 1}`,
 			title: `CGS International Carving a Niche in Financial Services`,
