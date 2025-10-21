@@ -14,19 +14,15 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar, Clock, MapPin } from "lucide-react";
 
-interface EventProps {
-	id: string;
-	title: string;
-	imageUrl: string;
-	description: string;
-	date: string;
-	time: string;
-	location: string;
-}
+
 const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
 	const showControls = events.length >= 4;
-	const contentClass = showControls ? "" : "justify-center gap-[36px]";
-	const itemClass = showControls ? "basis:1/3 lg:basis-1/4" : "basis-auto flex-shrink-0";
+
+	// Chỉ căn giữa khi ít items VÀ ở màn hình lớn
+	const contentClass = showControls ? "" : "lg:justify-center lg:gap-[36px]";
+	const itemClass = showControls
+		? "basis-[66%] md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+		: "basis-[66%] md:basis-1/2 lg:basis-auto lg:flex-shrink-0";
 
 	return (
 		<div>
@@ -39,7 +35,7 @@ const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
 				<CarouselContent className={contentClass}>
 					{events.map((event) => (
 						<CarouselItem key={event.id} className={itemClass}>
-							<div className={cn("w-[283px] rounded-lg shadow bg-white")}>
+							<div className={cn("w-[230px] md:w-[283px] rounded-lg shadow bg-white")}>
 								<Image
 									className="w-full h-auto rounded-t-lg"
 									src={event.imageUrl}
@@ -48,19 +44,9 @@ const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
 									height={100}
 								/>
 								<div className="py-[14px] px-3 flex flex-col gap-4">
-									<div className="self-stretch text-xs font-semibold leading-none">
-										{event.title}
-									</div>
+									<div className="text-xs font-semibold leading-none">{event.title}</div>
 
-									<div
-										className="self-stretch justify-start text-typo-secondary text-[10px] leading-4"
-										style={{
-											display: "-webkit-box",
-											WebkitLineClamp: 3,
-											WebkitBoxOrient: "vertical",
-											overflow: "hidden",
-										}}
-									>
+									<div className="justify-start text-typo-secondary text-[10px] leading-4 line-clamp-3">
 										{event.description}
 										<br />
 									</div>
@@ -85,8 +71,12 @@ const EventCarousel = ({ events }: { events: Array<EventProps> }) => {
 						</CarouselItem>
 					))}
 				</CarouselContent>
-				{showControls && <CarouselPrevious className="text-enhanced-blue border-enhanced-blue" />}
-				{showControls && <CarouselNext className="text-enhanced-blue border-enhanced-blue" />}
+				{showControls && (
+					<CarouselPrevious className="hidden lg:flex text-enhanced-blue border-enhanced-blue" />
+				)}
+				{showControls && (
+					<CarouselNext className="hidden lg:flex text-enhanced-blue border-enhanced-blue" />
+				)}
 			</Carousel>
 		</div>
 	);
@@ -150,7 +140,7 @@ const Events = () => {
 			<div className="container-default">
 				<div className="flex justify-between items-center">
 					<div className="flex gap-2 items-center">
-						<span className="font-semibold text-lg">Event & Seminars</span>
+						<span className="font-semibold text-base">Event & Seminars</span>
 					</div>
 					<div className="flex items-center gap-3">
 						<Button
@@ -161,7 +151,7 @@ const Events = () => {
 						</Button>
 						<Link
 							href={ENDPOINT.CGSI_EVENTS}
-							className="text-enhanced-blue text-sm font-normal"
+							className="text-enhanced-blue text-xs md:text-sm font-normal"
 							target="_blank"
 						>
 							View All

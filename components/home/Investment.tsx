@@ -44,27 +44,21 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 				>
 					<div className="pl-6 pt-5 pb-4 w-2/3">
 						<div className="flex flex-col md:flex-row items-baseline gap-4 mb-2">
-							<h2 className="text-lg font-semibold text-enhanced-blue">{title}</h2>
-							<span className="text-sm text-typo-tertiary">
+							<h2 className="text-xs md:text-lg font-semibold text-enhanced-blue">{title}</h2>
+							<span className="text-[10px] md:text-sm text-typo-tertiary">
 								{available != 0 ? `${available} Available` : "No Available"}
 							</span>
 						</div>
 						<p
 							hidden={isMobile}
-							className="text-typo-tertiary leading-relaxed text-sm max-w-[70%] lg:max-w-[90%]"
-							style={{
-								display: "-webkit-box",
-								WebkitLineClamp: 2,
-								WebkitBoxOrient: "vertical",
-								overflow: "hidden",
-							}}
+							className="text-typo-tertiary leading-relaxed text-sm max-w-[70%] lg:max-w-[90%] line-clamp-2"
 						>
 							{subtext}
 						</p>
 					</div>
 				</div>
 			</div>
-			<div className="absolute right-3 lg:right-8 bottom-0 h-[90%] md:h-[110%]">
+			<div className="absolute right-0 lg:right-8 bottom-0 h-[90%] md:h-[110%]">
 				<Image
 					src={imageSrc}
 					alt={imageAlt ?? title}
@@ -79,16 +73,16 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 const Investment = () => {
 	return (
-		<div className="container-default h-[155px] bg-white">
+		<div className="container-default bg-white">
 			<div className="flex justify-between items-center">
 				<div className="flex gap-2 items-center">
-					<span className="font-semibold text-lg">Investment Products</span>
+					<span className="font-semibold text-base">Investment Products</span>
 					<Image src={"/icons/Non-categorized.svg"} alt="icon" width={16} height={16} />
 				</div>
 				<div className="">
 					<Link
 						href={ENDPOINT.CGSI_EVENTS}
-						className="text-enhanced-blue text-sm font-normal"
+						className="text-enhanced-blue text-xs md:text-sm font-normal"
 						target="_blank"
 					>
 						View All

@@ -48,6 +48,12 @@
 	--color-enhanced-blue: var(--enhanced-blue);
 	--color-stroke-secondary: var(--stroke-secondary);
 	--color-status-selected: var(--status-selected);
+	--color-status-error: var(--status-error);
+	--color-status-success: var(--status-success);
+	--color-status-warning: var(--status-warning);
+	--color-icon-light: var(--icon-light);
+	--color-status-disable-primary: var(--status-disable-primary);
+	--color-background-section: var(--background-section);
 }
 
 :root {
@@ -58,7 +64,8 @@
 	--card-foreground: oklch(0.145 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
+	--primary: #006ceb;
+	/* --primary: oklch(0.205 0 0); */
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.97 0 0);
 	--secondary-foreground: oklch(0.205 0 0);
@@ -89,6 +96,12 @@
 	--enhanced-blue: #006ceb;
 	--stroke-secondary: #dde4ec;
 	--status-selected: #eaf1ff;
+	--status-error: #d92b2b;
+	--status-success: #11b47b;
+	--status-warning: #ffc414;
+	--status-disable-primary: #bac3d1;
+	--icon-light: #4b5563;
+	--background-section: #f5f8ff;
 }
 
 .dark {
@@ -134,13 +147,7 @@
 	}
 
 	html {
-		font-size: 12px;
-	}
-
-	@media (min-width: 768px) {
-		html {
-			font-size: 16px;
-		}
+		font-size: 16px;
 	}
 }
 
@@ -185,5 +192,26 @@
 		mask-composite: exclude;
 		-webkit-mask-composite: xor;
 		pointer-events: none;
+	}
+}
+
+@utility sidebar-scoll {
+	::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		background: #555;
 	}
 }
