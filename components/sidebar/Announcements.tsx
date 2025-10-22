@@ -1,7 +1,6 @@
 import React from "react";
-import { SheetClose, SheetHeader, SheetTitle } from "../ui/sheet";
-import { X } from "lucide-react";
 import { INotification } from "@/types";
+import CustomSheetTitle from "./CustomSheetTitle";
 const Announcements = ({
 	detailViewing = {
 		time: "24-Aug-2025, 06:30 SGT",
@@ -18,27 +17,10 @@ const Announcements = ({
 }) => {
 	return (
 		<div className="relative h-full flex flex-col">
-			<SheetHeader className="p-0 text-[16px] lg:text-lg flex-shrink-0">
-				<div className="flex justify-between">
-					<SheetTitle className="text-typo-primary flex gap-2 items-center">
-						{/* <ChevronLeft className="text-icon-light" onClick={() => setDetailViewing(null)} /> */}
-						Announcement
-					</SheetTitle>
-					<SheetClose className="text-typo-secondary">
-						<X />
-					</SheetClose>
-				</div>
-			</SheetHeader>
+			<CustomSheetTitle title="Announcement" />
 			{/* Your notification items */}
 
 			<div className="mt-6">
-				{/* <Image
-					src={"/images/bg-event.png"}
-					alt="placeholder"
-					width={400}
-					height={128}
-					className="w-full mb-4"
-				/> */}
 				<p className="text-base font-semibold text-typo-primary">{detailViewing.title}</p>
 				<p className="text-xs text-typo-tertiary leading-4 mt-4">{detailViewing.time}</p>
 

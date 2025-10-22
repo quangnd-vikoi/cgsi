@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
+import { SheetManager } from "@/components/sidebar/SheetManager";
 const inter = Inter({
 	variable: "--font-inter",
 	subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
 				<div className="flex flex-col min-h-screen">
 					<header className="bg-white">
 						<Header />
+						<SheetManager />
 					</header>
 					<main>{children}</main>
 					<Toaster position="bottom-right" />

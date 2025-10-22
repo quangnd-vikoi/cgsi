@@ -1,7 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { SheetHeader, SheetTitle, SheetClose } from "../ui/sheet";
-import { ChevronLeft, Dot, MailOpen, X } from "lucide-react";
+import { Dot, MailOpen } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import Image from "next/image";
@@ -9,6 +8,7 @@ import Alert from "../Alert";
 import { Button } from "../ui/button";
 import { toast } from "../ui/toaster";
 import { INotification } from "@/types";
+import CustomSheetTitle from "./CustomSheetTitle";
 
 const tempNoti: INotification = {
 	title: "Why Investors Are Looking Beyond the United States in 2025",
@@ -89,15 +89,7 @@ const Notification = () => {
 	if (detailViewing === null) {
 		return (
 			<div className="relative h-full flex flex-col">
-				<SheetHeader className="p-0 text-[16px] lg:text-lg flex-shrink-0">
-					<div className="flex justify-between">
-						<SheetTitle className="text-typo-primary">Notification Centre</SheetTitle>
-						<SheetClose className="text-typo-secondary">
-							<X />
-						</SheetClose>
-					</div>
-				</SheetHeader>
-				{/* Your notification items */}
+				<CustomSheetTitle title="Notification Centre" />
 
 				<div className="flex justify-between items-center text-xs mt-6 flex-shrink-0">
 					<p>2 Unread Notification(s)</p>
@@ -120,7 +112,7 @@ const Notification = () => {
 						onAction={() => handleMarkAllRead()}
 					/>
 				</div>
-				<div className="flex flex-col overflow-y-auto sidebar-scoll flex-1 mt-4">
+				<div className="flex flex-col overflow-y-auto sidebar-scroll flex-1 mt-4">
 					{listNoti.length > 0 ? (
 						listNoti.map((noti, index) => (
 							<NotiItem key={index} notification={noti} setDetailViewing={setDetailViewing} />
@@ -144,17 +136,6 @@ const Notification = () => {
 	} else {
 		return (
 			<div className="relative h-full flex flex-col">
-				<SheetHeader className="p-0 text-[16px] lg:text-lg flex-shrink-0">
-					<div className="flex justify-between">
-						<SheetTitle className="text-typo-primary flex gap-2 items-center">
-							<ChevronLeft className="text-icon-light" onClick={() => setDetailViewing(null)} />
-							Detail
-						</SheetTitle>
-						<SheetClose className="text-typo-secondary">
-							<X />
-						</SheetClose>
-					</div>
-				</SheetHeader>
 				{/* Your notification items */}
 
 				<div className="mt-6">

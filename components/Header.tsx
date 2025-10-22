@@ -1,7 +1,7 @@
 "use client";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Dispatch, SetStateAction } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Grip } from "lucide-react";
@@ -12,14 +12,10 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
-import Notification from "./sidebar/Notification";
-import Profile from "./sidebar/Profile";
 import { TriangleAlert, X } from "lucide-react";
-import Announcements from "./sidebar/Announcements";
 import useToggle from "@/hooks/useToggle";
-type SheetType = "notification" | "profile" | "annoucement" | null;
-
+import { useSheetStore } from "@/stores/sheetStore";
+import { SheetType } from "@/types";
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
 	const isActive = link === "/" ? pathname === "/" : pathname?.startsWith(link);
@@ -57,7 +53,7 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 	);
 };
 
-const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: Dispatch<SetStateAction<SheetType>> }) => {
+const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType) => void }) => {
 	const { value, setFalse } = useToggle(true);
 	return (
 		<div
@@ -71,7 +67,7 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: Dispatch<SetStateActi
 				<div className="flex gap-4 shrink-0">
 					<div
 						className="text-xs font-semibold underline cursor-pointer"
-						onClick={() => setOpenSheet("annoucement")}
+						onClick={() => setOpenSheet("announcement")}
 					>
 						Learn More
 					</div>
@@ -85,14 +81,11 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: Dispatch<SetStateActi
 };
 
 const Header = () => {
-	const [openSheet, setOpenSheet] = React.useState<SheetType>(null);
+	const openSheet = useSheetStore((state) => state.openSheet);
+	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 
 	const handleOpenSheet = (type: SheetType) => {
 		setOpenSheet(type);
-	};
-
-	const handleCloseSheet = () => {
-		setOpenSheet(null);
 	};
 
 	return (
@@ -100,13 +93,15 @@ const Header = () => {
 			<div className="p-4 md:px-10 md:py-5 max-w-[1440px] xl:mx-auto z-[100]">
 				<div className="flex justify-between h-full">
 					<div className="flex items-center my-auto gap-12">
-						<Image
-							src="/icons/iTrade-header.svg"
-							alt="Logo"
-							width={75}
-							height={23}
-							className="object-contain"
-						/>
+						<Link href={"/"}>
+							<Image
+								src="/icons/iTrade-header.svg"
+								alt="Logo"
+								width={75}
+								height={23}
+								className="object-contain"
+							/>
+						</Link>
 
 						<div className="hidden md:flex gap-6">
 							<MenuItem title="Home" link="/" />
@@ -171,20 +166,6 @@ const Header = () => {
 			</div>
 
 			<AnnouncementBar setOpenSheet={setOpenSheet} />
-			{/* Notification Sheet */}
-			<Sheet  open={openSheet != null} onOpenChange={handleCloseSheet}>
-				<SheetContent
-					side="right"
-					className={cn(
-						"w-[352px] lg:w-[432px] rounded-l-lg border border-stroke-secondary border-r-0 top-[56px] md:top-[72px] h-[calc(100vh-56px)] md:h-[calc(100vh-72px)] px-4 md:px-6 py-6 focus:outline-none",
-						openSheet === "profile" && "p-0 px-0"
-					)}
-				>
-					{openSheet === "notification" && <Notification />}
-					{openSheet === "profile" && <Profile />}
-					{openSheet === "annoucement" && <Announcements />}
-				</SheetContent>
-			</Sheet>
 		</>
 	);
 };

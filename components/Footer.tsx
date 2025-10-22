@@ -5,7 +5,7 @@ export default function Footer() {
 	return (
 		<footer className="w-full">
 			{/* Main footer content */}
-			<div className="bg-slate-700 px-8 py-12 text-white">
+			<div className="bg-[#29313B] px-4 md:px-8 py-8 md:py-12 text-white">
 				<div className="">
 					<div className="flex justify-between">
 						{/* CGS Logo */}
@@ -17,7 +17,7 @@ export default function Footer() {
 							height={100}
 						/>
 						<div className="flex flex-col items-end gap-2">
-							<p className="text-md font-medium">Follow us on</p>
+							<p className="text-md font-normal md:font-medium">Follow us on</p>
 							<div className="flex gap-4">
 								<a href="#" className=" ">
 									<Instagram size={20} />
