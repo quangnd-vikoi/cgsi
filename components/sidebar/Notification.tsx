@@ -112,7 +112,7 @@ const Notification = () => {
 						onAction={() => handleMarkAllRead()}
 					/>
 				</div>
-				<div className="flex flex-col overflow-y-auto sidebar-scroll flex-1 mt-4">
+				<div className="flex flex-col overflow-y-auto sidebar-scoll flex-1 mt-4">
 					{listNoti.length > 0 ? (
 						listNoti.map((noti, index) => (
 							<NotiItem key={index} notification={noti} setDetailViewing={setDetailViewing} />
@@ -136,8 +136,8 @@ const Notification = () => {
 	} else {
 		return (
 			<div className="relative h-full flex flex-col">
+				<CustomSheetTitle title="Detail" backTo={"notification"} />
 				{/* Your notification items */}
-
 				<div className="mt-6">
 					<Image
 						src={"/images/bg-event.png"}
