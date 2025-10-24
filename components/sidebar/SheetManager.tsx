@@ -11,6 +11,7 @@ import TradingRepresentative from "./TradingRepresentative";
 import ClientServices from "./ClientService";
 import CentralDealingDesk from "./CentralDealingDesk";
 import PasswordSecurity from "./PasswordSecurity";
+import DetailNotification from "./DetailNotification";
 
 const SHEET_CONFIGS = {
 	notification: {
@@ -43,6 +44,10 @@ const SHEET_CONFIGS = {
 	},
 	password_and_security: {
 		component: PasswordSecurity,
+		className: "px-4 md:px-6 py-6",
+	},
+	detail_notification: {
+		component: DetailNotification,
 		className: "px-4 md:px-6 py-6",
 	},
 } as const;

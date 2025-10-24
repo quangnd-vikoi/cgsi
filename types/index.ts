@@ -24,4 +24,5 @@ export type SheetType =
 	| "client_services"
 	| "central_dealing_desk"
 	| "password_and_security"
+	| "detail_notification"
 	| null;

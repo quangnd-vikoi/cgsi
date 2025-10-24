@@ -4,6 +4,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 type InvestmentCardProps = {
 	title: string;
@@ -13,6 +14,7 @@ type InvestmentCardProps = {
 	imageAlt?: string;
 	imageWidth?: number;
 	imageHeight?: number;
+	href: string;
 };
 
 const InvestmentCard: React.FC<InvestmentCardProps> = ({
@@ -23,12 +25,14 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
+	href = "/",
 }) => {
 	const isMobile = useMediaQuery("mobile");
-
+	const router = useRouter();
 	return (
 		<div
-			className="relative rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm w-full"
+			onClick={() => router.push(href)}
+			className="relative rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm w-full cursor-pointer"
 			style={{
 				backgroundImage:
 					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
@@ -92,6 +96,7 @@ const Investment = () => {
 
 			<div className="mt-6 flex gap-4 justify-between">
 				<InvestmentCard
+					href="/securities"
 					title="Securities"
 					available={1}
 					imageSrc="/icons/Investment-left.svg"
@@ -99,6 +104,7 @@ const Investment = () => {
 				/>
 
 				<InvestmentCard
+					href="/alternatives"
 					title="Alternatives"
 					available={0}
 					imageSrc="/icons/Investment-right.png"

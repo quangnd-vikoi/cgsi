@@ -55,7 +55,9 @@
 	--color-icon-light: var(--icon-light);
 	--color-status-disable-primary: var(--status-disable-primary);
 	--color-background-section: var(--background-section);
+	--color-background-focus: var(--background-focus);
 	--color-theme-blue-09: var(--theme-blue-09);
+	--color-theme-neutral-095: var(--theme-neutral-095);
 }
 
 :root {
@@ -105,7 +107,9 @@
 	--status-disable-primary: #bac3d1;
 	--icon-light: #4b5563;
 	--background-section: #f5f8ff;
+	--background-focus: #f9fbff;
 	--theme-blue-09: #eaf1ff;
+	--theme-neutral-095: #f9fafc;
 }
 
 .dark {
