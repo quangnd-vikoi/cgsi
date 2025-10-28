@@ -4,14 +4,18 @@ import { FileText, ChevronRight } from "lucide-react";
 // TypeScript Interface for Document Item
 interface DocumentItemProps {
 	title: string;
-	onClick?: () => void;
+	filePath: string;
 }
 
 // Document Item Component
-const DocumentItem: React.FC<DocumentItemProps> = ({ title, onClick }) => {
+const DocumentItem: React.FC<DocumentItemProps> = ({ title, filePath }) => {
+	const handleClick = () => {
+		window.open(filePath, "_blank"); // mở tab mới
+	};
+
 	return (
 		<button
-			onClick={onClick}
+			onClick={handleClick}
 			className="w-full flex items-center justify-between p-4 bg-white border rounded-lg hover:bg-gray-50 transition-colors group"
 		>
 			<div className="flex items-center gap-3">
@@ -24,22 +28,14 @@ const DocumentItem: React.FC<DocumentItemProps> = ({ title, onClick }) => {
 };
 
 const DocumentsTab: React.FC = () => {
-	const handleDocumentClick = (docName: string) => {
-		console.log(`Clicked on: ${docName}`);
-		// Add your document open logic here
-	};
-
 	return (
 		<div className="pt-6">
 			<h3 className="text-base font-semibold text-typo-primary mb-4">Reference Documents</h3>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<DocumentItem title="Prospectus" onClick={() => handleDocumentClick("Prospectus")} />
-				<DocumentItem title="Fact Sheet" onClick={() => handleDocumentClick("Fact Sheet")} />
-				<DocumentItem
-					title="Supplementary Note"
-					onClick={() => handleDocumentClick("Supplementary Note")}
-				/>
+				<DocumentItem title="Prospectus" filePath="/sample.pdf" />
+				<DocumentItem title="Fact Sheet" filePath="/sample.pdf" />
+				<DocumentItem title="Supplementary Note" filePath="/sample.pdf" />
 			</div>
 		</div>
 	);

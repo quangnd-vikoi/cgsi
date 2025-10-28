@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { ENDPOINT } from "@/constants/endpoint";
+import { ENDPOINT } from "@/constants/routes";
 
 const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();

@@ -3,9 +3,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/compon
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Archive, ChevronDown, CircleCheck, Headset } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
@@ -30,7 +31,7 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 
 const Navigation = () => {
 	const pathname = usePathname();
-
+	const router = useRouter();
 	const segment = pathname.split("/")[1] || "Home";
 	const title = segment.charAt(0).toUpperCase() + segment.slice(1);
 
@@ -43,8 +44,8 @@ const Navigation = () => {
 						<ChevronDown className="text-enhanced-blue cursor-pointer" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-64 px-0 py-2" align="start">
-						<MenuItem title="Securities" link="/securities" />
-						<MenuItem title="Alternatives" link="/alternatives" />
+						<MenuItem title="Securities" link={INTERNAL_ROUTES.SECURITIES} />
+						<MenuItem title="Alternatives" link={INTERNAL_ROUTES.ALTERNATIVE} />
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
@@ -54,7 +55,10 @@ const Navigation = () => {
 					<Headset className="text-icon-light" />
 					<p className="hidden md:inline-block">Contact us</p>
 				</Button>
-				<Button className="h-fit border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-blue-500/10 font-medium transition-colors ">
+				<Button
+					onClick={() => router.push(INTERNAL_ROUTES.MYAPPLICATION)}
+					className="h-fit border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-blue-500/10 font-medium transition-colors "
+				>
 					<Archive />
 					<p className="leading-4">My Applications</p>
 				</Button>

@@ -1,13 +1,16 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useSelectionStore } from "@/stores/selectionStore";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 
 export default function Sidebar() {
 	const pathname = usePathname();
-	const [viewing, setViewing] = useState<number | null>(null);
+	const { selectedId, setSelectedId } = useSelectionStore();
+
 	const etfData = [
 		{
 			id: 1,
@@ -18,6 +21,7 @@ export default function Sidebar() {
 			openingDate: "20-Oct-2025, 10:00 SGT",
 			closingDate: "02-Nov-2025, 17:00 SGT",
 			hasDetails: true,
+			applied: true,
 		},
 		{
 			id: 2,
@@ -28,6 +32,7 @@ export default function Sidebar() {
 			openingDate: "20-Oct-2025, 10:00 SGT",
 			closingDate: "02-Nov-2025, 17:00 SGT",
 			hasDetails: false,
+			applied: false,
 		},
 		{
 			id: 3,
@@ -36,30 +41,62 @@ export default function Sidebar() {
 			closingDate: "20-May-2025, 17:00 SGT",
 			hasDetails: false,
 			isCompact: true,
+			applied: false,
 		},
+		// {
+		// 	id: 4,
+		// 	name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
+		// 	code: "VND.SGX",
+		// 	closingDate: "20-May-2025, 17:00 SGT",
+		// 	hasDetails: false,
+		// 	isCompact: true,
+		// 	applied: true,
+		// },
+		// {
+		// 	id: 5,
+		// 	name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
+		// 	code: "VND.SGX",
+		// 	closingDate: "20-May-2025, 17:00 SGT",
+		// 	hasDetails: false,
+		// 	isCompact: true,
+		// 	applied: false,
+		// },
 	];
 
 	return (
-		<div className="min-h-screen bg-white  rounded">
-			<div className="w-full md:max-w-sm mx-auto p-6">
+		<div className="relative h-full flex flex-col bg-white rounded md:max-w-sm" id="sidebar_form">
+			{/* Header - Fixed */}
+			<div className="flex-shrink-0 p-6 pb-0">
 				<h1 className="text-base font-semibold text-typo-primary mb-6">
-					{pathname.startsWith("/securities")
+					{pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
 						? "Initial Offering Price (IOP)"
 						: "Commercial Papers"}
 				</h1>
+			</div>
 
+			{/* Content - Scrollable */}
+			<div className="flex-1 overflow-y-auto sidebar-scroll p-6 pt-0">
 				<div className="space-y-4">
 					{etfData.map((etf) => (
 						<div
 							key={etf.id}
 							className={cn(
-								"rounded-lg border  p-4 shadow-sm",
-								viewing === etf.id ? "border-enhanced-blue" : "border-stroke-secondary",
+								"rounded-lg border p-4 shadow-sm relative",
+								selectedId === etf.id ? "border-enhanced-blue" : "border-stroke-secondary",
 								etf.isCompact ? "bg-theme-neutral-095" : "bg-white"
 							)}
 						>
+							{/* Applied Badge - góc trái trên */}
+							{etf.applied && (
+								<div className="absolute top-0 left-0">
+									<div className="bg-status-success text-white text-[10px] font-medium px-2 py-0.5 rounded-tl-[9px] rounded-br-[9px]">
+										Applied
+									</div>
+								</div>
+							)}
+
 							{/* Header */}
-							<div className="flex items-start gap-2 mb-2">
+							<div className={cn("flex items-start gap-2 mb-2", etf.applied && "mt-4")}>
 								<div className="flex-1">
 									<h3
 										className={cn(
@@ -73,15 +110,15 @@ export default function Sidebar() {
 								<Button
 									className={cn(
 										"gap-1 px-3 h-6 border border-enhanced-blue text-xs rounded-4xl flex items-center leading-2",
-										viewing === etf.id
+										selectedId === etf.id
 											? "bg-enhanced-blue text-white"
 											: "bg-transparent text-enhanced-blue hover:bg-background-focus transition-colors "
 									)}
-									onClick={() => setViewing(etf.id)}
+									onClick={() => setSelectedId(etf.id)}
 								>
-									{viewing == etf.id && <Check className="text-sm" />}
+									{selectedId === etf.id && <Check className="text-sm" />}
 									Details
-									{viewing != etf.id && (
+									{selectedId !== etf.id && (
 										<ArrowRight className="text-sm text-enhanced-blue" />
 									)}
 								</Button>

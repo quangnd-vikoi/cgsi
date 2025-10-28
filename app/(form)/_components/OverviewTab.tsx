@@ -123,7 +123,6 @@ const OverviewTab = () => {
 			value: "Excluded Investment Product (EIP)",
 		},
 	];
-	const timelineHeight = (dates.length - 1) * (30 + 20) + 2 * dates.length;
 	return (
 		<div className="space-y-6 h-full pr-3">
 			{/* Banner */}
@@ -132,7 +131,7 @@ const OverviewTab = () => {
 					src={"/images/securitiy-overview.png"}
 					height={200}
 					width={400}
-					className="w-full"
+					className="w-full mt-6"
 					alt="overview-item"
 				/>
 			</div>
@@ -149,51 +148,63 @@ const OverviewTab = () => {
 			{/* Timeline */}
 			<div className="p-4 bg-background-section rounded-lg">
 				<div className="relative">
-					{/* Vertical line */}
-					<div
-						className="absolute left-[9px] top-1 bottom-0 w-0.5 bg-enhanced-blue"
-						style={{ height: `${timelineHeight}px` }}
-					></div>
-
 					{/* Timeline items */}
 					<div className="space-y-5">
-						{dates.map((item) => (
-							<div key={item.id} className="relative flex items-start ">
-								<div className="flex-1 flex items-start justify-between">
-									<div className="flex items-center gap-2">
+						{dates.map((item, index) => {
+							const isLast = index === dates.length - 1;
+							const nextItem = dates[index + 1];
+							const isNextComing = nextItem?.status === "upcoming";
+
+							return (
+								<div key={item.id} className="relative flex items-start">
+									{/* Vertical line for each item */}
+									{!isLast && (
 										<div
-											className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 ${
-												item.status === "completed"
-													? "bg-enhanced-blue border-enhanced-blue"
-													: item.status === "active"
-													? "bg-white border-enhanced-blue"
-													: "bg-white border-status-disable-primary"
+											className={`absolute left-[9px] top-5 w-0.5 ${
+												isNextComing
+													? "border-l-2 border-dashed border-status-disable-primary bg-transparent"
+													: "bg-enhanced-blue"
 											}`}
-										>
-											{item.status === "completed" ? (
-												<Check className="w-5 h-5 text-white" />
-											) : item.status === "active" ? (
-												<Dot
-													strokeWidth={10}
-													className="w-5 h-5 text-enhanced-blue"
-												/>
-											) : (
-												<Check className="w-5 h-5 text-status-disable-primary" />
-											)}
+											style={{ height: "calc(100% + 20px)" }}
+										></div>
+									)}
+
+									<div className="flex-1 flex items-start justify-between">
+										<div className="flex items-center gap-2">
+											<div
+												className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 ${
+													item.status === "completed"
+														? "bg-enhanced-blue border-enhanced-blue"
+														: item.status === "active"
+														? "bg-white border-enhanced-blue"
+														: "bg-white border-status-disable-primary"
+												}`}
+											>
+												{item.status === "completed" ? (
+													<Check className="w-5 h-5 text-white" />
+												) : item.status === "active" ? (
+													<Dot
+														strokeWidth={10}
+														className="w-5 h-5 text-enhanced-blue"
+													/>
+												) : (
+													<Check className="w-5 h-5 text-status-disable-primary" />
+												)}
+											</div>
+											<span className="text-typo-primary text-xs font-medium">
+												{item.label}
+											</span>
 										</div>
-										<span className="text-typo-primary text-xs font-medium">
-											{item.label}
-										</span>
-									</div>
-									<div className="text-right">
-										<div className="text-typo-secondary text-xs font-medium">
-											{item.date}
+										<div className="text-right">
+											<div className="text-typo-secondary text-xs font-medium">
+												{item.date}
+											</div>
+											<div className="text-[10px] text-typo-tertiary">{item.time}</div>
 										</div>
-										<div className="text-[10px] text-typo-tertiary">{item.time}</div>
 									</div>
 								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 			</div>

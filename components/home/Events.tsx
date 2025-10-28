@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ENDPOINT } from "@/constants/endpoint";
+import { ENDPOINT } from "@/constants/routes";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { IEventProps } from "@/types";
+import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 
 const EventCarousel = ({ events }: { events: Array<IEventProps> }) => {
 	const showControls = events.length >= 4;
@@ -147,7 +148,7 @@ const Events = () => {
 							onClick={cycleEventsState}
 							className="bg-transparent text-xs px-2 py-1 border border-enhanced-blue text-enhanced-blue rounded hover:bg-enhanced-blue/10"
 						>
-							Change number event
+							Change number
 						</Button>
 						<Link
 							href={ENDPOINT.CGSI_EVENTS}
@@ -181,13 +182,7 @@ const Events = () => {
 						</div>
 					) : events.length === 0 ? (
 						<div className="py-[86px] flex flex-col items-center justify-center h-full">
-							<Image
-								src="/icons/home-ev-noevent.svg"
-								alt="loading"
-								width={100}
-								height={100}
-								className=""
-							/>
+							<HomeEvNoevent width={100} height={100} className="text-status-disable-primary" />
 							<div className="mt-6 self-stretch text-center text-typo-primary text-base font-semibold leading-normal">
 								Currently No Scheduled Events
 							</div>

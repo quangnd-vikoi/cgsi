@@ -55,7 +55,7 @@ const Alert: React.FC<AlertProps> = ({
 					>
 						{cancelText}
 					</AlertDialogCancel>
-					<AlertDialogAction className="rounded-sm font-normal" onClick={onAction}>
+					<AlertDialogAction className="px-3 rounded-sm font-normal" onClick={onAction}>
 						{actionText}
 					</AlertDialogAction>
 				</AlertDialogFooter>

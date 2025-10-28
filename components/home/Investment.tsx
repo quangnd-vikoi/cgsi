@@ -1,10 +1,11 @@
 "use client";
-import { ENDPOINT } from "@/constants/endpoint";
+import { ENDPOINT } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 
 type InvestmentCardProps = {
 	title: string;
@@ -32,13 +33,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	return (
 		<div
 			onClick={() => router.push(href)}
-			className="relative rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm w-full cursor-pointer"
+			className="relative rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm w-full cursor-pointer "
 			style={{
 				backgroundImage:
 					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
 			}}
 		>
-			<div className="relative rounded-lg w-full">
+			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow">
 				<div
 					className="overflow-hidden rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm"
 					style={{
@@ -46,8 +47,8 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 							"linear-gradient(90deg, white 0%, #f6fbff 20%, #d9edff 50%, #f6fbff 80%, white 100%)",
 					}}
 				>
-					<div className="pl-6 pt-5 pb-4 w-2/3">
-						<div className="flex flex-col md:flex-row items-baseline gap-4 mb-2">
+					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-2/3">
+						<div className="flex flex-col md:flex-row items-baseline gap-4 md:mb-2">
 							<h2 className="text-xs md:text-lg font-semibold text-enhanced-blue">{title}</h2>
 							<span className="text-[10px] md:text-sm text-typo-tertiary">
 								{available != 0 ? `${available} Available` : "No Available"}
@@ -96,7 +97,7 @@ const Investment = () => {
 
 			<div className="mt-6 flex gap-4 justify-between">
 				<InvestmentCard
-					href="/securities"
+					href={INTERNAL_ROUTES.SECURITIES}
 					title="Securities"
 					available={1}
 					imageSrc="/icons/Investment-left.svg"
@@ -104,7 +105,7 @@ const Investment = () => {
 				/>
 
 				<InvestmentCard
-					href="/alternatives"
+					href={INTERNAL_ROUTES.ALTERNATIVE}
 					title="Alternatives"
 					available={0}
 					imageSrc="/icons/Investment-right.png"

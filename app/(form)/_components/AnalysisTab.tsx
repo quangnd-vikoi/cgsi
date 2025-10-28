@@ -11,13 +11,15 @@ interface AnalysisAccordionItemProps {
 // Custom AccordionItem Component
 const AnalysisAccordionItem: React.FC<AnalysisAccordionItemProps> = ({ value, title, children }) => {
 	return (
-		<AccordionItem value={value} className="border rounded-lg mb-4">
+		<AccordionItem value={value} className="border border-b-0 rounded-lg mb-4">
 			<AccordionTrigger
-				className={`p-4 text-sm font-medium hover:no-underline data-[state=open]:bg-theme-blue-09 data-[state=open]:text-enhanced-blue`}
+				className={`p-4 text-sm border-b rounded-lg data-[state=open]:rounded-b-none data-[state=open]:border-b-0 font-medium hover:no-underline data-[state=open]:bg-theme-blue-09 data-[state=open]:text-enhanced-blue`}
 			>
 				{title}
 			</AccordionTrigger>
-			<AccordionContent className="p-4 text-sm text-typo-primary">{children}</AccordionContent>
+			<AccordionContent className="p-4 text-sm text-typo-primary border-b rounded-lg">
+				{children}
+			</AccordionContent>
 		</AccordionItem>
 	);
 };

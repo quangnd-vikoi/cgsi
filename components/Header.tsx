@@ -16,6 +16,7 @@ import { TriangleAlert, X } from "lucide-react";
 import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { SheetType } from "@/types";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
 	const isActive = link === "/" ? pathname === "/" : pathname?.startsWith(link);
@@ -104,9 +105,9 @@ const Header = () => {
 						</Link>
 
 						<div className="hidden md:flex gap-6">
-							<MenuItem title="Home" link="/" />
-							<MenuItem title="Discover" link="/discover" />
-							<MenuItem title="Portfolio" link="/portfolio" />
+							<MenuItem title="Home" link={INTERNAL_ROUTES.HOME} />
+							<MenuItem title="Discover" link={INTERNAL_ROUTES.DISCOVER} />
+							<MenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />
 						</div>
 					</div>
 
@@ -155,9 +156,9 @@ const Header = () => {
 									<Grip className="cursor-pointer w-6 md:w-8 data-[state=open]:text-enhanced-blue text-typo-secondary" />
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="w-64 px-0" align="end">
-									<MobileMenuItem title="Home" link="/" />
-									<MobileMenuItem title="Discover" link="/discover" />
-									<MobileMenuItem title="Portfolio" link="/portfolio" />
+									<MobileMenuItem title="Home" link={INTERNAL_ROUTES.HOME} />
+									<MobileMenuItem title="Discover" link={INTERNAL_ROUTES.DISCOVER} />
+									<MobileMenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</div>

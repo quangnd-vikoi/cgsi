@@ -2,7 +2,7 @@ import React from "react";
 import CustomSheetTitle from "./CustomSheetTitle";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { ENDPOINT } from "@/constants/endpoint";
+import { ENDPOINT } from "@/constants/routes";
 
 const PasswordSecurity = () => {
 	return (
