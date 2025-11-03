@@ -108,7 +108,7 @@ const Investment = () => {
 					href={INTERNAL_ROUTES.ALTERNATIVE}
 					title="Alternatives"
 					available={0}
-					imageSrc="/icons/Investment-right.png"
+					imageSrc="/icons/Investment-right.svg"
 					subtext="Diversify with curated funds that match different risk profiles and investment horizons"
 				/>
 			</div>

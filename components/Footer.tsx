@@ -1,5 +1,5 @@
-import { Instagram, Linkedin, Facebook, Youtube } from "lucide-react";
 import Image from "next/image";
+import * as Icons from "@/public/icons/footer";
 
 export default function Footer() {
 	return (
@@ -17,54 +17,49 @@ export default function Footer() {
 							height={100}
 						/>
 						<div className="flex flex-col items-end gap-2">
-							<p className="text-md font-normal md:font-medium">Follow us on</p>
+							<p className="font-normal md:font-medium text-md">Follow us on</p>
 							<div className="flex gap-4">
 								<a href="#" className=" ">
-									<Instagram size={20} />
+									<Icons.Instagram />
 								</a>
 								<a href="#" className=" ">
-									<Linkedin size={20} />
+									<Icons.Linkedin />
 								</a>
 								<a href="#" className=" ">
-									<Facebook size={20} />
+									<Icons.Facebook />
 								</a>
 								<a href="#" className=" ">
-									<Youtube size={20} />
+									<Icons.Youtube />
 								</a>
 							</div>
 						</div>
 					</div>
 
 					{/* Bottom side */}
-					<div className="flex justify-between mt-6">
-						<p className="text-xs leading-relaxed">
+					<div className="flex md:flex-row flex-col justify-between mt-4 md:mt-6">
+						<p className="mb-4 text-xs leading-relaxed">
 							CGS International Securities Singapore Pte. Ltd | Company Reg No.: 197901004504
 							(UEN703-W)
 						</p>
-						<div className="hidden md:flex justify-center gap-4 text-xs ">
-							<a href="#" className="">
-								CGS
-							</a>
-							<span className="">|</span>
-							<a href="#" className="">
-								CDI
-							</a>
-							<span className="">|</span>
-							<a href="#" className="">
-								Contact Us
-							</a>
-							<span className="">|</span>
-							<a href="#" className="">
-								Terms of Use
-							</a>
-							<span className="">|</span>
-							<a href="#" className="">
-								General Terms and Conditions
-							</a>
-							<span className="">|</span>
-							<a href="#" className="">
-								Privacy Notice
-							</a>
+						<div className="flex flex-wrap justify-start md:justify-end gap-x-4 gap-y-2 md:mt-0 text-xs text-center">
+							<a href="#">CGS</a>
+							<span className="hidden md:inline-block">|</span>
+
+							<a href="#">CDI</a>
+							<span className="hidden md:inline-block">|</span>
+
+							<a href="#">Contact Us</a>
+							<span className="hidden md:inline-block">|</span>
+
+							<a href="#">Terms of Use</a>
+
+							{/* điểm xuống dòng */}
+							<span className="md:hidden basis-full" />
+
+							<a href="#">General Terms and Conditions</a>
+							<span className="hidden md:inline-block">|</span>
+
+							<a href="#">Privacy Notice</a>
 						</div>
 					</div>
 				</div>

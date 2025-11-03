@@ -158,6 +158,15 @@
 	* {
 		@apply border-border outline-ring/50;
 	}
+
+	/* *:focus {
+		outline: none !important;
+		box-shadow: none !important;
+	}
+	*:focus-visible {
+		outline: none !important;
+		box-shadow: none !important;
+	} */
 	body {
 		@apply bg-background text-foreground;
 	}
@@ -169,7 +178,7 @@
 
 @layer components {
 	.container-default {
-		@apply mx-4 md:mx-8 lg:mx-10 xl:mx-auto xl:max-w-[1200px];
+		@apply mx-4 md:mx-6 xl:mx-auto xl:max-w-[1200px];
 	}
 
 	.investment-card {
