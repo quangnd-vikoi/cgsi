@@ -51,13 +51,16 @@ const Navigation = () => {
 			</div>
 
 			<div className="flex gap-4 items-center">
-				<Button className="border-0 md:border border-stroke-secondary text-typo-primary rounded-sm px-0 py-0 md:px-3 md:py-1.5 text-sm bg-transparent hover:bg-black/5 font-normal transition-colors">
-					<Headset className="text-icon-light" />
+				<Button className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-black/5 font-normal transition-colors h-8">
+					<Headset className="text-icon-light" size={24} />
 					<p className="hidden md:inline-block">Contact us</p>
 				</Button>
+
+				<Headset className="text-icon-light md:hidden" size={24} />
+
 				<Button
 					onClick={() => router.push(INTERNAL_ROUTES.MYAPPLICATION)}
-					className="h-fit border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-blue-500/10 font-medium transition-colors "
+					className="h-fit md:h-8 border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-blue-500/10 font-medium transition-colors "
 				>
 					<Archive />
 					<p className="leading-4">My Applications</p>

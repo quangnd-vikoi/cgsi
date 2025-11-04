@@ -124,7 +124,7 @@ const OverviewTab = () => {
 		},
 	];
 	return (
-		<div className="space-y-6 h-full pr-3">
+		<div className="space-y-6 h-full md:pr-3">
 			{/* Banner */}
 			<div className="">
 				<Image

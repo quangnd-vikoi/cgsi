@@ -18,6 +18,7 @@ import { IEventProps } from "@/types";
 import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import { useEffect } from "react";
+import { tree } from "next/dist/build/templates/app-page";
 
 const EventCarousel = ({ events }: { events: Array<IEventProps> }) => {
 	const [api, setApi] = useState<CarouselApi>();

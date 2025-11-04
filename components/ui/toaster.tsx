@@ -1,9 +1,23 @@
 "use client";
 
-import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon, XIcon } from "lucide-react";
+import {
+	CircleAlert,
+	CircleCheckIcon,
+	InfoIcon,
+	Loader2Icon,
+	OctagonXIcon,
+	TriangleAlertIcon,
+	XIcon,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { toast as sonnerToast, Toaster as Sonner, type ExternalToast, type ToasterProps } from "sonner";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+	subsets: ["latin"],
+	variable: "--font-inter",
+});
 
 // Custom Toast Component với progress bar
 interface CustomToastProps {
@@ -36,11 +50,11 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 
 	const typeConfig = {
 		success: {
-			icon: <CircleCheckIcon className="size-5 text-white" fill="#11B47B" size={16} />,
+			icon: <CircleCheckIcon className="size-5 text-white" fill="#11B47B" size={20} />,
 			progressColor: "bg-status-success",
 		},
 		error: {
-			icon: <OctagonXIcon className="size-5" />,
+			icon: <CircleAlert size={20} className="fill-status-error border-status-error" color="#FFFFFF" />,
 			progressColor: "bg-red-500",
 		},
 		warning: {
@@ -63,7 +77,9 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 	const config = typeConfig[type];
 
 	return (
-		<div className={`relative w-full sm:w-[350px] bg-white border rounded-lg shadow-lg overflow-hidden`}>
+		<div
+			className={`${inter.className} relative w-full sm:w-[344px] bg-white border rounded-lg shadow-lg overflow-hidden`}
+		>
 			<div className="flex items-start gap-1 p-3">
 				{/* Icon */}
 				<div className={`flex-shrink-0 mt-0.5`}>{config.icon}</div>
@@ -87,7 +103,7 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 			</div>
 
 			{/* Progress Bar */}
-			<div className="h-[3px] bg-black/10 dark:bg-white/10">
+			<div className="h-[3px] bg-white dark:bg-white/10">
 				<div
 					className={`h-full ${config.progressColor} transition-all duration-75 ease-linear`}
 					style={{ width: `${progress}%` }}
@@ -104,7 +120,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 	return (
 		<Sonner
 			theme={theme as ToasterProps["theme"]}
-			className="toaster group"
+			className={`toaster group`}
 			style={
 				{
 					"--normal-bg": "var(--popover)",

@@ -17,74 +17,158 @@ import { CircleAlert, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ENDPOINT } from "@/constants/routes";
+import { toast } from "@/components/ui/toaster";
+import Image from "next/image";
+
 type RouteProps = {
 	pathname: "alternatives" | "securities";
 };
 
+// Configuration constants
+const FORM_CONFIG = {
+	issuePrice: 100.0,
+	minQuantity: 20,
+	unitIncremental: 10,
+	productName: "CGS SG 3-month USD Commercial Paper Series 012",
+	productCode: "C012USD.ADDX",
+};
+
+// Select field configurations
+const SELECT_FIELDS = [
+	{
+		id: "account",
+		label: "Account",
+		placeholder: "Select an account",
+		defaultValue: "cash-0123456",
+		options: [
+			{ value: "cash-0123456", label: "(Cash) 0123456" },
+			{ value: "cash-0123457", label: "(Cash) 0123457" },
+			{ value: "cash-0123458", label: "(Cash) 0123458" },
+		],
+	},
+	{
+		id: "payment",
+		label: "Preferred Payment Mode",
+		placeholder: "Select a payment option",
+		defaultValue: "",
+		options: [
+			{ value: "bank-transfer", label: "Bank Transfer" },
+			{ value: "credit-card", label: "Credit Card" },
+			{ value: "debit-card", label: "Debit Card" },
+		],
+	},
+];
+
+const CURRENCY_OPTIONS = [
+	{
+		value: "sgd",
+		label: "Singapore Dollar (SGD)",
+		flag: "https://flagcdn.com/sg.svg",
+		flagAlt: "SG Flag",
+		flagPosition: "object-left",
+	},
+	{
+		value: "usd",
+		label: "US Dollar (USD)",
+		flag: "https://flagcdn.com/us.svg",
+		flagAlt: "US Flag",
+		flagPosition: "object-[20%-30%]",
+	},
+	{
+		value: "eur",
+		label: "Euro (EUR)",
+		flag: "https://flagcdn.com/eu.svg",
+		flagAlt: "EU Flag",
+		flagPosition: "object-center",
+	},
+];
+
 export default function ApplicationForm({ pathname }: RouteProps) {
-	const [quantity, setQuantity] = useState<number | "">(""); // Allow empty string for placeholder
+	const [quantity, setQuantity] = useState<number | "">("");
 	const [agreed, setAgreed] = useState(false);
-	const [account, setAccount] = useState("cash-0123456");
-	const [paymentMode, setPaymentMode] = useState("");
-	const [currency, setCurrency] = useState("sgd");
+	const [formValues, setFormValues] = useState({
+		account: "cash-0123456",
+		payment: "",
+		currency: "sgd",
+	});
 	const [showError, setShowError] = useState(false);
+	const [showValidationErrors, setShowValidationErrors] = useState(false);
 	const router = useRouter();
 
+	// Validation logic
+	const currentQuantity = quantity === "" ? 0 : quantity;
+	const isValidIncremental = quantity === "" || currentQuantity % FORM_CONFIG.unitIncremental === 0;
+	const isBiggerThanMinimum = quantity === "" || currentQuantity >= FORM_CONFIG.minQuantity;
+	const isQuantityFilled = quantity !== "";
+	const isValid = isValidIncremental && isBiggerThanMinimum && isQuantityFilled;
+	const estNetValue = (currentQuantity * FORM_CONFIG.issuePrice).toFixed(2);
+	const hasQuantityError = showValidationErrors && !isQuantityFilled;
+
 	const handleSubmit = () => {
-		if (!isValid) {
+		if (!formValues.account || !formValues.payment || !formValues.currency || !isValid || !agreed) {
+			setShowValidationErrors(true);
+			if (!agreed) setShowError(true);
 			return;
 		}
-		if (quantity === "") {
-			setQuantity(0);
-			return;
-		}
-		if (!agreed) {
-			setShowError(true);
-			return;
-		}
+
 		setShowError(false);
-		router.push(ENDPOINT.CGSI_INVOICE("helloKelvinCHAN"));
-	};
+		setShowValidationErrors(false);
 
-	const issuePrice = 100.0;
-	const minQuantity = 20;
-	const unitIncremental = 10;
-
-	const handleDecrease = () => {
-		const currentQty = quantity === "" ? minQuantity : quantity;
-		if (currentQty > minQuantity) {
-			setQuantity(currentQty - unitIncremental);
+		if (pathname === "alternatives") {
+			if (Math.random() < 0.5) {
+				toast.success(
+					"Application Success!",
+					"Your Application for CGS Fullgoal CSI 1000 ETF has been submitted successfully."
+				);
+			} else {
+				toast.error("Error Encountered", "Something went wrong. Please try again later.");
+			}
+		} else {
+			router.push(ENDPOINT.CGSI_INVOICE("itrade-token-12345"));
 		}
 	};
 
-	const handleIncrease = () => {
-		const currentQty = quantity === "" ? minQuantity : quantity;
-		setQuantity(currentQty + unitIncremental);
+	const handleQuantityChange = (delta: number) => {
+		const currentQty = quantity === "" ? FORM_CONFIG.minQuantity : quantity;
+		const newQty = currentQty + delta;
+		if (newQty >= FORM_CONFIG.minQuantity) {
+			setQuantity(newQty);
+		}
 	};
 
-	const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
-
-		// Allow empty string (backspace to clear)
 		if (value === "") {
 			setQuantity("");
 			return;
 		}
-
 		const numValue = parseInt(value);
 		if (!isNaN(numValue) && numValue >= 0) {
 			setQuantity(numValue);
 		}
 	};
 
-	const currentQuantity = quantity === "" ? 0 : quantity;
-	const isValidIncremental = currentQuantity % unitIncremental === 0;
-	const isBiggerThanMinimum = currentQuantity >= minQuantity || quantity === "";
+	const updateFormValue = (field: string, value: string) => {
+		setFormValues((prev) => ({ ...prev, [field]: value }));
+	};
 
-	const isValid = isValidIncremental && isBiggerThanMinimum;
-	const estNetValue = (currentQuantity * issuePrice).toFixed(2);
-
-	console.log("isValidIncremental ", isValidIncremental);
+	const quantityDetails = [
+		{
+			label: "Issue Price",
+			value: `${FORM_CONFIG.issuePrice.toFixed(2)} USD`,
+			isError: false,
+		},
+		{
+			label: "Min. Quantity",
+			value: `${FORM_CONFIG.minQuantity.toLocaleString()} Unit(s)`,
+			isError: isQuantityFilled && !isBiggerThanMinimum,
+		},
+		{
+			label: "Unit Incremental",
+			value: `${FORM_CONFIG.unitIncremental.toLocaleString()} Unit(s)`,
+			isError: isQuantityFilled && !isValidIncremental,
+		},
+	];
 
 	return (
 		<Dialog>
@@ -92,9 +176,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
 			<DialogContent className="p-0 gap-0 w-[346px] md:w-[530px]">
-				<DialogHeader className=" p-4 md:p-6 pt-4">
+				<DialogHeader className="p-4 md:p-6 pt-4">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
-						{pathname == "alternatives"
+						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
 							: "IOP Application Form"}
 					</DialogTitle>
@@ -104,81 +188,98 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					{/* Product Info */}
 					<div className="bg-background-section rounded-lg p-4 mb-6">
 						<h3 className="font-semibold text-base text-typo-primary mb-2 leading-6">
-							CGS SG 3-month USD Commercial Paper Series 012
+							{FORM_CONFIG.productName}
 						</h3>
 						<p className="text-xs px-3 rounded-full border border-stroke-secondary inline-block py-1 text-typo-secondary leading-4">
-							C012USD.ADDX
+							{FORM_CONFIG.productCode}
 						</p>
 					</div>
 
-					{/* Account */}
-					<div className="mb-6">
-						<Label htmlFor="account" className="text-sm font-semibold text-typo-primary mb-1.5">
-							Account
-						</Label>
-						<Select value={account} onValueChange={setAccount}>
-							<SelectTrigger id="account" className="w-full">
-								<SelectValue placeholder="Select an account" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="cash-0123456">(Cash) 0123456</SelectItem>
-								<SelectItem value="cash-0123457">(Cash) 0123457</SelectItem>
-								<SelectItem value="cash-0123458">(Cash) 0123458</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+					{/* Dynamic Select Fields */}
+					{SELECT_FIELDS.map((field) => {
+						const hasError =
+							showValidationErrors && !formValues[field.id as keyof typeof formValues];
+						return (
+							<div key={field.id} className="mb-6">
+								<Label
+									htmlFor={field.id}
+									className="text-sm font-semibold text-typo-primary mb-1.5"
+								>
+									{field.label}
+								</Label>
+								<Select
+									value={formValues[field.id as keyof typeof formValues]}
+									onValueChange={(value) => updateFormValue(field.id, value)}
+								>
+									<SelectTrigger
+										id={field.id}
+										className={cn(
+											"w-full",
+											hasError && "border-status-error bg-background-error"
+										)}
+									>
+										<SelectValue placeholder={field.placeholder} />
+									</SelectTrigger>
+									<SelectContent>
+										{field.options.map((option) => (
+											<SelectItem key={option.value} value={option.value}>
+												{option.label}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+						);
+					})}
 
-					{/* Preferred Payment Mode */}
-					<div className="mb-6">
-						<Label htmlFor="payment" className="text-sm font-semibold text-typo-primary mb-1.5">
-							Preferred Payment Mode
-						</Label>
-						<Select value={paymentMode} onValueChange={setPaymentMode}>
-							<SelectTrigger id="payment" className="w-full">
-								<SelectValue placeholder="Select a payment option" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="bank-transfer">Bank Transfer</SelectItem>
-								<SelectItem value="credit-card">Credit Card</SelectItem>
-								<SelectItem value="debit-card">Debit Card</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-
-					{/* Settlement Currency */}
+					{/* Currency Select */}
 					<div className="mb-6">
 						<Label htmlFor="currency" className="text-sm font-semibold text-typo-primary mb-1.5">
 							Settlement Currency
 						</Label>
-						<Select value={currency} onValueChange={setCurrency}>
-							<SelectTrigger id="currency" className="w-full">
+						<Select
+							value={formValues.currency}
+							onValueChange={(value) => updateFormValue("currency", value)}
+						>
+							<SelectTrigger
+								id="currency"
+								className={cn(
+									"w-full",
+									showValidationErrors &&
+										!formValues.currency &&
+										"border-status-error bg-background-error"
+								)}
+							>
 								<SelectValue placeholder="Select a currency" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="sgd">
-									<div className="flex items-center gap-2">
-										<span className="text-base">🇸🇬</span>
-										<span className="text-typo-primary">Singapore Dollar (SGD)</span>
-									</div>
-								</SelectItem>
-								<SelectItem value="usd">
-									<div className="flex items-center gap-2">
-										<span className="text-base">🇺🇸</span>
-										<span className="text-typo-primary">US Dollar (USD)</span>
-									</div>
-								</SelectItem>
-								<SelectItem value="eur">
-									<div className="flex items-center gap-2">
-										<span className="text-base">🇪🇺</span>
-										<span className="text-typo-primary">Euro (EUR)</span>
-									</div>
-								</SelectItem>
+								{CURRENCY_OPTIONS.map((currency) => (
+									<SelectItem
+										key={currency.value}
+										value={currency.value}
+										className="px-3 py-2.5"
+									>
+										<div className="flex items-center gap-2">
+											<Image
+												src={currency.flag}
+												alt={currency.flagAlt}
+												width={20}
+												height={20}
+												className={cn(
+													"rounded-full object-cover aspect-square",
+													currency.flagPosition
+												)}
+											/>
+											<span className="text-typo-primary">{currency.label}</span>
+										</div>
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>
 
 					{/* Quantity Requested */}
-					<div className={`border rounded-lg py-4 px-4 md:px-6 mb-6 border-stroke-secondary`}>
+					<div className="border rounded-lg py-4 px-4 md:px-6 mb-6 border-stroke-secondary">
 						<Label className="text-sm font-semibold text-typo-primary mb-1.5">
 							Quantity Requested
 						</Label>
@@ -186,84 +287,61 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						<div
 							className={cn(
 								"flex items-center justify-between mb-4 border-b border-stroke-secondary px-1.5 py-2.5",
-								!isValid && "border-status-error bg-background-error"
+								(hasQuantityError || (isQuantityFilled && !isValid)) &&
+									"border-status-error bg-background-error"
 							)}
 						>
 							<Button
 								type="button"
-								onClick={handleDecrease}
-								disabled={quantity === "" || currentQuantity <= minQuantity}
+								onClick={() => handleQuantityChange(-FORM_CONFIG.unitIncremental)}
+								disabled={quantity === "" || currentQuantity <= FORM_CONFIG.minQuantity}
 								variant="outline"
 								size="icon"
 								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-blue-50 hover:text-enhanced-blue disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
-								<Minus className={cn("w-4 h-4", !isValid && "bg-background-error")} />
+								<Minus className="w-4 h-4" />
 							</Button>
 							<div className="flex-1 mx-4">
 								<Input
 									type="number"
 									value={quantity}
-									onChange={handleQuantityChange}
-									placeholder={`Min. ${minQuantity} Unit(s)`}
-									min={minQuantity}
-									className={cn(
-										`text-center border-0 text-sm font-normal focus-visible:ring-0 focus-visible:ring-offset-0 text-theme-neutral-07 shadow-none h-5`,
-										!quantity && "cursor-none"
-									)}
+									onChange={handleInputChange}
+									placeholder={`Min. ${FORM_CONFIG.minQuantity} Unit(s)`}
+									min={FORM_CONFIG.minQuantity}
+									className="text-center border-0 text-sm font-normal focus-visible:ring-0 focus-visible:ring-offset-0 text-theme-neutral-07 shadow-none h-5"
 								/>
 							</div>
 							<Button
 								type="button"
-								onClick={handleIncrease}
+								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
 								variant="outline"
 								size="icon"
 								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-blue-50 hover:text-enhanced-blue h-5 w-5"
 							>
-								<Plus className={cn("w-4 h-4", !isValid && "bg-background-error")} />
+								<Plus className="w-4 h-4" />
 							</Button>
 						</div>
 
 						<div className="space-y-3 text-xs">
-							<div className="flex justify-between">
-								<span className="text-typo-secondary">Issue Price</span>
-								<span className="font-medium text-typo-primary">
-									{issuePrice.toFixed(2)} USD
-								</span>
-							</div>
-							<div className="flex justify-between">
-								<span
-									className={cn(
-										isBiggerThanMinimum ? "text-typo-secondary" : "text-status-error"
-									)}
-								>
-									Min. Quantity
-								</span>
-								<span
-									className={cn(
-										"font-medium",
-										isBiggerThanMinimum ? "text-typo-primary" : "text-status-error"
-									)}
-								>
-									{minQuantity.toLocaleString()} Unit(s)
-								</span>
-							</div>
-							<div className="flex justify-between">
-								<span
-									className={cn(
-										isValidIncremental ? "text-typo-secondary" : "text-status-error"
-									)}
-								>
-									Unit Incremental
-								</span>
-								<span
-									className={cn(
-										"font-medium",
-										isValidIncremental ? "text-typo-primary" : "text-status-error"
-									)}
-								>
-									{unitIncremental.toLocaleString()} Unit(s)
-								</span>
-							</div>
+							{quantityDetails.map((detail) => (
+								<div key={detail.label} className="flex justify-between">
+									<span
+										className={cn(
+											detail.isError ? "text-status-error" : "text-typo-secondary"
+										)}
+									>
+										{detail.label}
+									</span>
+									<span
+										className={cn(
+											"font-medium",
+											detail.isError ? "text-status-error" : "text-typo-primary"
+										)}
+									>
+										{detail.value}
+									</span>
+								</div>
+							))}
 							<div className="flex justify-between text-sm">
 								<span className="text-typo-primary font-medium w-1/2">
 									Est. Net Application Value
@@ -308,7 +386,6 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							</Label>
 						</div>
 
-						{/* Hiện lỗi */}
 						{showError && (
 							<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 								<CircleAlert
@@ -321,10 +398,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						)}
 					</div>
 				</div>
+
 				<DialogFooter className="bg-background-section px-4 md:px-6 py-4">
 					<Button
 						onClick={handleSubmit}
-						// disabled={!agreed || !isValidIncremental || !isBiggerThanMinimum}
 						className="bg-enhanced-blue hover:bg-enhanced-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Submit Application

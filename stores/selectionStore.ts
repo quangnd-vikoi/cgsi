@@ -5,9 +5,12 @@ interface SelectedItem {
 	id: number;
 	name: string;
 	code: string;
+	issuePrice?: string;
+	minUnits?: string;
+	openingDate?: string;
 	closingDate: string;
 	hasDetails: boolean;
-	isCompact: boolean;
+	isCompact?: boolean;
 	applied: boolean;
 }
 

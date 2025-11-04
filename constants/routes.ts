@@ -4,6 +4,7 @@ export const ENDPOINT = {
 	CGSI_CHANGE_PASSWORD: "https://itrade.cgsi.com.sg/app/trade.z",
 	CGSI_INVOICE: (token: string) =>
 		`https://itrade.cgsi.com.sg/app/subscription.iop.invoice.z?code=${token}`,
+	CGSI_TRADE: "https://sg.itradecgsi.com/gcCGSIPlus/tcplus/index.jsp",
 };
 
 export const INTERNAL_ROUTES = {

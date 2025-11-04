@@ -9,7 +9,7 @@ import { INTERNAL_ROUTES } from "@/constants/routes";
 
 export default function Sidebar() {
 	const pathname = usePathname();
-	const { selectedId, setSelectedId } = useSelectionStore();
+	const { selectedId, setSelectedItem } = useSelectionStore();
 
 	const etfData = [
 		{
@@ -43,6 +43,15 @@ export default function Sidebar() {
 			isCompact: true,
 			applied: false,
 		},
+		{
+			id: 4,
+			name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
+			code: "VND.SGX",
+			closingDate: "20-May-2025, 17:00 SGT",
+			hasDetails: false,
+			isCompact: true,
+			applied: true,
+		},
 		// {
 		// 	id: 4,
 		// 	name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
@@ -66,8 +75,8 @@ export default function Sidebar() {
 	return (
 		<div className="relative h-full flex flex-col bg-white rounded md:max-w-sm" id="sidebar_form">
 			{/* Header - Fixed */}
-			<div className="flex-shrink-0 p-6 pb-0">
-				<h1 className="text-base font-semibold text-typo-primary mb-6">
+			<div className="flex-shrink-0 p-4 md:p-6 !pb-4">
+				<h1 className="text-base font-semibold text-typo-primary">
 					{pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
 						? "Initial Offering Price (IOP)"
 						: "Commercial Papers"}
@@ -75,7 +84,7 @@ export default function Sidebar() {
 			</div>
 
 			{/* Content - Scrollable */}
-			<div className="flex-1 overflow-y-auto sidebar-scroll p-6 pt-0">
+			<div className="flex-1 overflow-y-auto sidebar-scroll p-4 md:p-6 !pt-0">
 				<div className="space-y-4">
 					{etfData.map((etf) => (
 						<div
@@ -96,7 +105,7 @@ export default function Sidebar() {
 							)}
 
 							{/* Header */}
-							<div className={cn("flex items-start gap-2 mb-2", etf.applied && "mt-4")}>
+							<div className={cn("flex items-start gap-2 mb-2", etf.applied && "mt-3")}>
 								<div className="flex-1">
 									<h3
 										className={cn(
@@ -114,7 +123,7 @@ export default function Sidebar() {
 											? "bg-enhanced-blue text-white"
 											: "bg-transparent text-enhanced-blue hover:bg-background-focus transition-colors "
 									)}
-									onClick={() => setSelectedId(etf.id)}
+									onClick={() => setSelectedItem(etf)}
 								>
 									{selectedId === etf.id && <Check className="text-sm" />}
 									Details
@@ -159,7 +168,7 @@ export default function Sidebar() {
 							{etf.isCompact && (
 								<div className="mt-4">
 									<div className="flex justify-between items-center *:text-xs">
-										<span className=" text-typo-secondary">Closing Date</span>
+										<span className=" text-typo-tertiary">Closing Date</span>
 										<span className=" font-medium text-typo-tertiary">
 											{etf.closingDate}
 										</span>
