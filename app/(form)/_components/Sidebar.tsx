@@ -75,7 +75,7 @@ export default function Sidebar() {
 	return (
 		<div className="relative h-full flex flex-col bg-white rounded md:max-w-sm" id="sidebar_form">
 			{/* Header - Fixed */}
-			<div className="flex-shrink-0 p-4 md:p-6 !pb-4">
+			<div className="flex-shrink-0 pad !pb-4">
 				<h1 className="text-base font-semibold text-typo-primary">
 					{pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
 						? "Initial Offering Price (IOP)"
@@ -84,7 +84,7 @@ export default function Sidebar() {
 			</div>
 
 			{/* Content - Scrollable */}
-			<div className="flex-1 overflow-y-auto sidebar-scroll p-4 md:p-6 !pt-0">
+			<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
 				<div className="space-y-4">
 					{etfData.map((etf) => (
 						<div

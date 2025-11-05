@@ -1,5 +1,5 @@
 "use client";
-import { ENDPOINT } from "@/constants/routes";
+import { CGSI } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "next/image";
 import Link from "next/link";
@@ -86,7 +86,7 @@ const Investment = () => {
 				</div>
 				<div className="">
 					<Link
-						href={ENDPOINT.CGSI_EVENTS}
+						href={CGSI.EVENTS}
 						className="text-enhanced-blue text-xs md:text-sm font-normal"
 						target="_blank"
 					>

@@ -2,10 +2,10 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { ENDPOINT } from "@/constants/routes";
+import { CGSI } from "@/constants/routes";
+import { Button } from "@/components/ui/button";
 
 const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();
@@ -114,7 +114,7 @@ const Campaigns = () => {
 
 						{/* View All Button */}
 						<Button className="flex-shrink-0 bg-transparent hover:bg-white/20 px-3 border border-white rounded-full h-6 font-normal text-[12px] whitespace-nowrap cursor-pointer">
-							<Link href={ENDPOINT.CGSI_CAMPAIGNS} target="_blank">
+							<Link href={CGSI.CAMPAIGNS} target="_blank">
 								View All
 							</Link>
 						</Button>

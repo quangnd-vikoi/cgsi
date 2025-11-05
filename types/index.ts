@@ -26,3 +26,22 @@ export type SheetType =
 	| "password_and_security"
 	| "detail_notification"
 	| null;
+
+export interface IResearchArticleProps {
+	id: string;
+	title: string;
+	description: string;
+	date: string;
+	author: string;
+	tag: string;
+	url: string;
+}
+
+export interface IInsightProps {
+	id: string;
+	imageUrl: string; 
+	tag: string; // "Idea of the Day"
+	title: string; // "Malaysian Portfolios with US-China Trade Exposure"
+	description: string; // đoạn mô tả ngắn
+	date: string; // "25-Aug-2025"
+}

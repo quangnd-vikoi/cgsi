@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CircleAlert, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { ENDPOINT } from "@/constants/routes";
+import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
 import Image from "next/image";
 
@@ -124,7 +124,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				toast.error("Error Encountered", "Something went wrong. Please try again later.");
 			}
 		} else {
-			router.push(ENDPOINT.CGSI_INVOICE("itrade-token-12345"));
+			router.push(CGSI.INVOICE("itrade-token-12345"));
 		}
 	};
 
@@ -176,7 +176,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
 			<DialogContent className="p-0 gap-0 w-[346px] md:w-[530px]">
-				<DialogHeader className="p-4 md:p-6 pt-4">
+				<DialogHeader className="pad pt-4">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
@@ -308,7 +308,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									onChange={handleInputChange}
 									placeholder={`Min. ${FORM_CONFIG.minQuantity} Unit(s)`}
 									min={FORM_CONFIG.minQuantity}
-									className="text-center border-0 text-sm font-normal focus-visible:ring-0 focus-visible:ring-offset-0 text-theme-neutral-07 shadow-none h-5"
+									className="text-center border-0 text-sm font-normal text-theme-neutral-07"
 								/>
 							</div>
 							<Button

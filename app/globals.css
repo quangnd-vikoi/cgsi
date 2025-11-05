@@ -62,6 +62,7 @@
 	--color-theme-neutral-095: var(--theme-neutral-095);
 	--color-theme-neutral-07: var(--theme-neutral-07);
 	--color-theme-neutral-08: var(--theme-neutral-08);
+	--color-background-banner: var(--background-banner);
 }
 
 :root {
@@ -118,6 +119,7 @@
 	--theme-neutral-07: #bac3d1;
 	--theme-neutral-08: #d5dbe5;
 	--theme-neutral-095: #f9fafc;
+	/* discover*/
 }
 
 .dark {
@@ -193,6 +195,14 @@
 			);
 		border-image-slice: 1;
 	}
+
+	.pad {
+		@apply p-4 md:p-6;
+	}
+
+	.pad-x {
+		@apply px-4 md:px-6;
+	}
 }
 @utility investment-card {
 	position: relative;
@@ -221,56 +231,35 @@
 }
 
 @layer utilities {
+	/* === Custom Scroll === */
 	.sidebar-scroll {
-		/* Firefox: giữ thin, nếu muốn ẩn hoàn toàn dùng 'none' */
 		scrollbar-width: thin;
 		scrollbar-color: #bac3d1 transparent;
 	}
-
-	/* WebKit (Chrome, Edge Chromium, Safari) */
 	.sidebar-scroll::-webkit-scrollbar {
 		width: 5px;
 		height: 5px;
 	}
-
 	.sidebar-scroll::-webkit-scrollbar-track {
 		background: #dde4ec;
 		border-radius: 9999px;
 	}
-
 	.sidebar-scroll::-webkit-scrollbar-thumb {
 		background: #bac3d1;
 		border-radius: 9999px;
 	}
-
 	.sidebar-scroll::-webkit-scrollbar-thumb:hover {
 		background: #888;
 	}
-
-	/* Ẩn mũi tên (cover nhiều biến thể) */
 	.sidebar-scroll::-webkit-scrollbar-button,
-	.sidebar-scroll::-webkit-scrollbar-button:start,
-	.sidebar-scroll::-webkit-scrollbar-button:end,
-	.sidebar-scroll::-webkit-scrollbar-button:single-button,
-	.sidebar-scroll::-webkit-scrollbar-button:single-button:vertical,
-	.sidebar-scroll::-webkit-scrollbar-button:single-button:horizontal {
-		display: none !important;
-		width: 0 !important;
-		height: 0 !important;
-		-webkit-appearance: none !important;
-		appearance: none !important;
-	}
-
-	/* Ẩn góc (nếu có) */
 	.sidebar-scroll::-webkit-scrollbar-corner {
+		display: none !important;
 		background: transparent;
 	}
-}
 
-@layer utilities {
+	/* === Scrollbar offset on mobile === */
 	@media (max-width: 768px) {
 		.scrollbar-offset-right {
-			/* Mobile: 8px */
 			width: calc(100% + 10px);
 			padding-right: 10px;
 			box-sizing: border-box;
@@ -279,17 +268,61 @@
 			scrollbar-gutter: stable;
 		}
 	}
-	/* @media (min-width: 768px) {
-		.scrollbar-offset-right {
-			width: calc(100% + 12px);
-			padding-right: 12px;
+
+	/* === Discover banner === */
+	.bg-discover-banner {
+		background-image: url("/icons/discover/banner-mobile.png");
+		background-size: cover;
+		background-position: center;
+	}
+	@media (min-width: 768px) {
+		.bg-discover-banner {
+			background-image: linear-gradient(to bottom, #213e6c, #3679df);
 		}
 	}
 
-	@media (min-width: 1024px) {
-		.scrollbar-offset-right {
-			width: calc(100% + 16px);
-			padding-right: 16px;
+	/* === Stockresearch background === */
+	.bg-stockresearch-gradient {
+		background: linear-gradient(
+			135deg,
+			rgba(255, 255, 255, 0.5) 0%,
+			rgba(226, 240, 255, 0.5) 35%,
+			rgba(226, 240, 255, 1) 75%,
+			rgba(255, 255, 255, 0.5) 100%
+		);
+	}
+	.bg-stockresearch-gradient-overlay {
+		background: linear-gradient(
+			135deg,
+			rgba(226, 240, 255, 0.42) 0%,
+			rgba(255, 255, 255, 0.42) 50%,
+			rgba(226, 240, 255, 0.42) 100%
+		);
+	}
+
+	/* === Investment card === */
+	.investment-card {
+		position: relative;
+		background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+		border-radius: 12px;
+		overflow: hidden;
+
+		&::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 1px;
+			background: linear-gradient(
+				135deg,
+				rgba(255, 255, 255, 0.8) 0%,
+				#dff0ff 50.48%,
+				rgba(255, 255, 255, 0.8) 100%
+			);
+			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+			mask-composite: exclude;
+			-webkit-mask-composite: xor;
+			pointer-events: none;
 		}
-	} */
+	}
 }

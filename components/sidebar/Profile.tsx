@@ -188,7 +188,7 @@ const Profile = () => {
 					</div>
 				</div>
 			</SheetHeader>
-			<div className="p-4 md:p-6 pt-6 md:pt-10 flex flex-col gap-10 overflow-y-auto flex-1">
+			<div className="pad pt-6 md:pt-10 flex flex-col gap-10 overflow-y-auto flex-1">
 				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => (
 					<MenuGroup key={title} title={title} items={items} />
 				))}

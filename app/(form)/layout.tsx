@@ -1,12 +1,9 @@
 "use client";
-import React, { useState } from "react";
 import Navigation from "./_components/Navigation";
 import Sidebar from "./_components/Sidebar";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { ChevronLeft, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -34,9 +31,7 @@ export default function Layout({ children }: LayoutProps) {
 
 					{/* Right content - chỉ hiện trên mobile khi đã chọn item, luôn hiện từ md trở lên */}
 					<section
-						className={`${
-							selectedId ? "block" : "hidden md:block"
-						} flex-1 h-full bg-white p-4 md:p-6`}
+						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad`}
 					>
 						<div className="flex-shrink-0">
 							<div className="flex justify-between items-center">
@@ -53,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
 								/>
 							</div>
 
-							<Separator className="my-4" />
+							<Separator className="mt-4 mb-1.5" />
 						</div>
 						{children}
 					</section>

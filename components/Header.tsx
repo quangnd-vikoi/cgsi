@@ -16,7 +16,7 @@ import { TriangleAlert, X } from "lucide-react";
 import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { SheetType } from "@/types";
-import { ENDPOINT, INTERNAL_ROUTES } from "@/constants/routes";
+import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
 	const isActive = link === "/" ? pathname === "/" : pathname?.startsWith(link);
@@ -137,7 +137,7 @@ const Header = () => {
 							</div>
 						</div>
 						<div className="hidden md:block w-[2px] h-8 bg-gray-300"></div>
-						<Link href={ENDPOINT.CGSI_TRADE} className="" target="_blank">
+						<Link href={CGSI.TRADE} className="" target="_blank">
 							<Button
 								variant={"default"}
 								className="h-6 md:h-8 rounded-sm bg-enhanced-blue px-2 md:px-3 font-normal hover:bg-enhanced-blue/70 text-xs md:text-sm"

@@ -1,6 +1,6 @@
-import Campaigns from "@/components/home/Campaigns";
-import Events from "@/components/home/Events";
-import Investment from "@/components/home/Investment";
+import Campaigns from "./_component/Campaigns";
+import Events from "./_component/Events";
+import Investment from "./_component/Investment";
 
 export default function Home() {
 	return (
