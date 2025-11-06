@@ -269,6 +269,17 @@
 		}
 	}
 
+	@media (min-width: 768px) {
+		.scrollbar-offset-laptop {
+			width: calc(100% + 12px);
+			padding-right: 12px;
+			box-sizing: border-box;
+			scrollbar-width: thin;
+			scrollbar-color: #bac3d1 transparent;
+			scrollbar-gutter: stable;
+		}
+	}
+
 	/* === Discover banner === */
 	.bg-discover-banner {
 		background-image: url("/icons/discover/banner-mobile.png");

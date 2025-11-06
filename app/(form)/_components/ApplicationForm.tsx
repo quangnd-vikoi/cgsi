@@ -13,12 +13,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CircleAlert, Minus, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Minus, Plus } from "lucide-react";
+import { cn, convertTo2DigitsNumber } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
 import Image from "next/image";
+import CustomCircleAlert from "@/components/CircleAlertIcon";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
@@ -184,7 +185,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</DialogTitle>
 				</DialogHeader>
 
-				<div className="px-4 md:px-6">
+				<div className="pad-x">
 					{/* Product Info */}
 					<div className="bg-background-section rounded-lg p-4 mb-6">
 						<h3 className="font-semibold text-base text-typo-primary mb-2 leading-6">
@@ -279,7 +280,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</div>
 
 					{/* Quantity Requested */}
-					<div className="border rounded-lg py-4 px-4 md:px-6 mb-6 border-stroke-secondary">
+					<div className="border rounded-lg py-4 pad-x mb-6 border-stroke-secondary">
 						<Label className="text-sm font-semibold text-typo-primary mb-1.5">
 							Quantity Requested
 						</Label>
@@ -347,11 +348,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									Est. Net Application Value
 								</span>
 								<span className="font-semibold text-typo-primary">
-									{parseFloat(estNetValue).toLocaleString("en-US", {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2,
-									})}{" "}
-									USD
+									{convertTo2DigitsNumber(estNetValue)} USD
 								</span>
 							</div>
 						</div>
@@ -388,18 +385,14 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 						{showError && (
 							<p className="text-status-error text-xs mt-1 flex items-center gap-1">
-								<CircleAlert
-									size={15}
-									className="fill-status-error border-status-error"
-									color="#FFFFFF"
-								/>{" "}
+								<CustomCircleAlert />
 								Please acknowledge the Terms & Conditions to proceed
 							</p>
 						)}
 					</div>
 				</div>
 
-				<DialogFooter className="bg-background-section px-4 md:px-6 py-4">
+				<DialogFooter className="">
 					<Button
 						onClick={handleSubmit}
 						className="bg-enhanced-blue hover:bg-enhanced-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"

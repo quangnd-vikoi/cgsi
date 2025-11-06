@@ -2,13 +2,13 @@
 import { cn } from "@/lib/utils";
 import { Dot, MailOpen } from "lucide-react";
 import { useEffect, useState } from "react";
-import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import Alert from "../Alert";
 import { Button } from "../ui/button";
 import { toast } from "../ui/toaster";
 import { INotification } from "@/types";
 import CustomSheetTitle from "./CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
+import { ErrorState } from "@/components/ErrorState";
 
 const tempNoti: INotification = {
 	title: "Why Investors Are Looking Beyond the United States in 2025",
@@ -113,17 +113,12 @@ const Notification = () => {
 				{listNoti.length > 0 ? (
 					listNoti.map((noti, index) => <NotiItem key={index} notification={noti} />)
 				) : (
-					<div className="text-enhanced-blue pt-[72px] px-5 flex flex-col items-center gap-6">
-						<HomeEvNoevent width={100} height={100} />
-						<div className="text-center px-4">
-							<p className="text-typo-primary text-base font-semibold">
-								Notification Centre is currently empty
-							</p>
-							<p className="text-typo-secondary text-sm ">
-								We&apos;ll let you know as soon as something new comes in
-							</p>
-						</div>
-					</div>
+					<ErrorState
+						type="empty"
+						title="Notification Centre is currently empty"
+						description="We'll let you know as soon as something new comes in"
+						className="!pt-[72px] justify-start"
+					/>
 				)}
 			</div>
 		</div>

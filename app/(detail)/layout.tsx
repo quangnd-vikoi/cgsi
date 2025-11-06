@@ -4,8 +4,12 @@ interface LayoutProps {
 }
 const Layout = ({ children }: LayoutProps) => {
 	return (
-		<div className="bg-background-section h-[calc(100vh-72px)] py-6">
-			<div className="container-default h-full">{children}</div>
+		<div className="bg-background-section py-6">
+			<div className="container-default">
+				<div className="min-h-[calc(100vh-106px)] md:min-h-[calc(100vh-120px)] flex flex-col">
+					{children}
+				</div>
+			</div>
 		</div>
 	);
 };

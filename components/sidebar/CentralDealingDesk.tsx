@@ -29,11 +29,11 @@ const CentralDealingDesk = () => {
 
 	return (
 		<div className="flex flex-col h-full overflow-hidden -mx-4 md:-mx-6">
-			<div className="flex-shrink-0 px-4 md:px-6">
+			<div className="flex-shrink-0 pad-x">
 				<CustomSheetTitle title="Central Dealing Desk" backTo={"contact"} />
 			</div>
 
-			<div className="flex-1 overflow-y-auto px-4 md:px-6 pr-2 md:pr-3">
+			<div className="flex-1 overflow-y-auto pad-x pr-2 md:pr-3">
 				{/* Business Hours */}
 				<div className="mt-6 p-4 rounded-lg bg-background-section">
 					<div className="flex gap-2 items-center mb-3">

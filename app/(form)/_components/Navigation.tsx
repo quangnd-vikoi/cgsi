@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import { useSheetStore } from "@/stores/sheetStore";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
@@ -32,6 +33,7 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 const Navigation = () => {
 	const pathname = usePathname();
 	const router = useRouter();
+	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const segment = pathname.split("/")[1] || "Home";
 	const title = segment.charAt(0).toUpperCase() + segment.slice(1);
 
@@ -51,12 +53,19 @@ const Navigation = () => {
 			</div>
 
 			<div className="flex gap-4 items-center">
-				<Button className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-black/5 font-normal transition-colors h-8">
+				<Button
+					onClick={() => setOpenSheet("trading_representative")}
+					className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-black/5 font-normal transition-colors h-8"
+				>
 					<Headset className="text-icon-light" size={24} />
 					<p className="hidden md:inline-block">Contact us</p>
 				</Button>
 
-				<Headset className="text-icon-light md:hidden" size={24} />
+				<Headset
+					className="text-icon-light md:hidden cursor-pointer"
+					size={24}
+					onClick={() => setOpenSheet("trading_representative")}
+				/>
 
 				<Button
 					onClick={() => router.push(INTERNAL_ROUTES.MYAPPLICATION)}

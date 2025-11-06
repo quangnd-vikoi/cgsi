@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
 				<Navigation />
 
 				{/* Body */}
-				<main className="flex flex-1 mt-7 gap-6 h-[calc(100vh-232px)]">
+				<main className="flex flex-1 mt-7 gap-6 h-[calc(100vh-172px)]">
 					{/* Left sidebar - ẩn trên mobile khi đã chọn item */}
 					<div className={`${selectedId ? "hidden md:block" : "block"}`}>
 						<Sidebar />

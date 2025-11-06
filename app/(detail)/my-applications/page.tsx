@@ -66,11 +66,11 @@ export default function MyApplication() {
 	};
 
 	return (
-		<div className="container-default">
+		<div className="flex-1 flex flex-col">
 			{/* Header */}
 			<Title showBackButton title="My Applications" />
 			{/* Content Box */}
-			<div className="bg-white pad rounded-lg min-h-[856px] flex flex-col">
+			<div className="bg-white pad rounded-lg flex-1 flex flex-col">
 				{/* Tabs */}
 				<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ApplicationType)}>
 					<TabsList className="mb-6 bg-transparent gap-2 border-b-0">
@@ -97,9 +97,9 @@ export default function MyApplication() {
 
 				{/* Table or Empty State */}
 				{filteredApplications.length === 0 ? (
-					<div className="flex-1 flex flex-col items-center justify-center text-center text-typo-secondary gap-4 text-xs font-normal">
+					<div className="flex-1 w-full flex flex-col items-center justify-center text-center text-typo-secondary gap-4 text-xs font-normal">
 						<p>No product applications available.</p>
-						<p>Check back here after you’ve submitted your application.</p>
+						<p>Check back here after you&apos;ve submitted your application.</p>
 					</div>
 				) : (
 					<>

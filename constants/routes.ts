@@ -7,6 +7,7 @@ export const CGSI = {
 	STOCK_FILTER: "https://www2.trkd-hs.com/cgsi/ui/home?lang=en",
 	ISCREENER: "https://example.com/",
 	INSIGHTS: "https://www.cgsi.com.sg/insights/?lang=EN",
+	ONETIME_DONATION: "https://itrade.cgsi.com.sg/app/donation.z?a=ack",
 };
 
 export const INTERNAL_ROUTES = {

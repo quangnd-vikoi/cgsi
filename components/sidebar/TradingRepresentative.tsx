@@ -154,12 +154,12 @@ const TradingRepresentative = () => {
 	];
 
 	return (
-		<div className="flex flex-col h-full overflow-hidden -mx-2 md:-mx-4 sidebar-scroll">
-			<div className="flex-shrink-0 px-4 md:px-6">
+		<div className="flex flex-col h-full ">
+			<div className="flex-shrink-0">
 				<CustomSheetTitle title="Trading Representative(s)" backTo={"contact"} />
 			</div>
 
-			<div className="flex-1 overflow-y-auto px-4 md:px-6 pr-2 md:pr-3">
+			<div className="flex-1 overflow-y-auto sidebar-scroll scrollbar-offset-laptop scrollbar-offset-right">
 				<div className="mt-6 p-4 rounded-lg bg-background-section">
 					<div className="flex gap-2 items-center">
 						<CircleQuestionMark size={16} className="text-icon-light" />

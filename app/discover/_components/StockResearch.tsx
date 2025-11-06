@@ -1,7 +1,6 @@
 "use client";
 import { CGSI } from "@/constants/routes";
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { StockResearchLMobile, StockResearchRMobile } from "@/public/icons/discover";

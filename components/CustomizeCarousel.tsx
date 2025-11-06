@@ -54,10 +54,10 @@ const CustomizeCarousel = <T,>({
 	containerClassName = "",
 	contentClassName = "",
 	itemsPerView = {
-		mobile: "basis-[74%]",
-		tablet: "md:basis-[33.5%]",
-		laptop: "lg:basis-[24%]",
-		desktop: "xl:basis-[23.8%]",
+		mobile: "basis-[75.2%]",
+		tablet: "md:basis-[33.9%]",
+		laptop: "lg:basis-[25.1%]",
+		desktop: "xl:basis-[24.9%]",
 	},
 	centerWhenFew = true,
 	centerThreshold = {
@@ -75,7 +75,6 @@ const CustomizeCarousel = <T,>({
 }: CustomizeCarousel<T>) => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
-	const [count, setCount] = useState(0);
 	const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
 
 	const itemsCount = items.length;
@@ -114,7 +113,6 @@ const CustomizeCarousel = <T,>({
 			return;
 		}
 
-		setCount(api.scrollSnapList().length);
 		setCurrent(api.selectedScrollSnap());
 
 		api.on("select", () => {
@@ -140,10 +138,10 @@ const CustomizeCarousel = <T,>({
 			>
 				<CarouselContent
 					className={cn(
-						"justify-start w-full",
+						"justify-start w-full overflow-y-visible",
 						shouldCenter && "justify-center",
-						"md:gap-1",
-						"lg:gap-4 xl:gap-6",
+						"gap-0",
+						"lg:gap-1 xl:gap-2",
 						contentClassName
 					)}
 				>
@@ -155,6 +153,7 @@ const CustomizeCarousel = <T,>({
 								itemsPerView.tablet,
 								itemsPerView.laptop,
 								itemsPerView.desktop,
+
 								itemClassName
 							)}
 						>

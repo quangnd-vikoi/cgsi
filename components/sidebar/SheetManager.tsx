@@ -16,7 +16,7 @@ import DetailNotification from "./DetailNotification";
 const SHEET_CONFIGS = {
 	notification: {
 		component: Notification,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	profile: {
 		component: Profile,
@@ -24,31 +24,31 @@ const SHEET_CONFIGS = {
 	},
 	announcement: {
 		component: Announcements,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	contact: {
 		component: Contact,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	trading_representative: {
 		component: TradingRepresentative,
-		className: "px-4 md:px-6 pt-6",
+		className: "pad-x pt-6",
 	},
 	client_services: {
 		component: ClientServices,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	central_dealing_desk: {
 		component: CentralDealingDesk,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	password_and_security: {
 		component: PasswordSecurity,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 	detail_notification: {
 		component: DetailNotification,
-		className: "px-4 md:px-6 py-6",
+		className: "pad-x py-6",
 	},
 } as const;
 
@@ -57,7 +57,7 @@ type SheetConfigKey = keyof typeof SHEET_CONFIGS;
 // Default config cho các sheet chưa được định nghĩa
 const DEFAULT_SHEET_CONFIG = {
 	component: Contact, // hoặc một component placeholder khác
-	className: "px-4 md:px-6 py-6",
+	className: "pad-x py-6",
 };
 
 export const SheetManager = () => {

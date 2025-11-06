@@ -13,7 +13,7 @@ import CustomizeCarousel from "@/components/CustomizeCarousel";
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
 		<Link href={"#"} target="_blank">
-			<div className="bg-white shadow rounded-lg">
+			<div className="bg-white shadow rounded-lg  mb-[1px]">
 				<div>
 					<Image
 						src={article.imageUrl}

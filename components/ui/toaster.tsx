@@ -1,18 +1,11 @@
 "use client";
 
-import {
-	CircleAlert,
-	CircleCheckIcon,
-	InfoIcon,
-	Loader2Icon,
-	OctagonXIcon,
-	TriangleAlertIcon,
-	XIcon,
-} from "lucide-react";
+import { CircleCheckIcon, InfoIcon, Loader2Icon, TriangleAlertIcon, XIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { toast as sonnerToast, Toaster as Sonner, type ExternalToast, type ToasterProps } from "sonner";
 import { Inter } from "next/font/google";
+import CustomCircleAlert from "../CircleAlertIcon";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -54,7 +47,7 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 			progressColor: "bg-status-success",
 		},
 		error: {
-			icon: <CircleAlert size={20} className="fill-status-error border-status-error" color="#FFFFFF" />,
+			icon: <CustomCircleAlert size={20} />,
 			progressColor: "bg-red-500",
 		},
 		warning: {

@@ -5,14 +5,14 @@ import { CGSI } from "@/constants/routes";
 import Image from "next/image";
 import { Calendar, Clock, MapPin, RefreshCcw } from "lucide-react";
 import { IEventProps } from "@/types";
-import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import { Button } from "@/components/ui/button";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
+import { ErrorState } from "@/components/ErrorState";
 
 // Event Card Component
 const EventCard = ({ event }: { event: IEventProps }) => {
 	return (
-		<div className="bg-white shadow rounded-lg">
+		<div className="bg-white shadow rounded-lg mb-[1px]">
 			<Image
 				className="rounded-t-lg w-full h-auto"
 				src={event.imageUrl}
@@ -102,7 +102,7 @@ const Events = () => {
 	};
 
 	return (
-		<div className="bg-background-section md:bg-[url('/images/bg-event.png')] bg-no-repeat bg-cover py-6 md:py-12">
+		<div className="bg-background-section md:bg-[url('/images/bg-event.png')] bg-cover py-6 md:py-12">
 			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
 				<div className="flex justify-between items-center pr-4 md:pr-0">
 					<div className="flex items-center gap-2">
@@ -128,36 +128,18 @@ const Events = () => {
 				{/* Event Carousel */}
 				<div className="mt-6">
 					{events === null ? (
-						<div className="flex flex-col justify-center items-center py-[86px] h-full">
-							<Image
-								src="/icons/home-ev-error.svg"
-								alt="loading"
-								width={100}
-								height={100}
-								className=""
-							/>
-							<div className="self-stretch mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Oops, Something Went Wrong
-							</div>
-							<div className="self-stretch mt-1 font-normal text-typo-secondary text-sm text-center leading-tight">
-								We are unable to display the content,please{" "}
-								<span className="block">please try again later.</span>
-							</div>
-						</div>
+						<ErrorState type="error" className="md:py-[86px]" />
 					) : events.length === 0 ? (
-						<div className="flex flex-col justify-center items-center py-[86px] h-full">
-							<HomeEvNoevent width={100} height={100} className="text-status-disable-primary" />
-							<div className="self-stretch mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Currently No Scheduled Events
-							</div>
-							<div className="self-stretch mt-1 font-normal text-typo-secondary text-sm text-center leading-tight">
-								Check back soon—new events are on the way!
-							</div>
-						</div>
+						<ErrorState
+							type="empty"
+							title="Currently No Scheduled Events"
+							description="Check back soon—new events are on the way!"
+							className="md:py-[86px]"
+						/>
 					) : (
 						<CustomizeCarousel<IEventProps>
 							items={events}
-							renderItem={(event) => <EventCard event={event} />} // event có type IEventProps
+							renderItem={(event) => <EventCard event={event} />}
 							getItemKey={(event) => event.id}
 						/>
 					)}

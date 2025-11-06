@@ -1,23 +1,22 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Calendar, RefreshCcw, User } from "lucide-react";
 import { IResearchArticleProps } from "@/types";
-import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
+import { ErrorState } from "@/components/ErrorState";
 
 // Event Card Component
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
 	return (
 		<Link href={article.url} target="_blank">
-			<div className="bg-white shadow rounded-lg">
+			<div className="bg-white shadow rounded-lg mb-[1px]">
 				<div className="flex flex-col gap-4 px-3 py-[14px]">
 					<div className="text-[10px] font-medium text-typo-tertiary">{article.tag}</div>
 					<div className="font-semibold text-xs leading-none">{article.title}</div>
 
-					<div className="justify-start text-[10px] text-typo-secondary line-clamp-4 leading-4">
+					<div className="justify-start text-[10px] text-typo-secondary line-clamp-4 leading-4 font-normal">
 						{article.description}
 						<br />
 					</div>
@@ -42,12 +41,7 @@ const generateTempResearchArticles = (count: number): Array<IResearchArticleProp
 	return Array.from({ length: count }, (_, index) => ({
 		id: `temp-${index + 1}`,
 		title: `CGS International Carving a Niche in Financial Services`,
-		description: `With its rebranding, CGS International is moving beyond traditional
-					brokerage services. As Deputy CEO Khairi Shahrin explains, there's no
-					value in chasing bottom-feeding fees - CGS is diving into niche
-					markets where others aren't looking. He discusses the company's
-					strategy for growth, leveraging its China connection, and key trends
-					shaping 2025.`,
+		description: `We observe nascent signs of a Korea–China thaw, with the first K-pop concert approval since 2015 and policy support for overseas content imports. Potential China reopening could add W40bn revenue and W32bn net income, driving FY26F/FY27F EPS upside potential of 84%/47% vs. consensus.`,
 		date: "05-May-2025",
 		author: "John Doe",
 		tag: "Stock Research",
@@ -112,35 +106,18 @@ const ResearchArticles = () => {
 				{/* Event Carousel */}
 				<div className="mt-4 md:mt-6">
 					{articles === null ? (
-						<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full pr-4 md:pr-0">
-							<Image
-								src="/icons/home-ev-error.svg"
-								alt="loading"
-								width={100}
-								height={100}
-								className=""
-							/>
-							<div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Oops, Something Went Wrong
-							</div>
-							<div className="mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5">
-								We are unable to display the content,please try again later.
-							</div>
-						</div>
+						<ErrorState type="error" className="pr-4 md:pr-0" />
 					) : articles.length === 0 ? (
-						<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full  pr-4 md:pr-0">
-							<HomeEvNoevent width={100} height={100} className="text-status-disable-primary" />
-							<div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Currently No New Research Articles
-							</div>
-							<div className="mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5">
-								Check back soon - new articles are on the way!
-							</div>
-						</div>
+						<ErrorState
+							type="empty"
+							title="Currently No New Research Articles"
+							description="Check back soon - new articles are on the way!"
+							className="pr-4 md:pr-0"
+						/>
 					) : (
 						<CustomizeCarousel<IResearchArticleProps>
 							items={articles}
-							renderItem={(article) => <ResearchArticleCard article={article} />} // article có type IResearchArticleProps
+							renderItem={(article) => <ResearchArticleCard article={article} />}
 							getItemKey={(article) => article.id}
 						/>
 					)}

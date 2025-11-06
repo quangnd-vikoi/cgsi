@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { SheetManager } from "@/components/sidebar/SheetManager";
+
 const inter = Inter({
 	variable: "--font-inter",
 	subsets: ["latin"],
@@ -21,18 +22,21 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body className={`${inter.className}  antialiased`}>
+		<html lang="en" className="antialiased">
+			<body className={`${inter.className}`}>
 				<div className="flex flex-col min-h-screen">
-					<header className="bg-white">
+					<header className="bg-white z-10">
 						<Header />
 						<SheetManager />
 					</header>
+
 					<main>{children}</main>
-					<Toaster position="bottom-right" />
+
 					<footer>
 						<Footer />
 					</footer>
+
+					<Toaster position="bottom-right" />
 				</div>
 			</body>
 		</html>
