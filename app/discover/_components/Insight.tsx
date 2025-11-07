@@ -159,7 +159,7 @@ const Insight = () => {
 							}}
 							itemsPerView={{
 								mobile: "basis-[74%]",
-								tablet: "md:basis-[25.1%]",
+								tablet: "md:basis-[25.5%]",
 								laptop: "lg:basis-[20.1%]",
 								desktop: "xl:basis-[19.7%]",
 							}}

@@ -1,22 +1,30 @@
-// components/SheetManager.tsx
 "use client";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
-import Notification from "@/components/sidebar/Notification";
-import Profile from "@/components/sidebar/Profile";
-import Announcements from "@/components/sidebar/Announcements";
+import Notification from "./Notification";
+import Profile from "./Profile";
+import Announcements from "./Announcements";
 import Contact from "./Contact";
 import TradingRepresentative from "./TradingRepresentative";
 import ClientServices from "./ClientService";
 import CentralDealingDesk from "./CentralDealingDesk";
 import PasswordSecurity from "./PasswordSecurity";
 import DetailNotification from "./DetailNotification";
+import { SheetType } from "@/types";
+import Acknowledgements from "./Acknowledgements";
 
-const SHEET_CONFIGS = {
+type ValidSheetType = Exclude<SheetType, null>;
+
+type SheetConfig = {
+	component: React.ComponentType;
+	className?: string;
+};
+
+const SHEET_CONFIGS: Record<ValidSheetType, SheetConfig> = {
 	notification: {
 		component: Notification,
-		className: "pad-x py-6",
+		className: "",
 	},
 	profile: {
 		component: Profile,
@@ -24,40 +32,30 @@ const SHEET_CONFIGS = {
 	},
 	announcement: {
 		component: Announcements,
-		className: "pad-x py-6",
 	},
 	contact: {
 		component: Contact,
-		className: "pad-x py-6",
 	},
 	trading_representative: {
 		component: TradingRepresentative,
-		className: "pad-x pt-6",
+		className: "pt-6",
 	},
 	client_services: {
 		component: ClientServices,
-		className: "pad-x py-6",
 	},
 	central_dealing_desk: {
 		component: CentralDealingDesk,
-		className: "pad-x py-6",
 	},
 	password_and_security: {
 		component: PasswordSecurity,
-		className: "pad-x py-6",
 	},
 	detail_notification: {
 		component: DetailNotification,
-		className: "pad-x py-6",
 	},
-} as const;
-
-type SheetConfigKey = keyof typeof SHEET_CONFIGS;
-
-// Default config cho các sheet chưa được định nghĩa
-const DEFAULT_SHEET_CONFIG = {
-	component: Contact, // hoặc một component placeholder khác
-	className: "pad-x py-6",
+	acknowledgements: {
+		component: Acknowledgements,
+		className: "pb-0 pt-6",
+	},
 };
 
 export const SheetManager = () => {
@@ -66,21 +64,18 @@ export const SheetManager = () => {
 
 	if (!openSheet) return null;
 
-	// Lấy config từ SHEET_CONFIGS, nếu không có thì dùng default
-	const config =
-		openSheet in SHEET_CONFIGS ? SHEET_CONFIGS[openSheet as SheetConfigKey] : DEFAULT_SHEET_CONFIG;
-
+	const config = SHEET_CONFIGS[openSheet];
 	const SheetComponent = config.component;
 
 	return (
-		<Sheet open={true} onOpenChange={closeSheet}>
+		<Sheet open onOpenChange={closeSheet}>
 			<SheetContent
 				side="right"
 				className={cn(
-					"w-[352px] lg:w-[432px] rounded-l-lg border border-stroke-secondary border-r-0",
+					"max-w-full w-[352px] lg:w-[432px] rounded-l-lg border border-stroke-secondary border-r-0",
 					"top-[56px] md:top-[72px] h-[calc(100vh-56px)] md:h-[calc(100vh-72px)]",
-					"focus:outline-none",
-					config.className
+					"focus:outline-none pad-x py-6",
+					config.className ?? ""
 				)}
 			>
 				<SheetComponent />

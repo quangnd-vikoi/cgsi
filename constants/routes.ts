@@ -8,6 +8,8 @@ export const CGSI = {
 	ISCREENER: "https://example.com/",
 	INSIGHTS: "https://www.cgsi.com.sg/insights/?lang=EN",
 	ONETIME_DONATION: "https://itrade.cgsi.com.sg/app/donation.z?a=ack",
+	ESTATEMENT: "https://itrade.cgsi.com.sg/app/iTradeEstatement?systemId=8a839ebd87a6ff260187e4326dfb4d7e",
+	HELP_CENTRE: "https://www.cgsi.com.sg/draft/help/faq-itrade#General",
 };
 
 export const INTERNAL_ROUTES = {

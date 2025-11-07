@@ -25,6 +25,7 @@ export type SheetType =
 	| "central_dealing_desk"
 	| "password_and_security"
 	| "detail_notification"
+	| "acknowledgements"
 	| null;
 
 export interface IResearchArticleProps {

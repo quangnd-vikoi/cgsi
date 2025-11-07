@@ -21,12 +21,14 @@ import { JSX } from "react";
 import Link from "next/link";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
+import { CGSI } from "@/constants/routes";
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
 	name: string;
 	href?: string;
 	sheet?: SheetType;
+	target?: "_blank" | "_self";
 }
 
 const PROFILE_MENU_ITEM = {
@@ -78,12 +80,13 @@ const PROFILE_MENU_ITEM = {
 		{
 			icon: <FileText />,
 			name: "eStatements",
-			href: "/reports/estatements",
+			href: CGSI.ESTATEMENT,
+			target: "_blank" as IProfileMenuItem["target"],
 		},
 		{
 			icon: <FileCheck />,
 			name: "Acknowledgements",
-			href: "/reports/acknowledgements",
+			sheet: "acknowledgements" as SheetType,
 		},
 	],
 	"Help & Support": [
@@ -95,7 +98,8 @@ const PROFILE_MENU_ITEM = {
 		{
 			icon: <CircleQuestionMark />,
 			name: "Help Centre",
-			href: "/help",
+			href: CGSI.HELP_CENTRE,
+			target: "_blank" as IProfileMenuItem["target"],
 		},
 		{
 			icon: <Settings />,
@@ -123,17 +127,13 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 			<ChevronRight className="w-5 text-enhanced-blue" strokeWidth={2} />
 		</>
 	);
-
-	// Nếu có href thì dùng Link
 	if (item.href) {
 		return (
-			<Link href={item.href} className="flex justify-between">
+			<Link href={item.href} target={item.target || "_self"} className="flex justify-between">
 				{content}
 			</Link>
 		);
 	}
-
-	// Nếu có sheet thì dùng onClick
 	if (item.sheet !== undefined) {
 		return (
 			<div className="flex justify-between cursor-pointer" onClick={handleClick}>
