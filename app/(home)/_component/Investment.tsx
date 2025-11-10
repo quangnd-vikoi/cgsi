@@ -33,41 +33,41 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	return (
 		<div
 			onClick={() => router.push(href)}
-			className="relative rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm w-full cursor-pointer "
+			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full cursor-pointer"
 			style={{
 				backgroundImage:
 					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
 			}}
 		>
-			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow">
+			<div className="relative hover:shadow border border-transparent hover:border-background-selected rounded-lg w-full">
 				<div
-					className="overflow-hidden rounded-lg bg-gradient-to-br from-white via-blue-50 to-white shadow-sm"
+					className="bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg overflow-hidden"
 					style={{
 						backgroundImage:
 							"linear-gradient(90deg, white 0%, #f6fbff 20%, #d9edff 50%, #f6fbff 80%, white 100%)",
 					}}
 				>
-					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-2/3">
-						<div className="flex flex-col md:flex-row items-baseline gap-4 md:mb-2">
-							<h2 className="text-xs md:text-lg font-semibold text-enhanced-blue">{title}</h2>
-							<span className="text-[10px] md:text-sm text-typo-tertiary">
+					<div className="py-3 md:pt-5 md:pb-4 pl-2 md:pl-6 w-2/3">
+						<div className="flex md:flex-row flex-col items-baseline gap-4 md:mb-2">
+							<h2 className="font-semibold text-enhanced-blue text-xs md:text-lg">{title}</h2>
+							<span className="text-[10px] text-typo-tertiary md:text-sm">
 								{available != 0 ? `${available} Available` : "No Available"}
 							</span>
 						</div>
 						<p
 							hidden={isMobile}
-							className="text-typo-tertiary leading-relaxed text-sm max-w-[70%] lg:max-w-[90%] line-clamp-2"
+							className="max-w-[70%] lg:max-w-[90%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
 						>
 							{subtext}
 						</p>
 					</div>
 				</div>
 			</div>
-			<div className="absolute right-0 lg:right-8 bottom-0 h-[90%] md:h-[110%]">
+			<div className="right-0 lg:right-8 bottom-0 absolute h-[90%] md:h-[110%]">
 				<Image
 					src={imageSrc}
 					alt={imageAlt ?? title}
-					className="h-full w-auto object-contain scale-x-80 md:scale-x-90"
+					className="w-auto h-full object-contain scale-x-80 md:scale-x-90"
 					width={imageWidth}
 					height={imageHeight}
 				/>
@@ -78,16 +78,16 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 const Investment = () => {
 	return (
-		<div className="container-default bg-white">
+		<div className="bg-white container-default">
 			<div className="flex justify-between items-center">
-				<div className="flex gap-2 items-center">
+				<div className="flex items-center gap-2">
 					<span className="font-semibold text-base">Investment Products</span>
-					<Image src={"/icons/Non-categorized.svg"} alt="icon" width={16} height={16} />
+					<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
 				</div>
 				<div className="">
 					<Link
 						href={CGSI.EVENTS}
-						className="text-enhanced-blue text-xs md:text-sm font-normal"
+						className="font-normal text-enhanced-blue text-xs md:text-sm"
 						target="_blank"
 					>
 						View All
@@ -95,7 +95,7 @@ const Investment = () => {
 				</div>
 			</div>
 
-			<div className="mt-6 flex gap-4 justify-between">
+			<div className="flex justify-between gap-4 mt-6">
 				<InvestmentCard
 					href={INTERNAL_ROUTES.SECURITIES}
 					title="Securities"

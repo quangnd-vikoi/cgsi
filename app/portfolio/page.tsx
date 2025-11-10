@@ -34,7 +34,7 @@ const DevelopmentBanner = () => {
 };
 const Portfolio = () => {
 	return (
-		<div className="py-6">
+		<div className="bg-background-section py-6">
 			<div className="container-default">
 				<DevelopmentBanner />
 
