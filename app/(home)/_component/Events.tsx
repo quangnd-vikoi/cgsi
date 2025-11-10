@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 // Event Card Component
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
-		<div className="bg-white shadow rounded-lg mb-[1px]">
+		<div className="bg-white shadow mb-[1px] rounded-lg">
 			<Image
 				className={cn("rounded-t-lg w-full h-auto", imageClassName)}
 				src={event.imageUrl}
@@ -20,7 +20,7 @@ const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassNa
 				height={283}
 			/>
 			<div className="flex flex-col gap-4 px-3 py-[14px]">
-				<div className="font-semibold text-xs leading-4 line-clamp-2 min-h-[32px]">{event.title}</div>
+				<div className="min-h-[32px] font-semibold text-xs line-clamp-2 leading-4">{event.title}</div>
 
 				<div className="justify-start text-[10px] text-typo-secondary line-clamp-3 leading-4">
 					{event.description}
@@ -126,6 +126,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 								<EventCard event={event} imageClassName={imageClassName} />
 							)}
 							getItemKey={(event) => event.id}
+							loop={true}
 						/>
 					)}
 				</div>

@@ -49,23 +49,42 @@ const Campaigns = () => {
 				<div className="w-full md:w-3/5">
 					<Carousel setApi={setApi}>
 						<CarouselContent>
-							<CarouselItem className="aspect-2/1">
-								<Image
-									className="rounded-lg w-full h-full object-cover"
-									src={"/images/home-cp-placeholder.png"}
-									alt="campaign"
-									width={200}
-									height={345}
-								/>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-cp-placeholder.png"
+										alt="campaign"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+										priority
+									/>
+								</div>
 							</CarouselItem>
-							{/* <CarouselItem className="flex justify-center items-center bg-gray-700 rounded-lg w-full h-full aspect-2/1">
-								<span className="text-4xl">2</span>
+							{/* <CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-cp-placeholder-2.png"
+										alt="campaign 2"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+									/>
+								</div>
 							</CarouselItem>
-							<CarouselItem className="flex justify-center items-center bg-gray-700 rounded-lg w-full h-full aspect-2/1">
-								<span className="text-4xl">2</span>
-							</CarouselItem>
-							<CarouselItem className="flex justify-center items-center bg-gray-600 rounded-lg w-full h-full aspect-2/1">
-								<span className="text-4xl">3</span>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-cp-placeholder-3.png"
+										alt="campaign 3"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+									/>
+								</div>
 							</CarouselItem> */}
 						</CarouselContent>
 					</Carousel>
