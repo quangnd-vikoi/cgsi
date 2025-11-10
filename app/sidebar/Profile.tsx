@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { SheetHeader, SheetTitle, SheetClose } from "../ui/sheet";
+import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import {
 	BookOpen,
 	Box,
@@ -22,6 +22,7 @@ import Link from "next/link";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
+import Group from "./_components/Group"; // Import component Group
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
@@ -53,12 +54,12 @@ const PROFILE_MENU_ITEM = {
 		{
 			icon: <BookOpen />,
 			name: "Trading Accounts",
-			href: "/trading/accounts",
+			sheet: "trading_accounts" as SheetType,
 		},
 		{
 			icon: <FileCheck />,
 			name: "Trading Declarations",
-			href: "/trading/declarations",
+			sheet: "trading_declarations" as SheetType,
 		},
 		{
 			icon: <Building2 />,
@@ -127,6 +128,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 			<ChevronRight className="w-5 text-enhanced-blue" strokeWidth={2} />
 		</>
 	);
+
 	if (item.href) {
 		return (
 			<Link href={item.href} target={item.target || "_self"} className="flex justify-between">
@@ -134,6 +136,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 			</Link>
 		);
 	}
+
 	if (item.sheet !== undefined) {
 		return (
 			<div className="flex justify-between cursor-pointer" onClick={handleClick}>
@@ -144,21 +147,6 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 
 	// Fallback - không có action
 	return <div className="flex justify-between">{content}</div>;
-};
-
-const MenuGroup = ({ title, items }: { title: string; items: IProfileMenuItem[] }) => {
-	return (
-		<div className="w-full border rounded-xl p-4 pt-6 relative">
-			<div className="absolute px-2 py-1 bg-theme-blue-09 text-xs font-normal top-0 left-0 -translate-y-1/2 rounded-sm">
-				{title}
-			</div>
-			<div className="flex flex-col gap-6">
-				{items.map((item, index) => (
-					<MenuItem key={index} item={item} />
-				))}
-			</div>
-		</div>
-	);
 };
 
 const Profile = () => {
@@ -190,7 +178,11 @@ const Profile = () => {
 			</SheetHeader>
 			<div className="pad pt-6 md:pt-10 flex flex-col gap-10 overflow-y-auto flex-1">
 				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => (
-					<MenuGroup key={title} title={title} items={items} />
+					<Group key={title} title={title}>
+						{items.map((item, index) => (
+							<MenuItem key={index} item={item} />
+						))}
+					</Group>
 				))}
 
 				<div className="-mt-3 flex justify-center gap-2 cursor-pointer">

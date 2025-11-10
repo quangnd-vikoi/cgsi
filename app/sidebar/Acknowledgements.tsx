@@ -1,8 +1,8 @@
 import React from "react";
-import Title from "../Title";
-import { X, ChevronRight } from "lucide-react";
-import { useSheetStore } from "@/stores/sheetStore";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
+import Group from "./_components/Group";
 
 interface AgreementRecord {
 	title: string;
@@ -102,51 +102,25 @@ const AgreementItem = ({ record }: { record: AgreementRecord }) => {
 	);
 };
 
-const AgreementGroup = ({ category, records }: AgreementCategory) => {
-	return (
-		<div className="w-full border rounded-xl p-4 pt-6 relative">
-			<div className="absolute px-[18px] py-1 bg-theme-blue-09 text-xs font-normal text-typo-secondary top-0 -left-0.5 -translate-y-1/2 rounded-sm">
-				{category}
-			</div>
-			<div className="flex flex-col gap-6">
-				{records.length > 0 ? (
-					records.map((record, index) => <AgreementItem key={index} record={record} />)
-				) : (
-					<div className="text-xs text-typo-tertiary text-center font-normal">
-						No Records Retrieved
-					</div>
-				)}
-			</div>
-		</div>
-	);
-};
-
 const Acknowledgements = () => {
-	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
-	const closeSheet = useSheetStore((state) => state.closeSheet);
-
 	return (
 		<div className="h-full flex flex-col">
-			<div className="pad-x flex-shrink-0">
-				<Title
-					showBackButton={true}
-					title="Acknowledgements"
-					rightContent={
-						<button onClick={closeSheet} className="hover:opacity-80 transition-opacity">
-							<X />
-						</button>
-					}
-					onBack={() => setOpenSheet("profile")}
-					className=""
-				/>
+			<div className="flex-shrink-0 mb-6">
+				<CustomSheetTitle backTo={"profile"} title="Acknowledgements" />
 			</div>
 			<div className="pb-6 pt-3 flex flex-col gap-10 overflow-y-auto flex-1">
 				{agreementsData.map((categoryData, index) => (
-					<AgreementGroup
-						key={index}
-						category={categoryData.category}
-						records={categoryData.records}
-					/>
+					<Group key={index} title={categoryData.category}>
+						{categoryData.records.length > 0 ? (
+							categoryData.records.map((record, idx) => (
+								<AgreementItem key={idx} record={record} />
+							))
+						) : (
+							<div className="text-xs text-typo-tertiary text-center font-normal">
+								No Records Retrieved
+							</div>
+						)}
+					</Group>
 				))}
 			</div>
 		</div>

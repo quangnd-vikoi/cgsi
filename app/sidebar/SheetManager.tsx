@@ -13,6 +13,9 @@ import PasswordSecurity from "./PasswordSecurity";
 import DetailNotification from "./DetailNotification";
 import { SheetType } from "@/types";
 import Acknowledgements from "./Acknowledgements";
+import TradingDeclartions from "./TradingDeclartions";
+import TradingAccounts from "./TradingAccounts";
+import TradingAccountDetail from "./TradingAccountDetail";
 
 type ValidSheetType = Exclude<SheetType, null>;
 
@@ -55,6 +58,15 @@ const SHEET_CONFIGS: Record<ValidSheetType, SheetConfig> = {
 	acknowledgements: {
 		component: Acknowledgements,
 		className: "pb-0 pt-6",
+	},
+	trading_declarations: {
+		component: TradingDeclartions,
+	},
+	trading_accounts: {
+		component: TradingAccounts,
+	},
+	trading_account_details: {
+		component: TradingAccountDetail,
 	},
 };
 

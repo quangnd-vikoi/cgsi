@@ -1,5 +1,5 @@
 import React from "react";
-import { SheetHeader, SheetTitle, SheetClose } from "../ui/sheet";
+import { SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { ChevronLeft, X } from "lucide-react";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";

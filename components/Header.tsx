@@ -16,7 +16,7 @@ import { TriangleAlert, X } from "lucide-react";
 import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { SheetType } from "@/types";
-import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
 	const isActive = link === "/" ? pathname === "/" : pathname?.startsWith(link);
@@ -137,14 +137,18 @@ const Header = () => {
 							</div>
 						</div>
 						<div className="hidden md:block w-[2px] h-8 bg-gray-300"></div>
-						<Link href={CGSI.TRADE} className="" target="_blank">
+						<Link
+							href="/images/events/temp_tradenow.png"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
 							<Button
 								variant={"default"}
 								className="h-6 md:h-8 rounded-sm bg-enhanced-blue px-2 md:px-3 font-normal hover:bg-enhanced-blue/70 text-xs md:text-sm"
 							>
 								<Image
 									src="/icons/Charts.svg"
-									alt="User"
+									alt="Trade Now"
 									width={20}
 									height={20}
 									className="hidden md:block"

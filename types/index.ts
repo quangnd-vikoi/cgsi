@@ -26,6 +26,9 @@ export type SheetType =
 	| "password_and_security"
 	| "detail_notification"
 	| "acknowledgements"
+	| "trading_declarations"
+	| "trading_accounts"
+	| "trading_account_details"
 	| null;
 
 export interface IResearchArticleProps {
@@ -40,7 +43,7 @@ export interface IResearchArticleProps {
 
 export interface IInsightProps {
 	id: string;
-	imageUrl: string; 
+	imageUrl: string;
 	tag: string; // "Idea of the Day"
 	title: string; // "Malaysian Portfolios with US-China Trade Exposure"
 	description: string; // đoạn mô tả ngắn

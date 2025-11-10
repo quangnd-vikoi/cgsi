@@ -1,7 +1,7 @@
 import React from "react";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { ChevronRight } from "lucide-react";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 

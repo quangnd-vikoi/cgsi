@@ -58,7 +58,7 @@ const Campaigns = () => {
 									height={345}
 								/>
 							</CarouselItem>
-							<CarouselItem className="flex justify-center items-center bg-gray-700 rounded-lg w-full h-full aspect-2/1">
+							{/* <CarouselItem className="flex justify-center items-center bg-gray-700 rounded-lg w-full h-full aspect-2/1">
 								<span className="text-4xl">2</span>
 							</CarouselItem>
 							<CarouselItem className="flex justify-center items-center bg-gray-700 rounded-lg w-full h-full aspect-2/1">
@@ -66,7 +66,7 @@ const Campaigns = () => {
 							</CarouselItem>
 							<CarouselItem className="flex justify-center items-center bg-gray-600 rounded-lg w-full h-full aspect-2/1">
 								<span className="text-4xl">3</span>
-							</CarouselItem>
+							</CarouselItem> */}
 						</CarouselContent>
 					</Carousel>
 

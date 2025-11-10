@@ -1,27 +1,26 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import Image from "next/image";
-import { Calendar, Clock, MapPin, RefreshCcw } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
 import { IEventProps } from "@/types";
-import { Button } from "@/components/ui/button";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
+import { cn } from "@/lib/utils";
 
 // Event Card Component
-const EventCard = ({ event }: { event: IEventProps }) => {
+const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
 		<div className="bg-white shadow rounded-lg mb-[1px]">
 			<Image
-				className="rounded-t-lg w-full h-auto"
+				className={cn("rounded-t-lg w-full h-auto", imageClassName)}
 				src={event.imageUrl}
 				alt={event.title}
 				width={283}
 				height={283}
 			/>
 			<div className="flex flex-col gap-4 px-3 py-[14px]">
-				<div className="font-semibold text-xs leading-none">{event.title}</div>
+				<div className="font-semibold text-xs leading-4 line-clamp-2 min-h-[32px]">{event.title}</div>
 
 				<div className="justify-start text-[10px] text-typo-secondary line-clamp-3 leading-4">
 					{event.description}
@@ -48,59 +47,51 @@ const EventCard = ({ event }: { event: IEventProps }) => {
 	);
 };
 
-// Generate temporary events for testing
-const generateTempEvents = (count: number): Array<IEventProps> => {
-	return Array.from({ length: count }, (_, index) => ({
-		id: `temp-${index + 1}`,
-		title: `CGS International Carving a Niche in Financial Services`,
-		imageUrl: "/images/home-ev-temp.png",
-		description: `With its rebranding, CGS International is moving beyond traditional
-					brokerage services. As Deputy CEO Khairi Shahrin explains, there's no
-					value in chasing bottom-feeding fees - CGS is diving into niche
-					markets where others aren't looking. He discusses the company's
-					strategy for growth, leveraging its China connection, and key trends
-					shaping 2025.`,
-		date: "05-May-2025",
-		time: "8:00PM - 9:00PM ",
-		location: "Zoom Webinar",
-	}));
-};
+// Events data
+const events: Array<IEventProps> = [
+	{
+		id: "1",
+		title: "Learn from the Pros",
+		imageUrl: "/images/events/e1.png",
+		description: `An initiative by CGS International, "Learn From The Pros" is a financial education series where experts from different professions in the financial industry share their investing and trading knowledge and experiences. It is an opportunity to learn from market practitioners on how we can all be better investors and traders.`,
+		date: "27-Nov-2025",
+		time: "7.30pm SGT",
+		location: "Webinar",
+	},
+	{
+		id: "2",
+		title: "S-REITS Outlook 2H 2025",
+		imageUrl: "/images/events/e2.png",
+		description: `Singapore REITs enter the second half of 2025 with resilience and value on their side. Supported by stable fundamentals and attractive yields, the sector remains a key focus for investors seeking both income and growth. Join us as our analyst shares her outlook on the market and the opportunities that lie ahead.`,
+		date: "11-Sep-2025",
+		time: "7.30pm SGT",
+		location: "Webinar",
+	},
+	{
+		id: "3",
+		title: "Diversify to the Power of Three: Geography, Income and Growth",
+		imageUrl: "/images/events/e3.png",
+		description: `While diversification is key in any environment or time period, it is particularly important now, as heightened geopolitical uncertainty continues to sway markets. With volatility expected to persist, diversification remains a cornerstone of resilient investment strategies and ETFs continue to uniquely offer cost-effective access to a broad range of markets and sectors.`,
+		date: "07-Aug-2025",
+		time: "7.30pm SGT",
+		location: "Webinar",
+	},
+	{
+		id: "4",
+		title: "Unlock the Full Potential of CGS International iTrade - Join Our Live Platform",
+		imageUrl: "/images/events/e4.png",
+		description: `Whether you're new to our platform or looking to sharpen your trading edge, we invite you to join our exclusive live webinars designed to help you navigate and maximise the features of CGS iTrade Web and Mobile app. Conducted during actual trading hours, the webinars are designed to simulate a real-life trading environment—giving you hands-on exposure to the platform’s features as they function in real time.`,
+		date: "15-Jul-2025 to 31-Dec-2025",
+		time: "Tues, 10am & 2.30pm SGT",
+		location: "Webinar",
+	},
+];
 
-const Events = () => {
-	const [events, setEvents] = useState<Array<IEventProps> | null>(generateTempEvents(6));
+interface EventsProps {
+	imageClassName?: string;
+}
 
-	// Cycle through different event states
-	const cycleEventsState = () => {
-		if (events === null) {
-			setEvents(generateTempEvents(0));
-			return;
-		}
-
-		const currentCount = events.length;
-		if (currentCount === 0) {
-			setEvents(generateTempEvents(1));
-			return;
-		}
-		if (currentCount === 1) {
-			setEvents(generateTempEvents(2));
-			return;
-		}
-		if (currentCount === 2) {
-			setEvents(generateTempEvents(3));
-			return;
-		}
-		if (currentCount === 3) {
-			setEvents(generateTempEvents(6));
-			return;
-		}
-		if (currentCount === 6) {
-			setEvents(null);
-			return;
-		}
-
-		setEvents(null);
-	};
-
+const Events = ({ imageClassName }: EventsProps) => {
 	return (
 		<div className="bg-background-section md:bg-[url('/images/bg-event.png')] bg-cover py-6 md:py-12">
 			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
@@ -109,12 +100,6 @@ const Events = () => {
 						<span className="font-semibold text-base">Event & Seminars</span>
 					</div>
 					<div className="flex items-center gap-3">
-						<Button
-							onClick={cycleEventsState}
-							className="bg-transparent hover:bg-enhanced-blue/10 px-2 py-1 border border-enhanced-blue rounded text-enhanced-blue text-xs"
-						>
-							<RefreshCcw />
-						</Button>
 						<Link
 							href={CGSI.EVENTS}
 							className="font-normal text-enhanced-blue text-xs md:text-sm"
@@ -127,9 +112,7 @@ const Events = () => {
 
 				{/* Event Carousel */}
 				<div className="mt-6">
-					{events === null ? (
-						<ErrorState type="error" className="md:py-[86px]" />
-					) : events.length === 0 ? (
+					{events.length === 0 ? (
 						<ErrorState
 							type="empty"
 							title="Currently No Scheduled Events"
@@ -139,7 +122,9 @@ const Events = () => {
 					) : (
 						<CustomizeCarousel<IEventProps>
 							items={events}
-							renderItem={(event) => <EventCard event={event} />}
+							renderItem={(event) => (
+								<EventCard event={event} imageClassName={imageClassName} />
+							)}
 							getItemKey={(event) => event.id}
 						/>
 					)}

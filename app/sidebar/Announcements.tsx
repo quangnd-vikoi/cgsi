@@ -1,6 +1,6 @@
 import React from "react";
 import { INotification } from "@/types";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 const Announcements = ({
 	detailViewing = {
 		time: "24-Aug-2025, 06:30 SGT",

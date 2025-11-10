@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";

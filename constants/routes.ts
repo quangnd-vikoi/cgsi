@@ -14,7 +14,7 @@ export const CGSI = {
 
 export const INTERNAL_ROUTES = {
 	HOME: "/",
-	PORFOLIO: "/porfolio",
+	PORFOLIO: "/portfolio",
 	DISCOVER: "/discover",
 	SECURITIES: "/securities",
 	ALTERNATIVE: "/alternatives",

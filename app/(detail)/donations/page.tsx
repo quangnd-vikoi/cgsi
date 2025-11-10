@@ -22,7 +22,9 @@ const Donations = () => {
 					rightContent={
 						<Dialog>
 							<DialogTrigger asChild>
-								<p className="px-3 text-enhanced-blue text-xs font-medium">Learn More</p>
+								<p className="px-3 text-enhanced-blue text-xs font-medium cursor-pointer hover:opacity-50">
+									Learn More
+								</p>
 							</DialogTrigger>
 							<DialogContent className="sm:max-w-[528px] p-0 gap-2 md:gap-4 max-h-[730px]">
 								<DialogHeader className="pad-x pt-6">

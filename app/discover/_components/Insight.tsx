@@ -1,35 +1,32 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Calendar, RefreshCcw } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { IInsightProps } from "@/types";
-import HomeEvNoevent from "@/public/icons/home-ev-noevent.svg";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 
 // Event Card Component
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
 		<Link href={"#"} target="_blank">
-			<div className="bg-white shadow rounded-lg  mb-[1px]">
-				<div>
+			<div className="bg-white shadow mb-[1px] rounded-lg overflow-hidden">
+				<div className="relative w-full aspect-[16/9]">
 					<Image
 						src={article.imageUrl}
-						alt="insight items"
-						width={50}
-						height={50}
-						className="w-full"
+						alt={article.title}
+						fill
+						className="object-cover"
+						sizes="(max-width: 768px) 74vw, (max-width: 1024px) 25.5vw, (max-width: 1280px) 20.1vw, 19.7vw"
+						quality={90}
 					/>
 				</div>
-				<div className="flex flex-col gap-4 px-3 py-[14px]">
-					<div className="text-[10px] font-medium text-typo-tertiary">{article.tag}</div>
-					<div className="font-semibold text-xs leading-none">{article.title}</div>
+				<div className="flex flex-col gap-3 px-3 py-[14px]">
+					<div className="font-medium text-[10px] text-typo-tertiary">{article.tag}</div>
+					<div className="min-h-8 font-semibold text-xs line-clamp-2">{article.title}</div>
 
-					<div className="justify-start text-[10px] text-typo-secondary line-clamp-4 leading-4">
+					<div className="min-h-[4em] text-[10px] text-typo-secondary line-clamp-4 leading-4">
 						{article.description}
-						<br />
 					</div>
 					<div className="flex flex-col gap-3">
 						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
@@ -43,57 +40,55 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 	);
 };
 
-// Generate temporary events for testing
-const generateTempInsight = (count: number): Array<IInsightProps> => {
-	return Array.from({ length: count }, (_, index) => ({
-		id: `temp-${index + 1}`,
-		title: `Malaysian Portfolios with US-China Trade Exposure`,
-		description: `Lorem ipsum dolor sit amet consectetur. Quis leo enim tincidunt facilisis leo magna eget vel urna. Ipsum quis at amet nulla id vulputate suspendisse. Fusce euismod facilisi dis mauris id nam pulvinar. Odio magna rhoncus rhoncus vitae nisi mollis aenean ipsum id. Lectus enim id vestibulum amet vel sed adipiscing quis tristique. Tellus sagittis hendrerit et neque in. Vitae turpis pharetra magna nibh.`,
-		date: "05-May-2025",
-		tag: "Idea of the Day",
-		imageUrl: "/images/discover/insight-placeholder.png",
-	}));
-};
+const articles: Array<IInsightProps> = [
+	{
+		id: "insight-1",
+		title: "Beyond the Boardroom",
+		description:
+			"​Ever wondered what CEOs discuss Beyond the Boardroom? Our new video series pulls back the curtain! Join CGS International Singapore's CEO, Malcolm Koo and Research Analyst, Natalie Ong for an exclusive video series, Beyond the Boardroom. They'll be hosting insightful conversations with CEOs of leading SGX-listed",
+		date: "31-Dec-2025",
+		tag: "Video Series",
+		imageUrl: "/images/insights/i1.png",
+	},
+	{
+		id: "insight-2",
+		title: "Kopi with Uncle Song & Friends",
+		description:
+			"Ever wondered what the future holds for Singapore's economy? Or how to navigate the ever-changing market landscape? CGS International Securities is bringing you Kopi with Uncle Song & Friends, a content series where economic guru Mr. Song Seng Wun spills the beans on all things economic.",
+		date: "31-Dec-2025",
+		tag: "Video Series",
+		imageUrl: "/images/insights/i2.png",
+	},
+	{
+		id: "insight-3",
+		title: "Market Pulse: Earnings Strength, Shutdown Delays & Yield Watch",
+		description:
+			"Strong US Corporate Earnings Fuel Equity Market Gains. US equity markets started this week with fresh upside momentum. The Dow Jones Industrial Average hit a record of 46,924.74, led by strong earnings from companies like 3M and Coca‑Cola. Meanwhile, General Motors surged nearly 15% after raising its full-year forecast. These positive results provided tangible support for equity prices amidst the overhang of concerns about stretched US equity valuations and prevailing geopolitical risk. What is also aiding the stock market's resilience is the prospect of Fed easing at its Oct 28th & 29th FOMC meeting where a 25bp Fed funds rate cut is anticipated.",
+		date: "27-Oct-2025",
+		tag: "Market Outlook",
+		imageUrl: "/images/insights/i3.png",
+	},
+	{
+		id: "insight-4",
+		title: "Inside Our Hong Kong Regional Webinar: What's Next for China's Economy?",
+		description:
+			"We recently wrapped up our Hong Kong Regional Webinar, and it turned out to be a fascinating session for anyone following China's fast-evolving Electric Vehicle (EV) and Advanced Driver Assistance Systems (ADAS) sectors. Hosted by CGS International Securities Hong Kong's analysts, Ray Kwok and Sera Chen, the webinar took a deep dive into how the country's EV market has matured beyond the phase of price wars and subsidies, and how emerging technologies like LiDAR, AI chips, and autonomous driving systems are setting the tone for the next chapter of growth.",
+		date: "24-Oct-2025",
+		tag: "Webinar Recap",
+		imageUrl: "/images/insights/i4.png",
+	},
+	{
+		id: "insight-5",
+		title: "Meet Lim Siew Khee, Head of Singapore Research",
+		description:
+			"With a sharp eye for market trends and a commitment to delivering timely, actionable insights, Siew Khee leads one of Singapore's largest research teams. CGSI Research has earned industry recognition and continues to set itself apart through agility, originality, and a client-first approach. Her team's work empowers investors with robust analysis and forward-looking strategies in today's fast-moving financial landscape.",
+		date: "22-Oct-2025",
+		tag: "Inside CGSI",
+		imageUrl: "/images/insights/i5.png",
+	},
+];
 
 const Insight = () => {
-	const [articles, setArticles] = useState<Array<IInsightProps> | null>(generateTempInsight(6));
-
-	// Cycle through different event states
-	const cycleEventsState = () => {
-		if (articles === null) {
-			setArticles(generateTempInsight(0));
-			return;
-		}
-
-		const currentCount = articles.length;
-		if (currentCount === 0) {
-			setArticles(generateTempInsight(1));
-			return;
-		}
-		if (currentCount === 1) {
-			setArticles(generateTempInsight(2));
-			return;
-		}
-		if (currentCount === 2) {
-			setArticles(generateTempInsight(3));
-			return;
-		}
-		if (currentCount === 3) {
-			setArticles(generateTempInsight(4));
-			return;
-		}
-		if (currentCount === 4) {
-			setArticles(generateTempInsight(6));
-			return;
-		}
-		if (currentCount === 6) {
-			setArticles(null);
-			return;
-		}
-
-		setArticles(null);
-	};
-
 	return (
 		<div className="bg-white bg-cover py-6 md:py-12">
 			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
@@ -101,70 +96,34 @@ const Insight = () => {
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-base">CGSI Insights</span>
 					</div>
-					<div className="flex items-center gap-3">
-						<Button
-							onClick={cycleEventsState}
-							className="bg-transparent hover:bg-enhanced-blue/10 px-2 py-1 border border-enhanced-blue rounded text-enhanced-blue text-xs"
-						>
-							<RefreshCcw />
-						</Button>
-						<Link
-							href={CGSI.INSIGHTS}
-							className="font-normal text-enhanced-blue text-xs md:text-sm"
-							target="_blank"
-						>
-							View All
-						</Link>
-					</div>
+					<Link
+						href={CGSI.INSIGHTS}
+						className="font-normal text-enhanced-blue text-xs md:text-sm"
+						target="_blank"
+					>
+						View All
+					</Link>
 				</div>
 
 				{/* Event Carousel */}
 				<div className="mt-4 md:mt-6">
-					{articles === null ? (
-						<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full pr-4 md:pr-0">
-							<Image
-								src="/icons/home-ev-error.svg"
-								alt="loading"
-								width={100}
-								height={100}
-								className=""
-							/>
-							<div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Oops, Something Went Wrong
-							</div>
-							<div className="mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5">
-								We are unable to display the content,please try again later.
-							</div>
-						</div>
-					) : articles.length === 0 ? (
-						<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full  pr-4 md:pr-0">
-							<HomeEvNoevent width={100} height={100} className="text-status-disable-primary" />
-							<div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
-								Currently No Scheduled Articles
-							</div>
-							<div className="mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5">
-								Check back soon - new articles are on the way!
-							</div>
-						</div>
-					) : (
-						<CustomizeCarousel<IInsightProps>
-							items={articles}
-							renderItem={(article) => <InsightCard article={article} />} // article có type IInsightProps
-							getItemKey={(article) => article.id}
-							contentClassName="lg:gap-0 xl:gap-2"
-							centerThreshold={{
-								desktop: 5,
-								laptop: 5,
-								tablet: 4,
-							}}
-							itemsPerView={{
-								mobile: "basis-[74%]",
-								tablet: "md:basis-[25.5%]",
-								laptop: "lg:basis-[20.1%]",
-								desktop: "xl:basis-[19.7%]",
-							}}
-						/>
-					)}
+					<CustomizeCarousel<IInsightProps>
+						items={articles}
+						renderItem={(article) => <InsightCard article={article} />}
+						getItemKey={(article) => article.id}
+						contentClassName="lg:gap-0 xl:gap-2"
+						centerThreshold={{
+							desktop: 5,
+							laptop: 5,
+							tablet: 4,
+						}}
+						itemsPerView={{
+							mobile: "basis-[74%]",
+							tablet: "md:basis-[25.5%]",
+							laptop: "lg:basis-[20.1%]",
+							desktop: "xl:basis-[19.7%]",
+						}}
+					/>
 				</div>
 			</div>
 		</div>

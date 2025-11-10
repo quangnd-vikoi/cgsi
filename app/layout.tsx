@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
-import { SheetManager } from "@/components/sidebar/SheetManager";
+import { SheetManager } from "@/app/sidebar/SheetManager";
 
 const inter = Inter({
 	variable: "--font-inter",

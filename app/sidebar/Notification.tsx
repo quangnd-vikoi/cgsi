@@ -2,11 +2,11 @@
 import { cn } from "@/lib/utils";
 import { Dot, MailOpen } from "lucide-react";
 import { useEffect, useState } from "react";
-import Alert from "../Alert";
-import { Button } from "../ui/button";
-import { toast } from "../ui/toaster";
+import Alert from "@/components/Alert";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toaster";
 import { INotification } from "@/types";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
 

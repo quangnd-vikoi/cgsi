@@ -1,5 +1,5 @@
 import React from "react";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Image from "next/image";
 import { useSheetStore } from "@/stores/sheetStore";
 import { INotification } from "@/types";

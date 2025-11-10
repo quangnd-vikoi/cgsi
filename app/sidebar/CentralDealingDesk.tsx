@@ -1,12 +1,12 @@
-// components/sidebar/ClientServices.tsx
+// components/sidebar/CentralDealingDesk.tsx
 import React from "react";
-import CustomSheetTitle from "./CustomSheetTitle";
-import { Clock, Phone, Mail, MapPin, Copy, CircleArrowRight } from "lucide-react";
-import { Separator } from "../ui/separator";
-import { Button } from "../ui/button";
-import { toast } from "../ui/toaster";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
+import { Clock, Phone, MapPin, Copy, CircleArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toaster";
+import { Separator } from "@/components/ui/separator";
 
-const ClientServices = () => {
+const CentralDealingDesk = () => {
 	const handleCopy = (text: string, type: string) => {
 		navigator.clipboard.writeText(text);
 		toast.success(`${type} copied to clipboard`);
@@ -16,26 +16,21 @@ const ClientServices = () => {
 		window.location.href = `tel:${phone}`;
 	};
 
-	const handleEmail = (email: string) => {
-		window.location.href = `mailto:${email}`;
-	};
-
 	const handleOpenMap = (address: string) => {
 		const encodedAddress = encodeURIComponent(address);
 		window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
 	};
 
 	const businessInfo = {
-		hours: "08:30 - 17:30 SGT (Mon-Fri)",
-		phone: "+65 6225 1228",
-		email: "sg.clientservices@cgsi.com",
+		hours: "08:30 - 17:30 SGT, 21:30 - 04:00 SGT (Mon-Fri)",
+		phone: "+65 6232 5888",
 		address: "10 Marina Boulevard, #09-01 Marina Bay Financial Centre Tower 2, Singapore 018983",
 	};
 
 	return (
 		<div className="flex flex-col h-full overflow-hidden -mx-4 md:-mx-6">
 			<div className="flex-shrink-0 pad-x">
-				<CustomSheetTitle title="Client Services" backTo={"contact"} />
+				<CustomSheetTitle title="Central Dealing Desk" backTo={"contact"} />
 			</div>
 
 			<div className="flex-1 overflow-y-auto pad-x pr-2 md:pr-3">
@@ -46,14 +41,9 @@ const ClientServices = () => {
 						<p className="text-sm font-semibold text-typo-primary">Business Hours</p>
 					</div>
 					<Separator className="my-3" />
-					<div className="text-xs text-typo-secondary font-medium mb-3">
-						Available: <span className="font-normal">{businessInfo.hours}</span>
-					</div>
-
-					<div className="text-xs text-typo-secondary">
-						We will get back to you within 3 business days.
-						<br />
-						For trade-related enquiries, please contact your Trading Representative directly.
+					<div className="text-xs text-typo-secondary font-medium">
+						Available:
+						<span className="font-normal ml-1">{businessInfo.hours}</span>
 					</div>
 				</div>
 
@@ -85,37 +75,11 @@ const ClientServices = () => {
 						</div>
 					</div>
 
-					{/* Email */}
-					<div className="flex items-center justify-between px-1.5 py-2.5">
-						<div className="flex items-center gap-2 min-w-0 flex-1">
-							<Mail size={16} className="text-icon-light flex-shrink-0" />
-							<span className="text-sm text-typo-primary truncate">{businessInfo.email}</span>
-						</div>
-						<div className="flex gap-5 flex-shrink-0 ml-2">
-							<Button
-								variant="ghost"
-								size="icon"
-								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleCopy(businessInfo.email, "Email")}
-							>
-								<Copy size={16} className="text-enhanced-blue" />
-							</Button>
-							<Button
-								variant="ghost"
-								size="icon"
-								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleEmail(businessInfo.email)}
-							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
-							</Button>
-						</div>
-					</div>
-
 					{/* Address */}
 					<div className="flex items-center justify-between px-1.5 py-2.5">
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<MapPin size={16} className="text-icon-light flex-shrink-0 mt-0.5" />
-							<span className="text-sm text-typo-primary w-[90%]">{businessInfo.address}</span>
+							<span className="text-sm text-typo-primary">{businessInfo.address}</span>
 						</div>
 						<div className="flex gap-5 flex-shrink-0 ml-2">
 							<Button
@@ -144,4 +108,4 @@ const ClientServices = () => {
 	);
 };
 
-export default ClientServices;
+export default CentralDealingDesk;

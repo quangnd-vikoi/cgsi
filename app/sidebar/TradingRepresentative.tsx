@@ -1,10 +1,10 @@
 // components/sidebar/TradingRepresentative.tsx
 import React from "react";
-import CustomSheetTitle from "./CustomSheetTitle";
+import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { CircleArrowRight, CircleQuestionMark, Copy, Mail, Phone } from "lucide-react";
-import { Separator } from "../ui/separator";
-import { toast } from "../ui/toaster";
-import { Button } from "../ui/button";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "@/components/ui/toaster";
+import { Button } from "@/components/ui/button";
 
 interface TradingRepresentativeData {
 	id: string;
