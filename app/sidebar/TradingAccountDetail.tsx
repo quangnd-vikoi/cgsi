@@ -2,8 +2,10 @@ import React from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { ChevronRight, Copy } from "lucide-react";
+import { ChevronDown, ChevronRight, Copy } from "lucide-react";
 import WaringIcon from "@/public/icons/Warning.svg";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const TradingAccountDetail = () => {
 	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
@@ -22,10 +24,18 @@ const TradingAccountDetail = () => {
 						</div>
 					</div>
 
-					<Group title="Account Linkages">
+					<Group title="Account Linkages" childrenClassName="gap-4">
 						<div className="">
 							<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs">
-								CDP <WaringIcon />
+								CDP
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<WaringIcon />
+									</TooltipTrigger>
+									<TooltipContent className="bg-theme-neutral-08 text-typo-primary">
+										<p>Add to library</p>
+									</TooltipContent>
+								</Tooltip>
 							</div>
 
 							<div className="flex justify-between items-center">
@@ -36,8 +46,75 @@ const TradingAccountDetail = () => {
 								) : (
 									<p className="text-typo-tertiary">-</p>
 								)}
+								<div className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer">
+									Update to SUB-CDP
+									<ChevronRight size={16} />
+								</div>
+							</div>
+						</div>
+
+						<Separator />
+
+						<div className="">
+							<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs">
+								CPF <WaringIcon />
+							</div>
+
+							<div className="flex justify-between items-center">
+								{selectedAccount.details.cpfAccount ? (
+									<p className="font-medium text-typo-primary text-sm">
+										{selectedAccount.details.cpfAccount}
+									</p>
+								) : (
+									<p className="text-typo-tertiary">-</p>
+								)}
 								<p className="flex gap-1 text-enhanced-blue text-xs cursor-pointer">
-									Update to SUB-CDP <ChevronRight />
+									Link Now
+									<ChevronRight />
+								</p>
+							</div>
+						</div>
+
+						<Separator />
+
+						<div className="">
+							<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs">
+								SRS <WaringIcon />
+							</div>
+
+							<div className="flex justify-between items-center">
+								{selectedAccount.details.srsAccount ? (
+									<p className="font-medium text-typo-primary text-sm">
+										{selectedAccount.details.srsAccount}
+									</p>
+								) : (
+									<p className="text-typo-tertiary">-</p>
+								)}
+								<p className="flex gap-1 text-enhanced-blue text-xs cursor-pointer">
+									Link Now
+									<ChevronRight />
+								</p>
+							</div>
+						</div>
+
+						<Separator />
+
+						<div className="">
+							<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs">
+								SRS <WaringIcon />
+							</div>
+
+							<div className="flex justify-between items-center">
+								{selectedAccount.details.srsAccount ? (
+									<p className="font-medium text-typo-primary text-sm">
+										{selectedAccount.details.srsAccount}
+									</p>
+								) : (
+									<p className="text-typo-tertiary">-</p>
+								)}
+								<p className="flex gap-1 text-enhanced-blue text-xs cursor-pointer">
+									Payment Method
+									<ChevronDown />
 								</p>
 							</div>
 						</div>

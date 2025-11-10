@@ -52,6 +52,58 @@ const Campaigns = () => {
 							<CarouselItem className="aspect-[2/1]">
 								<div className="relative rounded-lg w-full h-full overflow-hidden">
 									<Image
+										src="/images/home-1.png"
+										alt="campaign"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+										priority
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-2.png"
+										alt="campaign"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+										priority
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-3.png"
+										alt="campaign"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+										priority
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
+										src="/images/home-4.png"
+										alt="campaign"
+										fill
+										className="object-cover"
+										sizes="(max-width: 768px) 100vw, 60vw"
+										quality={95}
+										priority
+									/>
+								</div>
+							</CarouselItem>
+							<CarouselItem className="aspect-[2/1]">
+								<div className="relative rounded-lg w-full h-full overflow-hidden">
+									<Image
 										src="/images/home-cp-placeholder.png"
 										alt="campaign"
 										fill
