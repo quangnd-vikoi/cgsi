@@ -82,25 +82,21 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 	);
 };
 
-const ImagePopup = ({ src, onClose }: { src: string; onClose: () => void }) => {
-	return (
-		<div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
-			<div className="relative max-w-7xl max-h-[90vh] w-full h-full">
-				<div className="relative w-full h-full" onClick={(e) => e.stopPropagation()}>
-					<Image src={src} alt="Trade Now" fill className="object-contain" priority />
-				</div>
-			</div>
-		</div>
-	);
-};
-
 const Header = () => {
 	const openSheet = useSheetStore((state) => state.openSheet);
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
-	const [showImagePopup, setShowImagePopup] = useState(false);
 
 	const handleOpenSheet = (type: SheetType) => {
 		setOpenSheet(type);
+	};
+	const handleTradeNowClick = () => {
+		const width = 1370;
+		const height = 695;
+		window.open(
+			"/images/events/temp_tradenow.png",
+			"Trade Now",
+			`width=${width},height=${height},resizable=yes,scrollbars=yes`
+		);
 	};
 
 	return (
@@ -152,7 +148,7 @@ const Header = () => {
 						</div>
 						<div className="hidden md:block w-[2px] h-8 bg-gray-300"></div>
 						<Button
-							onClick={() => setShowImagePopup(true)}
+							onClick={handleTradeNowClick}
 							variant={"default"}
 							className="h-6 md:h-8 rounded-sm bg-enhanced-blue px-2 md:px-3 font-normal hover:bg-enhanced-blue/70 text-xs md:text-sm"
 						>
@@ -182,10 +178,6 @@ const Header = () => {
 			</div>
 
 			<AnnouncementBar setOpenSheet={setOpenSheet} />
-
-			{showImagePopup && (
-				<ImagePopup src="/images/events/temp_tradenow.png" onClose={() => setShowImagePopup(false)} />
-			)}
 		</>
 	);
 };
