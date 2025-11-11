@@ -92,10 +92,16 @@ const Header = () => {
 	const handleTradeNowClick = () => {
 		const width = 1370;
 		const height = 695;
+		const left = Math.round((window.screen.availWidth - width) / 4);
+		const top = Math.round((window.screen.availHeight - height) / 5);
+
+		console.log("Window dimensions:", window.screen.availWidth, window.screen.availHeight);
+		console.log("Trade Now clicked", width, height, left, top);
+
 		window.open(
 			"/images/events/temp_tradenow.png",
-			"Trade Now",
-			`width=${width},height=${height},resizable=yes,scrollbars=yes`
+			"TradeNow",
+			`width=${width},height=${height},screenX=${left},screenY=${top},resizable=yes,scrollbars=yes`
 		);
 	};
 
