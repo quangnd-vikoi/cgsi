@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/toaster";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -10,4 +11,9 @@ export function convertTo2DigitsNumber(value: string) {
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2,
 	});
+}
+
+export function handleCopy(text: string) {
+	navigator.clipboard.writeText(text);
+	toast.success("Copied to clipboard");
 }
