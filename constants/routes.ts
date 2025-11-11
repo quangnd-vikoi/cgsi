@@ -20,4 +20,6 @@ export const INTERNAL_ROUTES = {
 	ALTERNATIVE: "/alternatives",
 	MYAPPLICATION: "/my-applications",
 	DONATIONS: "/donations",
+	ACCOUNT_LINKAGES: (type: string, unlink?: boolean) =>
+		`/account-linkages?tab=${type}${unlink ? "?action=unlink" : ""}`,
 };

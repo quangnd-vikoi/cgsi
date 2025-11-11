@@ -33,7 +33,7 @@ const TradingAccounts = () => {
 								<div className="flex gap-2 items-center mt-1">
 									<p className="text-lg font-semibold">{acc.id}</p>
 									<Copy
-										className="text-enhanced-blue cursor-pointer hover:text-blue-700"
+										className="text-enhanced-blue cursor-pointer hover:text-enhanced-blue"
 										size={16}
 									/>
 								</div>

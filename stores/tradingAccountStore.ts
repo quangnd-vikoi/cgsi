@@ -2,9 +2,11 @@ import { create } from "zustand";
 
 export interface TradingAccountDetails {
 	cdp: string | null;
+	subcdp?: string | null;
 	cpfAccount: string | null;
 	srsAccount: string | null;
-	paymentMethod: string | null;
+	paymentAccount: string | null;
+	paymentMethod: "GIRO" | "EPS" | null;
 	representative: {
 		name: string;
 		department: string;
@@ -16,7 +18,12 @@ export interface TradingAccountDetails {
 
 export interface TradingAccount {
 	id: string;
-	type: string;
+	type:
+		| "Cash Trading Account"
+		| "Margin Trading Account"
+		| "Shares Borrowing Account"
+		| "CUT Account"
+		| "iCash Account";
 	trName: string;
 	details: TradingAccountDetails;
 }
@@ -38,10 +45,31 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 			type: "Cash Trading Account",
 			trName: "Lim Yi Bin",
 			details: {
-				cdp: "1681-1234-5678",
+				cdp: "",
+				subcdp: "Sub-CDP-2171-1234-5678",
+				cpfAccount: "S9538515Z",
+				srsAccount: "D1234567A",
+				paymentMethod: "GIRO",
+				paymentAccount: "123-456789-01",
+				representative: {
+					name: "Lim Yi Linked",
+					department: "Wealth Solutions",
+					repNo: "TTK100025746",
+					phone: "+65 6536 8810",
+					email: "yibin.lim@cgsi.com",
+				},
+			},
+		},
+		{
+			id: "0223451",
+			type: "Cash Trading Account",
+			trName: "Lim Yi Unlinked",
+			details: {
+				cdp: null,
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Lim Yi Bin",
 					department: "Wealth Solutions",
@@ -60,6 +88,8 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
+
 				representative: {
 					name: "Diyan Tan",
 					department: "Wealth Solutions",
@@ -78,6 +108,8 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
+
 				representative: {
 					name: "Rayhan Abhisamajah",
 					department: "Wealth Solutions",
@@ -96,6 +128,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Lim Yi Bin",
 					department: "Wealth Solutions",
@@ -114,6 +147,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Lim Yi Bin",
 					department: "Wealth Solutions",
@@ -123,24 +157,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				},
 			},
 		},
-		{
-			id: "0223451",
-			type: "Cash Trading Account",
-			trName: "Lim Yi Bin",
-			details: {
-				cdp: "1681-1234-5678",
-				cpfAccount: null,
-				srsAccount: null,
-				paymentMethod: null,
-				representative: {
-					name: "Lim Yi Bin",
-					department: "Wealth Solutions",
-					repNo: "TTK100025746",
-					phone: "+65 6536 8810",
-					email: "yibin.lim@cgsi.com",
-				},
-			},
-		},
+
 		{
 			id: "0223452",
 			type: "Margin Trading Account",
@@ -150,6 +167,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Diyan Tan",
 					department: "Wealth Solutions",
@@ -168,6 +186,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Rayhan Abhisamajah",
 					department: "Wealth Solutions",
@@ -186,6 +205,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Lim Yi Bin",
 					department: "Wealth Solutions",
@@ -204,6 +224,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 				cpfAccount: null,
 				srsAccount: null,
 				paymentMethod: null,
+				paymentAccount: null,
 				representative: {
 					name: "Lim Yi Bin",
 					department: "Wealth Solutions",

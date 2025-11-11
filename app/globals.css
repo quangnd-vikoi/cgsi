@@ -64,6 +64,9 @@
 	--color-theme-neutral-07: var(--theme-neutral-07);
 	--color-theme-neutral-08: var(--theme-neutral-08);
 	--color-background-banner: var(--background-banner);
+	--color-tone-green-00: var(--tone-green-00);
+	--color-tone-green-02: var(--tone-green-02);
+	--color-tone-green-04: var(--tone-green-04);
 }
 
 :root {
@@ -121,6 +124,9 @@
 	--theme-neutral-07: #bac3d1;
 	--theme-neutral-08: #d5dbe5;
 	--theme-neutral-095: #f9fafc;
+	--tone-green-00: #ceefe3;
+	--tone-green-02: #46e8af;
+	--tone-green-04: #1bb27d;
 	/* discover*/
 }
 
