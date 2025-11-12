@@ -6,6 +6,7 @@ import { AlarmClock, ChevronRight, CircleCheck } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
+import { Separator } from "@/components/ui/separator";
 
 interface DeclarationItem {
 	title: string;
@@ -137,7 +138,7 @@ const TradingDeclartions = () => {
 			<CustomSheetTitle backTo={"profile"} title="Trading Declarations" />
 
 			<div className="w-full max-w-md space-y-4 mt-6">
-				{items.map((item) => (
+				{items.map((item, index) => (
 					<div key={item.title}>
 						<div className="flex items-center justify-between mb-2">
 							<div className="flex items-center gap-2 font-normal text-sm">
@@ -168,6 +169,8 @@ const TradingDeclartions = () => {
 							</Badge>
 							<span className="text-xs text-gray-400">Exp: {item.exp}</span>
 						</div>
+
+						{index < items.length - 1 && <Separator className="my-4 bg-stroke-secondary" />}
 					</div>
 				))}
 			</div>

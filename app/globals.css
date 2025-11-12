@@ -175,14 +175,26 @@
 		@apply border-border outline-ring/50;
 	}
 
-	/* *:focus {
-		outline: none !important;
-		box-shadow: none !important;
+	* {
+		user-select: none;
+		-webkit-user-select: none;
+		cursor: default;
 	}
-	*:focus-visible {
-		outline: none !important;
-		box-shadow: none !important;
-	} */
+
+	/* Giữ cursor pointer cho các element có thể click */
+	button,
+	a,
+	[role="button"] {
+		cursor: pointer !important;
+	}
+
+	input,
+	textarea,
+	[contenteditable="true"] {
+		user-select: text !important;
+		cursor: text !important;
+	}
+
 	body {
 		@apply bg-background text-foreground;
 	}
