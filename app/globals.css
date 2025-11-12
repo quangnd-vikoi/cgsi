@@ -178,7 +178,7 @@
 	* {
 		user-select: none;
 		-webkit-user-select: none;
-		cursor: default;
+		/* cursor: default; */
 	}
 
 	/* Giữ cursor pointer cho các element có thể click */

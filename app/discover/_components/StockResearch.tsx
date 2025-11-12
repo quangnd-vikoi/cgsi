@@ -23,12 +23,12 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
-	// href = "/",
+	href = "/",
 }) => {
-	// const router = useRouter();
+	const router = useRouter();
 	return (
 		<div
-			// onClick={() => router.push(href)}
+			onClick={() => router.push(href)}
 			className="relative rounded-lg shadow-sm w-full cursor-pointer "
 		>
 			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow h-full">

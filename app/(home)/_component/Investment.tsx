@@ -26,20 +26,20 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
-	// href = "/",
+	href = "/",
 }) => {
 	const isMobile = useMediaQuery("mobile");
-	// const router = useRouter();
+	const router = useRouter();
 	return (
 		<div
-			// onClick={() => router.push(href)}
-			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full "
+			onClick={() => router.push(href)}
+			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full"
 			style={{
 				backgroundImage:
 					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
 			}}
 		>
-			<div className="relative border border-transparent rounded-lg w-full">
+			<div className="relative border border-transparent rounded-lg w-full cursor-pointer hover:shadow-sm">
 				<div
 					className="bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg overflow-hidden"
 					style={{
@@ -85,13 +85,13 @@ const Investment = () => {
 					<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
 				</div>
 				<div className="">
-					<Link
+					{/* <Link
 						href={CGSI.EVENTS}
 						className="font-normal text-enhanced-blue text-xs md:text-sm"
 						target="_blank"
 					>
 						View All
-					</Link>
+					</Link> */}
 				</div>
 			</div>
 
