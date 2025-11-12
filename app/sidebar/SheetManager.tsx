@@ -16,6 +16,7 @@ import Acknowledgements from "./Acknowledgements";
 import TradingDeclartions from "./TradingDeclartions";
 import TradingAccounts from "./TradingAccounts";
 import TradingAccountDetail from "./TradingAccountDetail";
+import UserProfile from "./UserProfile";
 
 type ValidSheetType = Exclude<SheetType, null>;
 
@@ -67,6 +68,9 @@ const SHEET_CONFIGS: Record<ValidSheetType, SheetConfig> = {
 	},
 	trading_account_details: {
 		component: TradingAccountDetail,
+	},
+	user_profile: {
+		component: UserProfile,
 	},
 };
 

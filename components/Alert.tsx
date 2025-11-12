@@ -13,27 +13,31 @@ import {
 import { X } from "lucide-react";
 
 type AlertProps = {
-	trigger?: React.ReactNode; // nút hoặc element mở dialog
+	trigger?: React.ReactNode;
 	title?: string;
-	description?: string;
+	description?: string | React.ReactNode;
 	cancelText?: string;
 	actionText?: string;
 	onAction?: () => void;
 	onCancel?: () => void;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 };
 
 const Alert: React.FC<AlertProps> = ({
-	trigger = <button>Open</button>,
+	trigger,
 	title = "Are you absolutely sure?",
 	description = "This action cannot be undone.",
 	cancelText = "Cancel",
 	actionText = "Continue",
 	onAction,
 	onCancel,
+	open,
+	onOpenChange,
 }) => {
 	return (
-		<AlertDialog>
-			<AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+		<AlertDialog open={open} onOpenChange={onOpenChange}>
+			{trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
 
 			<AlertDialogContent className="p-0 sm:max-w-[528px] gap-0">
 				<AlertDialogHeader className="text-start p-4">
@@ -43,12 +47,13 @@ const Alert: React.FC<AlertProps> = ({
 							<X size={16} />
 						</AlertDialogCancel>
 					</AlertDialogTitle>
-					<AlertDialogDescription className="text-sm md:text-base ">
+
+					<AlertDialogDescription className="text-sm md:text-base">
 						{description}
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 
-				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3">
+				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3 rounded-b-lg">
 					<AlertDialogCancel
 						className="bg-transparent border-none shadow-none text-enhanced-blue font-normal"
 						onClick={onCancel}

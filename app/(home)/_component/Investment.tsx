@@ -33,13 +33,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	return (
 		<div
 			onClick={() => router.push(href)}
-			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full cursor-pointer"
+			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full "
 			style={{
 				backgroundImage:
 					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
 			}}
 		>
-			<div className="relative hover:shadow border border-transparent hover:border-background-selected rounded-lg w-full">
+			<div className="relative border border-transparent rounded-lg w-full">
 				<div
 					className="bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg overflow-hidden"
 					style={{

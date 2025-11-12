@@ -37,7 +37,7 @@ const PROFILE_MENU_ITEM = {
 		{
 			icon: <CircleUserRound />,
 			name: "User Profile",
-			href: "/profile",
+			sheet: "user_profile" as SheetType,
 		},
 		{
 			icon: <ShieldCheck />,

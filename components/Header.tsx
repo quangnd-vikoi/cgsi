@@ -95,9 +95,6 @@ const Header = () => {
 		const left = Math.round((window.screen.availWidth - width) / 4);
 		const top = Math.round((window.screen.availHeight - height) / 5);
 
-		console.log("Window dimensions:", window.screen.availWidth, window.screen.availHeight);
-		console.log("Trade Now clicked", width, height, left, top);
-
 		window.open(
 			"/images/events/temp_tradenow.png",
 			"TradeNow",

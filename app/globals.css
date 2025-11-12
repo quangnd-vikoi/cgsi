@@ -67,6 +67,9 @@
 	--color-tone-green-00: var(--tone-green-00);
 	--color-tone-green-02: var(--tone-green-02);
 	--color-tone-green-04: var(--tone-green-04);
+	--color-tone-orange-00: var(--tone-orange-00);
+	--color-tone-orange-01: var(--tone-orange-01);
+	--color-tone-orange-04: var(--tone-orange-04);
 }
 
 :root {
@@ -127,6 +130,9 @@
 	--tone-green-00: #ceefe3;
 	--tone-green-02: #46e8af;
 	--tone-green-04: #1bb27d;
+	--tone-orange-00: #fff1ec;
+	--tone-orange-01: #feb69c;
+	--tone-orange-04: #f16a2c;
 	/* discover*/
 }
 

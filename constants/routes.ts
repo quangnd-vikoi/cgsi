@@ -22,4 +22,7 @@ export const INTERNAL_ROUTES = {
 	DONATIONS: "/donations",
 	ACCOUNT_LINKAGES: (type: string, unlink?: boolean) =>
 		`/account-linkages?tab=${type}${unlink ? "?action=unlink" : ""}`,
+	UPDATE_MOBILE: "/update-mobile",
+	UPDATE_EMAIL: "/update-email",
+	UPDATE_SIGNATURE: "/update-signature",
 };
