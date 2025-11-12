@@ -26,13 +26,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
-	href = "/",
+	// href = "/",
 }) => {
 	const isMobile = useMediaQuery("mobile");
-	const router = useRouter();
+	// const router = useRouter();
 	return (
 		<div
-			onClick={() => router.push(href)}
+			// onClick={() => router.push(href)}
 			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full "
 			style={{
 				backgroundImage:

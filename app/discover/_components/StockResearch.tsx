@@ -23,17 +23,17 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
-	href = "/",
+	// href = "/",
 }) => {
-	const router = useRouter();
+	// const router = useRouter();
 	return (
 		<div
-			onClick={() => router.push(href)}
+			// onClick={() => router.push(href)}
 			className="relative rounded-lg shadow-sm w-full cursor-pointer "
 		>
-			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow">
-				<div className="overflow-hidden rounded-lg bg-stockresearch-gradient shadow-sm">
-					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-full md:w-2/3">
+			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow h-full">
+				<div className="overflow-hidden rounded-lg bg-stockresearch-gradient shadow-sm h-full">
+					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-full md:w-1/2">
 						<div className="flex items-center gap-4 md:mb-2">
 							<div className="md:hidden bg-white p-2 rounded-full">
 								{title == "iScreener" ? <StockResearchLMobile /> : <StockResearchRMobile />}
@@ -46,11 +46,11 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 					</div>
 				</div>
 			</div>
-			<div className="hidden md:block absolute right-0 lg:right-8 bottom-0 h-[90%] md:h-[110%] lg:h-[120%]">
+			<div className="hidden md:block absolute right-0 lg:right-8 bottom-0 h-[90%] md:h-[70%] lg:h-[110%] xl:h-[120%]">
 				<Image
 					src={imageSrc}
 					alt={imageAlt ?? title}
-					className="h-full w-auto object-contain scale-x-80 md:scale-x-90"
+					className="h-full w-auto object-contain scale-x-80 md:scale-x-90 md:left-2 lg:left-10 xl:left-4 relative"
 					width={imageWidth}
 					height={imageHeight}
 				/>
