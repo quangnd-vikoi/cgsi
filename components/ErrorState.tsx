@@ -1,7 +1,8 @@
 import NoEvent from "@/public/icons/home-ev-noevent.svg";
 import Error from "@/public/icons/home-ev-error.svg";
+import SuccessState from "@/public/icons/success-state.svg";
 
-type ErrorStateType = "error" | "empty";
+type ErrorStateType = "error" | "empty" | "success";
 
 interface ErrorStateProps {
 	type?: ErrorStateType;
@@ -34,10 +35,14 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 			title: "Currently No Scheduled Content",
 			description: "Check back soon—new content is on the way!",
 		},
+		success: {
+			title: "Email Address Updated",
+			description: "You have successfully updated your email address",
+		},
 	};
 
 	// Select icon based on type
-	const IconComponent = type === "error" ? Error : NoEvent;
+	const IconComponent = type === "error" ? Error : type === "empty" ? NoEvent : SuccessState;
 
 	// Use custom text if provided, otherwise use default
 	const displayTitle = title || defaultTexts[type].title;

@@ -2,40 +2,72 @@
 import Title from "@/components/Title";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import Alert from "@/components/Alert";
-import { getCountryCallingCode, Country as CountryCode } from "react-phone-number-input";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
-import { MobileInputStep } from "./MobileInputStep";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { useEffect } from "react";
-import en from "react-phone-number-input/locale/en.json";
 
-interface Country {
-	code: CountryCode;
-	name: string;
-	dialCode: string;
-}
+const InputStep = ({
+	newEmail,
+	setNewEmail,
+	error,
+	setError,
+	onContinue,
+}: {
+	newEmail: string;
+	setNewEmail: (value: string) => void;
+	error: string;
+	setError: (value: string) => void;
+	onContinue: () => void;
+}) => {
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			onContinue();
+		}
+	};
+
+	const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setNewEmail(value);
+		if (error) setError("");
+	};
+
+	return (
+		<div className="pad-x">
+			<h2 className="text-base font-semibold mb-6">Enter Your New Email Here</h2>
+
+			<Input
+				placeholder="Enter here"
+				value={newEmail}
+				onChange={handleEmailChange}
+				onKeyPress={handleKeyPress}
+				className="focus-visible:!border-b-enhanced-blue focus-visible:!border-b focus:bg-background-selected"
+				type="email"
+				error={error}
+			/>
+		</div>
+	);
+};
 
 const OTPStep = ({
-	phoneNumber,
+	email,
 	otp,
 	error,
 	setOtp,
 	setStep,
-	dialCode,
 }: {
-	phoneNumber: string;
+	email: string;
 	otp: string;
 	error: string;
 	setOtp: (value: string) => void;
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
-	dialCode: string;
 }) => {
 	const [countdown, setCountdown] = useState(120); // 2 phút = 120s
 
@@ -66,7 +98,7 @@ const OTPStep = ({
 			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
 			<p className="text-sm text-typo-secondary mt-6">
 				You will receive a 6 digit code at
-				<span className="ml-1">{dialCode + phoneNumber}</span>
+				<span className="ml-1">{email}</span>
 			</p>
 
 			<p
@@ -110,48 +142,43 @@ const ConfirmStep = () => {
 		<ErrorState
 			className="w-[322px] mx-auto my-auto"
 			type="success"
-			title="Mobile Number Updated"
-			description="You have successfully updated your mobile phone number"
+			title="Email Address Updated"
+			description="You have successfully updated your email address"
 		/>
 	);
 };
 
-const UpdateMobile = () => {
+const UpdateEmail = () => {
 	const router = useRouter();
-	const { mobile: currentMobile } = useUserStore();
+	const { email: currentEmail } = useUserStore();
 	const [step, setStep] = useState<1 | 2 | 3>(1);
-	const [phoneNumber, setPhoneNumber] = useState("");
+	const [newEmail, setNewEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
-	const [selectedCountry, setSelectedCountry] = useState<Country>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
 
-	// Validate phone number
-	const isValidPhone = (phone: string) => {
-		// Basic validation: at least 8 digits
-		return phone.length >= 8;
+	// Validate email format
+	const isValidEmail = (email: string) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
 	};
 
-	// Handle continue for step 1
+	// Handle form submission for step 1
 	const handleStep1Continue = () => {
 		// Check if empty
-		if (!phoneNumber.trim()) {
-			setError("Phone number cannot be empty");
+		if (!newEmail.trim()) {
+			setError("Email cannot be empty");
 			return;
 		}
 
-		// Check if same as old phone
-		if (phoneNumber === currentMobile) {
-			setError("Please enter a different phone number");
+		// Check if same as old email
+		if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
+			setError("Please enter a different email");
 			return;
 		}
 
-		// Check if valid phone format
-		if (!isValidPhone(phoneNumber)) {
-			setError("Please enter a valid phone number");
+		// Check if valid email format
+		if (!isValidEmail(newEmail)) {
+			setError("Please enter a valid email address");
 			return;
 		}
 
@@ -164,7 +191,7 @@ const UpdateMobile = () => {
 		if (otp.length === 6) {
 			// TODO: Verify OTP with backend
 			// Simulate API call failure
-			toast.error("Failed to send Mobile OTP", "Please check your internet connection and try again.");
+			toast.error("Failed to send Email OTP", "Please check your internet connection and try again.");
 
 			// Move to error step
 			setStep(3);
@@ -184,14 +211,14 @@ const UpdateMobile = () => {
 	};
 
 	return (
-		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col">
+		<div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col ">
 			<div className="shrink-0">
 				<Title
-					title="Update Mobile Number"
+					title="Update Email"
 					rightContent={
 						<Alert
 							trigger={<X />}
-							title="Exit Update Mobile Number?"
+							title="Exit Update Email Address?"
 							description="Any information previously entered will be discarded."
 							actionText="Back To Form"
 							cancelText="Exit without Saving"
@@ -201,35 +228,26 @@ const UpdateMobile = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6">
+			<div className="bg-white rounded-lg flex-1 flex flex-col justify-between pt-6 ">
 				{step === 1 && (
-					<MobileInputStep
-						phoneNumber={phoneNumber}
-						setPhoneNumber={setPhoneNumber}
+					<InputStep
+						newEmail={newEmail}
+						setNewEmail={setNewEmail}
 						error={error}
 						setError={setError}
-						selectedCountry={selectedCountry}
-						setSelectedCountry={setSelectedCountry}
+						onContinue={handleStep1Continue}
 					/>
 				)}
 
 				{step === 2 && (
-					<OTPStep
-						dialCode={selectedCountry.dialCode}
-						phoneNumber={phoneNumber}
-						otp={otp}
-						setOtp={setOtp}
-						setStep={setStep}
-						error={error}
-					/>
+					<OTPStep email={newEmail} otp={otp} setOtp={setOtp} setStep={setStep} error={error} />
 				)}
 
 				{step === 3 && <ConfirmStep />}
-
 				<div className="">
 					{step === 2 && (
 						<div className="rounded-full bg-theme-blue-085 text-xs w-fit mx-auto mb-4 px-4 py-2 shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] text-theme-blue-03">
-							{`SMS OTP has been sent to ${selectedCountry.dialCode + phoneNumber}`}
+							{`SMS OTP has been sent to ${newEmail}`}
 						</div>
 					)}
 					<div className="pad-x py-4 border-t w-full relative">
@@ -243,4 +261,4 @@ const UpdateMobile = () => {
 	);
 };
 
-export default UpdateMobile;
+export default UpdateEmail;

@@ -37,7 +37,11 @@ const Alert: React.FC<AlertProps> = ({
 }) => {
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
-			{trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
+			{trigger && (
+				<AlertDialogTrigger asChild className="cursor-pointer">
+					{trigger}
+				</AlertDialogTrigger>
+			)}
 
 			<AlertDialogContent className="p-0 sm:max-w-[528px] gap-0">
 				<AlertDialogHeader className="text-start p-4">

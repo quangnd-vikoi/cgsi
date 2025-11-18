@@ -58,9 +58,11 @@
 	--color-background-focus: var(--background-focus);
 	--color-background-selected: var(--background-selected);
 	--color-background-error: var(--background-error);
+	--color-theme-blue-03: var(--theme-blue-03);
 	--color-theme-blue-085: var(--theme-blue-085);
 	--color-theme-blue-09: var(--theme-blue-09);
 	--color-theme-neutral-095: var(--theme-neutral-095);
+	--color-theme-neutral-06: var(--theme-neutral-06)
 	--color-theme-neutral-07: var(--theme-neutral-07);
 	--color-theme-neutral-08: var(--theme-neutral-08);
 	--color-background-banner: var(--background-banner);
@@ -122,8 +124,10 @@
 	--background-focus: #f9fbff;
 	--background-selected: #eaf1ff;
 	--background-error: #e540401a;
+	--theme-blue-03: #004DA7;
 	--theme-blue-085: #d9e6ff;
 	--theme-blue-09: #eaf1ff;
+	--theme-neutral-06: #a4aebd;
 	--theme-neutral-07: #bac3d1;
 	--theme-neutral-08: #d5dbe5;
 	--theme-neutral-095: #f9fafc;

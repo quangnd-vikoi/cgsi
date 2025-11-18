@@ -7,7 +7,7 @@ import WaringIcon from "@/public/icons/Warning.svg";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { cn, handleCopy } from "@/lib/utils";
+import { handleCopy } from "@/lib/utils";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";

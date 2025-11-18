@@ -13,7 +13,7 @@ function Input({ className, type, error = false, ...props }: InputProps) {
 	const errorMessage = typeof error === "string" && error.trim() !== "" ? error : "Field cannot be empty";
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col w-full">
 			<input
 				type={type}
 				data-slot="input"

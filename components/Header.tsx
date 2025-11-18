@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -17,6 +16,7 @@ import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { SheetType } from "@/types";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import HeaderPerson from "@/public/icons/CustomPerson.svg";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
@@ -85,10 +85,8 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 const Header = () => {
 	const openSheet = useSheetStore((state) => state.openSheet);
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+	const pathName = usePathname();
 
-	const handleOpenSheet = (type: SheetType) => {
-		setOpenSheet(type);
-	};
 	const handleTradeNowClick = () => {
 		const width = 1370;
 		const height = 695;
@@ -102,6 +100,13 @@ const Header = () => {
 		);
 	};
 
+	const isIconFill = !["/", "/discover", "/portfolio"].includes(pathName);
+
+	const handleSheetOpen = (type: "profile" | "notification") => {
+		window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+		if (type == "profile") setOpenSheet("profile");
+		else setOpenSheet("notification");
+	};
 	return (
 		<>
 			<div className="p-4 md:px-10 md:py-5 max-w-[1440px] xl:mx-auto z-[100]">
@@ -126,7 +131,7 @@ const Header = () => {
 
 					<div className="flex items-center my-auto gap-4 md:gap-6">
 						<div className="flex gap-4 md:gap-6">
-							<div onClick={() => handleOpenSheet("notification")}>
+							<div onClick={() => handleSheetOpen("notification")}>
 								<Image
 									className="cursor-pointer w-6 md:w-8"
 									src={
@@ -139,13 +144,16 @@ const Header = () => {
 									height={32}
 								/>
 							</div>
-							<div onClick={() => handleOpenSheet("profile")}>
-								<Image
-									className="cursor-pointer w-6 md:w-8"
-									src="/icons/Person.svg"
-									alt="User"
-									width={32}
-									height={32}
+							<div onClick={() => handleSheetOpen("profile")}>
+								<HeaderPerson
+									className={cn(
+										"cursor-pointer w-6 md:w-8",
+										openSheet
+											? "text-enhanced-blue"
+											: isIconFill
+											? "text-enhanced-blue [&_path]:fill-enhanced-blue"
+											: "text-icon-light"
+									)}
 								/>
 							</div>
 						</div>
