@@ -1,8 +1,8 @@
 "use client";
-import { CGSI } from "@/constants/routes";
+// import { CGSI } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
