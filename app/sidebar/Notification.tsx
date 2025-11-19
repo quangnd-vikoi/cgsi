@@ -32,9 +32,11 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 			)}
 			onClick={handleNotiClick}
 		>
-			<div className="flex gap-1">
-				{notification.read && <Dot className="text-status-error" strokeWidth="5" color="#D92B2B" />}
-				<span className="text-sm font-semibold leading-5">{notification.title}</span>
+			<div className="flex">
+				{notification.read && (
+					<Dot className="text-status-error relative right-1 -mr-1.5" strokeWidth="5" color="#D92B2B" />
+				)}
+				<span className="text-sm font-semibold leading-5 ">{notification.title}</span>
 			</div>
 
 			<p className="line-clamp-3 text-typo-secondary text-xs mt-1.5 leading-4">

@@ -19,15 +19,15 @@ const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassNa
 				width={283}
 				height={283}
 			/>
-			<div className="flex flex-col gap-4 px-3 py-[14px]">
+			<div className="flex flex-col gap-[14px] md:gap-4 px-3 py-[14px]">
 				<div className="min-h-[32px] font-semibold text-xs line-clamp-2 leading-4">{event.title}</div>
 
-				<div className="justify-start text-[10px] text-typo-secondary line-clamp-3 leading-4">
+				<div className="justify-start text-xs md:text-sm text-typo-secondary line-clamp-4 md:line-clamp-3 leading-4">
 					{event.description}
 					<br />
 				</div>
 				<div className="flex flex-col gap-2">
-					<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
+					<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary">
 						<Calendar className="w-4 h-4" />
 						{event.date}
 					</div>

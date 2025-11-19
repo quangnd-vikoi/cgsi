@@ -176,7 +176,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 			<DialogTrigger asChild>
 				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
-			<DialogContent className="p-0 gap-0 w-[346px] md:w-[530px]">
+			<DialogContent className="p-0 gap-0 w-[346px] md:w-[530px] rounded">
 				<DialogHeader className="pad pt-4">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"

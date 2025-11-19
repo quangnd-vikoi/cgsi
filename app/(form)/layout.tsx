@@ -34,7 +34,7 @@ export default function Layout({ children }: LayoutProps) {
 						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad`}
 					>
 						<div className="flex-shrink-0">
-							<div className="flex justify-between items-center">
+							<div className="flex justify-between items-center mb-1.5">
 								<div className="flex items-center gap-2">
 									<ChevronLeft
 										className="inline-block cursor-pointer md:hidden hover:text-enhanced-blue transition-colors"
@@ -48,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
 								/>
 							</div>
 
-							<Separator className="mt-4 mb-1.5" />
+							{/* <Separator className="mt-4 mb-1.5" /> */}
 						</div>
 						{children}
 					</section>

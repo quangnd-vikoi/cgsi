@@ -80,7 +80,7 @@ export default function Sidebar() {
 							<div
 								key={etf.id}
 								className={cn(
-									"rounded-lg border p-4 shadow-sm relative",
+									"rounded border p-4 shadow-sm relative",
 									selectedId === etf.id
 										? "border-enhanced-blue"
 										: "border-stroke-secondary",
@@ -90,7 +90,7 @@ export default function Sidebar() {
 								{/* Applied Badge - góc trái trên */}
 								{etf.applied && (
 									<div className="absolute top-0 left-0">
-										<div className="bg-status-success text-white text-[10px] font-medium px-2 py-0.5 rounded-tl-[9px] rounded-br-[9px]">
+										<div className="bg-status-success text-white text-[10px] font-medium px-2 py-0.5 rounded-tl rounded-br">
 											Applied
 										</div>
 									</div>

@@ -35,15 +35,8 @@ const Discover = () => {
 
 			{/* Donate  */}
 
-			<div className="container-default py-6 md:py-12 flex gap-4 justify-center items-center relative">
-				<Image
-					src={"/icons/discover/Donate.svg"}
-					alt="donate icon"
-					width={240}
-					height={208}
-					className="mx-5 hidden md:block"
-				/>
-				<div className="bg-[url('/images/discover/bg-mobile-donate.png')] bg-cover px-3 md:px-6 py-[14px] md:py-5 flex w-full max-w-[466px] border border-blue-200 rounded-lg">
+			<div className="container-default py-6 md:py-12 flex gap-4 justify-center items-center relative">	
+				<div className="relative bg-[url('/images/discover/bg-mobile-donate.png')] bg-cover px-3 md:px-6 py-[14px] md:py-5 flex justify-between w-full max-w-[588px] border border-blue-200 rounded-lg">
 					<div className="">
 						<div className="space-x-4">
 							<p className="font-semibold text-base md:text-[32px] text-typo-primary">
@@ -66,9 +59,9 @@ const Discover = () => {
 					<Image
 						src={"/icons/discover/Donate.svg"}
 						alt="donate icon"
-						width={130}
-						height={115}
-						className="md:hidden h-full absolute right-0 bottom-0"
+						width={221}
+						height={192}
+						className="h-full w-fit absolute right-0 md:right-6 bottom-0 md:bottom-3"
 					/>
 				</div>
 			</div>

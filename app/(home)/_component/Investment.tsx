@@ -1,11 +1,12 @@
 "use client";
-// import { CGSI } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "next/image";
-// import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import useToggle from "@/hooks/useToggle";
+import Alert from "@/components/Alert";
+import { useSheetStore } from "@/stores/sheetStore";
 
 type InvestmentCardProps = {
 	title: string;
@@ -30,9 +31,25 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 }) => {
 	const isMobile = useMediaQuery("mobile");
 	const router = useRouter();
+
+	const { value, toggle } = useToggle();
+	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+
+	const handleClick = () => {
+		if (title === "Alternatives") {
+			toggle();
+		} else {
+			router.push(href);
+		}
+	};
+
+	const handleAlert = () => {
+		toggle();
+		setOpenSheet("contact");
+	};
 	return (
 		<div
-			onClick={() => router.push(href)}
+			onClick={() => handleClick()}
 			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full"
 			style={{
 				backgroundImage:
@@ -72,6 +89,21 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 					height={imageHeight}
 				/>
 			</div>
+			<Alert
+				open={value}
+				onOpenChange={toggle}
+				title="Access to Alternative Investments"
+				description={
+					<span className="text-sm md:text-base">
+						Alternative Investments are available only to Accredited Investors. Please download
+						and fill the <span className="text-enhanced-blue font-medium">Declaration Form</span>,
+						then send it to us via “Contact Us” to proceed.
+					</span>
+				}
+				cancelText="Cancel"
+				actionText="Contact Us"
+				onAction={handleAlert}
+			/>
 		</div>
 	);
 };
@@ -79,20 +111,9 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 const Investment = () => {
 	return (
 		<div className="bg-white container-default">
-			<div className="flex justify-between items-center">
-				<div className="flex items-center gap-2">
-					<span className="font-semibold text-base">Investment Products</span>
-					<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
-				</div>
-				<div className="">
-					{/* <Link
-						href={CGSI.EVENTS}
-						className="font-normal text-enhanced-blue text-xs md:text-sm"
-						target="_blank"
-					>
-						View All
-					</Link> */}
-				</div>
+			<div className="flex items-center gap-2">
+				<span className="font-semibold text-base">Investment Products</span>
+				<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
 			</div>
 
 			<div className="flex justify-between gap-4 mt-6">

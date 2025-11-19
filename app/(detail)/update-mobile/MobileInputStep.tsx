@@ -156,15 +156,15 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 							<ChevronDown className="text-icon-light -ml-1 h-10 shrink-0" size={16} />
 						</div>
 					</DialogTrigger>
-					<DialogContent className="w-full max-w-[343px] h-[80%] md:h-[88%] md:max-w-[530px] mx-auto p-0 pt-6 gap-6">
-						<DialogHeader className="pad-x">
+					<DialogContent className="w-full max-w-[343px] h-[80%] md:h-[88%] md:max-w-[530px] mx-auto p-0 pt-6 gap-0">
+						<DialogHeader className="pad-x mb-6">
 							<DialogTitle>Select Country Code</DialogTitle>
 						</DialogHeader>
 						<div className="pad-x space-y-6 max-h-[698px] overflow-y-scroll sidebar-scroll relative">
 							<div className="relative">
 								<Input
 									placeholder="Search country name or code"
-									className="rounded-lg px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary"
+									className="rounded-lg px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary text-sm"
 									value={searchTerm}
 									onChange={handleSearchChange}
 								/>
@@ -237,7 +237,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 								</div>
 							)}
 							{alphabet.length > 0 && (
-								<div className="w-8 pr-2 flex flex-col items-center justify-start pt-30 gap-[1px] fixed -right-3 md:-right-2 top-20">
+								<div className="w-8 pr-2 flex flex-col items-center justify-start pt-30 gap-[1px] fixed -right-3 md:-right-2 top-10 md:top-20">
 									{alphabet.map((letter) => (
 										<button
 											key={letter}

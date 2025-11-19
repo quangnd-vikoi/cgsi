@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ interface DeclarationItem {
 	title: string;
 	status: "inactive" | "success" | "expiring";
 	exp?: string;
-	tooltipContent: string;
+	tooltipContent: ReactNode;
 	onRenew?: () => void;
 	onDeclare?: () => void;
 }
@@ -33,7 +33,12 @@ const TradingDeclartions = () => {
 			title: "CKA/ CAR",
 			status: "inactive",
 			exp: "-",
-			tooltipContent: "Required to trade Listed/ Unlisted Specified Investment Products (SIPs)...",
+			tooltipContent: (
+				<p>
+					Required to trade Listed/ Unlisted Specified Investment Products (SIPs), clients must
+					complete a declaration to assess their investment knowledge or experience.
+				</p>
+			),
 			onDeclare: () => {
 				window.open(
 					"/images/declaration/CKA.png",
@@ -46,7 +51,12 @@ const TradingDeclartions = () => {
 			title: "W8-BEN",
 			status: "expiring",
 			exp: "-",
-			tooltipContent: "Required to trade US Stocks...",
+			tooltipContent: (
+				<p>
+					Required to trade US Stocks, non-US individuals will need to confirm their foreign status
+					and claim reduced tax rates on US income under tax treaties.
+				</p>
+			),
 			onDeclare: () => {
 				window.open(
 					"/images/declaration/W8-BEN.png",
@@ -59,7 +69,8 @@ const TradingDeclartions = () => {
 			title: "BCAN",
 			status: "inactive",
 			exp: "-",
-			tooltipContent: "Required to trade on the Stock Exchange of Hong Kong (HKEX)...",
+			tooltipContent:
+				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
 			onDeclare: () => {
 				setAlertContent({
 					title: "You’re Eligible for BCAN",
@@ -85,7 +96,8 @@ const TradingDeclartions = () => {
 			title: "CRS",
 			status: "inactive",
 			exp: "-",
-			tooltipContent: "Financial institutions are required to collect...",
+			tooltipContent:
+				"Financial institutions are required to collect and report account information to support international tax transparency and prevent tax evasion by foreign tax residents.",
 			onDeclare: () => {
 				window.open(
 					"/images/declaration/CRS.png",
@@ -98,21 +110,35 @@ const TradingDeclartions = () => {
 			title: "Accredited Investor",
 			status: "inactive",
 			exp: "-",
-			tooltipContent: "Required to access products available exclusively...",
+			tooltipContent: (
+				<div>
+					<p>
+						Required to access products available exclusively to Accredited Investors. To qualify,
+						individuals must meet at least one of the following criteria:
+					</p>
+					<ul className="list-disc list-outside mt-3 pl-4 md:pl-6 space-y-1">
+						<li>Annual income &gt; SGD 300,000</li>
+						<li>Net personal assets (excl. properties) &gt; SGD 2,000,000</li>
+						<li>Net financial assets &gt; SGD 1,000,000</li>
+					</ul>
+				</div>
+			),
 			onDeclare: () => {
 				setAlertContent({
 					title: "Accredited Investor Declaration",
 					description: (
 						<p>
-							<p>
+							<span className="inline-block">
 								Visit the <span className="text-enhanced-blue">iTrade Application Forms</span>{" "}
 								website and download the “AI Declaration” form.
-							</p>
-							<p className="mt-4">
+							</span>
+
+							<br className="" />
+							<span className="mt-6 inline-block">
 								Complete and email the form to our Client Services team at
 								<span className="text-enhanced-blue ml-1">sg.clientservices@cgsi.com</span>.
 								You will receive an email notification once your request has been processed.
-							</p>
+							</span>
 						</p>
 					),
 					onCancel: () => {
@@ -147,9 +173,7 @@ const TradingDeclartions = () => {
 									<TooltipTrigger asChild>
 										<WaringIcon />
 									</TooltipTrigger>
-									<TooltipContent side="bottom">
-										<p>{item.tooltipContent}</p>
-									</TooltipContent>
+									<TooltipContent side="bottom">{item.tooltipContent}</TooltipContent>
 								</Tooltip>
 							</div>
 							<Button
