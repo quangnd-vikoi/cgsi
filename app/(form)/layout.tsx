@@ -3,7 +3,6 @@ import Navigation from "./_components/Navigation";
 import Sidebar from "./_components/Sidebar";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { ChevronLeft, X } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 interface LayoutProps {
 	children: React.ReactNode;

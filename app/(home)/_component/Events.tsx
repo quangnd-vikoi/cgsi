@@ -7,91 +7,95 @@ import { IEventProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/fetchWrapper";
+import { ENDPOINTS } from "@/lib/apiConfig";
+
+// API Response Interface
+interface EventAPIItem {
+	SEO_Page_Name: string;
+	MastheadBasic_Article_Title: string;
+	MastheadBasic_Article_Short: string;
+	Event_StartDate: string;
+	Tagging_EventType: string;
+	Tagging_EventStatus: string;
+	MastheadBasic_Article_Card_Thumbnail_Image: string;
+	Tagging_Timing?: string; // Optional as it might not be in all items
+}
 
 // Event Card Component
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
-		<div className="bg-white shadow mb-[1px] rounded-lg">
-			<Image
-				className={cn("rounded-t-lg w-full h-auto", imageClassName)}
-				src={event.imageUrl}
-				alt={event.title}
-				width={283}
-				height={283}
-			/>
-			<div className="flex flex-col gap-[14px] md:gap-4 px-3 py-[14px]">
-				<div className="min-h-[32px] font-semibold text-xs line-clamp-2 leading-4">{event.title}</div>
+		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank">
+			<div className="bg-white shadow mb-[1px] rounded-lg h-full flex flex-col">
+				<Image
+					className={cn("rounded-t-lg w-full h-auto", imageClassName)}
+					src={event.imageUrl}
+					alt={event.title}
+					width={283}
+					height={283}
+				/>
+				<div className="flex flex-col gap-[14px] md:gap-4 px-3 py-[14px] flex-grow">
+					<div className="min-h-[32px] font-semibold text-xs line-clamp-2 leading-4">{event.title}</div>
 
-				<div className="justify-start text-xs md:text-sm text-typo-secondary line-clamp-4 md:line-clamp-3 leading-4">
-					{event.description}
-					<br />
-				</div>
-				<div className="flex flex-col gap-2">
-					<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary">
-						<Calendar className="w-4 h-4" />
-						{event.date}
+					<div className="justify-start text-xs md:text-sm text-typo-secondary line-clamp-4 md:line-clamp-3 leading-4 flex-grow">
+						{event.description}
 					</div>
+					<div className="flex flex-col gap-2 mt-auto">
+						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary">
+							<Calendar className="w-4 h-4" />
+							{event.date}
+						</div>
 
-					<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-						<Clock className="w-4 h-4" />
-						{event.time}
-					</div>
+						{event.time && (
+							<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
+								<Clock className="w-4 h-4" />
+								{event.time}
+							</div>
+						)}
 
-					<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-						<MapPin className="w-4 h-4" />
-						{event.location}
+						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
+							<MapPin className="w-4 h-4" />
+							{event.location}
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</Link>
 	);
 };
-
-// Events data
-const events: Array<IEventProps> = [
-	{
-		id: "1",
-		title: "Learn from the Pros",
-		imageUrl: "/images/events/e1.png",
-		description: `An initiative by CGS International, "Learn From The Pros" is a financial education series where experts from different professions in the financial industry share their investing and trading knowledge and experiences. It is an opportunity to learn from market practitioners on how we can all be better investors and traders.`,
-		date: "27-Nov-2025",
-		time: "7.30pm SGT",
-		location: "Webinar",
-	},
-	{
-		id: "2",
-		title: "S-REITS Outlook 2H 2025",
-		imageUrl: "/images/events/e2.png",
-		description: `Singapore REITs enter the second half of 2025 with resilience and value on their side. Supported by stable fundamentals and attractive yields, the sector remains a key focus for investors seeking both income and growth. Join us as our analyst shares her outlook on the market and the opportunities that lie ahead.`,
-		date: "11-Sep-2025",
-		time: "7.30pm SGT",
-		location: "Webinar",
-	},
-	{
-		id: "3",
-		title: "Diversify to the Power of Three: Geography, Income and Growth",
-		imageUrl: "/images/events/e3.png",
-		description: `While diversification is key in any environment or time period, it is particularly important now, as heightened geopolitical uncertainty continues to sway markets. With volatility expected to persist, diversification remains a cornerstone of resilient investment strategies and ETFs continue to uniquely offer cost-effective access to a broad range of markets and sectors.`,
-		date: "07-Aug-2025",
-		time: "7.30pm SGT",
-		location: "Webinar",
-	},
-	{
-		id: "4",
-		title: "Unlock the Full Potential of CGS International iTrade - Join Our Live Platform",
-		imageUrl: "/images/events/e4.png",
-		description: `Whether you're new to our platform or looking to sharpen your trading edge, we invite you to join our exclusive live webinars designed to help you navigate and maximise the features of CGS iTrade Web and Mobile app. Conducted during actual trading hours, the webinars are designed to simulate a real-life trading environment—giving you hands-on exposure to the platform’s features as they function in real time.`,
-		date: "15-Jul-2025 to 31-Dec-2025",
-		time: "Tues, 10am & 2.30pm SGT",
-		location: "Webinar",
-	},
-];
 
 interface EventsProps {
 	imageClassName?: string;
 }
 
 const Events = ({ imageClassName }: EventsProps) => {
+	const [events, setEvents] = useState<EventAPIItem[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchEvents = async () => {
+			try {
+				const url = ENDPOINTS.events();
+				const response = await fetchAPI<EventAPIItem[]>(url);
+
+				if (response.success && response.data) {
+					setEvents(response.data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch events:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchEvents();
+	}, []);
+
+	if (loading) {
+		return null; // Or a loading skeleton
+	}
+
 	return (
 		<div className="bg-background-section md:bg-[url('/images/bg-event.png')] bg-cover py-6 md:py-12">
 			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
@@ -120,12 +124,23 @@ const Events = ({ imageClassName }: EventsProps) => {
 							className="md:py-[86px]"
 						/>
 					) : (
-						<CustomizeCarousel<IEventProps>
+						<CustomizeCarousel<EventAPIItem>
 							items={events}
-							renderItem={(event) => (
-								<EventCard event={event} imageClassName={imageClassName} />
+							renderItem={(item) => (
+								<EventCard
+									event={{
+										id: item.SEO_Page_Name,
+										title: item.MastheadBasic_Article_Title,
+										imageUrl: item.MastheadBasic_Article_Card_Thumbnail_Image,
+										description: item.MastheadBasic_Article_Short,
+										date: item.Event_StartDate,
+										time: item.Tagging_Timing || "7.30pm SGT (TBC)",
+										location: item.Tagging_EventType || "Webinar",
+									}}
+									imageClassName={imageClassName}
+								/>
 							)}
-							getItemKey={(event) => event.id}
+							getItemKey={(item) => item.SEO_Page_Name}
 							loop={true}
 						/>
 					)}

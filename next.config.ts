@@ -18,6 +18,15 @@ const nextConfig: NextConfig = {
 			},
 		},
 	},
+
+	images: {
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "www.cgsi.com.sg",
+			},
+		],
+	},
 };
 
 export default nextConfig;

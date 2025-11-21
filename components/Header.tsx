@@ -1,4 +1,7 @@
 "use client";
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/fetchWrapper";
+import { ENDPOINTS } from "@/lib/apiConfig";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -55,8 +58,34 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 	);
 };
 
-const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType) => void }) => {
+interface AnnouncementItem {
+	Announcement_Desc: string;
+	Anchor_Link: string;
+}
+
+const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType, payload?: unknown) => void }) => {
 	const { value, setFalse } = useToggle(true);
+	const [announcement, setAnnouncement] = useState<AnnouncementItem | null>(null);
+
+	useEffect(() => {
+		const fetchAnnouncements = async () => {
+			try {
+				const response = await fetchAPI<AnnouncementItem[]>(ENDPOINTS.announcements());
+				if (response.success && response.data && response.data.length > 0) {
+					const items = response.data.slice(0, 3);
+					const randomItem = items[Math.floor(Math.random() * items.length)];
+					setAnnouncement(randomItem);
+				}
+			} catch (error) {
+				console.error("Failed to fetch announcements:", error);
+			}
+		};
+
+		fetchAnnouncements();
+	}, []);
+
+	if (!announcement) return null;
+
 	return (
 		<div
 			className={cn("bg-status-warning w-full px-4 md:px-14 py-2 relative", value ? "block" : "hidden")}
@@ -64,12 +93,12 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 			<div className="flex justify-center items-center gap-4">
 				<TriangleAlert size={16} className="shrink-0" />
 				<p className="text-xs text-typo-primary text-ellipsis line-clamp-2 md:line-clamp-1 ">
-					iTrade+ Maintenance Unavailable at 30-Aug-2025, 06:00 - 13:30
+					{announcement.Announcement_Desc}
 				</p>
 				<div className="flex gap-4 shrink-0">
 					<div
 						className="text-xs font-semibold underline cursor-pointer"
-						onClick={() => setOpenSheet("announcement")}
+						onClick={() => setOpenSheet("announcement", { anchor_link: announcement.Anchor_Link })}
 					>
 						Learn More
 					</div>
@@ -78,7 +107,7 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 			</div>
 
 			<X size={16} className="hidden md:block absolute right-4 top-2" onClick={() => setFalse()} />
-		</div>
+		</div >
 	);
 };
 
@@ -151,8 +180,8 @@ const Header = () => {
 										openSheet
 											? "text-enhanced-blue"
 											: isIconFill
-											? "text-enhanced-blue [&_path]:fill-enhanced-blue"
-											: "text-icon-light"
+												? "text-enhanced-blue [&_path]:fill-enhanced-blue"
+												: "text-icon-light"
 									)}
 								/>
 							</div>

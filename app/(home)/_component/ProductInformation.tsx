@@ -1,4 +1,3 @@
-import React from "react";
 import HomeStock from "@/public/icons/home-stock.svg";
 import HomeChart from "@/public/icons/home-chart.svg";
 import HomeCareer from "@/public/icons/home-career.svg";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Check, Dot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";

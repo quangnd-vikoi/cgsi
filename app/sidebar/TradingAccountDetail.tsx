@@ -138,7 +138,7 @@ const TradingAccountDetail = () => {
 									: selectedAccount.details.cdp || undefined
 							}
 							actionContent={
-								selectedAccount.details.cdp && (
+								!selectedAccount.details.subcdp && (
 									<div className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0">
 										Update to SUB-CDP
 										<ChevronRight size={16} />

@@ -6,11 +6,35 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
+import { fetchAPI } from "@/lib/fetchWrapper";
+import { ENDPOINTS } from "@/lib/apiConfig";
+
+interface Campaign {
+	SEO_Page_Name: string;
+	MastheadBasic_Article_Title: string;
+	MastheadBasic_Article_Short: string;
+	Campaign_StartDate: string;
+	MastheadBasic_Article_Card_Thumbnail_Image: string;
+	Tagging_Timing?: string;
+}
 
 const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
 	const [count, setCount] = useState(0);
+	const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+
+	useEffect(() => {
+		const fetchCampaigns = async () => {
+			const url = ENDPOINTS.campaigns();
+			const response = await fetchAPI<Campaign[]>(url);
+			if (response.success && response.data) {
+				setCampaigns(response.data);
+			}
+		};
+
+		fetchCampaigns();
+	}, []);
 
 	useEffect(() => {
 		if (!api) return;
@@ -21,7 +45,7 @@ const Campaigns = () => {
 		api.on("select", () => {
 			setCurrent(api.selectedScrollSnap());
 		});
-	}, [api]);
+	}, [api, campaigns]); // Add campaigns to dependency to update count when data loads
 
 	const scrollPrev = () => {
 		api?.scrollPrev();
@@ -34,6 +58,11 @@ const Campaigns = () => {
 	const scrollTo = (index: number) => {
 		api?.scrollTo(index);
 	};
+
+	// Fallback if no campaigns loaded yet or error
+	if (campaigns.length === 0) {
+		return null; // Or render a skeleton/loading state
+	}
 
 	return (
 		<div className="bg-[url('/images/bg-campaigns.png')] bg-cover bg-center w-full">
@@ -49,95 +78,28 @@ const Campaigns = () => {
 				<div className="w-full md:w-3/5">
 					<Carousel setApi={setApi}>
 						<CarouselContent>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-1.png"
-										alt="campaign"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-										priority
-									/>
-								</div>
-							</CarouselItem>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-2.png"
-										alt="campaign"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-										priority
-									/>
-								</div>
-							</CarouselItem>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-3.png"
-										alt="campaign"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-										priority
-									/>
-								</div>
-							</CarouselItem>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-4.png"
-										alt="campaign"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-										priority
-									/>
-								</div>
-							</CarouselItem>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-cp-placeholder.png"
-										alt="campaign"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-										priority
-									/>
-								</div>
-							</CarouselItem>
-							{/* <CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-cp-placeholder-2.png"
-										alt="campaign 2"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-									/>
-								</div>
-							</CarouselItem>
-							<CarouselItem className="aspect-[2/1]">
-								<div className="relative rounded-lg w-full h-full overflow-hidden">
-									<Image
-										src="/images/home-cp-placeholder-3.png"
-										alt="campaign 3"
-										fill
-										className="object-cover"
-										sizes="(max-width: 768px) 100vw, 60vw"
-										quality={95}
-									/>
-								</div>
-							</CarouselItem> */}
+							{campaigns.map((campaign, index) => (
+								<CarouselItem key={campaign.SEO_Page_Name || index} className="aspect-[2/1]">
+									<Link
+										href={
+											campaign.SEO_Page_Name
+												? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
+												: CGSI.CAMPAIGNS
+										}
+										target="_blank"
+										className="relative block rounded-lg w-full h-full overflow-hidden cursor-pointer"
+									>
+										<Image
+											src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+											alt={campaign.MastheadBasic_Article_Title || "campaign"}
+											fill
+											className="object-cover"
+											sizes="(max-width: 768px) 100vw, 60vw"
+											priority={index === 0}
+										/>
+									</Link>
+								</CarouselItem>
+							))}
 						</CarouselContent>
 					</Carousel>
 
@@ -173,11 +135,10 @@ const Campaigns = () => {
 								<button
 									key={index}
 									onClick={() => scrollTo(index)}
-									className={`rounded-full flex-1 transition-all ${
-										index === current
-											? "h-[3px] bg-white"
-											: "h-[1px] bg-white/40 hover:bg-white/60"
-									}`}
+									className={`rounded-full flex-1 transition-all ${index === current
+										? "h-[3px] bg-white"
+										: "h-[1px] bg-white/40 hover:bg-white/60"
+										}`}
 									aria-label={`Go to slide ${index + 1}`}
 								/>
 							))}
