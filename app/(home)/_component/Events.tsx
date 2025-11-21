@@ -26,7 +26,7 @@ interface EventAPIItem {
 // Event Card Component
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
-		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank">
+		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block h-[calc(100%-1px)]">
 			<div className="bg-white shadow mb-[1px] rounded-lg h-full flex flex-col">
 				<Image
 					className={cn("rounded-t-lg w-full h-auto", imageClassName)}
