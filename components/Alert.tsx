@@ -11,6 +11,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type AlertProps = {
 	trigger?: React.ReactNode;
@@ -22,6 +23,7 @@ type AlertProps = {
 	onCancel?: () => void;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
+	className?: string;
 };
 
 const Alert: React.FC<AlertProps> = ({
@@ -34,6 +36,7 @@ const Alert: React.FC<AlertProps> = ({
 	onCancel,
 	open,
 	onOpenChange,
+	className,
 }) => {
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -43,21 +46,23 @@ const Alert: React.FC<AlertProps> = ({
 				</AlertDialogTrigger>
 			)}
 
-			<AlertDialogContent className="p-0 sm:max-w-[528px] gap-0">
-				<AlertDialogHeader className="text-start p-4">
-					<AlertDialogTitle className="text-base font-semibold flex justify-between">
+			<AlertDialogContent className={cn("p-0 sm:max-w-[528px] gap-0 max-h-[70%] md:max-h-[90%] flex flex-col overflow-hidden", className ? className : '')}>
+				<AlertDialogHeader className="text-start p-4 shrink-0">
+					<AlertDialogTitle className="text-base font-semibold flex justify-between items-center">
 						{title}
 						<AlertDialogCancel className="border-none shadow-none">
 							<X size={16} />
 						</AlertDialogCancel>
 					</AlertDialogTitle>
-
-					<AlertDialogDescription className="text-sm md:text-base">
-						{description}
-					</AlertDialogDescription>
 				</AlertDialogHeader>
 
-				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3 rounded-b-lg">
+				<div className="flex-1 overflow-y-auto px-4 pb-4">
+					<AlertDialogDescription asChild className="text-sm md:text-base">
+						{description}
+					</AlertDialogDescription>
+				</div>
+
+				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3 rounded-b-lg shrink-0">
 					<AlertDialogCancel
 						className="bg-transparent border-none shadow-none text-enhanced-blue font-normal"
 						onClick={onCancel}

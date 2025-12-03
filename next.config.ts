@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+	output: "export",
+	basePath: "/portal",
+	assetPrefix: "/portal/",
+	trailingSlash: true,
+
+	env: {
+		NEXT_PUBLIC_BASE_PATH: "/portal",
+	},
+
 	webpack(config) {
 		config.module.rules.push({
 			test: /\.svg$/i,
@@ -20,6 +29,7 @@ const nextConfig: NextConfig = {
 	},
 
 	images: {
+		unoptimized: true,
 		remotePatterns: [
 			{
 				protocol: "https",

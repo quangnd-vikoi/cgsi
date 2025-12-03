@@ -29,7 +29,7 @@ export default function Title({
 	return (
 		<div className={cn("flex items-center gap-2 mb-6", rightContent && "justify-between", className)}>
 			<div className="flex items-center gap-2.5">
-				{showBackButton && <ChevronLeft size={24} onClick={handleBack} />}
+				{showBackButton && <ChevronLeft size={24} onClick={handleBack} className="cursor-pointer" />}
 				<h1 className="text-base md:text-lg font-semibold text-typo-primary">{title}</h1>
 			</div>
 			{rightContent && <div>{rightContent}</div>}

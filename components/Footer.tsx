@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/Image";
 import * as Icons from "@/public/icons/footer";
 
 export default function Footer() {

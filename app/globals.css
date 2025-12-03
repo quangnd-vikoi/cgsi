@@ -54,6 +54,7 @@
 	--color-status-warning: var(--status-warning);
 	--color-icon-light: var(--icon-light);
 	--color-status-disable-primary: var(--status-disable-primary);
+	--color-status-disable-secondary: var(--status0-disable-secondary);
 	--color-background-section: var(--background-section);
 	--color-background-focus: var(--background-focus);
 	--color-background-selected: var(--background-selected);
@@ -62,9 +63,10 @@
 	--color-theme-blue-085: var(--theme-blue-085);
 	--color-theme-blue-09: var(--theme-blue-09);
 	--color-theme-neutral-095: var(--theme-neutral-095);
-	--color-theme-neutral-06: var(--theme-neutral-06)
+	--color-theme-neutral-06: var(--theme-neutral-06);
 	--color-theme-neutral-07: var(--theme-neutral-07);
 	--color-theme-neutral-08: var(--theme-neutral-08);
+	--color-theme-neutral-09: var(--theme-neutral-09);
 	--color-background-banner: var(--background-banner);
 	--color-tone-green-00: var(--tone-green-00);
 	--color-tone-green-02: var(--tone-green-02);
@@ -119,17 +121,19 @@
 	--status-success: #11b47b;
 	--status-warning: #ffc414;
 	--status-disable-primary: #bac3d1;
+	--status-disable-secondary: #f9fafc;
 	--icon-light: #4b5563;
 	--background-section: #f5f8ff;
 	--background-focus: #f9fbff;
 	--background-selected: #eaf1ff;
 	--background-error: #e540401a;
-	--theme-blue-03: #004DA7;
+	--theme-blue-03: #004da7;
 	--theme-blue-085: #d9e6ff;
 	--theme-blue-09: #eaf1ff;
 	--theme-neutral-06: #a4aebd;
 	--theme-neutral-07: #bac3d1;
 	--theme-neutral-08: #d5dbe5;
+	--theme-neutral-09: #ecf0f7;
 	--theme-neutral-095: #f9fafc;
 	--tone-green-00: #ceefe3;
 	--tone-green-02: #46e8af;
@@ -214,7 +218,8 @@
 	}
 
 	.investment-card {
-		@apply border border-transparent rounded-lg; /* áp dụng utility cơ bản */
+		@apply border border-transparent rounded-lg;
+		/* áp dụng utility cơ bản */
 
 		border-image-source: linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
 			linear-gradient(
@@ -234,6 +239,7 @@
 		@apply px-4 md:px-6;
 	}
 }
+
 @utility investment-card {
 	position: relative;
 	background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
@@ -266,21 +272,26 @@
 		scrollbar-width: thin;
 		scrollbar-color: #bac3d1 transparent;
 	}
+
 	.sidebar-scroll::-webkit-scrollbar {
 		width: 5px;
 		height: 5px;
 	}
+
 	.sidebar-scroll::-webkit-scrollbar-track {
 		background: #dde4ec;
 		border-radius: 9999px;
 	}
+
 	.sidebar-scroll::-webkit-scrollbar-thumb {
 		background: #bac3d1;
 		border-radius: 9999px;
 	}
+
 	.sidebar-scroll::-webkit-scrollbar-thumb:hover {
 		background: #888;
 	}
+
 	.sidebar-scroll::-webkit-scrollbar-button,
 	.sidebar-scroll::-webkit-scrollbar-corner {
 		display: none !important;
@@ -310,12 +321,21 @@
 		}
 	}
 
+	@media (min-width: 768px) {
+		.scrollbar-offset-2 {
+			scrollbar-width: thin;
+			scrollbar-color: #bac3d1 transparent;
+			scrollbar-gutter: stable both-edges;
+		}
+	}
+
 	/* === Discover banner === */
 	.bg-discover-banner {
 		background-image: url("/icons/discover/banner-mobile.png");
 		background-size: cover;
 		background-position: center;
 	}
+
 	@media (min-width: 768px) {
 		.bg-discover-banner {
 			background-image: linear-gradient(to bottom, #213e6c, #3679df);
@@ -332,6 +352,7 @@
 			rgba(255, 255, 255, 0.5) 100%
 		);
 	}
+
 	.bg-stockresearch-gradient-overlay {
 		background: linear-gradient(
 			135deg,

@@ -58,7 +58,7 @@ function SelectContent({
 				className={cn(
 					"bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto border-0 -top-1 rounded-lg shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)]",
 					position === "popper" &&
-						"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+					"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
 					className
 				)}
 				position={position}
@@ -70,7 +70,7 @@ function SelectContent({
 					className={cn(
 						"",
 						position === "popper" &&
-							"h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+						"h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1"
 					)}
 				>
 					{children}
@@ -101,12 +101,12 @@ function SelectItem({ className, children, ...props }: React.ComponentProps<type
 			)}
 			{...props}
 		>
-			<span className="absolute right-2 flex size-3.5 items-center justify-center">
-				{/* <SelectPrimitive.ItemIndicator>
+			{/* <span className="absolute right-2 flex size-3.5 items-center justify-center">
+				<SelectPrimitive.ItemIndicator>
 					<CheckIcon className="size-4" />
-				</SelectPrimitive.ItemIndicator> */}
-			</span>
-			<SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+				</SelectPrimitive.ItemIndicator>
+			</span> */}
+			<SelectPrimitive.ItemText asChild className="flex w-full">{children}</SelectPrimitive.ItemText>
 		</SelectPrimitive.Item>
 	);
 }

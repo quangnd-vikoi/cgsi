@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/fetchWrapper";
 import { ENDPOINTS } from "@/lib/apiConfig";
-import Image from "next/image";
+import Image from "@/components/Image";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
