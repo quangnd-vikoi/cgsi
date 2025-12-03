@@ -24,7 +24,7 @@ export interface IMarketDataItem {
     }
 }
 const MarketData = () => {
-    const [currentStep, setCurrentStep] = useState<Step>("non-professional-declaration");
+    const [currentStep, setCurrentStep] = useState<Step>("select");
     const [selectedItems, setSelectedItems] = useState<Array<IMarketDataItem>>([]);
 
     console.log("Selected Items: ", selectedItems);
