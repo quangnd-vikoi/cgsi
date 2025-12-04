@@ -22,7 +22,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({ title, filePath }) => {
 				<FileText className="w-5 h-5 text-typo-secondary" />
 				<span className="text-sm font-medium text-typo-primary">{title}</span>
 			</div>
-			<ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+			<ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-typo-teritary transition-colors" />
 		</button>
 	);
 };

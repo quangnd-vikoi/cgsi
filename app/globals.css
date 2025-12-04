@@ -74,6 +74,11 @@
 	--color-tone-orange-00: var(--tone-orange-00);
 	--color-tone-orange-01: var(--tone-orange-01);
 	--color-tone-orange-04: var(--tone-orange-04);
+	--color-tone-blue-02: var(--tone-blue-02);
+	/* red */
+	--color-tone-red-00: var(--tone-red-00);
+	--color-tone-red-01: var(--tone-red-01);
+	--color-tone-red-05: var(--tone-red-05);
 }
 
 :root {
@@ -142,6 +147,10 @@
 	--tone-orange-01: #feb69c;
 	--tone-orange-04: #f16a2c;
 	/* discover*/
+	--tone-blue-02: #91c0f6;
+	--tone-red-00: #e54040;
+	--tone-red-01: #fab1b1;
+	--tone-red-05: #d92b2b;
 }
 
 .dark {

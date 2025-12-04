@@ -296,7 +296,7 @@ const UpdateSignature = () => {
 														{/* Remove Button */}
 														<button
 															onClick={removeFile}
-															className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+															className="flex-shrink-0 text-gray-400 hover:text-typo-teritary transition-colors"
 														>
 															<X size={20} />
 														</button>

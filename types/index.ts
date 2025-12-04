@@ -30,6 +30,7 @@ export type SheetType =
 	| "trading_accounts"
 	| "trading_account_details"
 	| "user_profile"
+	| "my_subscriptions"
 	| null;
 
 export interface IResearchArticleProps {
