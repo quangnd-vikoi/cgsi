@@ -28,4 +28,6 @@ export const INTERNAL_ROUTES = {
 	UPDATE_MOBILE: "/update-mobile",
 	UPDATE_EMAIL: "/update-email",
 	UPDATE_SIGNATURE: "/update-signature",
+	MARKET_DATA: "/market-data",
+	MY_SUBSCRIPTIONS: "/my-subscriptions",
 };

@@ -186,7 +186,7 @@ const Header = () => {
 								/>
 							</div>
 						</div>
-						<div className="hidden md:block w-[2px] h-8 bg-gray-300"></div>
+						<div className="hidden md:block w-[2px] h-8 bg-stroke-secondary"></div>
 						<Button
 							onClick={handleTradeNowClick}
 							variant={"default"}

@@ -117,7 +117,7 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
     return (
         <div className="py-6 pad-x max-w-4xl mx-auto">
             <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-typo-teritary">
                     <span className="font-semibold mr-1">
                         &quot;Non-Professional Subscriber&quot;
                     </span>
@@ -132,7 +132,7 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
                         cancelText=""
                         title="Non-Professional Subscriber"
                         description={
-                            <div className="text-base text-gray-600">
+                            <div className="text-base text-typo-teritary">
                                 <span>&quot;Non-Professional Subscriber&quot; refers to any natural person who receives market data solely for his/her personal, non-business use and who is Not a &quot;Securities Professional&quot; meaning that you are:</span>
                                 <ul className="list-disc space-y-6 pl-4 md:pl-7 mt-5">
                                     <li>
@@ -154,8 +154,8 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
 
 
             <div className="flex items-center gap-2 mt-7">
-                <p className="shrink-0 text-xs font-semibold text-gray-600">Research Articles</p>
-                <Separator className="flex-1 border border-gray-300" />
+                <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
+                <Separator className="flex-1 border border-stroke-secondary" />
             </div>
             <div className="mt-2 space-y-3">
                 {researchArticles.map((item) => (
@@ -180,8 +180,8 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
             </div>
 
             <div className="flex items-center gap-2 mt-7">
-                <p className="shrink-0 text-xs font-semibold text-gray-600">Market Data</p>
-                <Separator className="flex-1 border border-gray-300" />
+                <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
+                <Separator className="flex-1 border border-stroke-secondary" />
             </div>
             <div className="mt-2 space-y-3">
                 {marketData.map((item) => (

@@ -17,6 +17,7 @@ import TradingDeclartions from "./TradingDeclartions";
 import TradingAccounts from "./TradingAccounts";
 import TradingAccountDetail from "./TradingAccountDetail";
 import UserProfile from "./UserProfile";
+import MySubscriptions from "./MySubscriptions";
 
 type ValidSheetType = Exclude<SheetType, null>;
 
@@ -72,6 +73,9 @@ const SHEET_CONFIGS: Record<ValidSheetType, SheetConfig> = {
 	user_profile: {
 		component: UserProfile,
 	},
+	my_subscriptions: {
+		component: MySubscriptions
+	}
 };
 
 export const SheetManager = () => {

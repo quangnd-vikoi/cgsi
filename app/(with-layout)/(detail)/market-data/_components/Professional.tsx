@@ -111,7 +111,7 @@ const Professional = () => {
   return (
     <div className="py-6 pad-x max-w-4xl mx-auto">
       <div>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-typo-teritary">
           <span className="font-semibold mr-0.5">
             &quot;Professional Subscriber&quot;
           </span>
@@ -126,7 +126,7 @@ const Professional = () => {
             cancelText=""
             title="Professional Subscriber"
             description={
-              <div className="text-base text-gray-600">
+              <div className="text-base text-typo-teritary">
                 <span>&quot;Professional Subscriber&quot; refers to any person or entity that uses market data for business, commercial, or professional purposes, including but not limited to individuals or organizations that meet any of the following criteria:</span>
                 <ul className="list-disc space-y-4 pl-4 md:pl-7 mt-5">
                   <li>
@@ -151,8 +151,8 @@ const Professional = () => {
 
 
       <div className="flex items-center gap-2 mt-7">
-        <p className="shrink-0 text-xs font-semibold text-gray-600">Research Articles</p>
-        <Separator className="flex-1 border border-gray-300" />
+        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
+        <Separator className="flex-1 border border-stroke-secondary" />
       </div>
       <div className="mt-2 space-y-3">
         {researchArticles.map((item) => (
@@ -167,8 +167,8 @@ const Professional = () => {
       </div>
 
       <div className="flex items-center gap-2 mt-7">
-        <p className="shrink-0 text-xs font-semibold text-gray-600">Market Data</p>
-        <Separator className="flex-1 border border-gray-300" />
+        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
+        <Separator className="flex-1 border border-stroke-secondary" />
       </div>
       <div className="mt-2 space-y-3">
         {marketData.map((item) => (

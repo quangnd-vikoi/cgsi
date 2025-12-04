@@ -75,7 +75,7 @@ const PROFILE_MENU_ITEM = {
 		{
 			icon: <Boxes />,
 			name: "My Subscriptions",
-			href: "/subscriptions",
+			sheet: "my_subscriptions" as SheetType,
 		},
 	],
 	Reports: [
