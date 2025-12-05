@@ -175,23 +175,22 @@ export const HoldingPosition = () => {
 
                 {/* Pagination Footer */}
                 <div className="flex flex-col gap-3 md:gap-4 mt-4 md:mt-6 pt-3 md:pt-4 border-t border-stroke-secondary">
-                    {/* Desktop Layout */}
-                    <div className="hidden md:flex justify-between items-center">
-                        <div className="text-sm text-typo-secondary shrink-0 w-[200px]">
+                    <div className="flex justify-between items-center">
+                        <div className="text-xs md:text-sm text-typo-secondary shrink-0 w-[200px]">
                             Showing {startIndex + 1}-{Math.min(endIndex, mockHoldingsData.length)} out of {mockHoldingsData.length}
                         </div>
 
-                        <Pagination>
+                        <Pagination className="w-fit m-0">
                             <PaginationContent className="gap-1">
                                 <PaginationItem>
                                     <PaginationPrevious
                                         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                        className={`size-9 p-0 ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
+                                        className={`size-7 md:size-9 p-0 ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
                                     />
                                 </PaginationItem>
 
                                 {generatePageNumbers().map((page, index) => (
-                                    <PaginationItem key={index}>
+                                    <PaginationItem className="hidden md:block" key={index}>
                                         {page === "ellipsis" ? (
                                             <PaginationEllipsis className="size-9" />
                                         ) : (
@@ -209,13 +208,13 @@ export const HoldingPosition = () => {
                                 <PaginationItem>
                                     <PaginationNext
                                         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                        className={`size-9 p-0 ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
+                                        className={`size-7 md:size-9 p-0 ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
                                     />
                                 </PaginationItem>
                             </PaginationContent>
                         </Pagination>
 
-                        <div className="flex items-center gap-4">
+                        <div className="hidden md:flex items-center gap-4">
                             <span className="text-sm text-typo-secondary whitespace-nowrap">
                                 Items per page
                             </span>
@@ -238,45 +237,6 @@ export const HoldingPosition = () => {
                                     ))}
                                 </SelectContent>
                             </Select>
-                        </div>
-
-                    </div>
-
-                    {/* Mobile Layout */}
-                    <div className="flex md:hidden flex-col gap-3">
-                        <div className="flex items-center justify-between">
-                            <div className="text-xs text-typo-secondary w-[200px]">
-                                Showing {startIndex + 1}-{Math.min(endIndex, mockHoldingsData.length)} out of {mockHoldingsData.length}
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs text-typo-secondary whitespace-nowrap">Items per page</span>
-                                <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-                                    <SelectTrigger className="w-[60px] h-7 text-xs rounded border border-stroke-secondary">
-                                        <SelectValue>{itemsPerPage}</SelectValue>
-                                    </SelectTrigger>
-                                    <SelectContent className="min-w-[60px]">
-                                        {ITEMS_PER_PAGE_OPTIONS.map((option) => (
-                                            <SelectItem key={option} value={option.toString()}>
-                                                {option}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-center items-center gap-2">
-                            <PaginationPrevious
-                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                className={`size-7 p-0 ${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
-                            />
-                            <span className="text-xs text-typo-secondary">
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <PaginationNext
-                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                className={`size-7 p-0 ${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
-                            />
                         </div>
                     </div>
                 </div>
