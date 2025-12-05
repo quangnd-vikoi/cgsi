@@ -4,6 +4,9 @@ import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "@/components/Image";
+import Dashboard from "./_components/Dashboard";
+import { CashBalance } from "./_components/CashBalance";
+import { HoldingPosition } from "./_components/HoldingPosition";
 
 const DevelopmentBanner = () => {
 	return (
@@ -54,32 +57,11 @@ const Portfolio = () => {
 
 				{/* Demo Images */}
 				<div className="flex flex-col gap-6 mt-6">
-					<Image
-						src="/images/portfolio/p-demo-1.png"
-						alt="Portfolio Demo 1"
-						width={1280}
-						height={720}
-						className="rounded-lg w-full h-auto"
-						quality={90}
-					/>
+					<Dashboard />
 
-					<Image
-						src="/images/portfolio/p-demo-2.png"
-						alt="Portfolio Demo 2"
-						width={1280}
-						height={720}
-						className="rounded-lg w-full h-auto"
-						quality={90}
-					/>
+					<CashBalance />
 
-					<Image
-						src="/images/portfolio/p-demo-3.png"
-						alt="Portfolio Demo 3"
-						width={1280}
-						height={720}
-						className="rounded-lg w-full h-auto"
-						quality={90}
-					/>
+					<HoldingPosition />
 				</div>
 			</div>
 		</div>
