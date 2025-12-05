@@ -11,9 +11,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { mockCurrencyData } from "./data";
-
 const INITIAL_DISPLAY_COUNT = 4;
 const LOAD_MORE_COUNT = 10;
+
 
 export const CashBalance = () => {
     const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);

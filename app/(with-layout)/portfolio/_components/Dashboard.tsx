@@ -15,8 +15,7 @@ import React from 'react'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChartPie } from './ChartPie'
-
-type PortfolioType = "CTA" | "MTA" | "SBL" | "CUT" | "iCash"
+import { PortfolioType } from '../page'
 
 type DashboardBlockProps = {
     title: string
@@ -150,9 +149,22 @@ const CashCall = () => {
     return <DashboardBlock title="Cash Call" amount="- 1,000.00 SGD" type="error" showPayButton onPay={() => console.log('Cash Call Pay clicked')} />
 }
 
-const Dashboard = () => {
+type DashboardProps = {
+    type?: PortfolioType
+    onTypeChange?: (type: PortfolioType) => void
+}
+
+const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
     const { selectedAccount } = useTradingAccountStore()
-    const type = selectedAccount ? getAccountTypeCode(selectedAccount.type) : "CTA" as PortfolioType
+    const accountType = selectedAccount ? getAccountTypeCode(selectedAccount.type) : "CTA" as PortfolioType
+
+    const type = propType || accountType
+
+    React.useEffect(() => {
+        if (onTypeChange && accountType !== propType) {
+            onTypeChange(accountType)
+        }
+    }, [accountType, onTypeChange, propType])
 
     // Layout configurations với components tương ứng
     const layoutConfig = {
@@ -164,8 +176,8 @@ const Dashboard = () => {
         ],
         MTA: [
             { id: 1, gridArea: "1 / 1 / 2 / 2", component: <AvailTradeLimit /> },
-            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <CollateralValue /> },
-            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <MarginRatio /> },
+            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <MarginRatio /> },
+            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <CollateralValue /> },
             { id: 4, gridArea: "2 / 2 / 3 / 3", component: <CashCall /> },
         ],
         SBL: [
@@ -205,7 +217,7 @@ const Dashboard = () => {
             </div>
 
             <div className="mt-6">
-                <ChartPie />
+                <ChartPie type={type} />
             </div>
         </div>
     )

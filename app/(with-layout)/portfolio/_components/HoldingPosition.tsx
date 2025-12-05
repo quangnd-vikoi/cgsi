@@ -34,10 +34,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowRightLeft, EllipsisVertical, Expand, FileOutput } from "lucide-react";
 import { mockHoldingsData } from "./data";
+import { PortfolioType } from "../page";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
-export const HoldingPosition = () => {
+export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -96,13 +97,17 @@ export const HoldingPosition = () => {
                             <FileOutput className="size-4" />
                             Export to Excel
                         </Button>
-                        <Button
-                            size="sm"
-                            className="text-sm rounded gap-2 bg-enhanced-blue hover:bg-enhanced-blue/90"
-                        >
-                            <ArrowRightLeft className="size-4" />
-                            SGX Shares Transfer
-                        </Button>
+                        {type === "CTA" && (
+
+
+                            <Button
+                                size="sm"
+                                className="text-sm rounded gap-2 bg-enhanced-blue hover:bg-enhanced-blue/90"
+                            >
+                                <ArrowRightLeft className="size-4" />
+                                SGX Shares Transfer
+                            </Button>)
+                        }
                     </div>
 
                     {/* Mobile: Show dropdown menu */}
@@ -121,10 +126,12 @@ export const HoldingPosition = () => {
                                     <FileOutput size={16} />
                                     Export to Excel
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <ArrowRightLeft size={16} />
-                                    SGX Shares Transfer
-                                </DropdownMenuItem>
+                                {type === "CTA" && (
+                                    <DropdownMenuItem>
+                                        <ArrowRightLeft size={16} />
+                                        SGX Shares Transfer
+                                    </DropdownMenuItem>)}
+
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
