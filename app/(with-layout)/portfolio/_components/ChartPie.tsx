@@ -55,15 +55,15 @@ export function ChartPie() {
             <div className="flex-shrink-0 w-full md:w-1/2">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square w-[280px] h-[280px]"
+                    className="mx-auto aspect-square max-h-[290px]"
                 >
                     <PieChart>
                         <Pie
                             data={chartData}
                             dataKey="value"
                             nameKey="asset"
-                            innerRadius={80}
-                            outerRadius={110}
+                            innerRadius={70}
+                            outerRadius={100}
                             strokeWidth={0}
                             startAngle={90}
                             endAngle={-270}
@@ -73,27 +73,35 @@ export function ChartPie() {
                                 content={({ viewBox }) => {
                                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                                         return (
-                                            <text
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                            >
-                                                <tspan
+                                            <g>
+                                                <circle
+                                                    cx={viewBox.cx}
+                                                    cy={viewBox.cy}
+                                                    r={70}
+                                                    className="fill-background-section"
+                                                />
+                                                <text
                                                     x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) - 8}
-                                                    className="fill-muted-foreground text-sm"
+                                                    y={viewBox.cy}
+                                                    textAnchor="middle"
+                                                    dominantBaseline="middle"
                                                 >
-                                                    SGD
-                                                </tspan>
-                                                <tspan
-                                                    x={viewBox.cx}
-                                                    y={(viewBox.cy || 0) + 12}
-                                                    className="fill-foreground text-2xl font-bold"
-                                                >
-                                                    {totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                </tspan>
-                                            </text>
+                                                    <tspan
+                                                        x={viewBox.cx}
+                                                        y={(viewBox.cy || 0) - 8}
+                                                        className="fill-typo-primary text-sm font-semibold"
+                                                    >
+                                                        SGD
+                                                    </tspan>
+                                                    <tspan
+                                                        x={viewBox.cx}
+                                                        y={(viewBox.cy || 0) + 12}
+                                                        className="fill-typo-primary text-sm font-semibold"
+                                                    >
+                                                        {totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                    </tspan>
+                                                </text>
+                                            </g>
                                         )
                                     }
                                 }}
