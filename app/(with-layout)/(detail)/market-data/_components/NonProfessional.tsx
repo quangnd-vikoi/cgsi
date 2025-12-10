@@ -46,6 +46,42 @@ const fetchMarketData = async (): Promise<MarketDataResponse> => {
                                 { label: "6 Months", value: "109.00 SGD" },
                                 { label: "12 Months", value: "218.00 SGD" }
                             ]
+                        },
+                        {
+                            id: 2,
+                            title: "Market Insights & Analysis",
+                            description: "From SGD 12.50/month",
+                            image: "/images/market-data/item-4.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "15.00 SGD" },
+                                { label: "3 Months", value: "40.00 SGD" },
+                                { label: "6 Months", value: "85.00 SGD" },
+                                { label: "12 Months", value: "165.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 3,
+                            title: "Technical Analysis Reports",
+                            description: "From SGD 20.83/month",
+                            image: "/images/market-data/item-5.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "25.00 SGD" },
+                                { label: "3 Months", value: "70.00 SGD" },
+                                { label: "6 Months", value: "135.00 SGD" },
+                                { label: "12 Months", value: "250.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 4,
+                            title: "Weekly Market Commentary",
+                            description: "From SGD 8.33/month",
+                            image: "/images/market-data/item-6.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "10.00 SGD" },
+                                { label: "3 Months", value: "28.00 SGD" },
+                                { label: "6 Months", value: "55.00 SGD" },
+                                { label: "12 Months", value: "100.00 SGD" }
+                            ]
                         }
                     ],
                     marketData: [
@@ -71,6 +107,78 @@ const fetchMarketData = async (): Promise<MarketDataResponse> => {
                                 { label: "3 Months", value: "50.00 SGD" },
                                 { label: "6 Months", value: "109.00 SGD" },
                                 { label: "12 Months", value: "218.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 3,
+                            title: "US NYSE & NASDAQ Live Feed",
+                            description: "From SGD 25.00/month",
+                            image: "/images/market-data/item-4.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "30.00 SGD" },
+                                { label: "3 Months", value: "85.00 SGD" },
+                                { label: "6 Months", value: "165.00 SGD" },
+                                { label: "12 Months", value: "320.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 4,
+                            title: "China Shanghai & Shenzhen Live Feed",
+                            description: "From SGD 18.33/month",
+                            image: "/images/market-data/item-5.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "22.00 SGD" },
+                                { label: "3 Months", value: "60.00 SGD" },
+                                { label: "6 Months", value: "115.00 SGD" },
+                                { label: "12 Months", value: "220.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 5,
+                            title: "Malaysia Bursa Live Feed",
+                            description: "From SGD 12.50/month",
+                            image: "/images/market-data/item-6.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "15.00 SGD" },
+                                { label: "3 Months", value: "42.00 SGD" },
+                                { label: "6 Months", value: "80.00 SGD" },
+                                { label: "12 Months", value: "150.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 6,
+                            title: "Thailand SET Live Feed",
+                            description: "From SGD 12.50/month",
+                            image: "/images/market-data/item-4.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "15.00 SGD" },
+                                { label: "3 Months", value: "42.00 SGD" },
+                                { label: "6 Months", value: "80.00 SGD" },
+                                { label: "12 Months", value: "150.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 7,
+                            title: "Japan Tokyo Stock Exchange Live Feed",
+                            description: "From SGD 20.83/month",
+                            image: "/images/market-data/item-5.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "25.00 SGD" },
+                                { label: "3 Months", value: "70.00 SGD" },
+                                { label: "6 Months", value: "135.00 SGD" },
+                                { label: "12 Months", value: "250.00 SGD" }
+                            ]
+                        },
+                        {
+                            id: 8,
+                            title: "Australia ASX Live Feed",
+                            description: "From SGD 18.33/month",
+                            image: "/images/market-data/item-6.png",
+                            dropDownItems: [
+                                { label: "1 Month", value: "22.00 SGD" },
+                                { label: "3 Months", value: "60.00 SGD" },
+                                { label: "6 Months", value: "115.00 SGD" },
+                                { label: "12 Months", value: "220.00 SGD" }
                             ]
                         }
                     ]

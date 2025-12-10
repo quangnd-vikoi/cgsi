@@ -11,12 +11,17 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { mockCurrencyData } from "./data";
+import Link from "next/link";
+import { INTERNAL_ROUTES } from "@/constants/routes";
+import { PaymentModel } from "@/components/PaymentModel";
 
 const INITIAL_DISPLAY_COUNT = 4;
 const LOAD_MORE_COUNT = 10;
 
+
 export const CashBalance = () => {
     const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
     const handleShowMore = () => {
         setDisplayCount((prev) => Math.min(prev + LOAD_MORE_COUNT, mockCurrencyData.length));
@@ -24,6 +29,10 @@ export const CashBalance = () => {
 
     const handleShowLess = () => {
         setDisplayCount(INITIAL_DISPLAY_COUNT);
+    };
+
+    const handleDepositClick = () => {
+        setIsPaymentModalOpen(true);
     };
 
     const visibleCurrencies = mockCurrencyData.slice(0, displayCount);
@@ -38,11 +47,13 @@ export const CashBalance = () => {
 
                     {/* Desktop: Show buttons */}
                     <div className="hidden md:flex gap-4">
-                        <Button variant="outline" size="sm" className="border border-enhanced-blue text-sm text-enhanced-blue rounded">
-                            <FileText size={16} />
-                            Cash Transactions
-                        </Button>
-                        <Button size="sm" className="text-sm rounded">
+                        <Link href={INTERNAL_ROUTES.CASH_TRANSACTION}>
+                            <Button variant="outline" size="sm" className="border border-enhanced-blue text-sm text-enhanced-blue rounded">
+                                <FileText size={16} />
+                                Cash Transactions
+                            </Button>
+                        </Link>
+                        <Button size="sm" className="text-sm rounded" onClick={handleDepositClick}>
                             <CirclePlus size={16} />
                             Deposit
                         </Button>
@@ -56,11 +67,13 @@ export const CashBalance = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem>
-                                <FileText size={16} />
-                                Cash Transactions
+                            <DropdownMenuItem asChild>
+                                <Link href={INTERNAL_ROUTES.CASH_TRANSACTION} className="flex items-center gap-2">
+                                    <FileText size={16} />
+                                    Cash Transactions
+                                </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleDepositClick}>
                                 <CirclePlus size={16} />
                                 Deposit
                             </DropdownMenuItem>
@@ -111,6 +124,11 @@ export const CashBalance = () => {
                     </div>
                 )}
             </div>
+
+            <PaymentModel
+                open={isPaymentModalOpen}
+                onOpenChange={setIsPaymentModalOpen}
+            />
         </div>
     );
 };

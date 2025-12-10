@@ -46,9 +46,9 @@ const Alert: React.FC<AlertProps> = ({
 				</AlertDialogTrigger>
 			)}
 
-			<AlertDialogContent className={cn("p-0 sm:max-w-[528px] gap-0 max-h-[70%] md:max-h-[90%] flex flex-col overflow-hidden", className ? className : '')}>
-				<AlertDialogHeader className="text-start p-4 shrink-0">
-					<AlertDialogTitle className="text-base font-semibold flex justify-between items-center">
+			<AlertDialogContent className={cn("p-0 sm:max-w-[528px] gap-0 max-h-[70%] md:max-h-[90%] flex flex-col overflow-hidden", className)}>
+				<AlertDialogHeader className="text-start pad-x shrink-0 py-6 ">
+					<AlertDialogTitle className="text-base font-semibold flex !h-6 justify-between items-center">
 						{title}
 						<AlertDialogCancel className="border-none shadow-none">
 							<X size={16} />
@@ -56,7 +56,7 @@ const Alert: React.FC<AlertProps> = ({
 					</AlertDialogTitle>
 				</AlertDialogHeader>
 
-				<div className="flex-1 overflow-y-auto px-4 pb-4">
+				<div className="flex-1 overflow-y-auto pad-x pb-4">
 					<AlertDialogDescription asChild className="text-sm md:text-base">
 						{description}
 					</AlertDialogDescription>

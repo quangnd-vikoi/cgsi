@@ -15,8 +15,11 @@ import React from 'react'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ChartPie } from './ChartPie'
-
-type PortfolioType = "CTA" | "MTA" | "SBL" | "CUT" | "iCash"
+import { PortfolioType } from '../page'
+import { PaymentModel } from '@/components/PaymentModel'
+import { useRouter } from 'next/navigation'
+import { INTERNAL_ROUTES } from '@/constants/routes'
+import Link from 'next/link'
 
 type DashboardBlockProps = {
     title: string
@@ -46,7 +49,7 @@ const DashboardBlock = ({ title, amount, type = 'normal', showPayButton = false,
                 {showPayButton && (
                     <Button
                         size="sm"
-                        className='hidden md:block bg-enhanced-blue hover:bg-enhanced-blue/90 text-xs px-3 h-6'
+                        className='hidden md:block bg-enhanced-blue hover:bg-enhanced-blue/90 rounded text-xs px-3 h-6'
                         onClick={onPay}
                     >
                         Pay
@@ -99,7 +102,7 @@ const TypeSelect = () => {
             </Select>
 
             <div className="mt-6 flex flex-col md:flex-row justify-between gap-4 md:gap-6 items-start">
-                <div className="w-1/2">
+                <div className="w-full md:w-1/2">
                     <p className='text-xs md:text-sm text-typo-secondary'>Total Asset Value</p>
                     <p className='mt-2 text-lg  md:text-2xl font-semibold'>180,000.16 SGD</p>
                 </div>
@@ -123,7 +126,14 @@ const SellContracts = () => {
 }
 
 const BuyContracts = () => {
-    return <DashboardBlock title="Buy Contracts (5)" amount="- 1,000.00 SGD" type="error" showPayButton onPay={() => console.log('Pay clicked')} />
+    const router = useRouter()
+    return <DashboardBlock
+        title="Buy Contracts (5)"
+        amount="- 1,000.00 SGD"
+        type="error"
+        showPayButton
+        onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
+    />
 }
 
 const ContraGain = () => {
@@ -131,7 +141,14 @@ const ContraGain = () => {
 }
 
 const ContraLoss = () => {
-    return <DashboardBlock title="Contra Loss (2)" amount="- 1,000.00 SGD" type="error" showPayButton onPay={() => console.log('Pay clicked')} />
+    const router = useRouter()
+    return <DashboardBlock
+        title="Contra Loss (2)"
+        amount="- 1,000.00 SGD"
+        type="error"
+        showPayButton
+        onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
+    />
 }
 
 const AvailTradeLimit = () => {
@@ -147,25 +164,53 @@ const MarginRatio = () => {
 }
 
 const CashCall = () => {
-    return <DashboardBlock title="Cash Call" amount="- 1,000.00 SGD" type="error" showPayButton onPay={() => console.log('Cash Call Pay clicked')} />
+    const [showPaymentModel, setShowPaymentModel] = React.useState(false)
+    return (
+        <>
+            <DashboardBlock
+                title="Cash Call"
+                amount="- 1,000.00 SGD"
+                type="error"
+                showPayButton
+                onPay={() => setShowPaymentModel(true)}
+            />
+            <PaymentModel
+                open={showPaymentModel}
+                onOpenChange={setShowPaymentModel}
+            />
+        </>
+    )
 }
 
-const Dashboard = () => {
+type DashboardProps = {
+    type?: PortfolioType
+    onTypeChange?: (type: PortfolioType) => void
+}
+
+const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
     const { selectedAccount } = useTradingAccountStore()
-    const type = selectedAccount ? getAccountTypeCode(selectedAccount.type) : "CTA" as PortfolioType
+    const accountType = selectedAccount ? getAccountTypeCode(selectedAccount.type) : "CTA" as PortfolioType
+
+    const type = propType || accountType
+
+    React.useEffect(() => {
+        if (onTypeChange && accountType !== propType) {
+            onTypeChange(accountType)
+        }
+    }, [accountType, onTypeChange, propType])
 
     // Layout configurations với components tương ứng
     const layoutConfig = {
         CTA: [
             { id: 1, gridArea: "1 / 1 / 2 / 2", component: <SellContracts /> },
-            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <BuyContracts /> },
-            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <ContraGain /> },
+            { id: 2, gridArea: "1 / 2 / 2 / 3", component: <BuyContracts /> },
+            { id: 3, gridArea: "2 / 1 / 3 / 2", component: <ContraGain /> },
             { id: 4, gridArea: "2 / 2 / 3 / 3", component: <ContraLoss /> },
         ],
         MTA: [
             { id: 1, gridArea: "1 / 1 / 2 / 2", component: <AvailTradeLimit /> },
-            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <CollateralValue /> },
-            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <MarginRatio /> },
+            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <MarginRatio /> },
+            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <CollateralValue /> },
             { id: 4, gridArea: "2 / 2 / 3 / 3", component: <CashCall /> },
         ],
         SBL: [
@@ -198,14 +243,30 @@ const Dashboard = () => {
                     </div>
                 )}
             </div>
+            {
 
-            <div className="flex text-enhanced-blue text-xs md:text-sm font-medium items-center mt-4 w-full justify-end cursor-pointer hover:text-enhanced-blue/75">
-                <p>View Contracts & Contra</p>
-                <ChevronRight className="inline-block ml-0.5" size={16} />
-            </div>
+                type === "CTA" &&
+                <div className='flex w-full justify-end'>
+                    <Link href={INTERNAL_ROUTES.SETTLE} className="flex text-enhanced-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-enhanced-blue/75">
+                        <p>View Contracts & Contra</p>
+                        <ChevronRight className="inline-block ml-0.5" size={16} />
+                    </Link>
+                </div>
+            }
+            {
+                ["SBL", "MTA"].includes(type) &&
+                <div className='flex w-full justify-end'>
+                    <Button variant={'ghost'} className="flex text-enhanced-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-enhanced-blue/75 hover:bg-transparent">
+                        <p>Fund Account</p>
+                        <ChevronRight className="inline-block ml-0.5" size={16} />
+                    </Button>
+                </div>
+
+            }
+
 
             <div className="mt-6">
-                <ChartPie />
+                <ChartPie type={type} />
             </div>
         </div>
     )

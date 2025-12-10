@@ -4,7 +4,11 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git mv:*)",
+      "Bash(wc:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(uvx:*)"
     ],
     "deny": [],
     "ask": []

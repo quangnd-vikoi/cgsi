@@ -7,10 +7,12 @@ import {
     ChartConfig,
     ChartContainer,
 } from "@/components/ui/chart"
+import { PortfolioType } from "../page"
 
 export const description = "A donut chart with asset distribution"
 
-const chartData = [
+// Default chart data for CTA, MTA, CUT, iCash
+const defaultChartData = [
     { asset: "equities", value: 36000.03, percentage: 20.00, fill: "#60A5FA" },
     { asset: "structured", value: 69606.06, percentage: 38.67, fill: "#3B82F6" },
     { asset: "bonds", value: 46800.04, percentage: 26.00, fill: "#1D4ED8" },
@@ -18,7 +20,15 @@ const chartData = [
     { asset: "others", value: 5994.01, percentage: 3.33, fill: "#14B8A6" },
 ]
 
-const chartConfig = {
+// SBL specific chart data - Different distribution for Shares Borrowing Account
+const sblChartData = [
+    { asset: "holdings", value: 45000.00, percentage: 25.00, fill: "#60A5FA" },
+    { asset: "borrowed", value: 81000.00, percentage: 45.00, fill: "#3B82F6" },
+    { asset: "lend", value: 36000.00, percentage: 20.00, fill: "#1D4ED8" },
+    { asset: "cash", value: 18000.00, percentage: 10.00, fill: "#10B981" },
+]
+
+const defaultChartConfig = {
     value: {
         label: "Market Value",
     },
@@ -44,10 +54,38 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export function ChartPie() {
+const sblChartConfig = {
+    value: {
+        label: "Market Value",
+    },
+    holdings: {
+        label: "Holdings & Positions",
+        color: "#60A5FA",
+    },
+    borrowed: {
+        label: "Borrowed Shares",
+        color: "#3B82F6",
+    },
+    lend: {
+        label: "Lend Shares",
+        color: "#1D4ED8",
+    },
+    cash: {
+        label: "Cash Balance",
+        color: "#10B981",
+    },
+} satisfies ChartConfig
+
+type ChartPieProps = {
+    type?: PortfolioType
+}
+
+export function ChartPie({ type = "CTA" }: ChartPieProps) {
+    const chartData = type === "SBL" ? sblChartData : defaultChartData
+    const chartConfig = type === "SBL" ? sblChartConfig : defaultChartConfig
     const totalValue = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.value, 0)
-    }, [])
+    }, [chartData])
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 items-center">
@@ -55,7 +93,7 @@ export function ChartPie() {
             <div className="flex-shrink-0 w-full md:w-1/2">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[290px]"
+                    className="mx-auto aspect-square max-h-56 md:max-h-[290px]"
                 >
                     <PieChart>
                         <Pie
@@ -124,7 +162,7 @@ export function ChartPie() {
                 {chartData.map((item) => {
                     const config = chartConfig[item.asset as keyof typeof chartConfig]
                     return (
-                        <div key={item.asset} className="grid gap-2 md:gap-4 py-3 md:py-4 text-sm border-b border-stroke-secondary last:border-0 md:last:border-b" style={{ gridTemplateColumns: '2.1fr 1fr 1.5fr' }}>
+                        <div key={item.asset} className="grid gap-2 md:gap-4 py-3 md:py-4 text-xs md:text-sm border-b border-stroke-secondary last:border-0 md:last:border-b" style={{ gridTemplateColumns: '2.1fr 1fr 1.5fr' }}>
                             <div className="flex items-center gap-2 md:gap-4 min-w-0">
                                 <div
                                     className="w-4 h-4 rounded-full flex-shrink-0"

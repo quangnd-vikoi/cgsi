@@ -20,6 +20,20 @@ export interface CurrencyBalance {
     countryCode: string; // ISO 3166-1 alpha-2 country code for flag
 }
 
+// Contract interface for Outstanding Payments (Settle) page
+export interface Contract {
+    id: string;
+    contractId: string;
+    status: "Overdue" | "Outstanding";
+    tradeDate: string;
+    dueDate: string;
+    settlementCcy: string;
+    gainLoss: number;
+    side: "Buy" | "Sell";
+    market: string;
+    code: string;
+}
+
 // Holdings & Positions mock data
 const generateHoldingsData = (): HoldingData[] => {
     const companies = [
@@ -82,3 +96,276 @@ export const mockCurrencyData: CurrencyBalance[] = [
     { currencyCode: "IDR", currencyName: "Indonesian Rupiah", balance: "15,000,000 IDR", countryCode: "id" },
     { currencyCode: "INR", currencyName: "Indian Rupee", balance: "850,000.00 INR", countryCode: "in" },
 ];
+
+// Generate contracts mock data for Settle page
+const generateContracts = (): Contract[] => {
+    const contracts: Contract[] = [
+        {
+            id: "1",
+            contractId: "199324823/I",
+            status: "Overdue",
+            tradeDate: "11-Jun-2025",
+            dueDate: "13-Jun-2025",
+            settlementCcy: "HKD",
+            gainLoss: -968.0,
+            side: "Buy",
+            market: "HKSE",
+            code: "AAPL",
+        },
+        {
+            id: "2",
+            contractId: "192353523/I",
+            status: "Outstanding",
+            tradeDate: "12-Jun-2025",
+            dueDate: "14-Jun-2025",
+            settlementCcy: "HKD",
+            gainLoss: 1020.0,
+            side: "Sell",
+            market: "SGX",
+            code: "MSFT",
+        },
+        {
+            id: "3",
+            contractId: "205423875/I",
+            status: "Outstanding",
+            tradeDate: "13-Jun-2025",
+            dueDate: "15-Jun-2025",
+            settlementCcy: "HKD",
+            gainLoss: 1500.0,
+            side: "Sell",
+            market: "US",
+            code: "GOOGL",
+        },
+        {
+            id: "4",
+            contractId: "214567890/I",
+            status: "Outstanding",
+            tradeDate: "14-Jun-2025",
+            dueDate: "16-Jun-2025",
+            settlementCcy: "SGD",
+            gainLoss: -2300.0,
+            side: "Buy",
+            market: "BURSA",
+            code: "AMZN",
+        },
+        {
+            id: "5",
+            contractId: "225678901/I",
+            status: "Outstanding",
+            tradeDate: "15-Jun-2025",
+            dueDate: "17-Jun-2025",
+            settlementCcy: "SGD",
+            gainLoss: 2800.0,
+            side: "Sell",
+            market: "BURSA",
+            code: "TSLA",
+        },
+        {
+            id: "6",
+            contractId: "236789012/I",
+            status: "Outstanding",
+            tradeDate: "16-Jun-2025",
+            dueDate: "18-Jun-2025",
+            settlementCcy: "SGD",
+            gainLoss: -1200.0,
+            side: "Buy",
+            market: "US",
+            code: "NFLX",
+        },
+        {
+            id: "7",
+            contractId: "247890123/I",
+            status: "Outstanding",
+            tradeDate: "17-Jun-2025",
+            dueDate: "19-Jun-2025",
+            settlementCcy: "SGD",
+            gainLoss: 2000.0,
+            side: "Sell",
+            market: "US",
+            code: "META",
+        },
+        {
+            id: "8",
+            contractId: "258901234/I",
+            status: "Outstanding",
+            tradeDate: "18-Jun-2025",
+            dueDate: "20-Jun-2025",
+            settlementCcy: "USD",
+            gainLoss: -1750.0,
+            side: "Buy",
+            market: "SET",
+            code: "NVDA",
+        },
+        {
+            id: "9",
+            contractId: "269012345/I",
+            status: "Outstanding",
+            tradeDate: "19-Jun-2025",
+            dueDate: "21-Jun-2025",
+            settlementCcy: "USD",
+            gainLoss: 1400.0,
+            side: "Sell",
+            market: "IDX",
+            code: "DIS",
+        },
+        {
+            id: "10",
+            contractId: "270123456/I",
+            status: "Outstanding",
+            tradeDate: "20-Jun-2025",
+            dueDate: "22-Jun-2025",
+            settlementCcy: "USD",
+            gainLoss: 900.0,
+            side: "Sell",
+            market: "SHANGHAI",
+            code: "ADBE",
+        },
+    ];
+
+    // Generate more data for pagination testing
+    const moreContracts: Contract[] = [];
+    for (let i = 11; i <= 15; i++) {
+        moreContracts.push({
+            ...contracts[i % 10],
+            id: i.toString(),
+            contractId: `${280000000 + i}/I`,
+        });
+    }
+
+    return [...contracts, ...moreContracts];
+};
+
+export const mockContracts = generateContracts();
+
+// Cash Transaction interface
+export interface CashTransaction {
+    id: string;
+    transactionId: string;
+    transactionDate: string;
+    description: string;
+    currency: string;
+    tradedPrice: number;
+    quantity: number;
+    amount: number;
+}
+
+// Generate cash transactions mock data
+const generateCashTransactions = (): CashTransaction[] => {
+    const transactions: CashTransaction[] = [
+        {
+            id: "1",
+            transactionId: "697678545",
+            transactionDate: "12-Jun-2025",
+            description: "Donation for Charity",
+            currency: "SGD",
+            tradedPrice: 0.000,
+            quantity: 0,
+            amount: -10.00,
+        },
+        {
+            id: "2",
+            transactionId: "697678546",
+            transactionDate: "13-Jun-2025",
+            description: "CASH STT BUY 25000 SGSIIC EN",
+            currency: "JPY",
+            tradedPrice: 150.000,
+            quantity: 15,
+            amount: -2250.00,
+        },
+        {
+            id: "3",
+            transactionId: "697678554",
+            transactionDate: "18-Jun-2025",
+            description: "CASH STT SELL 2000 SG UMS INTE",
+            currency: "CAD",
+            tradedPrice: 450.000,
+            quantity: 40,
+            amount: 750.00,
+        },
+        {
+            id: "4",
+            transactionId: "697678547",
+            transactionDate: "14-Jun-2025",
+            description: "CASH STT BUY 3000 HK HAIER SMA",
+            currency: "USD",
+            tradedPrice: 300.000,
+            quantity: 30,
+            amount: -12000.00,
+        },
+        {
+            id: "5",
+            transactionId: "697678548",
+            transactionDate: "19-Jun-2025",
+            description: "CASH STT SELL 5000 HK SUNLIGH",
+            currency: "GBP",
+            tradedPrice: 350.000,
+            quantity: 35,
+            amount: 3000.00,
+        },
+        {
+            id: "6",
+            transactionId: "697678549",
+            transactionDate: "15-Jun-2025",
+            description: "CASH STT BUY 16200 SG AIMS APA",
+            currency: "CHF",
+            tradedPrice: 250.000,
+            quantity: 10,
+            amount: -2500.00,
+        },
+        {
+            id: "7",
+            transactionId: "697678550",
+            transactionDate: "20-Jun-2025",
+            description: "CASH STT SELL 500 SG JARDINE CY",
+            currency: "NZD",
+            tradedPrice: 500.000,
+            quantity: 50,
+            amount: 500.00,
+        },
+        {
+            id: "8",
+            transactionId: "697678551",
+            transactionDate: "16-Jun-2025",
+            description: "CASH STT BUY 15000 SG RIVERSTO",
+            currency: "EUR",
+            tradedPrice: 100.000,
+            quantity: 25,
+            amount: 2500.00,
+        },
+        {
+            id: "9",
+            transactionId: "697678552",
+            transactionDate: "21-Jun-2025",
+            description: "CASH STT SELL 7500 SG FIRST RES",
+            currency: "CNY",
+            tradedPrice: 600.000,
+            quantity: 5,
+            amount: 1000.00,
+        },
+        {
+            id: "10",
+            transactionId: "697678553",
+            transactionDate: "17-Jun-2025",
+            description: "CASH STT BUY 4800 SG SINGAPOR...",
+            currency: "AUD",
+            tradedPrice: 400.000,
+            quantity: 12,
+            amount: -8000.00,
+        },
+    ];
+
+    // Generate more transactions for pagination testing
+    const moreTransactions: CashTransaction[] = [];
+    for (let i = 11; i <= 55; i++) {
+        const baseTransaction = transactions[(i - 1) % 10];
+        moreTransactions.push({
+            ...baseTransaction,
+            id: i.toString(),
+            transactionId: `${697678500 + i}`,
+        });
+    }
+
+    return [...transactions, ...moreTransactions];
+};
+
+export const mockCashTransactions = generateCashTransactions();
