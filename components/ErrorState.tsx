@@ -7,7 +7,7 @@ type ErrorStateType = "error" | "empty" | "success";
 interface ErrorStateProps {
 	type?: ErrorStateType;
 	title?: string;
-	description?: string;
+	description?: string | React.ReactNode;
 	iconWidth?: number;
 	iconHeight?: number;
 	className?: string;

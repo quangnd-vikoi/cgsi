@@ -54,7 +54,7 @@
 	--color-status-warning: var(--status-warning);
 	--color-icon-light: var(--icon-light);
 	--color-status-disable-primary: var(--status-disable-primary);
-	--color-status-disable-secondary: var(--status0-disable-secondary);
+	--color-status-disable-secondary: var(--status-disable-secondary);
 	--color-background-section: var(--background-section);
 	--color-background-focus: var(--background-focus);
 	--color-background-selected: var(--background-selected);

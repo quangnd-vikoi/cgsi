@@ -93,7 +93,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
             <div className="flex-shrink-0 w-full md:w-1/2">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[290px]"
+                    className="mx-auto aspect-square max-h-56 md:max-h-[290px]"
                 >
                     <PieChart>
                         <Pie
@@ -162,7 +162,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
                 {chartData.map((item) => {
                     const config = chartConfig[item.asset as keyof typeof chartConfig]
                     return (
-                        <div key={item.asset} className="grid gap-2 md:gap-4 py-3 md:py-4 text-sm border-b border-stroke-secondary last:border-0 md:last:border-b" style={{ gridTemplateColumns: '2.1fr 1fr 1.5fr' }}>
+                        <div key={item.asset} className="grid gap-2 md:gap-4 py-3 md:py-4 text-xs md:text-sm border-b border-stroke-secondary last:border-0 md:last:border-b" style={{ gridTemplateColumns: '2.1fr 1fr 1.5fr' }}>
                             <div className="flex items-center gap-2 md:gap-4 min-w-0">
                                 <div
                                     className="w-4 h-4 rounded-full flex-shrink-0"

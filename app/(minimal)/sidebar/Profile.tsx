@@ -190,7 +190,8 @@ const Profile = () => {
 				))}
 
 				<div className="-mt-3 flex justify-center gap-2 cursor-pointer">
-					<LogOut className="text-status-error" size={18} />
+					{/* <LogOut className="text-status-error" size={18} /> */}
+					<Image src={"/icons/logout.svg"} alt="" height={18} width={18} />
 					<p className="text-sm font-medium text-status-error">Log Out</p>
 				</div>
 			</div>

@@ -13,6 +13,7 @@ export const CGSI = {
 
 	EVENT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/events/${id}&lang=EN`,
 	INSIGHT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/insights/${id}&lang=EN`,
+	PAYMENT: `https://s2bpay.sc.com/s2bpay/billcollect?encstr=TTJJU1BWiV0sXSzzbNj3uT0c1qdyoh4J3GfwgvFogKaXR7elZZq1U3tS+fQdQTQZhz+rkItFTA66TELMGK14oQ==`,
 };
 
 export const INTERNAL_ROUTES = {
@@ -30,4 +31,7 @@ export const INTERNAL_ROUTES = {
 	UPDATE_SIGNATURE: "/update-signature",
 	MARKET_DATA: "/market-data",
 	MY_SUBSCRIPTIONS: "/my-subscriptions",
+	SETTLE: "/portfolio/settle",
+	CASH_TRANSACTION: "/portfolio/cash-transaction",
+	SHARE_TRANSFER: "/portfolio/shares-transfer",
 };
