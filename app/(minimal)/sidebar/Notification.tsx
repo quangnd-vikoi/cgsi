@@ -10,6 +10,8 @@ import { INotification } from "@/types";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
+import { fetchAPI, postAPI } from "@/lib/api/client";
+import { ENDPOINTS, API_BASE_URL } from "@/lib/api/endpoints";
 
 const tempNoti: INotification = {
 	title: "Why Investors Are Looking Beyond the United States in 2025",
@@ -71,20 +73,66 @@ const Notification = () => {
 	]);
 
 	const [hasUnread, setHasUnread] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-	console.log("Has Unread", hasUnread);
+	// Fetch notifications from API
+	useEffect(() => {
+		const fetchNotifications = async () => {
+			setLoading(true);
+			console.log("Fetching notifications from:", ENDPOINTS.notificationList());
+
+			const response = await fetchAPI<INotification[]>(ENDPOINTS.notificationList());
+
+			console.log("Notification API Response:", response);
+
+			if (response.success && response.data) {
+				console.log("Notifications loaded:", response.data);
+				setListNoti(response.data);
+			} else {
+				console.error("Failed to fetch notifications:", response.error);
+				console.error("Using mock data instead");
+				// Keep using mock data if API fails
+			}
+
+			setLoading(false);
+		};
+
+		// TODO: Uncomment when API endpoint is ready
+		fetchNotifications();
+
+		// For now, just log what would be called
+		console.log("API endpoint would be:", ENDPOINTS.notificationList());
+		console.log("Full URL would be:", `${API_BASE_URL}${ENDPOINTS.notificationList()}`);
+	}, []);
+
 	useEffect(() => {
 		setHasUnread(listNoti.some((noti: INotification) => noti.read));
 	}, [listNoti]);
 
-	const handleMarkAllRead = () => {
-		setListNoti((prev) =>
-			prev.map((noti: INotification) => ({
-				...noti,
-				read: false,
-			}))
-		);
-		toast.success("All Caught Up", "All messages have been marked as read.");
+	const handleMarkAllRead = async () => {
+		// Get all unread notification IDs
+		const unreadIds = listNoti.filter((noti) => noti.read).map((noti) => noti.id).filter(Boolean);
+
+		if (unreadIds.length === 0) return;
+
+		console.log("Marking notifications as read:", unreadIds);
+
+		const response = await postAPI(ENDPOINTS.notificationMarkAsRead(), { ids: unreadIds });
+
+		console.log("Mark as read API Response:", response);
+
+		if (response.success) {
+			setListNoti((prev) =>
+				prev.map((noti: INotification) => ({
+					...noti,
+					read: false,
+				}))
+			);
+			toast.success("All Caught Up", "All messages have been marked as read.");
+		} else {
+			console.error("Failed to mark as read:", response.error);
+			toast.error("Error", "Failed to mark notifications as read.");
+		}
 	};
 
 	return (
@@ -113,7 +161,11 @@ const Notification = () => {
 				/>
 			</div>
 			<div className="flex flex-col overflow-y-auto sidebar-scroll flex-1 mt-4">
-				{listNoti.length > 0 ? (
+				{loading ? (
+					<div className="flex items-center justify-center pt-20">
+						<p className="text-typo-secondary text-sm">Loading notifications...</p>
+					</div>
+				) : listNoti.length > 0 ? (
 					listNoti.map((noti, index) => <NotiItem key={index} notification={noti} />)
 				) : (
 					<ErrorState

@@ -1,19 +1,5 @@
-import { API_BASE_URL } from "./apiConfig";
-
-export interface StandardAPIResponse<T> {
-	status: "SUCCESS" | "ERROR";
-	statuscode: string;
-	article?: T;
-	data?: T;
-	message?: string;
-}
-
-export interface APIResponse<T> {
-	success: boolean;
-	data: T | null;
-	error: string | null;
-	statusCode: number;
-}
+import { API_BASE_URL } from "./config";
+import type { APIResponse, StandardAPIResponse } from "./types";
 
 /**
  * Fetch wrapper for API with standardized response format

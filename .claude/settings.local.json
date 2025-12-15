@@ -8,7 +8,15 @@
       "Bash(git mv:*)",
       "Bash(wc:*)",
       "Bash(claude mcp add:*)",
-      "Bash(uvx:*)"
+      "Bash(uvx:*)",
+      "Bash(pandoc:*)",
+      "Bash(python -c:*)",
+      "Bash(tree:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd.exe //c \"taskkill /PID 23252 /F\")",
+      "Bash(cmd.exe //c \"taskkill /PID 27084 /F\")"
     ],
     "deny": [],
     "ask": []

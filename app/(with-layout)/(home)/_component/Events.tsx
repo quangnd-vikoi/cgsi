@@ -8,8 +8,8 @@ import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { fetchAPI } from "@/lib/fetchWrapper";
-import { ENDPOINTS } from "@/lib/apiConfig";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 import { getBgImageClass } from "@/lib/utils";
 
 // API Response Interface

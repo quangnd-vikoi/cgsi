@@ -6,8 +6,8 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
-import { fetchAPI } from "@/lib/fetchWrapper";
-import { ENDPOINTS } from "@/lib/apiConfig";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 import { getBgImageClass } from "@/lib/utils";
 
 interface Campaign {

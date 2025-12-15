@@ -12,7 +12,6 @@ import {
 	FileText,
 	Headphones,
 	HeartHandshake,
-	LogOut,
 	Settings,
 	ShieldCheck,
 	X,

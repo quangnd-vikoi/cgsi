@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
-import { fetchAPI } from "@/lib/fetchWrapper";
-import { ENDPOINTS } from "@/lib/apiConfig";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 
 interface NoticeItem {
 	Title: string;
