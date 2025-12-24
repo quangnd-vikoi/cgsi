@@ -52,7 +52,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="border border-enhanced-blue text-sm text-enhanced-blue rounded gap-2"
+                            className="border border-enhanced-blue text-sm text-enhanced-blue rounded gap-2 hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
                         >
                             <FileOutput className="size-4" />
                             Export to Excel

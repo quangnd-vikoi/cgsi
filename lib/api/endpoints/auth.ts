@@ -5,12 +5,12 @@
  */
 export const authEndpoints = {
 	/**
-	 * Get SSO Parameter for Corporate Action
-	 * Returns SSO parameters for external corporate action access
+	 * Exchange authorization code for access and refresh tokens
 	 */
-	corporateAction: () => `/corporateAction`,
+	token: () => `/sso/api/v1/token`,
 
-	// Future SSO endpoints will be added here:
-	// token: () => `/sso/token`,
-	// refresh: () => `/sso/token/refresh`,
+	/**
+	 * Refresh access token using refresh token
+	 */
+	refresh: () => `/sso/api/v1/token/refresh`,
 } as const;

@@ -16,9 +16,13 @@
       "Bash(findstr:*)",
       "Bash(taskkill:*)",
       "Bash(cmd.exe //c \"taskkill /PID 23252 /F\")",
-      "Bash(cmd.exe //c \"taskkill /PID 27084 /F\")"
+      "Bash(cmd.exe //c \"taskkill /PID 27084 /F\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true
   }
 }

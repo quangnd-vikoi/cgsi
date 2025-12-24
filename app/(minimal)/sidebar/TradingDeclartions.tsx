@@ -21,7 +21,7 @@ const TradingDeclartions = () => {
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [alertContent, setAlertContent] = useState({
 		title: "",
-		description: "" as string | React.ReactNode,
+		description: <></> as React.ReactNode,
 		onCancel: () => {},
 		onAction: () => {},
 		actionText: "Proceed",
@@ -73,9 +73,12 @@ const TradingDeclartions = () => {
 				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
 			onDeclare: () => {
 				setAlertContent({
-					title: "You’re Eligible for BCAN",
-					description:
-						"To trade in the Stock Exchange Hong Kong (SEHK), a BCAN will be assigned to you. Do you wish to proceed?",
+					title: "You're Eligible for BCAN",
+					description: (
+						<p>
+							To trade in the Stock Exchange Hong Kong (SEHK), a BCAN will be assigned to you. Do you wish to proceed?
+						</p>
+					),
 					actionText: "Proceed",
 					cancelText: "Cancel",
 					onCancel: () => {

@@ -95,7 +95,7 @@ const UserProfile = () => {
 						<Button
 							onClick={() => handleUpdateClick("signature")}
 							variant="outline"
-							className="border-enhanced-blue text-enhanced-blue hover:bg-white hover:text-enhanced-blue/70 hover:border-enhanced-blue/70 w-fit font-normal px-3 py-1.5"
+							className="border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:text-enhanced-blue/75 hover:border-enhanced-blue/75 w-fit font-normal px-3 py-1.5"
 						>
 							Update Signature
 							<ChevronRight className="w-4 h-4 -ml-1" />

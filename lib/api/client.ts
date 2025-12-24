@@ -1,54 +1,112 @@
 import { API_BASE_URL } from "./config";
-import type { APIResponse, StandardAPIResponse } from "./types";
+import type { APIResponse, StandardAPIResponse, DirectAPIResponse } from "./types";
+import { getAccessToken, getProfileId } from "@/lib/services/authService";
+
+// Extended fetch options with auth support
+interface FetchOptions extends RequestInit {
+	useAuth?: boolean; // Flag to include auth headers (default: false)
+}
 
 /**
  * Fetch wrapper for API with standardized response format
  * @param url - API endpoint
- * @param options - Fetch options
+ * @param options - Fetch options (with optional useAuth flag)
  * @returns Normalized response
  */
-export async function fetchAPI<T>(url: string, options: RequestInit = {}): Promise<APIResponse<T>> {
+export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Promise<APIResponse<T>> {
 	try {
+		const { useAuth = false, ...restOptions } = options;
+
 		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json",
+			...(restOptions.headers as Record<string, string>),
+		};
+
+		// Add auth headers for endpoints that require authentication
+		if (useAuth) {
+			const token = getAccessToken();
+			const profileId = getProfileId();
+
+			if (token) {
+				headers["Authorization"] = `Bearer ${token}`;
+			}
+
+			if (profileId) {
+				headers["X-PROFILE-ID"] = profileId;
+			}
+		}
+
 		const res = await fetch(fullUrl, {
-			...options,
-			headers: {
-				"Content-Type": "application/json",
-				...options.headers,
-			},
+			...restOptions,
+			headers,
 		});
 
-		const json: StandardAPIResponse<T> = await res.json();
+		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();
 
 		// Check HTTP status
 		if (!res.ok) {
+			let errorMsg = `HTTP Error: ${res.status}`;
+			if ("message" in json && typeof json.message === "string") {
+				errorMsg = json.message;
+			} else if ("error" in json && typeof json.error === "string") {
+				errorMsg = json.error;
+			}
 			return {
 				success: false,
-				error: json.message || `HTTP Error: ${res.status}`,
+				error: errorMsg,
 				statusCode: res.status,
 				data: null,
 			};
 		}
 
-		// Check API status from response body
-		if (json.status !== "SUCCESS" || json.statuscode !== "200") {
+		// Check if this is a StandardAPIResponse (has status/statuscode fields)
+		const isStandardResponse = "status" in json && "statuscode" in json;
+
+		if (isStandardResponse) {
+			// Standard API response format
+			const standardJson = json as StandardAPIResponse<T>;
+
+			if (standardJson.status !== "SUCCESS" || standardJson.statuscode !== "200") {
+				return {
+					success: false,
+					error: standardJson.message || "API returned error status",
+					statusCode: parseInt(standardJson.statuscode) || res.status,
+					data: null,
+				};
+			}
+
+			// Success case - flexible data extraction
+			const data = (standardJson.article || standardJson.data || json) as T;
+
 			return {
-				success: false,
-				error: json.message || "API returned error status",
-				statusCode: parseInt(json.statuscode) || res.status,
-				data: null,
+				success: true,
+				data,
+				statusCode: parseInt(standardJson.statuscode),
+				error: null,
+			};
+		} else {
+			// Direct response format (like auth endpoints)
+			const directJson = json as DirectAPIResponse<T>;
+
+			// If HTTP status is OK and no error field, consider it success
+			if (directJson.error) {
+				return {
+					success: false,
+					error: directJson.error,
+					statusCode: res.status,
+					data: null,
+				};
+			}
+
+			return {
+				success: true,
+				data: json as T,
+				statusCode: res.status,
+				error: null,
 			};
 		}
-
-		// Success case - flexible data extraction
-		const data = (json.article || json.data || json) as T;
-
-		return {
-			success: true,
-			data,
-			statusCode: parseInt(json.statuscode),
-			error: null,
-		};
 	} catch (error) {
 		// Network or parsing errors
 		return {
@@ -63,19 +121,25 @@ export async function fetchAPI<T>(url: string, options: RequestInit = {}): Promi
 /**
  * Helper for GET requests with Next.js caching
  */
-export async function fetchWithCache<T>(url: string, revalidate: number = 3600): Promise<APIResponse<T>> {
+export async function fetchWithCache<T>(
+	url: string,
+	revalidate: number = 3600,
+	options: FetchOptions = {}
+): Promise<APIResponse<T>> {
 	return fetchAPI<T>(url, {
+		...options,
 		next: { revalidate },
 	});
 }
 
 /**
  * Helper for POST requests
+ * Automatically handles both StandardAPIResponse and direct response formats
  */
 export async function postAPI<T, B = unknown>(
 	url: string,
 	body: B,
-	options: RequestInit = {}
+	options: FetchOptions = {}
 ): Promise<APIResponse<T>> {
 	return fetchAPI<T>(url, {
 		method: "POST",
@@ -90,7 +154,7 @@ export async function postAPI<T, B = unknown>(
 export async function putAPI<T, B = unknown>(
 	url: string,
 	body: B,
-	options: RequestInit = {}
+	options: FetchOptions = {}
 ): Promise<APIResponse<T>> {
 	return fetchAPI<T>(url, {
 		method: "PUT",
@@ -102,7 +166,7 @@ export async function putAPI<T, B = unknown>(
 /**
  * Helper for DELETE requests
  */
-export async function deleteAPI<T>(url: string, options: RequestInit = {}): Promise<APIResponse<T>> {
+export async function deleteAPI<T>(url: string, options: FetchOptions = {}): Promise<APIResponse<T>> {
 	return fetchAPI<T>(url, {
 		method: "DELETE",
 		...options,

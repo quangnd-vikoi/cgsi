@@ -4,19 +4,30 @@
  */
 export const notificationEndpoints = {
 	/**
-	 * Get List of User Notifications
-	 * Returns list of active notifications with read/unread status
-	 * Each notification includes: title, body, published date/time, update date
-	 * Date format: DD-MMM-YYYY • HH:mm timezone (e.g., 24-Aug-2025, 06:30 SGT)
-	 * Returns NULL if no new notifications
+	 * Get List of User Notifications (Paginated)
+	 * @param pageSize - Number of notifications per page (default: 10, minimum: 1)
+	 * @param pageIndex - Page index, 0-based (default: 0, minimum: 0)
+	 * Returns: { total: number, notifications: UserNotificationData[] }
+	 * Requires: Authentication (Bearer token)
 	 */
-	notificationList: () => `/notification/list`,
+	notificationList: (pageSize = 10, pageIndex = 0) =>
+		`/notification/api/v1/list?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+
+	/**
+	 * Get Latest User Notifications
+	 * Retrieves notifications from the past X minutes for polling/real-time updates
+	 * @param pastMins - Number of past minutes to retrieve (default: 5, minimum: 1)
+	 * Returns: UserNotificationLatestResponse[]
+	 * Requires: Authentication (Bearer token)
+	 */
+	notificationLatest: (pastMins = 5) => `/notification/api/v1/latest?pastMins=${pastMins}`,
 
 	/**
 	 * Mark User Notifications as Read
-	 * Accepts notification IDs and updates status from unread to read
-	 * Updates status to 'R'
-	 * @returns Success/failure response
+	 * POST request with body: { ids: string[] }
+	 * Updates notification status from "U" (unread) to "R" (read)
+	 * @returns { isSuccess: boolean }
+	 * Requires: Authentication (Bearer token)
 	 */
-	notificationMarkAsRead: () => `/markAsRead`,
+	notificationMarkAsRead: () => `/notification/api/v1/markAsRead`,
 } as const;

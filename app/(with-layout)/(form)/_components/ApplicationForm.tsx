@@ -305,7 +305,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								disabled={quantity === "" || currentQuantity <= FORM_CONFIG.minQuantity}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-blue-50 hover:text-enhanced-blue disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Minus className="w-4 h-4" />
 							</Button>
@@ -324,7 +324,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-blue-50 hover:text-enhanced-blue h-5 w-5"
+								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 h-5 w-5"
 							>
 								<Plus className="w-4 h-4" />
 							</Button>

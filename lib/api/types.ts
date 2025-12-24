@@ -6,6 +6,10 @@ export interface StandardAPIResponse<T> {
 	message?: string;
 }
 
+export type DirectAPIResponse<T> = T & {
+	error?: string;
+};
+
 export interface APIResponse<T> {
 	success: boolean;
 	data: T | null;
