@@ -1,8 +1,24 @@
 export interface INotification {
+	id: string; // Required for mark as read functionality
 	title: string;
 	description: string;
-	read: boolean;
-	time: string;
+	category: string; // Notification category for filtering/grouping
+	status: "R" | "U"; // "R" = Read, "U" = Unread
+	createdOn: string; // ISO 8601 date-time format
+}
+
+// API Response Types for Notifications
+export interface NotificationListResponse {
+	total: number;
+	notifications: INotification[];
+}
+
+export interface NotificationMarkAsReadRequest {
+	ids: string[]; // Array of notification IDs to mark as read (minItems: 1)
+}
+
+export interface NotificationMarkAsReadResponse {
+	isSuccess: boolean;
 }
 
 export interface IEventProps {

@@ -69,7 +69,7 @@ const Navigation = () => {
 
 				<Button
 					onClick={() => router.push(INTERNAL_ROUTES.MYAPPLICATION)}
-					className="h-fit md:h-8 border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-blue-500/10 font-medium transition-colors "
+					className="h-fit md:h-8 border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 font-medium transition-colors "
 				>
 					<Archive />
 					<p className="leading-4">My Applications</p>

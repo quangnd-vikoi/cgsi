@@ -21,6 +21,7 @@ import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Alert from "@/components/Alert";
+import { useFormErrors } from "@/hooks/form/useFormErrors";
 
 const SELECT_FIELDS = [
 	{
@@ -49,20 +50,43 @@ const RecurringForm = () => {
 	// Align state naming and structure with ApplicationForm
 	const [formValues, setFormValues] = useState({ duration: "", amount: "" });
 	const [agreed, setAgreed] = useState(false);
-	const [showValidationErrors, setShowValidationErrors] = useState(false);
-	const [showTermsError, setShowTermsError] = useState(false);
+	const {
+		hasError,
+		setError,
+		clearError,
+		clearAllErrors,
+		showValidationErrors,
+		setShowValidationErrors,
+	} = useFormErrors();
 	const [open, setOpen] = useState(false);
 	const [recurringDonations, setRecurringDonations] = useState<{ duration: string; amount: string }[]>([]);
 
 	const updateFormValue = (field: string, value: string) => {
 		setFormValues((prev) => ({ ...prev, [field]: value }));
+		if (value) clearError(field);
 	};
 
 	const handleSetup = () => {
-		const hasMissing = !formValues.duration || !formValues.amount;
-		if (hasMissing || !agreed) {
-			setShowValidationErrors(true);
-			if (!agreed) setShowTermsError(true);
+		setShowValidationErrors(true);
+
+		let hasValidationError = false;
+
+		if (!formValues.duration) {
+			setError("duration", "Field cannot be empty");
+			hasValidationError = true;
+		}
+
+		if (!formValues.amount) {
+			setError("amount", "Field cannot be empty");
+			hasValidationError = true;
+		}
+
+		if (!agreed) {
+			setError("terms", "Please acknowledge the Terms & Conditions to proceed");
+			hasValidationError = true;
+		}
+
+		if (hasValidationError) {
 			return;
 		}
 
@@ -78,7 +102,7 @@ const RecurringForm = () => {
 			setFormValues({ duration: "", amount: "" });
 			setAgreed(false);
 			setShowValidationErrors(false);
-			setShowTermsError(false);
+			clearAllErrors();
 		} else {
 			toast.error("Error Encountered", "Something went wrong. Please try again later.");
 		}
@@ -133,8 +157,7 @@ const RecurringForm = () => {
 							{/* Select  */}
 
 							{SELECT_FIELDS.map((field) => {
-								const hasError =
-									showValidationErrors && !formValues[field.id as keyof typeof formValues];
+								const fieldHasError = showValidationErrors && hasError(field.id);
 								return (
 									<div key={field.id} className="pad-x mb-6">
 										<Label
@@ -151,7 +174,7 @@ const RecurringForm = () => {
 												id={field.id}
 												className={cn(
 													"w-full",
-													hasError && "border-status-error bg-background-error"
+													fieldHasError && "border-status-error bg-background-error"
 												)}
 											>
 												<SelectValue placeholder={field.placeholder} />
@@ -166,7 +189,7 @@ const RecurringForm = () => {
 												))}
 											</SelectContent>
 										</Select>
-										{hasError && (
+										{fieldHasError && (
 											<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 												<CustomCircleAlert size={15} />
 												Field cannot be empty
@@ -181,10 +204,10 @@ const RecurringForm = () => {
 									<Checkbox
 										id="terms"
 										checked={agreed}
-										error={showTermsError}
+										error={showValidationErrors && hasError("terms")}
 										onCheckedChange={(checked) => {
 											setAgreed(checked as boolean);
-											if (checked) setShowTermsError(false);
+											if (checked) clearError("terms");
 										}}
 										className="mt-0.5 shrink-0"
 									/>
@@ -207,7 +230,7 @@ const RecurringForm = () => {
 									</Label>
 								</div>
 
-								{showTermsError && (
+								{showValidationErrors && hasError("terms") && (
 									<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 										<CustomCircleAlert />
 										Please acknowledge the Terms & Conditions to proceed
@@ -256,7 +279,9 @@ const RecurringForm = () => {
 											</div>
 										}
 										title="Cancel Recurring Donation?"
-										description="Are you sure you wish to Cancel your recurring donation? This action will permanently stop all future contributions associated with this donation."
+										description={<p>
+											Are you sure you wish to Cancel your recurring donation? This action will permanently stop all future contributions associated with this donation.
+										</p>}
 										actionText="Cancel"
 										cancelText="Close"
 										onAction={() => handleCancelDonations(index)}

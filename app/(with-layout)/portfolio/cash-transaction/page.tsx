@@ -113,7 +113,7 @@ export default function CashTransactionPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border border-enhanced-blue text-sm font-normal text-enhanced-blue rounded hover:bg-enhanced-blue/10"
+                                className="border border-enhanced-blue text-sm font-normal text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
                             >
                                 <FileDown className="size-4" />
                                 Export to Excel

@@ -6,8 +6,8 @@ import { Calendar } from "lucide-react";
 import { IInsightProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { useEffect, useState } from "react";
-import { fetchAPI } from "@/lib/fetchWrapper";
-import { ENDPOINTS } from "@/lib/apiConfig";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 
 // API Response Interface
 interface InsightAPIItem {

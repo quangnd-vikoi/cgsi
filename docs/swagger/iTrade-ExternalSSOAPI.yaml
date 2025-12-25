@@ -1,0 +1,311 @@
+openapi: 3.1.0
+info:
+  title: External SSO APIs
+  description: |-
+    Link to NTP,
+    Link to Research Portal,
+    Link to eStatement,
+    Link to Corporate Action
+    Link to Stock Filter
+    Link to EW8
+    Link to ECRS
+  version: 0.0.1
+servers:
+  - url: https://stgitrade.cgsi.com.sg/portal
+    description: "[uat]"
+  - url: https://sititrade.cgsi.com.sg/portal
+    description: "[dev]"
+  - url: http://localhost:8080
+    description: "[local]"
+paths:
+  /ntp:
+    get:
+      summary: Get SSO parameter for NTP
+      operationId: getSSOExternalNTP
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NtpSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /research:
+    get:
+      summary: Get SSO parameter for Research
+      operationId: getSSOExternalResearch
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /stockFilter:
+    get:
+      summary: Get SSO parameter for Stock Filter
+      operationId: getSSOExternalStockFilter
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockFilterSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /corporateAction:
+    get:
+      summary: Get SSO parameter for Corporate Action
+      operationId: getSSOExternalCorpAction
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CorpActionSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /estatement:
+    get:
+      summary: Get SSO parameter for eStatement (iTrade TruContent)
+      operationId: getSSOExternaleStatement
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EStatementSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /iscreener:
+    get:
+      summary: Get SSO parameter for iScreener (never implement in iTrade Portal)
+      operationId: getSSOExternaliScreener
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IScreenerSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /ew8:
+    get:
+      summary: Get SSO parameter for EW8
+      operationId: getSSOExternalEW8
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EW8SSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+  /ecrs:
+    get:
+      summary: Get SSO parameter for ECRS
+      operationId: getSSOExternalEWRS
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ECRSSSOResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bearerAuth: []
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    NtpSSOResponse:
+      type: object
+      description: NTP SSO Response
+      properties:
+        postUrl:
+          type: string
+          example: 'https://sg.itradecgsi.com/gcCGSIPlus/ext/cliChkLoginSSO.jsp'
+        act:
+          type: string
+          example: '1'
+        togaToken:
+          type: string
+          example: 'ZkrwI46hUE3xDuKkxhvUdLzCLYoqzc1QgLlrI9zGsvU='
+        assertion:
+          type: string
+          example: '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'
+        transactionId:
+          type: string
+          example: '74286ac2a84a4c50'
+        page:
+          type: string
+          example: 'P'
+    ResearchSSOResponse:
+      type: object
+      description: Research SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://research.cgsi.com/ResearchSSOLogin.aspx?code=c9d37f4e04b240170d516e42491a9fff4b0f24902668b0dd2c4944fd80748189&timestamp=1758852523&state=&sign=46A716F0345E72D70BC2287AF32E4D82'
+    StockFilterSSOResponse:
+      type: object
+      description: Research SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://www2.trkd-hs.com/cgsi/screener?id=gJMDbz2FKSc6Q6g8RdEqXQ%3D%3D&lang=en&token=c2N9kKKrKhDrinGZCf6TK%2FVQRx1Fa18h'
+    CorpActionSSOResponse:
+      type: object
+      description: NTP SSO Response
+      properties:
+        postUrl:
+          type: string
+          example: 'https://xsprisa-asa01-xsp.fiscloudservices.com/CGS_eTRANPlus/SAML/AssertionConsumerService.aspx'
+        samlResponse:
+          type: string
+          example: 'CjxzYW1scDI6UmVzcG9uc2UgSUQ9Il81ZGUwZmIxNC04MzJlLTQwNzktYjUwNi02Mjc2YzhjYWQ4ZmQiIElzc3VlSW5zdGFudD0iMjAyNS0wOS0yNlQwMjoyMDo1MS45NTlaIiBWZXJzaW9uPSIyLjAiIHhtbG5zOnNhbWxwMj0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnByb3RvY29sIj48c2FtbDI6SXNzdWVyIHhtbG5zOnNhbWwyPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIj5odHRwczovL2l0cmFkZS5jZ3NpLmNvbS5zZy9hcHAvZXRyYW4uc3NvLno8L3NhbWwyOklzc3Vlcj48ZHM6U2lnbmF0dXJlIHhtbG5zOmRzPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjIj48ZHM6U2lnbmVkSW5mbz48ZHM6Q2Fub25pY2FsaXphdGlvbk1ldGhvZCBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMTAveG1sLWV4Yy1jMTRuIyIvPjxkczpTaWduYXR1cmVNZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjcnNhLXNoYTEiLz48ZHM6UmVmZXJlbmNlIFVSST0iI181ZGUwZmIxNC04MzJlLTQwNzktYjUwNi02Mjc2YzhjYWQ4ZmQiPjxkczpUcmFuc2Zvcm1zPjxkczpUcmFuc2Zvcm0gQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjZW52ZWxvcGVkLXNpZ25hdHVyZSIvPjxkczpUcmFuc2Zvcm0gQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz48L2RzOlRyYW5zZm9ybXM+PGRzOkRpZ2VzdE1ldGhvZCBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvMDkveG1sZHNpZyNzaGExIi8+PGRzOkRpZ2VzdFZhbHVlPnZJOGh6bUdKT1VFSDNCQS9NcEJ6OGJCK2FsYz08L2RzOkRpZ2VzdFZhbHVlPjwvZHM6UmVmZXJlbmNlPjwvZHM6U2lnbmVkSW5mbz48ZHM6U2lnbmF0dXJlVmFsdWU+a28xQmpQelVLOE9UN2Via0w0cnJpai9EWk9Sb0FBbXdmeTBXcUdOcnErSXhvZFk3ZmNuclFwVmJpSWpHc09QWlRUdVcxbmxuaDZMZUtJdjlCU2RYQ0s1VWp1NmpnWm9qVVFNYmw4dklSYlBuV3lYeVl5aEpHQ3lhaXBIbkttbVdnd1lpcHVvWENBTWVxaXJUSmlnd2hxY1NJVStUZjkwR2xwMzNWUTJYREpQRThmbEcwcGxFVTN2TmFJL3dhN0ZTOGpwbzRmMFpwTmZOTzZxanpRYmNxaUtlUHEzUW8zMXpaSE5RNzU5Qkp2OEYxUWlWeWxrL2MzalpBZ21kV0dSb2p0eGFlZUw5OXBxY1diK0Vla1crSVZ5ejFkNlBlYi9uNEZpZW9pZHB0eHZ5Um1mL3k2Tndqajcxa3R5OHE3eFdRaU53Vlc1ZkdEOGFkRHdvQmlOd0JnPT08L2RzOlNpZ25hdHVyZVZhbHVlPjxkczpLZXlJbmZvPjxkczpYNTA5RGF0YT48ZHM6WDUwOVN1YmplY3ROYW1lPjEuMi44NDAuMTEzNTQ5LjEuOS4xPSMxNjE4NjY3NTZjNzQ2ZjZlMmU3NDZmNmU2NzQwNjM2NzczMmQ2MzY5NmQ2MjJlNjM2ZjZkLENOPWV0cmFuc3NvLnd3dy5pdHJhZGVjaW1iLmNvbS5zZyxPVT1pVHJhZGUsTz1DR1MtQ0lNQiBTZWN1cml0aWVzIFB0ZSBMdGQsTD1TaW5nYXBvcmUsU1Q9U2luZ2Fwb3JlLEM9U0c8L2RzOlg1MDlTdWJqZWN0TmFtZT48ZHM6WDUwOUlzc3VlclNlcmlhbD48ZHM6WDUwOUlzc3Vlck5hbWU+MS4yLjg0MC4xMTM1NDkuMS45LjE9IzE2MTg2Njc1NmM3NDZmNmUyZTc0NmY2ZTY3NDA2MzY3NzMyZDYzNjk2ZDYyMmU2MzZmNmQsQ049ZXRyYW5zc28ud3d3Lml0cmFkZWNpbWIuY29tLnNnLE9VPWlUcmFkZSxPPUNHUy1DSU1CIFNlY3VyaXRpZXMgUHRlIEx0ZCxMPVNpbmdhcG9yZSxTVD1TaW5nYXBvcmUsQz1TRzwvZHM6WDUwOUlzc3Vlck5hbWU+PGRzOlg1MDlTZXJpYWxOdW1iZXI+NzE3OTA2MTU3Nzc5MTY2MTI5MDc0NDg1NTk1MjUxNTM3MDgyNzAwMzc0NDkwNzQ8L2RzOlg1MDlTZXJpYWxOdW1iZXI+PC9kczpYNTA5SXNzdWVyU2VyaWFsPjxkczpYNTA5Q2VydGlmaWNhdGU+TUlJRVh6Q0NBMGVnQXdJQkFnSVVESk16MmpqMDFmNEoxa3BaWmxNKzE1SVRPWEl3RFFZSktvWklodmNOQVFFTEJRQXdnYjR4Q3pBSgpCZ05WQkFZVEFsTkhNUkl3RUFZRFZRUUlEQWxUYVc1bllYQnZjbVV4RWpBUUJnTlZCQWNNQ1ZOcGJtZGhjRzl5WlRFa01DSUdBMVVFCkNnd2JRMGRUTFVOSlRVSWdVMlZqZFhKcGRHbGxjeUJRZEdVZ1RIUmtNUTh3RFFZRFZRUUxEQVpwVkhKaFpHVXhKekFsQmdOVkJBTU0KSG1WMGNtRnVjM052TG5kM2R5NXBkSEpoWkdWamFXMWlMbU52YlM1elp6RW5NQ1VHQ1NxR1NJYjNEUUVKQVJZWVpuVnNkRzl1TG5SdgpibWRBWTJkekxXTnBiV0l1WTI5dE1CNFhEVEl5TURjeU1qQXhNakUwTkZvWERUSTBNRGN5TVRBeE1qRTBORm93Z2I0eEN6QUpCZ05WCkJBWVRBbE5ITVJJd0VBWURWUVFJREFsVGFXNW5ZWEJ2Y21VeEVqQVFCZ05WQkFjTUNWTnBibWRoY0c5eVpURWtNQ0lHQTFVRUNnd2IKUTBkVExVTkpUVUlnVTJWamRYSnBkR2xsY3lCUWRHVWdUSFJrTVE4d0RRWURWUVFMREFacFZISmhaR1V4SnpBbEJnTlZCQU1NSG1WMApjbUZ1YzNOdkxuZDNkeTVwZEhKaFpHVmphVzFpTG1OdmJTNXpaekVuTUNVR0NTcUdTSWIzRFFFSkFSWVlablZzZEc5dUxuUnZibWRBClkyZHpMV05wYldJdVkyOXRNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXZ3WS82V1F5Zm53Qzkya08KendNbVNzY0Y1S0MyZGJjNjZHVGpiTDFoN0NHcHVEUFNrVkRGYVkrazQ0YXVGQlJvWW13MU93NHN2ZG9RamMxMFZZUTBFSDY2TU9iYgpCODRPSWUvYmZqb21oR2pOeHJjcXFBeVlXbnl1aVNnSmUxZjExN0VBUUVLc1NMY3ZWejRjL3BQT2lXR202eEtzeEt2Z3lOa1l1dE84Cm9uL1B5Z0hodkhIeC9MY1BKRzhNSml1REtEa1duajVzbGJ5V0thYmJCMlpRUlVKYkdMZHhPZlJONzRpUk9CcUNHNmNBUEFZWjZ6OWQKc0w1UnBlenFJYXUzaXVzam51dHRzSXdHOHM5K0V1SGlWUFNhd1hLQXBHTU01N0RXYXNzMUpJcElVejBFZUZybXd3WThNNEYxMkJUTQo2U1h5WnVSNkNnY2gzd1A5cUtadnJRSURBUUFCbzFNd1VUQWRCZ05WSFE0RUZnUVVEL1ozSk1LQ3pSYnJ6MU03dS9NY3lQeDZjTzh3Ckh3WURWUjBqQkJnd0ZvQVVEL1ozSk1LQ3pSYnJ6MU03dS9NY3lQeDZjTzh3RHdZRFZSMFRBUUgvQkFVd0F3RUIvekFOQmdrcWhraUcKOXcwQkFRc0ZBQU9DQVFFQVMxVEJoMmg5eDZHZ0NiQlZwSjRDNDcxNXlDV3hiTWVNb0cyK01vYzlDUU1TVG4xdzdSNmY1d1VlL3NXQwpKT3NnMTVSU1d6dWlkZS9KeEppTDhock1uaVZFYnd6ajNHeTFMU3pGYzdtWWZNb0VTeGhXcjRLTmFURFlNMmk0aU5oUXZPSFVDb3M2ClViUVBEdGpGQ1RCbzFsK2hXY1laZTJUVTIvVUpoZWlmWGc2NGdMNStWcno5R3V1UTlMQWxJWEFleWJjdHI4VnhOTXJ3NzV5NlFQcGIKYUFqVmNhbDAzT3BGRVJveGNzd0lBZTQzTmJNYk56Nko1TFExZGhUMWNQMWM4ZXNoWW9VcTk3ejhyUkprKzdLRnZZMjJQc3lRcWY2SApRKzFMRTVESHFpRzZNd2lvRzQ3K3pXOTVsQlY2M20zVi9Va09HT054TzkzQy9MSW5LSHk4K1E9PTwvZHM6WDUwOUNlcnRpZmljYXRlPjwvZHM6WDUwOURhdGE+PC9kczpLZXlJbmZvPjwvZHM6U2lnbmF0dXJlPjxzYW1scDI6U3RhdHVzPjxzYW1scDI6U3RhdHVzQ29kZSBWYWx1ZT0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOnN0YXR1czpTdWNjZXNzIi8+PC9zYW1scDI6U3RhdHVzPjxzYW1sMjpFbmNyeXB0ZWRBc3NlcnRpb24geG1sbnM6c2FtbDI9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphc3NlcnRpb24iPjx4ZW5jOkVuY3J5cHRlZERhdGEgSWQ9Il9mNWVkZWZmNzVkMzdkYmFmMDdkNjA5YjgwZGVlMGRhNiIgVHlwZT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjRWxlbWVudCIgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIj48eGVuYzpFbmNyeXB0aW9uTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjYWVzMjU2LWNiYyIgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIi8+PGRzOktleUluZm8geG1sbnM6ZHM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvMDkveG1sZHNpZyMiPjx4ZW5jOkVuY3J5cHRlZEtleSBJZD0iX2ZjMDc3NTY4MGY4YTRlMTlhYTk1MWY0Mjk5OTMyODQwIiB4bWxuczp4ZW5jPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGVuYyMiPjx4ZW5jOkVuY3J5cHRpb25NZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGVuYyNyc2EtMV81IiB4bWxuczp4ZW5jPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGVuYyMiLz48ZHM6S2V5SW5mbz48ZHM6WDUwOURhdGE+PGRzOlg1MDlDZXJ0aWZpY2F0ZT5NSUlDeXpDQ0FiT2dBd0lCQWdJRVFiSytDVEFOQmdrcWhraUc5dzBCQVFzRkFEQVdNUlF3RWdZRFZRUURFd3QzZDNjdWFXUndMbU52CmJUQWVGdzB4TmpBeE1qVXhOekEyTWpsYUZ3MHlOakF4TWpJeE56QTJNamxhTUJZeEZEQVNCZ05WQkFNVEMzZDNkeTVwWkhBdVkyOXQKTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwdVA1YVlQREI4NjcyMlN6alpiMVhoNjRRZFZJYTJTSApudytZOUwzU2RQSG4wYlhvM0U5d28wK3VhSW1kT3JCZEhxR0tqRklkUXRpZ0xpYVRrV0pBamZITGRMZnk1ZVBwRWhlUFJRVUhmYjlVCnhIUVZSb1QvN05EelBlKzNTVGlNY0JvbVRTMkJSUzNac0l4NExZSzBDbGExa2psWGpRWm9TN1l5ZEVvVWhtVmhtTExUN1d5YnRubDIKdThhZTVUV3hsK2xidVd5UXB1ZmYyN1Jid1RaMGlPdVg3cjZ2OCttSTJnWXZoN1RMKzNlS3lkaEgwZlVrUzY4OTNIUmR3SjA4b2xYago1RTVVemZYejJvL2NDQjNZcFRpc3NIQ3BQYnV6UWs1YU11cDFSdTRNRldKeXQ5SWRpK3FKT3hBb09Ob3lHVzd4M2U2aDNoWU9CNHJzCkt6Tmoyd0lEQVFBQm95RXdIekFkQmdOVkhRNEVGZ1FVNnNiaXNHYzQydlFHeVZweU1pZkxJb2IzcHhVd0RRWUpLb1pJaHZjTkFRRUwKQlFBRGdnRUJBSGROVTkxZS9JcXBQN0xnY2hWTnExbHU3UHNIWlU4K1lycmNJL1JFeUdjVks5REpmTzA2Sm55b0l1Nkt5M0YyVmI2NgpuYWxlUGUrbElWMmV0TW5rN2g2dGJUeFZadXBnWjBORGFIaHBYV0JKZzE2Y0hqT21hWFVSYi9ITlZsT1VwTFNsWERXdjN5V3BuYnBnClphRVQrVGg0ZmxiWDM4ZC9SaHdJQ2JlUUFCTkZHSDZzclpsbzZqTk1lMTlJMUJJQjNta05ONWQwVjdCNFVLaHBBMXl4Q2FmaURHUHoKYzBBN2NzdzlCK3lka20wQlFEMDlKbGZMQms2S3FWZlN3RnVkMnUxcGpqZ3RrRDR5YWJ3d2lSMW1Cak9tUVBscGVNbnV4cUNIUFpRWAo5d2J3ZGhDbWRtNVZsdkJ5bC9KRWVVeWRjUFVmUUpLY2QzSElHY1VFVTZaS2FLdz08L2RzOlg1MDlDZXJ0aWZpY2F0ZT48L2RzOlg1MDlEYXRhPjwvZHM6S2V5SW5mbz48eGVuYzpDaXBoZXJEYXRhIHhtbG5zOnhlbmM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMDQveG1sZW5jIyI+PHhlbmM6Q2lwaGVyVmFsdWUgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIj5GdUNHYURRTDBpanQrQzVwR056Rzk3Z0Y3Y0krV25IRXlabk5KY2hLcGF1Skd1Tjd4Y2hPdXFxUDk5L3N4enQ0dWw5eDdSaW83MWo3QXI0U1QzSUJKZTNCV1h4b2dSekhCb1hjc1Ztd3UvditEaDU1Yk9sOSs4Q0hYVlFtRUtZbkN2WC8veU9CZ1pxa2RjTmpjaWFUQWg2WkZGTHBvYW5WTXZBSFpaK0RTUUpDaTBQMzd0NEphc2NjOWk2VFpQTFpYQ201b3RsSC8yVzFHYmFzeTQ2WVhjcWF1NVVOWUROTVdDbHBnUUI3TGFMNnlPL2hlc25HbEVVM0U3b00wOWVwd3dKKzJBeTArQ2hRYnhEMXFweW03eTNqY080cTdCR0UxcmNUVlJUVnY0VTh5OTdsNVozUVlRYjF4WWtORFEwRUJjbElLK2JmaFlCSm92YVIzQlVUbXc9PTwveGVuYzpDaXBoZXJWYWx1ZT48L3hlbmM6Q2lwaGVyRGF0YT48L3hlbmM6RW5jcnlwdGVkS2V5PjwvZHM6S2V5SW5mbz48eGVuYzpDaXBoZXJEYXRhIHhtbG5zOnhlbmM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMDQveG1sZW5jIyI+PHhlbmM6Q2lwaGVyVmFsdWUgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIj42QkVBV2J4Z3Y1TWttdTBnOW8zRzFkenNjNmtTNnkrc3hHM0M2TTY4WUV3NkI3bWFRL3pTd0hJb0VjcTk2a09LSDlWL3VuQjBzR1pwcGMyQktWSnJWdndsMDZ2RXhEWnlJMkFtK3RhMDdnYTFmb2NDUVo1YWhOUzRUUDYwS2tUVFBKNzlKRkhHbEFvRFB5ekwxcUtwaGVLVVBDQmdGWWtHRldPa0hFSE1RbHlDTy9MK0Q3SXlyOERJbHlxZTYrdUpIWU1JSnk1ZXQ4RzlYR0h0WFR4aXN3ZHowVlE3K2h4dG8xYlFFenVwc251MWs0c2hpYTgzN1lIOHdjWURMc1NBeHIxUXFDT1ZKYVd2ZzlJNnhEVDhpTUVVNkZ3MkRncWZWakZ6d3JubkxWZmFERnF4NFVFS1BBL0R0dTZTbzRUZWJFaGVHU0xGQjFBUFlFMGZYWVdObGQ2eXNoY1Y1ZFFsS0JXU3VJWTB3ZDJCd1F6N1pRQndudnhIam83S1IxOHNKVi9QdytGU2VwcDJPNXB3WjBodjZlVVlockpjSm9qMjUxVGIwRUNyeE14WGwyK2h3ODdzNlNSSUdhZFJiNHBYZjI0Sjliam93OExPYlZBU29QZk5pNi9OR0I4d09KQm9qdi9sTHlGRUhsclZjbHprcHBMZnRSVXAwVGxZVWhQNmlOVjVDNTZmc2ZldTZVVThKVDNUMysvcFhESTBoUDBTRWZaU1E0ME9zWWp3MzQ3NHBIZStlWEE0RzRYZXpQbDRZdk1ESm5xeGNiWE5uQ2Rzc2RSVld2c052QVRWbWhrelpyOVJwblR6amVHQWRGMElzbVBGekREY2NRZVR5akpQQ21jUlgycjlXTTArdXJna3J3YXR3cEVXT1c1cGtrZG92Wk54TlpvMjg4bHdmSDdHL1FGck01QU55ZzB1RXZob3dpcGs4U0FBUWYwM2tFdGpheSsvNHRmMUZiUjRVUGRrbzloekk4dWhRRXhiYkEzTlBSUUdlWWlPdDUxeXhlczdKUEtlN3ZiZHVuZm56MTNsWHJOUm5WMEg4cWNBd3Rqd3ZhRmVPVklZZEtYRFpZeExSMkNYMlZhRVplRFR5NkU3dUkwWUV4d1FoZFlWazk2Ri9RaS8wWHVmQU5RWFBWYnNFUHlqekRwNHQ0d0Flb1VxalprNGJOT09TRmU2YURlYTVoTTBtU1FGL2VjNTZubkRiR2RtNmZIRUsvTDlJZjFiY1JwSXVmOG56UUlmcS84T0FqSkhKN0hUTnRjVVJFZUVWKzR3ZEpSZlVzTUI1MHJwUVNSUkFYcnV6Z1oyTCtHZVZqUGl5N2NMYTR6d2x2MDVqQmVSTW9VRHVuOVFacWlraVpxZjBaRHhrYU93S3dyQTF5S09zd3dsci9UZDd1RmRhWk95WjNMNWpZcC9UK1hSL2V0NVRXQkJLTFRlN09pLzBFRHV6Rzl0UU00b0ptWDVMOEt0OEdzL2hObElOSEsrWmV0eWs4V1phUFoxR092aVpGU05Rbi9qSUZOQkdVOTFsMkFGb0loSUFhS1Z3Q1p6WE9lUllyZTlhTlMwQ2V0THdFN0RMdU5DSFZVVTFCb2xmNHBuaU0xVXpsYkhLMXFSNXhmRjR6Q2tOYjlGSHRmaDh3cGkraUZBbUFNUFdNUWlKUjlmaVJiWjJMbmZkbkx0MEJSZmI2KzcvbE1MSllRd2c4MzZ1SWEyTEIvcUpFbmlTS0x4TnhaSnRoUm96ZU44THJMS2pVMEg2ajB0U09PY2xlYWJsT3hiVmt1ek1oSmh5c1FjZ3o3T0xONzZ6TVdyV3Zwc3VPbmVHcnNZbUhGZkhnRCt0SGtBQi9jPTwveGVuYzpDaXBoZXJWYWx1ZT48L3hlbmM6Q2lwaGVyRGF0YT48L3hlbmM6RW5jcnlwdGVkRGF0YT48L3NhbWwyOkVuY3J5cHRlZEFzc2VydGlvbj48L3NhbWxwMjpSZXNwb25zZT4='
+    EStatementSSOResponse:
+      type: object
+      description: E-Statement SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://www.itradecimb.com.sg/app/mobile.estatement.z?code=9a4ca4aa3211b9ccb5ec76ddcee8ffc1d4967e12fbd0c4a5aac16b24e0117dd7&client_id=n2n&timestamp=1517984704&signature=117cc44b415e81885ba3e98cafba2fa3'
+    IScreenerSSOResponse:
+      type: object
+      description: iScreener SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://ken.nifi-is1.com/cgsi/GlobalIndices.html?id=C64892&lang=en&token=nG0XCTn2jGy3FcokGceVQchyPEBUgVhmm1eq3GGPwMw%3D'
+    EW8SSOResponse:
+      type: object
+      description: iScreener SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://ew8.cgsi.com/EW8/Authentication/CIMBSSOLogin?code=79e00cad9c9c2e169869ab9c85fc2df31ff8dc15992dbb6600e25d86a7109049&timestamp=1758864475&state=&sign=AA29B6FCE620E5DBDB44E62BFA0E7993'
+    ECRSSSOResponse:
+      type: object
+      description: iScreener SSO Response
+      properties:
+        redirectUrl:
+          type: string
+          example: 'https://ew8.cgsi.com/ECRS/Authentication/CIMBSSOLogin?code=79e00cad9c9c2e169869ab9c85fc2df31ff8dc15992dbb6600e25d86a7109049&timestamp=1758864475&state=&sign=AA29B6FCE620E5DBDB44E62BFA0E7993'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

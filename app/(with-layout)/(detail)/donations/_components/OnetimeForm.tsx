@@ -8,58 +8,44 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/toaster";
 import { CGSI } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { useDonationForm } from "../_hooks/useDonationForm";
 import PaynowIcon from "@/public/icons/discover/Paynow.svg";
 import { Loader2, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 const OneTimeForm = () => {
-	const [amount, setAmount] = useState<number>();
 	const [inputValue, setInputValue] = useState<string>("");
-	const [paymentMethod, setPaymentMethod] = useState<"now" | "trust" | "">("");
-	const [agreed, setAgreed] = useState(false);
-	const [showAmountError, setShowAmountError] = useState(false);
-	const [showPaymentError, setShowPaymentError] = useState(false);
-	const [showTermsError, setShowTermsError] = useState(false);
-	const [loading, setLoading] = useState<boolean>(false);
 
-	const handleDonate = () => {
-		let hasError = false;
-
-		if (!amount || amount < 1.0) {
-			setShowAmountError(true);
-			hasError = true;
-		}
-
-		if (!paymentMethod) {
-			setShowPaymentError(true);
-			hasError = true;
-		}
-
-		if (!agreed) {
-			setShowTermsError(true);
-			hasError = true;
-		}
-
-		if (!hasError) {
-			setLoading(true);
-			if (paymentMethod == "now")
+	const {
+		setAmount,
+		paymentMethod,
+		setPaymentMethod,
+		agreed,
+		setAgreed,
+		errors,
+		handleSubmit,
+		isSubmitting,
+	} = useDonationForm({
+		onSuccess: (values) => {
+			if (values.paymentMethod === "now") {
 				setTimeout(() => {
 					toast.success(
 						"Thank you!",
 						"Your donation will go a long way in uplifting lives. We truly appreciate it."
 					);
-
-					setLoading(false);
 				}, 2000);
-			else {
+			} else {
 				setTimeout(() => {
 					toast.error("Error Encountered", "Something went wrong. Please try again later.");
-
-					setLoading(false);
 				}, 2000);
 			}
-		}
+		},
+		minAmount: 1.0,
+	});
+
+	const handleDonate = () => {
+		handleSubmit();
 	};
 
 	return (
@@ -87,13 +73,12 @@ const OneTimeForm = () => {
 						value={inputValue}
 						type="text"
 						inputMode="decimal"
-						error={showAmountError}
+						error={errors.amount}
 						onChange={(e) => {
 							const value = e.target.value;
 							// Chỉ cho phép số và dấu chấm thập phân
 							if (value === "" || /^\d*\.?\d*$/.test(value)) {
 								setInputValue(value);
-								if (value) setShowAmountError(false);
 								// Parse và convert sang number với 2 chữ số thập phân khi có giá trị hợp lệ
 								if (value && !isNaN(parseFloat(value))) {
 									const numValue = parseFloat(value);
@@ -126,7 +111,6 @@ const OneTimeForm = () => {
 						value={paymentMethod}
 						onValueChange={(value) => {
 							setPaymentMethod(value as "now" | "trust");
-							if (value) setShowPaymentError(false);
 						}}
 						className="space-y-2 mt-1.5"
 					>
@@ -147,7 +131,7 @@ const OneTimeForm = () => {
 						</Label>
 					</RadioGroup>
 
-					{showPaymentError && (
+					{errors.paymentMethod && (
 						<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 							<CustomCircleAlert />
 							Please select a Payment Method
@@ -163,10 +147,9 @@ const OneTimeForm = () => {
 						<Checkbox
 							id="terms"
 							checked={agreed}
-							error={showTermsError}
+							error={errors.terms}
 							onCheckedChange={(checked) => {
 								setAgreed(checked as boolean);
-								if (checked) setShowTermsError(false);
 							}}
 							className="mt-0.5 shrink-0"
 						/>
@@ -189,7 +172,7 @@ const OneTimeForm = () => {
 						</Label>
 					</div>
 
-					{showTermsError && (
+					{errors.terms && (
 						<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 							<CustomCircleAlert />
 							Please acknowledge the Terms & Conditions to proceed
@@ -200,10 +183,10 @@ const OneTimeForm = () => {
 					<Button
 						className="w-full h-10 text-base font-normal"
 						onClick={handleDonate}
-						disabled={loading}
-						aria-busy={loading}
+						disabled={isSubmitting}
+						aria-busy={isSubmitting}
 					>
-						{loading ? (
+						{isSubmitting ? (
 							<>
 								<Loader2 className="animate-spin" />
 							</>
