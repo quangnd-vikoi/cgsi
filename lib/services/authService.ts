@@ -60,6 +60,7 @@ export const exchangeCode = async (code: string, redirectUri: string): Promise<v
 		redirectUri,
 	});
 
+	console.log(response)
 	// For token exchange, just check if we have a response with token data
 	if (!response.data) {
 		throw new Error("Failed to exchange code - no response data");

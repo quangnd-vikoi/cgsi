@@ -40,14 +40,12 @@ function HomeContent() {
 				}
 
 				// Exchange code for tokens
-				const redirectUri = `${window.location.origin}/portal`;
-				await authService.exchangeCode(code, redirectUri);
+				// Note: redirectUri must match the URI registered with SSO server
+				await authService.exchangeCode(code, "http://localhost:8080/authorize");
 
 				// Store token in cookie for middleware
 				document.cookie = `accessToken=${authService.getAccessToken()}; path=/; max-age=3600`;
 
-				// Clean up URL
-				router.replace("/portal");
 				setIsAuthenticating(false);
 			} catch (err) {
 				console.error("Auth error:", err);

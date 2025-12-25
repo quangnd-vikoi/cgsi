@@ -43,6 +43,16 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			headers,
 		});
 
+		// Handle empty responses (204 No Content, etc.)
+		if (res.status === 204 || res.headers.get("content-length") === "0") {
+			return {
+				success: true,
+				data: null,
+				statusCode: res.status,
+				error: null,
+			};
+		}
+
 		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();
 
 		// Check HTTP status
@@ -90,16 +100,17 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			// Direct response format (like auth endpoints)
 			const directJson = json as DirectAPIResponse<T>;
 
-			// If HTTP status is OK and no error field, consider it success
-			if (directJson.error) {
+			// If there's an explicit error field, it's an error
+			if ("error" in directJson && directJson.error) {
 				return {
 					success: false,
-					error: directJson.error,
+					error: directJson.error as string,
 					statusCode: res.status,
 					data: null,
 				};
 			}
 
+			// HTTP OK + no error field = success with direct data
 			return {
 				success: true,
 				data: json as T,
