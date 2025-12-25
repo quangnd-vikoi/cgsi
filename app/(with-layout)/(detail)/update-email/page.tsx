@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
 import Alert from "@/components/Alert";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
-import { useEffect } from "react";
 
 const InputStep = ({
 	newEmail,
@@ -69,28 +69,19 @@ const OTPStep = ({
 	setOtp: (value: string) => void;
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 }) => {
-	const [countdown, setCountdown] = useState(120); // 2 phút = 120s
+	const { countdown, formattedTime, isActive, reset } = useOTPCountdown({
+		initialSeconds: 120,
+	});
 
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
 	};
 
-	// Countdown
-	useEffect(() => {
-		if (countdown <= 0) return;
-
-		const timer = setInterval(() => {
-			setCountdown((prev) => prev - 1);
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, [countdown]);
-
-	const formatTime = (sec: number) => {
-		const m = Math.floor(sec / 60);
-		const s = sec % 60;
-		return `${m}:${s.toString().padStart(2, "0")}`;
+	const handleResendCode = () => {
+		reset();
+		// TODO: Implement actual resend OTP API call
+		toast.success("OTP Resent", "A new OTP code has been sent to your email.");
 	};
 
 	return (
@@ -127,10 +118,12 @@ const OTPStep = ({
 			)}
 
 			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
-				{countdown > 0 ? (
-					<>Resend in : {formatTime(countdown)}</>
+				{isActive ? (
+					<>Resend in : {formattedTime}</>
 				) : (
-					<span className="text-enhanced-blue cursor-pointer">Resend Code</span>
+					<span className="text-enhanced-blue cursor-pointer" onClick={handleResendCode}>
+						Resend Code
+					</span>
 				)}
 			</div>
 		</div>
@@ -219,7 +212,7 @@ const UpdateEmail = () => {
 						<Alert
 							trigger={<X />}
 							title="Exit Update Email Address?"
-							description="Any information previously entered will be discarded."
+							description={<p>Any information previously entered will be discarded.</p>}
 							actionText="Back To Form"
 							cancelText="Exit without Saving"
 							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}

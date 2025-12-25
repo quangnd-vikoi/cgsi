@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 type AlertProps = {
 	trigger?: React.ReactNode;
 	title?: string;
-	description?: string | React.ReactNode;
+	description?: React.ReactNode;
 	cancelText?: string;
 	actionText?: string;
 	onAction?: () => void;
@@ -29,7 +29,7 @@ type AlertProps = {
 const Alert: React.FC<AlertProps> = ({
 	trigger,
 	title = "Are you absolutely sure?",
-	description = "This action cannot be undone.",
+	description = <p>This action cannot be undone.</p>,
 	cancelText = "Cancel",
 	actionText = "Continue",
 	onAction,

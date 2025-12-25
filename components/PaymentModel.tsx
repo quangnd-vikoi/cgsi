@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PaynowIcon from "@/public/icons/discover/Paynow.svg";
 import Image from "./Image";

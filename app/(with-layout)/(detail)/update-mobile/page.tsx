@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
 import Alert from "@/components/Alert";
 import { getCountryCallingCode, Country as CountryCode } from "react-phone-number-input";
 import { INTERNAL_ROUTES } from "@/constants/routes";
@@ -13,7 +14,6 @@ import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import { MobileInputStep } from "./MobileInputStep";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
-import { useEffect } from "react";
 import en from "react-phone-number-input/locale/en.json";
 
 interface Country {
@@ -37,28 +37,19 @@ const OTPStep = ({
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	dialCode: string;
 }) => {
-	const [countdown, setCountdown] = useState(120); // 2 phút = 120s
+	const { formattedTime, isActive, reset } = useOTPCountdown({
+		initialSeconds: 120,
+	});
 
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
 	};
 
-	// Countdown
-	useEffect(() => {
-		if (countdown <= 0) return;
-
-		const timer = setInterval(() => {
-			setCountdown((prev) => prev - 1);
-		}, 1000);
-
-		return () => clearInterval(timer);
-	}, [countdown]);
-
-	const formatTime = (sec: number) => {
-		const m = Math.floor(sec / 60);
-		const s = sec % 60;
-		return `${m}:${s.toString().padStart(2, "0")}`;
+	const handleResendCode = () => {
+		reset();
+		// TODO: Implement actual resend OTP API call
+		toast.success("OTP Resent", "A new OTP code has been sent to your mobile number.");
 	};
 
 	return (
@@ -95,10 +86,12 @@ const OTPStep = ({
 			)}
 
 			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
-				{countdown > 0 ? (
-					<>Resend in : {formatTime(countdown)}</>
+				{isActive ? (
+					<>Resend in : {formattedTime}</>
 				) : (
-					<span className="text-enhanced-blue cursor-pointer">Resend Code</span>
+					<span className="text-enhanced-blue cursor-pointer" onClick={handleResendCode}>
+						Resend Code
+					</span>
 				)}
 			</div>
 		</div>
@@ -192,7 +185,7 @@ const UpdateMobile = () => {
 						<Alert
 							trigger={<X />}
 							title="Exit Update Mobile Number?"
-							description="Any information previously entered will be discarded."
+							description={<p>Any information previously entered will be discarded.</p>}
 							actionText="Back To Form"
 							cancelText="Exit without Saving"
 							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}

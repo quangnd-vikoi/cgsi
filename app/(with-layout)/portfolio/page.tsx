@@ -38,7 +38,7 @@ const DevelopmentBanner = () => {
 						trigger={
 							<Button
 								variant="ghost"
-								className="flex-1 md:flex-none p-0 h-auto font-normal text-enhanced-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent"
+								className="flex-1 md:flex-none p-0 h-auto font-normal text-enhanced-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent hover:text-enhanced-blue/75"
 							>
 								<Image src={"/icons/portfolio/dollar-sign.svg"} className="hidden md:block" alt="FX Rate" width={20} height={20} />
 								View FX Rate

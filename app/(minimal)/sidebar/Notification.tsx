@@ -1,4 +1,3 @@
-
 "use client";
 import { cn } from "@/lib/utils";
 import { Dot, MailOpen } from "lucide-react";
@@ -6,18 +5,38 @@ import { useEffect, useState } from "react";
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
-import { INotification } from "@/types";
+import {
+	INotification,
+	NotificationListResponse,
+	NotificationMarkAsReadRequest,
+	NotificationMarkAsReadResponse,
+} from "@/types";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
+import { fetchAPI, postAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 
-const tempNoti: INotification = {
-	title: "Why Investors Are Looking Beyond the United States in 2025",
-	description:
-		"Investors are increasingly shifting capital away from U.S. markets. The article explains how a weaker U.S. dollar, rising trade uncertainties, and more attractive valuations in global markets are driving",
-	read: true,
-	time: "24-Aug-2025, 06:30 SGT",
-};
+/**
+ * Format ISO 8601 date to display format
+ * @param isoDate - ISO 8601 date string
+ * @returns Formatted date string (e.g., "24-Aug-2025, 06:30 SGT")
+ */
+function formatDate(isoDate: string): string {
+	try {
+		const date = new Date(isoDate);
+		return date.toLocaleString("en-SG", {
+			day: "2-digit",
+			month: "short",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			timeZoneName: "short",
+		});
+	} catch (error) {
+		return isoDate; // Fallback to raw string if parsing fails
+	}
+}
 
 const NotiItem = ({ notification }: { notification: INotification }) => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
@@ -25,66 +44,169 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 	const handleNotiClick = () => {
 		setOpenSheet("detail_notification", { notification });
 	};
+
+	const isUnread = notification.status === "U";
+
 	return (
 		<div
 			className={cn(
 				"p-4 border-b border-stroke-secondary cursor-pointer",
-				notification.read && "bg-status-selected"
+				isUnread && "bg-status-selected"
 			)}
 			onClick={handleNotiClick}
 		>
 			<div className="flex">
-				{notification.read && (
+				{isUnread && (
 					<Dot className="text-status-error relative right-1 -mr-1.5" strokeWidth="5" color="#D92B2B" />
 				)}
-				<span className="text-sm font-semibold leading-5 ">{notification.title}</span>
+				<span className="text-sm font-semibold leading-5">{notification.title}</span>
 			</div>
 
 			<p className="line-clamp-3 text-typo-secondary text-xs mt-1.5 leading-4">
 				{notification.description}
 			</p>
 
-			<p className="text-typo-tertiary mt-4 text-xs">{notification.time}</p>
+			<p className="text-typo-tertiary mt-4 text-xs">{formatDate(notification.createdOn)}</p>
 		</div>
 	);
 };
 
 const Notification = () => {
-	const [listNoti, setListNoti] = useState<INotification[]>([
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-		{ ...tempNoti, read: true },
-		{ ...tempNoti, read: false },
-	]);
+	const [listNoti, setListNoti] = useState<INotification[]>([]);
+	const [total, setTotal] = useState(0);
+	const [pageIndex, setPageIndex] = useState(0);
+	const [loading, setLoading] = useState(false);
+	const [loadingMore, setLoadingMore] = useState(false);
 
-	const [hasUnread, setHasUnread] = useState(false);
+	const pageSize = 10;
+	const hasMore = (pageIndex + 1) * pageSize < total;
 
-	console.log("Has Unread", hasUnread);
-	useEffect(() => {
-		setHasUnread(listNoti.some((noti: INotification) => noti.read));
-	}, [listNoti]);
+	// Calculate unread count
+	const unreadCount = listNoti.filter((noti) => noti.status === "U").length;
+	const hasUnread = unreadCount > 0;
 
-	const handleMarkAllRead = () => {
-		setListNoti((prev) =>
-			prev.map((noti: INotification) => ({
-				...noti,
-				read: false,
-			}))
+	// Fetch notifications from API
+	const fetchNotifications = async (currentPageIndex: number, append: boolean = false) => {
+		if (append) {
+			setLoadingMore(true);
+		} else {
+			setLoading(true);
+		}
+
+		const response = await fetchAPI<NotificationListResponse>(
+			ENDPOINTS.notificationList(pageSize, currentPageIndex),
+			{ useAuth: true } // Requires authentication
 		);
-		toast.success("All Caught Up", "All messages have been marked as read.");
+
+		if (response.success && response.data) {
+			if (append) {
+				// Append to existing list (pagination)
+				setListNoti((prev) => [...prev, ...response.data.notifications]);
+			} else {
+				// Replace list (initial load)
+				setListNoti(response.data.notifications);
+			}
+
+			setTotal(response.data.total);
+		} else {
+			console.error("Failed to fetch notifications:", response.error);
+			toast.error("Error", response.error || "Failed to load notifications");
+		}
+
+		if (append) {
+			setLoadingMore(false);
+		} else {
+			setLoading(false);
+		}
+	};
+
+	// Fetch latest notifications for polling
+	const fetchLatestNotifications = async () => {
+		const response = await fetchAPI<INotification[]>(
+			ENDPOINTS.notificationLatest(5), // Last 5 minutes
+			{ useAuth: true }
+		);
+
+		if (response.success && response.data && response.data.length > 0) {
+			// Merge new notifications with existing ones (avoid duplicates)
+			setListNoti((prev) => {
+				const existingIds = new Set(prev.map((n) => n.id));
+				const newNotifications = response.data.filter((n) => !existingIds.has(n.id));
+
+				if (newNotifications.length > 0) {
+					// Show toast notification for new items
+					toast.info(
+						"New Notifications",
+						`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? "s" : ""}`
+					);
+
+					// Prepend new notifications to the list
+					return [...newNotifications, ...prev];
+				}
+
+				return prev;
+			});
+
+			// Update total count
+			setTotal((prev) => prev + response.data.length);
+		}
+	};
+
+	// Initial fetch on mount
+	useEffect(() => {
+		fetchNotifications(0);
+	}, []);
+
+	// Polling: Fetch latest notifications every 5 minutes
+	useEffect(() => {
+		const POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+		const intervalId = setInterval(() => {
+			fetchLatestNotifications();
+		}, POLLING_INTERVAL);
+
+		// Cleanup on unmount
+		return () => clearInterval(intervalId);
+	}, []);
+
+	// Load more notifications (pagination)
+	const handleLoadMore = () => {
+		const nextPage = pageIndex + 1;
+		setPageIndex(nextPage);
+		fetchNotifications(nextPage, true);
+	};
+
+	// Mark all unread notifications as read
+	const handleMarkAllRead = async () => {
+		// Get all unread notification IDs
+		const unreadIds = listNoti.filter((noti) => noti.status === "U").map((noti) => noti.id);
+
+		if (unreadIds.length === 0) {
+			toast.info("No Unread Notifications", "All messages are already marked as read.");
+			return;
+		}
+
+		const requestBody: NotificationMarkAsReadRequest = { ids: unreadIds };
+
+		const response = await postAPI<NotificationMarkAsReadResponse, NotificationMarkAsReadRequest>(
+			ENDPOINTS.notificationMarkAsRead(),
+			requestBody,
+			{ useAuth: true } // Enable auth headers
+		);
+
+		if (response.success && response.data?.isSuccess) {
+			// Update local state - change status from "U" to "R"
+			setListNoti((prev) =>
+				prev.map((noti) => ({
+					...noti,
+					status: noti.status === "U" ? "R" : noti.status,
+				}))
+			);
+			toast.success("All Caught Up", "All messages have been marked as read.");
+		} else {
+			console.error("Failed to mark as read:", response.error);
+			toast.error("Error", response.error || "Failed to mark notifications as read.");
+		}
 	};
 
 	return (
@@ -92,7 +214,9 @@ const Notification = () => {
 			<CustomSheetTitle title="Notification Centre" />
 
 			<div className="flex justify-between items-center text-xs mt-6 flex-shrink-0">
-				<p>2 Unread Notification(s)</p>
+				<p>
+					{unreadCount} Unread Notification{unreadCount !== 1 ? "s" : ""}
+				</p>
 
 				<Alert
 					trigger={
@@ -108,13 +232,40 @@ const Notification = () => {
 						</Button>
 					}
 					title="Mark All as Read"
-					description="Marking all messages as read may cause you to miss important information."
+					description={
+						<p>
+							Marking all messages as read may cause you to miss important information.
+						</p>
+					}
 					onAction={() => handleMarkAllRead()}
 				/>
 			</div>
+
 			<div className="flex flex-col overflow-y-auto sidebar-scroll flex-1 mt-4">
-				{listNoti.length > 0 ? (
-					listNoti.map((noti, index) => <NotiItem key={index} notification={noti} />)
+				{loading ? (
+					<div className="flex items-center justify-center pt-20">
+						<p className="text-typo-secondary text-sm">Loading notifications...</p>
+					</div>
+				) : listNoti.length > 0 ? (
+					<>
+						{listNoti.map((noti) => (
+							<NotiItem key={noti.id} notification={noti} />
+						))}
+
+						{/* Load More Button for Pagination */}
+						{hasMore && (
+							<div className="p-4">
+								<Button
+									onClick={handleLoadMore}
+									disabled={loadingMore}
+									variant="outline"
+									className="w-full"
+								>
+									{loadingMore ? "Loading..." : "Load More"}
+								</Button>
+							</div>
+						)}
+					</>
 				) : (
 					<ErrorState
 						type="empty"

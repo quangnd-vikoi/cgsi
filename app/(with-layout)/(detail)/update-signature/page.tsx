@@ -142,7 +142,7 @@ const UpdateSignature = () => {
 						<Alert
 							trigger={<X />}
 							title="Exit Update Signature?"
-							description="Any information previously entered will be discarded."
+							description={<p>Any information previously entered will be discarded.</p>}
 							actionText="Back To Form"
 							cancelText="Exit without Saving"
 							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
@@ -355,7 +355,7 @@ const UpdateSignature = () => {
 						)}
 						<div className="pad-x py-4 border-t w-full relative flex gap-2">
 							<Button
-								className="w-1/2 text-base font-normal bg-transparent border-none text-enhanced-blue hover:border-enhanced-blue hover:bg-transparent hover:text-enhanced-blue/70"
+								className="w-1/2 text-base font-normal bg-transparent border-none text-enhanced-blue hover:border-enhanced-blue/75 hover:bg-transparent hover:text-enhanced-blue/75"
 								onClick={() => handleClear()}
 							>
 								Clear

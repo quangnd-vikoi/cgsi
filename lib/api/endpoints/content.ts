@@ -1,15 +1,12 @@
-// lib/api/endpoints.ts
+import { LANG, type Language } from "../config";
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://www.cgsi.com.sg/cgsi/api/v1";
-
-export const LANG = {
-	EN: 1,
-	CN: 2,
-} as const;
-
-export type Language = (typeof LANG)[keyof typeof LANG];
-
-export const ENDPOINTS = {
+/**
+ * Content-related API endpoints (relative paths only)
+ * Includes announcements, notices, campaigns, events, and insights
+ * These endpoints use the 3rd party content API (cgsi.com.sg)
+ * Base URL will be automatically prepended when exported
+ */
+export const contentEndpoints = {
 	/**
 	 * Get Announcements
 	 * @param lang - Language ID (1 = EN, 2 = CN)

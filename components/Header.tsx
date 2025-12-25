@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fetchAPI } from "@/lib/fetchWrapper";
-import { ENDPOINTS } from "@/lib/apiConfig";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 import Image from "@/components/Image";
 import Link from "next/link";
 import { Button } from "./ui/button";

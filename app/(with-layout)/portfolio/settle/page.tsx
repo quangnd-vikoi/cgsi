@@ -111,7 +111,7 @@ export default function SettlePage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="hidden md:flex border border-enhanced-blue text-enhanced-blue rounded hover:bg-enhanced-blue/10"
+								className="hidden md:flex border border-enhanced-blue text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
 							>
 								<FileDown className="size-4" />
 								Export to Excel
@@ -140,7 +140,7 @@ export default function SettlePage() {
 						<Button
 							variant="outline"
 							size="sm"
-							className="flex md:hidden border border-enhanced-blue text-enhanced-blue rounded hover:bg-enhanced-blue/10 mb-6"
+							className="flex md:hidden border border-enhanced-blue text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 mb-6"
 						>
 							<FileDown className="size-4" />
 							Export to Excel
