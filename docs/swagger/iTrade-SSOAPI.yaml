@@ -1,141 +1,147 @@
-openapi: 3.1.0
+openapi: 3.0.4
 info:
-  title: SSO APIs
-  version: 0.0.1-SNAPSHOT
+  title: iTrade API - Subscription API
+  description: |-
+    Subscription API
+  version: 0.0.1
 servers:
-  - url: https://stgitrade.cgsi.com.sg/portal
-    description: "[uat]"
-  - url: https://sititrade.cgsi.com.sg/portal
-    description: "[dev]"
-  - url: http://localhost:20005
-    description: "[local]"
-tags:
-  - name: iTrade API - SSO Internal APIs
-    description: Internal endpoints for SSO APIs
-  - name: iTrade API - SSO APIs
-    description: Endpoints for SSO APIs
+  - url: http://localhost:8080/portal/sso/api/v1
 paths:
-  /sso/api/v1/token:
+  /token:
     post:
-      tags:
-        - iTrade API - SSO APIs
-      operationId: token
+      summary: Get Token by Code
+      operationId: getAccessToken
       requestBody:
+        description: SSO Code
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TokenRequest'
-        required: true
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-      security: []
-  /sso/api/v1/token/refresh:
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /token/refresh:
     post:
-      tags:
-        - iTrade API - SSO APIs
-      operationId: refreshToken
+      summary: Get Token by Refresh Token
+      operationId: getAccessTokenByRefresh
       requestBody:
+        description: Refresh TOken
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/RefreshTokenRequest'
-        required: true
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-      security: []
-  /sso/api/v1/internal/validate-token:
-    post:
-      tags:
-        - iTrade API - SSO Internal APIs
-      operationId: validateToken
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ValidateTokenRequest'
-        required: true
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
+  /token/info:
+    get:
+      summary: Get Token Information from Claims
+      operationId: getTokenInformation
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/ValidateTokenResponse'
-      security: []
+                $ref: '#/components/schemas/TokenInfoResponse'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
 components:
   schemas:
-    TokenRequest:
+    Error:
       type: object
       properties:
         code:
           type: string
-          minLength: 1
-        clientId:
+        message:
           type: string
-          minLength: 1
-        redirectUri:
-          type: string
-          minLength: 1
       required:
-        - clientId
         - code
-        - redirectUri
-    TokenResponse:
+        - message
+    TokenRequest:
       type: object
+      description: Subscription
       properties:
-        idToken:
-          type: string
-        accessToken:
-          type: string
-        expiresIn:
-          type: integer
-          format: int32
-        tokenType:
-          type: string
-        refreshToken:
+        sso:
           type: string
     RefreshTokenRequest:
       type: object
+      description: Subscription
       properties:
-        refreshToken:
+        refresh:
           type: string
-          minLength: 1
-        clientId:
-          type: string
-          minLength: 1
-      required:
-        - clientId
-        - refreshToken
-    ValidateTokenRequest:
+    TokenResponse:
       type: object
+      description: Subscription
       properties:
-        token:
+        expires_in:
           type: string
-        requiredScopes:
+        id_token:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    TokenInfoResponse:
+      type: object
+      description: Subscription
+      properties:
+        systemId:
+          type: string
+        sessionId:
+          type: string
+        accounts:
           type: array
           items:
             type: string
-      required:
-        - token
-    ValidateTokenResponse:
-      type: object
-      properties:
-        ssoId:
-          type: string
-        profileId:
-          type: string
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT

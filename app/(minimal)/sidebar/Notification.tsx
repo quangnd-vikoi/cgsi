@@ -122,33 +122,53 @@ const Notification = () => {
 
 	// Fetch latest notifications for polling
 	const fetchLatestNotifications = async () => {
-		const response = await fetchAPI<INotification[]>(
-			ENDPOINTS.notificationLatest(5), // Last 5 minutes
-			{ useAuth: true }
-		);
+		try {
+			const response = await fetchAPI<INotification[]>(
+				ENDPOINTS.notificationLatest(5), // Last 5 minutes
+				{ useAuth: true }
+			);
 
-		if (response.success && response.data && response.data.length > 0) {
-			// Merge new notifications with existing ones (avoid duplicates)
-			setListNoti((prev) => {
-				const existingIds = new Set(prev.map((n) => n.id));
-				const newNotifications = response.data.filter((n) => !existingIds.has(n.id));
-
-				if (newNotifications.length > 0) {
-					// Show toast notification for new items
-					toast.info(
-						"New Notifications",
-						`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? "s" : ""}`
-					);
-
-					// Prepend new notifications to the list
-					return [...newNotifications, ...prev];
+			// Handle successful response
+			if (response.success) {
+				// Handle empty array or null/undefined data
+				if (!response.data || response.data.length === 0) {
+					console.log("No new notifications in the last 5 minutes");
+					return; // Exit early, nothing to process
 				}
 
-				return prev;
-			});
+				// Merge new notifications with existing ones (avoid duplicates)
+				setListNoti((prev) => {
+					const existingIds = new Set(prev.map((n) => n.id));
+					const newNotifications = response.data.filter((n) => !existingIds.has(n.id));
 
-			// Update total count
-			setTotal((prev) => prev + response.data.length);
+					if (newNotifications.length > 0) {
+						console.log(`Found ${newNotifications.length} new notification(s)`);
+
+						// Show toast notification for new items
+						toast.info(
+							"New Notifications",
+							`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? "s" : ""}`
+						);
+
+						// Prepend new notifications to the list
+						return [...newNotifications, ...prev];
+					}
+
+					console.log("All notifications already in list (duplicates filtered)");
+					return prev;
+				});
+
+				// Update total count only if we have new data
+				if (response.data && response.data.length > 0) {
+					setTotal((prev) => prev + response.data.length);
+				}
+			} else {
+				// API returned an error - log but don't show toast (polling should be silent)
+				console.error("Failed to fetch latest notifications (polling):", response.error);
+			}
+		} catch (error) {
+			// Network error or unexpected exception - log but don't show toast
+			console.error("Error polling for latest notifications:", error);
 		}
 	};
 

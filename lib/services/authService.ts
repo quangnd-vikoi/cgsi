@@ -59,22 +59,18 @@ export const exchangeCode = async (code: string, redirectUri: string): Promise<v
 		clientId: CLIENT_ID,
 		redirectUri,
 	});
-
-	console.log(response)
 	// For token exchange, just check if we have a response with token data
 	if (!response.data) {
 		throw new Error("Failed to exchange code - no response data");
 	}
 
 	// Store tokens in Zustand store (persisted to localStorage)
-	// profileId will be extracted from idToken JWT
 	const { setTokens } = useAuthStore.getState();
 	setTokens(
 		response.data.accessToken,
 		response.data.refreshToken,
 		response.data.expiresIn,
-		response.data.idToken,
-		"" // profileId will be auto-extracted from idToken
+		response.data.idToken
 	);
 };
 
@@ -105,13 +101,11 @@ export const refreshAccessToken = async (): Promise<void> => {
 	}
 
 	// Store new tokens in Zustand store (persisted to localStorage)
-	// profileId will be extracted from idToken JWT
 	setTokens(
 		response.data.accessToken,
 		response.data.refreshToken,
 		response.data.expiresIn,
-		response.data.idToken,
-		"" // profileId will be auto-extracted from idToken
+		response.data.idToken
 	);
 };
 
@@ -120,13 +114,6 @@ export const refreshAccessToken = async (): Promise<void> => {
  */
 export const getAccessToken = (): string | null => {
 	return useAuthStore.getState().getAccessToken();
-};
-
-/**
- * Get current profile ID
- */
-export const getProfileId = (): string | null => {
-	return useAuthStore.getState().getProfileId();
 };
 
 /**
@@ -185,7 +172,6 @@ export const authService = {
 	exchangeCode,
 	refreshToken: refreshAccessToken,
 	getAccessToken,
-	getProfileId,
 	isTokenExpired,
 	shouldRefreshToken,
 	isAuthenticated,
