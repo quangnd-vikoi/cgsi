@@ -17,6 +17,7 @@ import {
 import { TriangleAlert, X } from "lucide-react";
 import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { SheetType } from "@/types";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
@@ -114,6 +115,7 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 const Header = () => {
 	const openSheet = useSheetStore((state) => state.openSheet);
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+	const unreadCount = useNotificationStore((state) => state.unreadCount);
 	const pathName = usePathname();
 
 	const handleTradeNowClick = () => {
@@ -160,13 +162,13 @@ const Header = () => {
 
 					<div className="flex items-center my-auto gap-4 md:gap-6">
 						<div className="flex gap-4 md:gap-6">
-							<div onClick={() => handleSheetOpen("notification")}>
+							<div onClick={() => handleSheetOpen("notification")} className="relative">
 								<Image
 									className="cursor-pointer w-6 md:w-8"
 									src={
-										openSheet === "notification"
-											? "/icons/header/Notif-Light.svg"
-											: "/icons/header/Notif-Light-Red.svg"
+										unreadCount > 0
+											? "/icons/header/Notif-Light-Red.svg"
+											: "/icons/header/Notif-Light.svg"
 									}
 									alt="Notification"
 									width={32}
@@ -204,7 +206,13 @@ const Header = () => {
 						<div className="md:hidden">
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									<Grip className="cursor-pointer w-6 md:w-8 data-[state=open]:text-enhanced-blue text-typo-secondary" />
+									<Button
+										variant="ghost"
+										size="icon"
+										className="h-6 w-6 md:h-8 md:w-8 p-0 data-[state=open]:text-enhanced-blue text-typo-secondary"
+									>
+										<Grip className="w-6 md:w-8" />
+									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="w-64 px-0" align="end">
 									<MobileMenuItem title="Home" link={INTERNAL_ROUTES.HOME} />

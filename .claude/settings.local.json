@@ -20,7 +20,10 @@
       "Bash(done)",
       "Bash(git checkout:*)",
       "Bash(npx tsc:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run lint:*)",
+      "Bash(bun run build:*)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []
