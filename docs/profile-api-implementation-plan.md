@@ -10,7 +10,6 @@ This document outlines the implementation plan for integrating the Profile APIs 
 
 **Authentication:**
 - All authenticated endpoints require `Bearer Token` in Authorization header
-- All endpoints require `X-PROFILE-ID` header
 
 ---
 
@@ -81,7 +80,6 @@ Create wrapper functions for Profile API calls using the existing `fetchWrapper`
 
 **Implementation Notes:**
 - Use existing `fetchAPI`, `postAPI` from `fetchWrapper.ts`
-- Handle `X-PROFILE-ID` header injection
 - Use Bearer token from auth context/store
 - Implement proper error handling and response normalization
 
@@ -224,7 +222,7 @@ NEXT_PUBLIC_PROFILE_API_URL=https://stgitrade.cgsi.com.sg/portal
 - Test all API endpoints with mock responses
 - Validate request/response type safety
 - Test error scenarios (401, 404, 500, network errors)
-- Test header injection (Bearer token, X-PROFILE-ID)
+- Test header injection (Bearer token)
 
 **Component Testing:**
 - Test components with loading states
@@ -308,10 +306,6 @@ NEXT_PUBLIC_PROFILE_API_URL=https://stgitrade.cgsi.com.sg/portal
    - How is the user logged in and token obtained?
    - How should token refresh be handled?
 
-2. **Where does the `X-PROFILE-ID` come from?**
-   - Is it returned from login API?
-   - Should it be stored in localStorage/sessionStorage?
-   - Is it the same as `userId` or different?
 
 3. **What happens when authentication fails (401)?**
    - Should the user be redirected to login?

@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "./config";
 import type { APIResponse, StandardAPIResponse, DirectAPIResponse } from "./types";
-import { getAccessToken, getProfileId } from "@/lib/services/authService";
+import { getAccessToken } from "@/lib/services/authService";
 
 // Extended fetch options with auth support
 interface FetchOptions extends RequestInit {
@@ -27,14 +27,9 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 		// Add auth headers for endpoints that require authentication
 		if (useAuth) {
 			const token = getAccessToken();
-			const profileId = getProfileId();
 
 			if (token) {
 				headers["Authorization"] = `Bearer ${token}`;
-			}
-
-			if (profileId) {
-				headers["X-PROFILE-ID"] = profileId;
 			}
 		}
 

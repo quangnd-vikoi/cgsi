@@ -1,181 +1,340 @@
-openapi: 3.1.0
+openapi: 3.0.4
 info:
-  title: Subscription APIs
-  version: 0.0.1-SNAPSHOT
+  title: iTrade API - Subscription API
+  description: |-
+    Product Subscription & Market Data Subscription API
+  version: 0.0.1
 servers:
-  - url: https://stgitrade.cgsi.com.sg/portal
-    description: "[uat]"
-  - url: https://sititrade.cgsi.com.sg/portal
-    description: "[dev]"
-  - url: http://localhost:20003
-    description: "[local]"
-tags:
-  - name: iTrade API - Subscription APIs
-    description: Endpoints for Subscription APIs
+  - url: http://localhost:8080/portal/subscription/api/v1
 paths:
-  /subscription/api/v1/product/mySubscription:
+  /subscription:
     get:
-      tags:
-        - iTrade API - Subscription APIs
-      operationId: getUserProductSubscriptions
-      parameters:
-        - name: X-PROFILE-ID
-          in: header
-          required: true
-          schema:
-            type: string
+      summary: Get Subscription
+      operationId: getSubscription
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserProductSubsListResponse'
+                type: array
+                items:
+                  $ref:  '#/components/schemas/Subscription'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
-        - bearerAuth: []
-    post:
-      tags:
-        - iTrade API - Subscription APIs
-      operationId: submitUserProductSubscription
-      parameters:
-        - name: X-PROFILE-ID
-          in: header
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserProductSubscriptionSubmissionRequest'
-        required: true
+        - BearerAuth: []
+  /userSubscription:
+    get:
+      summary: Get User Subscription
+      operationId: getUserSubscription
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserProductSubscriptionDetailResponse'
+                type: array
+                items:
+                  $ref: '#/components/schemas/userSubscription'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
-        - bearerAuth: []
-  /subscription/api/v1/product/{productType}:
+        - BearerAuth: []
+  /product/{productType}:
     get:
-      tags:
-        - iTrade API - Subscription APIs
-      operationId: getProductSubscriptions
+      summary: Get Product Subscription by Product Type
+      operationId: getProductSubs
       parameters:
-        - name: X-PROFILE-ID
-          in: header
-          required: true
-          schema:
-            type: string
         - name: productType
           in: path
+          description: Possible  value (IPO, IOP, AI)
           required: true
           schema:
             type: string
+            example: 'IPO'
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/ProductionSubscriptionListResponse'
-      security:
-        - bearerAuth: []
-  /subscription/api/v1/product/mySubscription/{subscriptionId}:
-    get:
-      tags:
-        - iTrade API - Subscription APIs
-      operationId: getUserProductSubscriptionDetails
-      parameters:
-        - name: X-PROFILE-ID
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: subscriptionId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
+                type: array
+                items:
+                  $ref: '#/components/schemas/productSubscription'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserProductSubscriptionDetailResponse'
+                $ref: "#/components/schemas/Error"
       security:
-        - bearerAuth: []
-  /subscription/api/v1/product/details/{productCode}:
+        - BearerAuth: []
+  /product/details/{productCode}:
     get:
-      tags:
-        - iTrade API - Subscription APIs
-      operationId: getProductSubscriptionDetails
+      summary: Get Product Subscription Detail
+      operationId: getProductSubsDetail
       parameters:
-        - name: X-PROFILE-ID
-          in: header
-          required: true
-          schema:
-            type: string
         - name: productCode
           in: path
           required: true
           schema:
             type: string
+            example: '0fd8dc31264d4dd68f4f93a3fe4b750c'
       responses:
         '200':
-          description: OK
+          description: Successful operation
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/ProductSubscriptionDetailResponse'
+                $ref: '#/components/schemas/productSubscriptionDetail'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
+  /product/mySubscription:
+    get:
+      summary: Get User product Subscription List
+      operationId: getUserProductSubscription
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/userProductSubscription'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
+    post:
+      summary: Submit user product subscription
+      operationId: SubmitUserProductSubscription
+      requestBody:
+        description: Product Submission Data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/submitProductSubscription'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productUserSubscriptionDetail'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
+  /product/mySubscription/{subscriptionId}:
+    get:
+      summary: Get User Product Subscription Detail
+      operationId: getUserProductSubscriptionDetail
+      parameters:
+        - name: subscriptionId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'ETF-202305-00002'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/productUserSubscriptionDetail'
+        '400':
+          description: Invalid Request
+        '404':
+          description: No Accounts Linked 
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - BearerAuth: []
 components:
   schemas:
-    UserProductSubscriptionSubmissionRequest:
+    Error:
       type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    Subscription:
+      type: object
+      description: Subscription
+      properties:
+        id:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+        needDeclaration:
+          type: boolean
+    userSubscription:
+      type: object
+      description: User Subscription
+      properties:
+        subscriptionId:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        start:
+          type: string
+          format: date
+        end:
+          type: string
+          format: date
+        paymentStatus:
+          type: string
+        allowRenew:
+          type: boolean
+    productSubscription:
+      type: object
+      description: Product Subscription
       properties:
         productCode:
           type: string
-          description: Product code
-          example: 40288a00889fb62901889fbacc111111
-          minLength: 0
-          maxLength: 32
+        productName:
+          type: string
+        productType:
+          type: string
+        stockCode:
+          type: string
+        exchangeCode:
+          type: string
+        currency:
+          type: string
+        issuePrice:
+          type: number
+        minQty:
+          type: number
+        startTime:
+          type: string
+          format: date
+        endTime:
+          type: string
+          format: date
+        isSubscribed:
+          type: boolean
+    submitProductSubscription:
+      type: object
+      description: Product Subscription
+      properties:
+        productCode:
+          type: string
         accountNo:
           type: string
-          description: Account No
-          example: '0000001'
-          minLength: 0
-          maxLength: 7
         totalUnit:
-          type: integer
-          format: int32
-          description: Total Unit
-          example: 1
-          minimum: 1
+          type: string
         paymentCurrency:
           type: string
-          description: Payment currency
-          example: SGD
-          minLength: 0
-          maxLength: 10
         paymentMode:
           type: string
-          description: Payment mode
-          example: PayNow
-          minLength: 0
-          maxLength: 200
-      required:
-        - productCode
-        - accountNo
-        - totalUnit
-        - paymentCurrency
-        - paymentMode
-    UserProductSubscriptionDetailResponse:
+    userProductSubscription:
       type: object
+      description: Product Subscription
+      properties:
+        subscriptionId:
+          type: string
+        productCode:
+          type: string
+        productName:
+          type: string
+        productType:
+          type: string
+        stockCode:
+          type: string
+        exchangeCode:
+          type: string
+        currency:
+          type: string
+        issuePrice:
+          type: number
+        appliedQty:
+          type: number
+        allocateddQty:
+          type: number
+        endTime:
+          type: string
+          format: date
+    productUserSubscriptionDetail:
+      type: object
+      description: Product Subscription
       properties:
         subscriptionId:
           type: string
@@ -191,7 +350,7 @@ components:
           type: string
         noteGenerateDate:
           type: string
-          format: date-time
+          format: date
         clientName:
           type: string
         accountNo:
@@ -200,43 +359,37 @@ components:
           type: string
         applicationDate:
           type: string
-          format: date-time
+          format: date
         paymentDueDate:
           type: string
-          format: date-time
+          format: date
         amountPayable:
-          type: number
-          format: double
+          type: string
+          format: number
         paymentCurrency:
           type: string
         baseCurrency:
           type: string
         totalUnit:
-          type: integer
-          format: int32
+          type: string
+          format: number
         issuePrice:
           type: number
-          format: double
         grossProceed:
           type: number
-          format: double
         commission:
           type: number
-          format: double
         adminFee:
           type: number
-          format: double
         gstAmount:
           type: number
-          format: double
         gstPct:
           type: number
-          format: double
         conversionRate:
           type: number
-          format: double
-    ProductSubscriptionDto:
+    productSubscriptionDetail:
       type: object
+      description: Product Subscription
       properties:
         productCode:
           type: string
@@ -248,110 +401,24 @@ components:
           type: string
         exchangeCode:
           type: string
-        currency:
-          type: string
         issuePrice:
           type: number
-          format: double
         minQty:
-          type: integer
-          format: int32
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        isSubscribed:
-          type: boolean
-    ProductionSubscriptionListResponse:
-      type: object
-      properties:
-        productSubs:
-          type: array
-          items:
-            $ref: '#/components/schemas/ProductSubscriptionDto'
-      required:
-        - productSubs
-    UserProductSubsListResponse:
-      type: object
-      properties:
-        userProductSubs:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserProductSubscriptionDto'
-      required:
-        - userProductSubs
-    UserProductSubscriptionDto:
-      type: object
-      properties:
-        subscriptionId:
-          type: string
-        productCode:
-          type: string
-        productName:
-          type: string
-        productType:
-          type: string
-        stockCode:
-          type: string
-        exchangeCode:
-          type: string
-        currency:
-          type: string
-        issuePrice:
           type: number
-          format: double
-        appliedQty:
-          type: integer
-          format: int32
-        allocatedQty:
-          type: integer
-          format: int32
-        endTime:
-          type: string
-          format: date-time
-      required:
-        - currency
-        - exchangeCode
-        - productCode
-        - productName
-        - productType
-        - stockCode
-    ProductSubscriptionDetailResponse:
-      type: object
-      properties:
-        productCode:
-          type: string
-        productName:
-          type: string
-        productType:
-          type: string
-        stockCode:
-          type: string
-        exchangeCode:
-          type: string
-        issuePrice:
-          type: number
-          format: double
-        minQty:
-          type: integer
-          format: int32
         incrementQty:
-          type: integer
-          format: int32
+          type: number
         startTime:
           type: string
-          format: date-time
+          format: dateTime
         endTime:
           type: string
-          format: date-time
+          format: dateTime
         paymentDate:
           type: string
-          format: date-time
+          format: date
         listingDate:
           type: string
-          format: date-time
+          format: date
         baseCurrency:
           type: string
         tradingCurrency:
@@ -366,57 +433,47 @@ components:
           type: string
         content2:
           type: string
+          description: in JSON format, please check with Mya on the display
         additionalInfo:
           type: string
+          description: in JSON format, please check with Mya on the display
         refDocs:
           type: string
+          description: in JSON format, please check with Mya on the display
         tncUrl:
           type: string
         brokerageFee:
           type: number
-          format: double
         minBrokerageFee:
           type: number
-          format: double
         transferFee:
           type: number
-          format: double
         managementFee:
           type: number
-          format: double
         conversionRate:
           type: number
-          format: double
         gst:
           type: number
-          format: double
         minPrice:
           type: number
-          format: double
         maxPrice:
           type: number
-          format: double
         aiOnly:
           type: boolean
         paymentAfterAllocation:
           type: boolean
         allocationDate:
           type: string
-          format: date-time
+          format: date
         acknowledgementDate:
           type: string
-          format: date-time
+          format: date
         issuePriceStatus:
           type: boolean
         allocationStatus:
           type: boolean
-      required:
-        - endTime
-        - listingDate
-        - paymentDate
-        - startTime
   securitySchemes:
-    bearerAuth:
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT

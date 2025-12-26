@@ -18,7 +18,9 @@
       "Bash(cmd.exe //c \"taskkill /PID 23252 /F\")",
       "Bash(cmd.exe //c \"taskkill /PID 27084 /F\")",
       "Bash(done)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

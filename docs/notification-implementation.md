@@ -51,7 +51,7 @@
 
 - ✅ All type definitions updated to match API spec
 - ✅ All API endpoints configured correctly
-- ✅ Auth headers support (temporary X-PROFILE-ID)
+- ✅ Auth headers support
 - ✅ Notification component fully rewritten
 - ✅ Mock data removed, real API integration
 - ✅ Pagination with "Load More" button
@@ -86,9 +86,9 @@
 
 | Method | Endpoint | Purpose | Auth Required |
 |--------|----------|---------|---------------|
-| GET | `/notification/api/v1/list` | Get paginated list of user notifications | Bearer Token + X-PROFILE-ID |
-| GET | `/notification/api/v1/latest` | Get latest notifications from past X minutes | Bearer Token + X-PROFILE-ID |
-| POST | `/notification/api/v1/markAsRead` | Mark notifications as read | Bearer Token + X-PROFILE-ID |
+| GET | `/notification/api/v1/list` | Get paginated list of user notifications | Bearer Token |
+| GET | `/notification/api/v1/latest` | Get latest notifications from past X minutes | Bearer Token |
+| POST | `/notification/api/v1/markAsRead` | Mark notifications as read | Bearer Token |
 
 #### Internal Endpoints (Not for frontend use)
 - POST `/notification/api/v1/internal/email/send` - Internal email sending
@@ -164,9 +164,7 @@ export const notificationEndpoints = {
 
 **Implemented:**
 ```typescript
-// Temporary auth configuration
-const TEMP_PROFILE_ID = "8a1ba0811d667c30011d7634d69422c7";
-const USE_TEMP_AUTH = true; // Set to false when SSO is ready
+import { getAccessToken } from "@/lib/services/authService";
 
 interface FetchOptions extends RequestInit {
   useAuth?: boolean; // Flag to include auth headers (default: false)
@@ -183,10 +181,12 @@ export async function fetchAPI<T>(
     ...restOptions.headers,
   };
 
-  // Add temporary auth headers for endpoints that require authentication
-  if (useAuth && USE_TEMP_AUTH) {
-    // TODO: After SSO integration, get token from authService
-    headers["X-PROFILE-ID"] = TEMP_PROFILE_ID;
+  // Add auth headers for endpoints that require authentication
+  if (useAuth) {
+    const token = getAccessToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
   }
 
   // ... rest of implementation
@@ -195,8 +195,8 @@ export async function fetchAPI<T>(
 
 **Changes Made:**
 - Added `FetchOptions` interface with `useAuth` flag
-- Temporary X-PROFILE-ID header support
-- Ready for SSO integration (commented code included)
+- Bearer token authentication support
+- SSO integration complete
 - Updated all helper functions: `postAPI`, `putAPI`, `deleteAPI`, `fetchWithCache`
 
 ---
@@ -303,13 +303,13 @@ Using local state in `Notification.tsx`:
 
 **Status:** ⏳ **PARTIAL** - Temporary auth implemented, waiting for SSO completion
 
-**Current Implementation (Temporary):**
+**Current Implementation:**
 ```typescript
-const TEMP_PROFILE_ID = "8a1ba0811d667c30011d7634d69422c7";
-const USE_TEMP_AUTH = true; // Set to false when SSO is ready
-
-if (useAuth && USE_TEMP_AUTH) {
-  headers["X-PROFILE-ID"] = TEMP_PROFILE_ID;
+if (useAuth) {
+  const token = getAccessToken();
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 }
 ```
 
@@ -493,7 +493,7 @@ const unreadCount = listNoti.filter((noti) => noti.status === "U").length;
 #### Initial Load
 1. Component mounts → `fetchNotifications(0)` called
 2. Calls `/notification/api/v1/list?pageSize=10&pageIndex=0`
-3. Includes header: `X-PROFILE-ID: 8a1ba0811d667c30011d7634d69422c7`
+3. Includes header: `Authorization: Bearer <token>`
 4. Receives `{ total: number, notifications: [...] }`
 5. Displays notifications with unread count
 
@@ -586,7 +586,7 @@ const hasMore = (pageIndex + 1) * pageSize < total;
    - Open notification panel
    - Should call /list?pageSize=10&pageIndex=0
    - Check Network tab for request
-   - Verify X-PROFILE-ID header is present
+   - Verify Authorization header is present
    - Should show "X Unread Notifications"
    ```
 
@@ -640,47 +640,7 @@ All API calls include console.log statements:
 
 ### When SSO is Ready
 
-#### Step 1: Update API Client
-```typescript
-// File: lib/api/client.ts
-
-// Change this:
-const USE_TEMP_AUTH = true;
-
-// To this:
-const USE_TEMP_AUTH = false;
-
-// Uncomment these lines:
-import { getAccessToken } from "@/lib/services/authService";
-const token = getAccessToken();
-if (token) {
-  headers["Authorization"] = `Bearer ${token}`;
-}
-```
-
-#### Step 2: Extract Profile ID from JWT
-```typescript
-// Add to lib/services/authService.ts or create new helper
-
-import jwt_decode from 'jwt-decode';
-
-export function getProfileIdFromToken(token: string): string | null {
-  try {
-    const decoded = jwt_decode<any>(token);
-    return decoded.sub || decoded.userId || decoded.profileId;
-  } catch (error) {
-    return null;
-  }
-}
-
-// Use in lib/api/client.ts:
-const profileId = getProfileIdFromToken(token);
-if (profileId) {
-  headers["X-PROFILE-ID"] = profileId;
-}
-```
-
-#### Step 3: Handle 401 Errors
+#### Step 1: Handle 401 Errors
 ```typescript
 // Already in place - will automatically refresh token
 // See SSO_INTEGRATION_GUIDE.md for details
@@ -699,7 +659,7 @@ if (profileId) {
 1. Implement `/notification/api/v1/list` endpoint
 2. Implement `/notification/api/v1/latest` endpoint
 3. Implement `/notification/api/v1/markAsRead` endpoint
-4. Accept `X-PROFILE-ID` header
+4. Accept Bearer token authorization
 5. Return data in format matching `INotification` interface
 6. Test with frontend
 
@@ -782,11 +742,7 @@ if (profileId) {
    - Solution: Add exponential backoff retry if needed
 
 ### Not Issues (Expected Behavior)
-1. **Temporary Auth** - Using hardcoded X-PROFILE-ID
-   - This is intentional until SSO is ready
-   - Code is ready for SSO (just uncomment)
-
-2. **No WebSocket** - Using polling instead
+1. **No WebSocket** - Using polling instead
    - This is per plan (polling is sufficient for MVP)
    - Can migrate to WebSocket later if needed
 
@@ -794,11 +750,10 @@ if (profileId) {
 
 ## Key Decisions & Clarifications
 
-1. **X-PROFILE-ID:** Hardcoded to `8a1ba0811d667c30011d7634d69422c7` temporarily (will extract from JWT after SSO)
-2. **Polling Strategy:** Use `/notification/api/v1/latest` endpoint, poll every **5 minutes**
-3. **Page Size:** Default 10 items per page
-4. **Real-time Updates:** No WebSocket - polling is sufficient for MVP
-5. **Authentication:** See `SSO_INTEGRATION_GUIDE.md` for SSO flow implementation
+1. **Polling Strategy:** Use `/notification/api/v1/latest` endpoint, poll every **5 minutes**
+2. **Page Size:** Default 10 items per page
+3. **Real-time Updates:** No WebSocket - polling is sufficient for MVP
+4. **Authentication:** See `SSO_INTEGRATION_GUIDE.md` for SSO flow implementation
 
 ---
 
