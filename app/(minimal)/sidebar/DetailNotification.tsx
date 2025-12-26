@@ -20,7 +20,7 @@ function formatDate(isoDate: string): string {
 			minute: "2-digit",
 			timeZoneName: "short",
 		});
-	} catch (error) {
+	} catch {
 		return isoDate; // Fallback to raw string if parsing fails
 	}
 }

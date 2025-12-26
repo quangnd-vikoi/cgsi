@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Dot, MailOpen } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
@@ -13,15 +13,11 @@ import {
 } from "@/types";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
+import { useNotificationStore } from "@/stores/notificationStore";
 import { ErrorState } from "@/components/ErrorState";
 import { fetchAPI, postAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 
-/**
- * Format ISO 8601 date to display format
- * @param isoDate - ISO 8601 date string
- * @returns Formatted date string (e.g., "24-Aug-2025, 06:30 SGT")
- */
 function formatDate(isoDate: string): string {
 	try {
 		const date = new Date(isoDate);
@@ -33,7 +29,7 @@ function formatDate(isoDate: string): string {
 			minute: "2-digit",
 			timeZoneName: "short",
 		});
-	} catch (error) {
+	} catch {
 		return isoDate; // Fallback to raw string if parsing fails
 	}
 }
@@ -77,6 +73,9 @@ const Notification = () => {
 	const [pageIndex, setPageIndex] = useState(0);
 	const [loading, setLoading] = useState(false);
 	const [loadingMore, setLoadingMore] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
 
 	const pageSize = 10;
 	const hasMore = (pageIndex + 1) * pageSize < total;
@@ -85,12 +84,19 @@ const Notification = () => {
 	const unreadCount = listNoti.filter((noti) => noti.status === "U").length;
 	const hasUnread = unreadCount > 0;
 
+	// Update global unread count whenever listNoti changes
+	useEffect(() => {
+		const count = listNoti.filter((noti) => noti.status === "U").length;
+		setUnreadCount(count);
+	}, [listNoti, setUnreadCount]);
+
 	// Fetch notifications from API
 	const fetchNotifications = async (currentPageIndex: number, append: boolean = false) => {
 		if (append) {
 			setLoadingMore(true);
 		} else {
 			setLoading(true);
+			setError(null); // Clear previous errors on fresh load
 		}
 
 		const response = await fetchAPI<NotificationListResponse>(
@@ -99,18 +105,25 @@ const Notification = () => {
 		);
 
 		if (response.success && response.data) {
+			const { notifications, total } = response.data;
 			if (append) {
 				// Append to existing list (pagination)
-				setListNoti((prev) => [...prev, ...response.data.notifications]);
+				setListNoti((prev) => [...prev, ...notifications]);
 			} else {
 				// Replace list (initial load)
-				setListNoti(response.data.notifications);
+				setListNoti(notifications);
 			}
-
-			setTotal(response.data.total);
+			setTotal(total);
+			setError(null); // Clear error on success
 		} else {
 			console.error("Failed to fetch notifications:", response.error);
-			toast.error("Error", response.error || "Failed to load notifications");
+			if (!append) {
+				// Only set error state for initial load failures
+				setError(response.error || "Failed to load notifications");
+			} else {
+				// For pagination failures, just show a toast
+				toast.error("Error", response.error || "Failed to load more notifications");
+			}
 		}
 
 		if (append) {
@@ -132,43 +145,29 @@ const Notification = () => {
 			if (response.success) {
 				// Handle empty array or null/undefined data
 				if (!response.data || response.data.length === 0) {
-					console.log("No new notifications in the last 5 minutes");
 					return; // Exit early, nothing to process
 				}
-
+				const latestNotifications = response.data;
 				// Merge new notifications with existing ones (avoid duplicates)
 				setListNoti((prev) => {
 					const existingIds = new Set(prev.map((n) => n.id));
-					const newNotifications = response.data.filter((n) => !existingIds.has(n.id));
-
+					const newNotifications = latestNotifications.filter((n) => !existingIds.has(n.id));
 					if (newNotifications.length > 0) {
-						console.log(`Found ${newNotifications.length} new notification(s)`);
-
-						// Show toast notification for new items
-						toast.info(
-							"New Notifications",
-							`You have ${newNotifications.length} new notification${newNotifications.length > 1 ? "s" : ""}`
-						);
-
-						// Prepend new notifications to the list
+						// Prepend new notifications to the list (red dot will show for unread)
 						return [...newNotifications, ...prev];
 					}
-
-					console.log("All notifications already in list (duplicates filtered)");
 					return prev;
 				});
 
-				// Update total count only if we have new data
-				if (response.data && response.data.length > 0) {
-					setTotal((prev) => prev + response.data.length);
-				}
+				// Update total count
+				setTotal((prev) => prev + latestNotifications.length);
 			} else {
 				// API returned an error - log but don't show toast (polling should be silent)
 				console.error("Failed to fetch latest notifications (polling):", response.error);
 			}
-		} catch (error) {
+		} catch (err) {
 			// Network error or unexpected exception - log but don't show toast
-			console.error("Error polling for latest notifications:", error);
+			console.error("Error polling for latest notifications:", err);
 		}
 	};
 
@@ -189,12 +188,38 @@ const Notification = () => {
 		return () => clearInterval(intervalId);
 	}, []);
 
+	// Infinite scroll observer
+	const observerTarget = useRef<HTMLDivElement>(null);
+
 	// Load more notifications (pagination)
-	const handleLoadMore = () => {
+	const handleLoadMore = useCallback(() => {
+		if (loadingMore || !hasMore) return;
+
 		const nextPage = pageIndex + 1;
 		setPageIndex(nextPage);
 		fetchNotifications(nextPage, true);
-	};
+	}, [pageIndex, loadingMore, hasMore]);
+
+	// Set up intersection observer for infinite scroll
+	useEffect(() => {
+		const target = observerTarget.current;
+		if (!target) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting && hasMore && !loadingMore) {
+					handleLoadMore();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		observer.observe(target);
+
+		return () => {
+			if (target) observer.unobserve(target);
+		};
+	}, [hasMore, loadingMore, handleLoadMore]);
 
 	// Mark all unread notifications as read
 	const handleMarkAllRead = async () => {
@@ -211,7 +236,7 @@ const Notification = () => {
 		const response = await postAPI<NotificationMarkAsReadResponse, NotificationMarkAsReadRequest>(
 			ENDPOINTS.notificationMarkAsRead(),
 			requestBody,
-			{ useAuth: true } // Enable auth headers
+			{ useAuth: true }
 		);
 
 		if (response.success && response.data?.isSuccess) {
@@ -266,23 +291,25 @@ const Notification = () => {
 					<div className="flex items-center justify-center pt-20">
 						<p className="text-typo-secondary text-sm">Loading notifications...</p>
 					</div>
+				) : error ? (
+					<ErrorState
+						type="error"
+						title="Failed to load notifications"
+						description={error}
+						className="!pt-[72px] justify-start"
+					/>
 				) : listNoti.length > 0 ? (
 					<>
 						{listNoti.map((noti) => (
 							<NotiItem key={noti.id} notification={noti} />
 						))}
 
-						{/* Load More Button for Pagination */}
+						{/* Infinite scroll trigger */}
 						{hasMore && (
-							<div className="p-4">
-								<Button
-									onClick={handleLoadMore}
-									disabled={loadingMore}
-									variant="outline"
-									className="w-full"
-								>
-									{loadingMore ? "Loading..." : "Load More"}
-								</Button>
+							<div ref={observerTarget} className="p-4 flex items-center justify-center">
+								{loadingMore && (
+									<p className="text-typo-secondary text-sm">Loading more...</p>
+								)}
 							</div>
 						)}
 					</>
