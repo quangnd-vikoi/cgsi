@@ -20,6 +20,18 @@ export function handleCopy(text: string) {
 	toast.success("Copied to clipboard");
 }
 
+export const handleCall = (phone: string) => {
+	window.location.href = `tel:${phone}`;
+};
+
+export const handleEmail = (email: string) => {
+	window.location.href = `mailto:${email}`;
+};
+
+export const handleOpenMap = (address: string) => {
+	const encodedAddress = encodeURIComponent(address);
+	window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
+};
 export const withBasePath = (path: string): string => {
 	const basePath = getBasePath();
 	if (!path.startsWith("/")) {

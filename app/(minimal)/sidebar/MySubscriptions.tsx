@@ -18,7 +18,7 @@ import Link from 'next/link';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
-import type { UserSubscriptionResponse, UserProductSubscriptionDto } from '@/types';
+import type { UserProductSubscriptionDto } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
 type SubcriptionItem = {
@@ -59,26 +59,11 @@ const getSubscriptionImage = (category: string, index: number): string => {
 
 const MySubscriptions = () => {
 	// State management
-	const [marketDataSubs, setMarketDataSubs] = useState<UserSubscriptionResponse[]>([]);
 	const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	// Helper function to determine subscription status
-	const determineMarketDataStatus = (sub: UserSubscriptionResponse): SubscriptionStatus => {
-		if (sub.paymentStatus === "PENDING") return "Pending Payment";
-
-		const endDate = new Date(sub.end);
-		const now = new Date();
-		const daysUntilExpiry = Math.ceil(
-			(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-		);
-
-		if (endDate < now) return "Expired";
-		if (daysUntilExpiry <= 30) return "Expiring Soon";
-		return "Active";
-	};
-
 	const determineProductStatus = (sub: UserProductSubscriptionDto): SubscriptionStatus => {
 		if (!sub.endTime) return "Active";
 
@@ -98,22 +83,14 @@ const MySubscriptions = () => {
 		setLoading(true);
 		setError(null);
 
-		const result = await subscriptionService.getAllUserSubscriptions();
+		// NOTE: Only product subscriptions are fetched
+		// Market data subscription endpoints do NOT exist in the API
+		const result = await subscriptionService.getUserProductSubscriptions();
 
-		if (result.marketData?.success && result.marketData.data) {
-			setMarketDataSubs(result.marketData.data);
-		}
-
-		if (result.productSubs?.success && result.productSubs.data) {
-			setProductSubs(result.productSubs.data.userProductSubs);
-		}
-
-		// Only set error if BOTH failed
-		if (!result.marketData?.success && !result.productSubs?.success) {
-			setError(
-				result.marketData?.error ||
-					"Failed to load subscriptions. Please try again later."
-			);
+		if (result.success && result.data) {
+			setProductSubs(result.data.userProductSubs);
+		} else {
+			setError(result.error || "Failed to load subscriptions. Please try again later.");
 		}
 
 		setLoading(false);
@@ -125,37 +102,22 @@ const MySubscriptions = () => {
 	}, [fetchSubscriptions]);
 
 	// Map API data to UI structure
+	// NOTE: Market data subscriptions removed - endpoints do not exist
 	const subscriptions: SubscriptionGroup[] = [
 		{
-			category: "Research Articles",
-			items: productSubs
-				.filter((sub) => sub.productType?.toLowerCase().includes("research"))
-				.map((sub, index) => ({
-					title: sub.productName,
-					description: sub.productType || "",
-					endDate: sub.endTime
-						? new Date(sub.endTime).toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-						  })
-						: "N/A",
-					image: getSubscriptionImage(sub.productType || "", index),
-					status: determineProductStatus(sub),
-				})),
-		},
-		{
-			category: "Market Data",
-			items: marketDataSubs.map((sub, index) => ({
-				title: sub.description,
-				description: sub.category,
-				endDate: new Date(sub.end).toLocaleDateString("en-GB", {
-					day: "2-digit",
-					month: "short",
-					year: "numeric",
-				}),
-				image: getSubscriptionImage(sub.category, index),
-				status: determineMarketDataStatus(sub),
+			category: "Product Subscriptions",
+			items: productSubs.map((sub, index) => ({
+				title: sub.productName,
+				description: sub.productType || "",
+				endDate: sub.endTime
+					? new Date(sub.endTime).toLocaleDateString("en-GB", {
+							day: "2-digit",
+							month: "short",
+							year: "numeric",
+					  })
+					: "N/A",
+				image: getSubscriptionImage(sub.productType || "", index),
+				status: determineProductStatus(sub),
 			})),
 		},
 	];

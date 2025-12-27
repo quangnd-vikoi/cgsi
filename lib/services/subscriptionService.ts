@@ -1,10 +1,12 @@
 /**
  * Subscription Service
  *
- * Handles all subscription-related API calls including:
- * - Market data subscriptions
+ * Handles all subscription-related API calls for:
  * - Product subscriptions (IPO, IOP, AI)
  * - User subscription management
+ *
+ * NOTE: Market data subscription endpoints do NOT exist in the API.
+ * Only PRODUCT subscriptions are supported.
  *
  * All functions return APIResponse<T> with consistent error handling.
  */
@@ -13,61 +15,12 @@ import { fetchAPI, postAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { APIResponse } from "@/lib/api/types";
 import type {
-	SubscriptionResponse,
-	UserSubscriptionResponse,
 	UserProductSubsListResponse,
 	UserProductSubscriptionSubmissionRequest,
 	UserProductSubscriptionDetailResponse,
 	ProductionSubscriptionListResponse,
 	ProductSubscriptionDetailResponse,
 } from "@/types";
-
-// ============================================
-// MARKET DATA SUBSCRIPTIONS
-// ============================================
-
-/**
- * Get available market data subscriptions
- *
- * @returns Array of market data subscriptions available for purchase
- * @requires Authentication - Bearer token
- *
- * @example
- * const response = await getMarketDataSubscriptions();
- * if (response.success && response.data) {
- *   console.log('Available subscriptions:', response.data);
- * }
- */
-export const getMarketDataSubscriptions = async (): Promise<
-	APIResponse<SubscriptionResponse[]>
-> => {
-	return await fetchAPI<SubscriptionResponse[]>(ENDPOINTS.subscriptions(), {
-		useAuth: true,
-	});
-};
-
-/**
- * Get user's market data subscriptions
- *
- * @returns Array of user's active market data subscriptions
- * @requires Authentication - Bearer token
- *
- * @example
- * const response = await getUserMarketDataSubscriptions();
- * if (response.success && response.data) {
- *   console.log('My subscriptions:', response.data);
- * }
- */
-export const getUserMarketDataSubscriptions = async (): Promise<
-	APIResponse<UserSubscriptionResponse[]>
-> => {
-	return await fetchAPI<UserSubscriptionResponse[]>(
-		ENDPOINTS.userSubscriptions(),
-		{
-			useAuth: true,
-		}
-	);
-};
 
 // ============================================
 // PRODUCT SUBSCRIPTIONS (IPO/IOP/AI)
@@ -200,63 +153,49 @@ export const getProductDetails = async (
 // ============================================
 
 /**
- * Get combined subscriptions (market data + product subscriptions)
+ * Get user's product subscriptions
  *
- * Useful for "My Subscriptions" page that needs to display both types.
- * Uses Promise.allSettled to handle partial failures gracefully.
+ * NOTE: Market data subscription endpoints do not exist.
+ * This function only returns product subscriptions.
  *
- * @returns Object containing both market data and product subscription responses
+ * @returns Object containing product subscription response
  *
  * @example
  * const result = await getAllUserSubscriptions();
- * if (result.marketData?.success) {
- *   console.log('Market data subs:', result.marketData.data);
- * }
  * if (result.productSubs?.success) {
  *   console.log('Product subs:', result.productSubs.data.userProductSubs);
  * }
  */
 export const getAllUserSubscriptions = async () => {
-	const [marketDataRes, productSubsRes] = await Promise.allSettled([
-		getUserMarketDataSubscriptions(),
-		getUserProductSubscriptions(),
-	]);
+	const productSubsRes = await getUserProductSubscriptions();
 
 	return {
-		marketData:
-			marketDataRes.status === "fulfilled" ? marketDataRes.value : null,
-		productSubs:
-			productSubsRes.status === "fulfilled" ? productSubsRes.value : null,
+		marketData: null, // Market data endpoints do not exist
+		productSubs: productSubsRes,
 	};
 };
 
 /**
- * Check if user can subscribe to a specific market data product
+ * Check if user can subscribe to a product
  *
- * Checks if user already has an active subscription for the given subscription ID.
+ * NOTE: Market data subscription endpoints do not exist.
+ * This function always returns true as we cannot check subscription status.
  *
- * @param subscriptionId - Subscription ID to check
- * @returns Boolean indicating if subscription is allowed
+ * @param subscriptionId - Subscription ID to check (unused)
+ * @returns Always returns true
  *
  * @example
  * const canUserSubscribe = await canSubscribe("sub123");
  * if (canUserSubscribe) {
  *   // Show subscribe button
- * } else {
- *   // Show "Already subscribed" message
  * }
  */
 export const canSubscribe = async (
 	subscriptionId: string
 ): Promise<boolean> => {
-	const response = await getUserMarketDataSubscriptions();
-	if (!response.success || !response.data) return true;
-
-	// Check if user already has this subscription
-	const hasSubscription = response.data.some(
-		(sub) => sub.subscriptionId === subscriptionId
-	);
-	return !hasSubscription;
+	// Market data subscription endpoints do not exist
+	// Always return true as we cannot check subscription status
+	return true;
 };
 
 // ============================================
@@ -265,12 +204,11 @@ export const canSubscribe = async (
 
 /**
  * Subscription service object containing all subscription-related functions
+ *
+ * NOTE: Only PRODUCT subscription functions are available.
+ * Market data subscription endpoints do NOT exist in the API.
  */
 export const subscriptionService = {
-	// Market data subscriptions
-	getMarketDataSubscriptions,
-	getUserMarketDataSubscriptions,
-
 	// Product subscriptions
 	getUserProductSubscriptions,
 	submitProductSubscription,

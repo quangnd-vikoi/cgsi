@@ -1,31 +1,49 @@
 // components/sidebar/CentralDealingDesk.tsx
-import React from "react";
+import { useEffect, useState } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { Clock, Phone, MapPin, Copy, CircleArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/toaster";
 import { Separator } from "@/components/ui/separator";
+import { handleCall, handleCopy, handleOpenMap } from "@/lib/utils";
+import { getCentralDealingDeskContact } from "@/lib/services/profileService";
+import { ContactUsCentralDealingDeskResponse } from "@/types"
+
 
 const CentralDealingDesk = () => {
-	const handleCopy = (text: string, type: string) => {
-		navigator.clipboard.writeText(text);
-		toast.success(`${type} copied to clipboard`);
-	};
 
-	const handleCall = (phone: string) => {
-		window.location.href = `tel:${phone}`;
-	};
+	const [businessInfo, setBusinessInfo] = useState<ContactUsCentralDealingDeskResponse | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const handleOpenMap = (address: string) => {
-		const encodedAddress = encodeURIComponent(address);
-		window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");
-	};
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				setIsLoading(true);
+				const res = await getCentralDealingDeskContact();
+				if (res.success && res.data) {
+					setBusinessInfo(res.data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch client service contact:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
 
-	const businessInfo = {
-		hours: "08:30 - 17:30 SGT, 21:30 - 04:00 SGT (Mon-Fri)",
-		phone: "+65 6232 5888",
-		address: "10 Marina Boulevard, #09-01 Marina Bay Financial Centre Tower 2, Singapore 018983",
-	};
+	if (isLoading || !businessInfo) {
+		return (
+			<div className="flex flex-col h-full overflow-hidden -mx-4 md:-mx-6">
+				<div className="flex-shrink-0 pad-x">
+					<CustomSheetTitle title="Client Services" backTo={"contact"} />
+				</div>
+				<div className="flex-1 flex items-center justify-center">
+					<p className="text-sm text-typo-secondary">Loading...</p>
+				</div>
+			</div>
+		);
+	}
+
 
 	return (
 		<div className="flex flex-col h-full overflow-hidden -mx-4 md:-mx-6">
@@ -41,9 +59,8 @@ const CentralDealingDesk = () => {
 						<p className="text-sm font-semibold text-typo-primary">Business Hours</p>
 					</div>
 					<Separator className="my-3" />
-					<div className="text-xs text-typo-secondary font-medium">
-						Available:
-						<span className="font-normal ml-1">{businessInfo.hours}</span>
+					<div className="text-xs text-typo-secondary font-medium mb-3">
+						Available: <span className="font-normal">{businessInfo.operatingHours.replace("Available", "")}</span>
 					</div>
 				</div>
 
@@ -53,14 +70,14 @@ const CentralDealingDesk = () => {
 					<div className="flex items-center justify-between px-1.5 py-2.5">
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<Phone size={16} className="text-icon-light flex-shrink-0" />
-							<span className="text-sm text-typo-primary truncate">{businessInfo.phone}</span>
+							<span className="text-sm text-typo-primary truncate">{businessInfo.centralDealingNumber}</span>
 						</div>
 						<div className="flex gap-5 flex-shrink-0 ml-2">
 							<Button
 								variant="ghost"
 								size="icon"
 								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleCopy(businessInfo.phone, "Phone number")}
+								onClick={() => handleCopy(businessInfo.centralDealingNumber)}
 							>
 								<Copy size={16} className="text-enhanced-blue" />
 							</Button>
@@ -68,7 +85,7 @@ const CentralDealingDesk = () => {
 								variant="ghost"
 								size="icon"
 								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleCall(businessInfo.phone)}
+								onClick={() => handleCall(businessInfo.centralDealingNumber)}
 							>
 								<CircleArrowRight size={16} className="text-enhanced-blue" />
 							</Button>
@@ -79,14 +96,14 @@ const CentralDealingDesk = () => {
 					<div className="flex items-center justify-between px-1.5 py-2.5">
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<MapPin size={16} className="text-icon-light flex-shrink-0 mt-0.5" />
-							<span className="text-sm text-typo-primary">{businessInfo.address}</span>
+							<span className="text-sm text-typo-primary">{businessInfo.companyAddress}</span>
 						</div>
 						<div className="flex gap-5 flex-shrink-0 ml-2">
 							<Button
 								variant="ghost"
 								size="icon"
 								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleCopy(businessInfo.address, "Address")}
+								onClick={() => handleCopy(businessInfo.companyAddress)}
 							>
 								<Copy size={16} className="text-enhanced-blue" />
 							</Button>
@@ -94,7 +111,7 @@ const CentralDealingDesk = () => {
 								variant="ghost"
 								size="icon"
 								className="h-5 w-5 hover:bg-transparent"
-								onClick={() => handleOpenMap(businessInfo.address)}
+								onClick={() => handleOpenMap(businessInfo.companyAddress)}
 							>
 								<CircleArrowRight size={16} className="text-enhanced-blue" />
 							</Button>

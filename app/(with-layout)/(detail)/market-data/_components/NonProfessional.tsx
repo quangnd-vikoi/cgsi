@@ -77,38 +77,17 @@ const getMarketDataImage = (category: string, index: number): string => {
 
 // Fetch market data from API
 const fetchMarketData = async (): Promise<MarketDataResponse> => {
-	const response = await subscriptionService.getMarketDataSubscriptions();
+	// TODO: Market data subscription endpoints do NOT exist in the API
+	// Waiting for backend team to implement:
+	// - GET /subscription/api/v1/subscription (get available subscriptions)
+	// - GET /subscription/api/v1/userSubscription (get user's subscriptions)
+	//
+	// For now, return empty arrays which will trigger the "No Subscription Items Found" message
 
-	if (!response.success || !response.data) {
-		throw new Error(
-			response.error || "Failed to fetch market data subscriptions"
-		);
-	}
-
-	const subscriptions = response.data;
-
-	// Separate research articles from market data based on category
-	const researchArticles: MarketItemData[] = subscriptions
-		.filter((sub) => sub.category.toLowerCase().includes("research"))
-		.map((sub, index) => ({
-			id: parseInt(sub.id) || index + 1,
-			title: sub.description,
-			description: `From SGD ${sub.amount.toFixed(2)}/month`,
-			image: getMarketDataImage(sub.category, index),
-			dropDownItems: generateDropdownItems(sub.amount),
-		}));
-
-	const marketData: MarketItemData[] = subscriptions
-		.filter((sub) => !sub.category.toLowerCase().includes("research"))
-		.map((sub, index) => ({
-			id: parseInt(sub.id) || index + 1,
-			title: sub.description,
-			description: `From SGD ${sub.amount.toFixed(2)}/month`,
-			image: getMarketDataImage(sub.category, index),
-			dropDownItems: generateDropdownItems(sub.amount),
-		}));
-
-	return { researchArticles, marketData };
+	return {
+		researchArticles: [],
+		marketData: [],
+	};
 };
 
 interface NonProfessionalProps {

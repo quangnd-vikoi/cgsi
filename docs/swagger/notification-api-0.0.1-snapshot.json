@@ -1,251 +1,251 @@
-{
-	"openapi": "3.1.0",
-	"info": { "title": "Notification APIs", "version": "0.0.1-SNAPSHOT" },
-	"servers": [
-		{ "url": "https://stgitrade.cgsi.com.sg/portal", "description": "[uat]" },
-		{ "url": "https://sititrade.cgsi.com.sg/portal", "description": "[dev]" },
-		{ "url": "http://localhost:20001", "description": "[local]" }
-	],
-	"tags": [
-		{ "name": "iTrade API - Notification APIs", "description": "Endpoints for Notification APIs" },
-		{
-			"name": "iTrade API - Notification Internal APIs",
-			"description": "Internal endpoints for Notification APIs"
-		}
-	],
-	"paths": {
-		"/notification/api/v1/markAsRead": {
-			"post": {
-				"tags": ["iTrade API - Notification APIs"],
-				"operationId": "markUserNotificationAsRead",
-				"parameters": [
-					{
-						"name": "X-PROFILE-ID",
-						"in": "header",
-						"required": true,
-						"schema": { "type": "string" }
-					}
-				],
-				"requestBody": {
-					"content": {
-						"application/json": {
-							"schema": { "$ref": "#/components/schemas/UserNotificationMarkAsReadRequest" }
+	{
+		"openapi": "3.1.0",
+		"info": { "title": "Notification APIs", "version": "0.0.1-SNAPSHOT" },
+		"servers": [
+			{ "url": "https://stgitrade.cgsi.com.sg/portal", "description": "[uat]" },
+			{ "url": "https://sititrade.cgsi.com.sg/portal", "description": "[dev]" },
+			{ "url": "http://localhost:20001", "description": "[local]" }
+		],
+		"tags": [
+			{ "name": "iTrade API - Notification APIs", "description": "Endpoints for Notification APIs" },
+			{
+				"name": "iTrade API - Notification Internal APIs",
+				"description": "Internal endpoints for Notification APIs"
+			}
+		],
+		"paths": {
+			"/notification/api/v1/markAsRead": {
+				"post": {
+					"tags": ["iTrade API - Notification APIs"],
+					"operationId": "markUserNotificationAsRead",
+					"parameters": [
+						{
+							"name": "X-PROFILE-ID",
+							"in": "header",
+							"required": true,
+							"schema": { "type": "string" }
 						}
-					},
-					"required": true
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
+					],
+					"requestBody": {
 						"content": {
-							"*/*": {
-								"schema": {
-									"$ref": "#/components/schemas/UserNotificationMarkAsReadResponse"
+							"application/json": {
+								"schema": { "$ref": "#/components/schemas/UserNotificationMarkAsReadRequest" }
+							}
+						},
+						"required": true
+					},
+					"responses": {
+						"200": {
+							"description": "OK",
+							"content": {
+								"*/*": {
+									"schema": {
+										"$ref": "#/components/schemas/UserNotificationMarkAsReadResponse"
+									}
 								}
 							}
 						}
-					}
-				},
-				"security": [{ "bearerAuth": [] }]
-			}
-		},
-		"/notification/api/v1/internal/email/send": {
-			"post": {
-				"tags": ["iTrade API - Notification Internal APIs"],
-				"operationId": "sendEmailNotification",
-				"requestBody": {
-					"content": {
-						"application/json": { "schema": { "$ref": "#/components/schemas/EmailSendRequest" } }
 					},
-					"required": true
-				},
-				"responses": {
-					"200": {
-						"description": "OK",
+					"security": [{ "bearerAuth": [] }]
+				}
+			},
+			"/notification/api/v1/internal/email/send": {
+				"post": {
+					"tags": ["iTrade API - Notification Internal APIs"],
+					"operationId": "sendEmailNotification",
+					"requestBody": {
 						"content": {
-							"*/*": { "schema": { "$ref": "#/components/schemas/EmailSendResponse" } }
-						}
-					}
-				},
-				"security": []
-			}
-		},
-		"/notification/api/v1/list": {
-			"get": {
-				"tags": ["iTrade API - Notification APIs"],
-				"operationId": "getUserNotifications",
-				"parameters": [
-					{
-						"name": "X-PROFILE-ID",
-						"in": "header",
-						"required": true,
-						"schema": { "type": "string" }
+							"application/json": { "schema": { "$ref": "#/components/schemas/EmailSendRequest" } }
+						},
+						"required": true
 					},
-					{
-						"name": "pageSize",
-						"in": "query",
-						"description": "Number of notifications per page",
-						"required": false,
-						"schema": {
-							"type": "integer",
-							"format": "int32",
+					"responses": {
+						"200": {
+							"description": "OK",
+							"content": {
+								"*/*": { "schema": { "$ref": "#/components/schemas/EmailSendResponse" } }
+							}
+						}
+					},
+					"security": []
+				}
+			},
+			"/notification/api/v1/list": {
+				"get": {
+					"tags": ["iTrade API - Notification APIs"],
+					"operationId": "getUserNotifications",
+					"parameters": [
+						{
+							"name": "X-PROFILE-ID",
+							"in": "header",
+							"required": true,
+							"schema": { "type": "string" }
+						},
+						{
+							"name": "pageSize",
+							"in": "query",
 							"description": "Number of notifications per page",
-							"example": 10,
-							"minimum": 1
+							"required": false,
+							"schema": {
+								"type": "integer",
+								"format": "int32",
+								"description": "Number of notifications per page",
+								"example": 10,
+								"minimum": 1
+							},
+							"example": 10
 						},
-						"example": 10
-					},
-					{
-						"name": "pageIndex",
-						"in": "query",
-						"description": "Page index (0-based)",
-						"required": false,
-						"schema": {
-							"type": "integer",
-							"format": "int32",
+						{
+							"name": "pageIndex",
+							"in": "query",
 							"description": "Page index (0-based)",
-							"example": 0,
-							"minimum": 0
-						},
-						"example": 0
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"*/*": {
-								"schema": { "$ref": "#/components/schemas/UserNotificationListResponse" }
-							}
+							"required": false,
+							"schema": {
+								"type": "integer",
+								"format": "int32",
+								"description": "Page index (0-based)",
+								"example": 0,
+								"minimum": 0
+							},
+							"example": 0
 						}
-					}
-				},
-				"security": [{ "bearerAuth": [] }]
-			}
-		},
-		"/notification/api/v1/latest": {
-			"get": {
-				"tags": ["iTrade API - Notification APIs"],
-				"operationId": "getLatestUserNotifications",
-				"parameters": [
-					{
-						"name": "X-PROFILE-ID",
-						"in": "header",
-						"required": true,
-						"schema": { "type": "string" }
-					},
-					{
-						"name": "pastMins",
-						"in": "query",
-						"description": "Number of past minutes of latest notifications to retrieve",
-						"required": false,
-						"schema": {
-							"type": "integer",
-							"format": "int32",
-							"description": "Number of past minutes of latest notifications to retrieve",
-							"example": 5,
-							"minimum": 1
-						},
-						"example": 5
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "OK",
-						"content": {
-							"*/*": {
-								"schema": {
-									"type": "array",
-									"items": { "$ref": "#/components/schemas/UserNotificationLatestResponse" }
+					],
+					"responses": {
+						"200": {
+							"description": "OK",
+							"content": {
+								"*/*": {
+									"schema": { "$ref": "#/components/schemas/UserNotificationListResponse" }
 								}
 							}
 						}
-					}
-				},
-				"security": [{ "bearerAuth": [] }]
-			}
-		}
-	},
-	"components": {
-		"schemas": {
-			"UserNotificationMarkAsReadRequest": {
-				"type": "object",
-				"properties": {
-					"ids": {
-						"type": "array",
-						"description": "List of notification IDs to mark as read",
-						"example": ["notif-123", "notif-456"],
-						"items": { "type": "string" },
-						"minItems": 1
-					}
-				},
-				"required": ["ids"]
-			},
-			"UserNotificationMarkAsReadResponse": {
-				"type": "object",
-				"properties": { "isSuccess": { "type": "boolean" } }
-			},
-			"EmailSendParams": {
-				"type": "object",
-				"properties": {
-					"name": { "type": "string" },
-					"userId": { "type": "string" },
-					"nric": { "type": "string" },
-					"homeNo": { "type": "string" },
-					"officeNo": { "type": "string" },
-					"mobileNo": { "type": "string" },
-					"email": { "type": "string" },
-					"bmessage": { "type": "string" },
-					"smessage": { "type": "string" }
+					},
+					"security": [{ "bearerAuth": [] }]
 				}
 			},
-			"EmailSendRequest": {
-				"type": "object",
-				"properties": {
-					"triggerPoint": { "type": "string" },
-					"toAddress": { "type": "string" },
-					"params": { "$ref": "#/components/schemas/EmailSendParams" }
-				},
-				"required": ["triggerPoint"]
-			},
-			"EmailSendResponse": {
-				"type": "object",
-				"properties": { "isSuccess": { "type": "boolean" } },
-				"required": ["isSuccess"]
-			},
-			"UserNotificationData": {
-				"type": "object",
-				"properties": {
-					"id": { "type": "string" },
-					"title": { "type": "string" },
-					"description": { "type": "string" },
-					"category": { "type": "string" },
-					"status": { "type": "string" },
-					"createdOn": { "type": "string", "format": "date-time" }
-				}
-			},
-			"UserNotificationListResponse": {
-				"type": "object",
-				"properties": {
-					"total": { "type": "integer", "format": "int64" },
-					"notifications": {
-						"type": "array",
-						"items": { "$ref": "#/components/schemas/UserNotificationData" }
-					}
-				}
-			},
-			"UserNotificationLatestResponse": {
-				"type": "object",
-				"properties": {
-					"id": { "type": "string" },
-					"title": { "type": "string" },
-					"description": { "type": "string" },
-					"category": { "type": "string" },
-					"status": { "type": "string" },
-					"createdOn": { "type": "string", "format": "date-time" }
+			"/notification/api/v1/latest": {
+				"get": {
+					"tags": ["iTrade API - Notification APIs"],
+					"operationId": "getLatestUserNotifications",
+					"parameters": [
+						{
+							"name": "X-PROFILE-ID",
+							"in": "header",
+							"required": true,
+							"schema": { "type": "string" }
+						},
+						{
+							"name": "pastMins",
+							"in": "query",
+							"description": "Number of past minutes of latest notifications to retrieve",
+							"required": false,
+							"schema": {
+								"type": "integer",
+								"format": "int32",
+								"description": "Number of past minutes of latest notifications to retrieve",
+								"example": 5,
+								"minimum": 1
+							},
+							"example": 5
+						}
+					],
+					"responses": {
+						"200": {
+							"description": "OK",
+							"content": {
+								"*/*": {
+									"schema": {
+										"type": "array",
+										"items": { "$ref": "#/components/schemas/UserNotificationLatestResponse" }
+									}
+								}
+							}
+						}
+					},
+					"security": [{ "bearerAuth": [] }]
 				}
 			}
 		},
-		"securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } }
+		"components": {
+			"schemas": {
+				"UserNotificationMarkAsReadRequest": {
+					"type": "object",
+					"properties": {
+						"ids": {
+							"type": "array",
+							"description": "List of notification IDs to mark as read",
+							"example": ["notif-123", "notif-456"],
+							"items": { "type": "string" },
+							"minItems": 1
+						}
+					},
+					"required": ["ids"]
+				},
+				"UserNotificationMarkAsReadResponse": {
+					"type": "object",
+					"properties": { "isSuccess": { "type": "boolean" } }
+				},
+				"EmailSendParams": {
+					"type": "object",
+					"properties": {
+						"name": { "type": "string" },
+						"userId": { "type": "string" },
+						"nric": { "type": "string" },
+						"homeNo": { "type": "string" },
+						"officeNo": { "type": "string" },
+						"mobileNo": { "type": "string" },
+						"email": { "type": "string" },
+						"bmessage": { "type": "string" },
+						"smessage": { "type": "string" }
+					}
+				},
+				"EmailSendRequest": {
+					"type": "object",
+					"properties": {
+						"triggerPoint": { "type": "string" },
+						"toAddress": { "type": "string" },
+						"params": { "$ref": "#/components/schemas/EmailSendParams" }
+					},
+					"required": ["triggerPoint"]
+				},
+				"EmailSendResponse": {
+					"type": "object",
+					"properties": { "isSuccess": { "type": "boolean" } },
+					"required": ["isSuccess"]
+				},
+				"UserNotificationData": {
+					"type": "object",
+					"properties": {
+						"id": { "type": "string" },
+						"title": { "type": "string" },
+						"description": { "type": "string" },
+						"category": { "type": "string" },
+						"status": { "type": "string" },
+						"createdOn": { "type": "string", "format": "date-time" }
+					}
+				},
+				"UserNotificationListResponse": {
+					"type": "object",
+					"properties": {
+						"total": { "type": "integer", "format": "int64" },
+						"notifications": {
+							"type": "array",
+							"items": { "$ref": "#/components/schemas/UserNotificationData" }
+						}
+					}
+				},
+				"UserNotificationLatestResponse": {
+					"type": "object",
+					"properties": {
+						"id": { "type": "string" },
+						"title": { "type": "string" },
+						"description": { "type": "string" },
+						"category": { "type": "string" },
+						"status": { "type": "string" },
+						"createdOn": { "type": "string", "format": "date-time" }
+					}
+				}
+			},
+			"securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } }
+		}
 	}
-}
