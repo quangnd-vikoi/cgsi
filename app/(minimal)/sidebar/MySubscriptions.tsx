@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import CustomSheetTitle from './_components/CustomSheetTitle'
 import { ErrorState } from '@/components/ErrorState'
 import { Separator } from '@/components/ui/separator'
@@ -17,6 +17,8 @@ import Alert from '@/components/Alert';
 import Link from 'next/link';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
+import { subscriptionService } from '@/lib/services/subscriptionService';
+import type { UserSubscriptionResponse, UserProductSubscriptionDto } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
 type SubcriptionItem = {
@@ -32,166 +34,227 @@ type SubscriptionGroup = {
     items: SubcriptionItem[];
 };
 
-export const subscriptions: SubscriptionGroup[] = [
-    {
-        category: "Research Articles",
-        items: [
-            {
-                title: "CGSI Research",
-                description: "3 Months",
-                endDate: "22-Feb-2026",
-                image: "/images/market-data/item-1.png",
-                status: "Pending Payment",
-            },
-        ],
-    },
-    {
-        category: "Market Data",
-        items: [
-            {
-                title: "Singapore SGX Live Feed + Market Depth",
-                description: "Promo till 31-Dec-2025",
-                endDate: "31-Dec-2025",
-                image: "/images/market-data/item-2.png",
-                status: "Expiring Soon",
-            },
-            {
-                title: "Hong Kong HKEX Live Feed + Market Depth",
-                description: "6 Months",
-                endDate: "26-Oct-2025",
-                image: "/images/market-data/item-3.png",
-                status: "Expired",
-            },
-            {
-                title: "[Non-Pro Only] Malaysia BURSA Live Feed",
-                description: "Promo 6 Months",
-                endDate: "01-Apr-2026",
-                image: "/images/market-data/item-4.png",
-                status: "Active",
-            },
-            {
-                title: "[Non-Pro Only] Thailand SET Live Feed",
-                description: "Promo 6 Months",
-                endDate: "01-Sep-2025",
-                image: "/images/market-data/item-5.png",
-                status: "Expired",
-            },
-            {
-                title: "[Non-Pro Only] US Live Feed",
-                description: "Promo 6 Months",
-                endDate: "01-Jul-2026",
-                image: "/images/market-data/item-6.png",
-                status: "Active",
-            },
-        ],
-    },
-];
+// Helper function to get subscription image based on category
+const getSubscriptionImage = (category: string, index: number): string => {
+	const SUBSCRIPTION_IMAGES: Record<string, string> = {
+		sgx: "/images/market-data/item-2.png",
+		hkex: "/images/market-data/item-3.png",
+		bursa: "/images/market-data/item-4.png",
+		malaysia: "/images/market-data/item-4.png",
+		thailand: "/images/market-data/item-5.png",
+		set: "/images/market-data/item-5.png",
+		us: "/images/market-data/item-6.png",
+		research: "/images/market-data/item-1.png",
+		default: "/images/market-data/item-1.png",
+	};
 
-const MY_SUBSCRIPTIONS =
-{
-    research_articles: [
-        {
-            id: 1,
-            title: "CGSI Research",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            status: "Active" as SubscriptionStatus,
-
-        },
-        {
-            id: 2,
-            title: "Hong Kong HKEX Live Feed",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            status: "Active" as SubscriptionStatus,
-        },
-        {
-            id: 3,
-            title: "Hong Kong HKEX Live Feed",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            tag: "Idea of the Day",
-            status: "Pending Payment" as SubscriptionStatus,
-        }
-    ],
-    market_data: [
-        {
-            id: 1,
-            title: "Singapore SGX Live Feed + Market Depth",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            tag: "Idea of the Day",
-            url: "https://www.cgsi.com.sg/market-data/idea-of-the-day-1"
-        },
-        {
-            id: 2,
-            title: "Hong Kong HKEX Live Feed",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            tag: "Idea of the Day",
-            url: "https://www.cgsi.com.sg/market-data/idea-of-the-day-2"
-        },
-        {
-            id: 3,
-            title: "Hong Kong HKEX Live Feed",
-            description: "From SGD 16.67/month",
-            date: "25-Aug-2025",
-            author: "Rayrayhan Abhirama",
-            tag: "Idea of the Day",
-            url: "https://www.cgsi.com.sg/market-data/idea-of-the-day-3"
-        }]
-}
+	const key = Object.keys(SUBSCRIPTION_IMAGES).find((k) =>
+		category.toLowerCase().includes(k.toLowerCase())
+	);
+	return (
+		SUBSCRIPTION_IMAGES[key as keyof typeof SUBSCRIPTION_IMAGES] ||
+		SUBSCRIPTION_IMAGES.default
+	);
+};
 
 const MySubscriptions = () => {
+	// State management
+	const [marketDataSubs, setMarketDataSubs] = useState<UserSubscriptionResponse[]>([]);
+	const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-    function statusClass(status: SubscriptionStatus): { badgeType: "default" | "secondary" | "destructive" | "outline" | "success" | "expiring" | null | undefined; icons: React.ReactNode } {
+	// Helper function to determine subscription status
+	const determineMarketDataStatus = (sub: UserSubscriptionResponse): SubscriptionStatus => {
+		if (sub.paymentStatus === "PENDING") return "Pending Payment";
 
-        switch (status) {
-            case "Pending Payment":
-                return {
-                    badgeType: "default",
-                    icons: <Hourglass />
-                }
-            case "Expiring Soon":
-                return {
-                    badgeType: "expiring",
-                    icons: <AlarmClock />
-                };
-            case "Expired":
-                return {
-                    badgeType: "destructive",
-                    icons: <CircleX />
-                };
-            case "Active":
-                return {
-                    badgeType: "success",
-                    icons: <CircleCheck />
-                };
-        }
-    }
+		const endDate = new Date(sub.end);
+		const now = new Date();
+		const daysUntilExpiry = Math.ceil(
+			(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+		);
 
+		if (endDate < now) return "Expired";
+		if (daysUntilExpiry <= 30) return "Expiring Soon";
+		return "Active";
+	};
 
+	const determineProductStatus = (sub: UserProductSubscriptionDto): SubscriptionStatus => {
+		if (!sub.endTime) return "Active";
 
-    if (MY_SUBSCRIPTIONS.research_articles.length === 0 && MY_SUBSCRIPTIONS.market_data.length === 0) {
-        return (
-            <div className='h-full'>
-                <CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
-                {/* <ErrorState title="No Subscription Records Found" description='Subscribe and find your active subscriptions here!' type='empty' /> */}
-                <ErrorState title="Oops, Something Went Wrong" description='We are unable to display the content, please try again later.' type='error' />
-            </div>
-        )
-    }
+		const endDate = new Date(sub.endTime);
+		const now = new Date();
+		const daysUntilExpiry = Math.ceil(
+			(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+		);
 
+		if (endDate < now) return "Expired";
+		if (daysUntilExpiry <= 30) return "Expiring Soon";
+		return "Active";
+	};
 
-    const handleUnsubcribe = (item: SubcriptionItem) => {
-        console.log("Unsubscribed from ", item.title);
-        toast.success('Unsubscribed', `You have successfully unsubscribed from "${item.title} - ${item.description}".`);
-    };
+	// Fetch subscriptions from API
+	const fetchSubscriptions = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+
+		const result = await subscriptionService.getAllUserSubscriptions();
+
+		if (result.marketData?.success && result.marketData.data) {
+			setMarketDataSubs(result.marketData.data);
+		}
+
+		if (result.productSubs?.success && result.productSubs.data) {
+			setProductSubs(result.productSubs.data.userProductSubs);
+		}
+
+		// Only set error if BOTH failed
+		if (!result.marketData?.success && !result.productSubs?.success) {
+			setError(
+				result.marketData?.error ||
+					"Failed to load subscriptions. Please try again later."
+			);
+		}
+
+		setLoading(false);
+	}, []);
+
+	// Fetch data on mount
+	useEffect(() => {
+		fetchSubscriptions();
+	}, [fetchSubscriptions]);
+
+	// Map API data to UI structure
+	const subscriptions: SubscriptionGroup[] = [
+		{
+			category: "Research Articles",
+			items: productSubs
+				.filter((sub) => sub.productType?.toLowerCase().includes("research"))
+				.map((sub, index) => ({
+					title: sub.productName,
+					description: sub.productType || "",
+					endDate: sub.endTime
+						? new Date(sub.endTime).toLocaleDateString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+						  })
+						: "N/A",
+					image: getSubscriptionImage(sub.productType || "", index),
+					status: determineProductStatus(sub),
+				})),
+		},
+		{
+			category: "Market Data",
+			items: marketDataSubs.map((sub, index) => ({
+				title: sub.description,
+				description: sub.category,
+				endDate: new Date(sub.end).toLocaleDateString("en-GB", {
+					day: "2-digit",
+					month: "short",
+					year: "numeric",
+				}),
+				image: getSubscriptionImage(sub.category, index),
+				status: determineMarketDataStatus(sub),
+			})),
+		},
+	];
+
+	function statusClass(status: SubscriptionStatus): {
+		badgeType:
+			| "default"
+			| "secondary"
+			| "destructive"
+			| "outline"
+			| "success"
+			| "expiring"
+			| null
+			| undefined;
+		icons: React.ReactNode;
+	} {
+		switch (status) {
+			case "Pending Payment":
+				return {
+					badgeType: "default",
+					icons: <Hourglass />,
+				};
+			case "Expiring Soon":
+				return {
+					badgeType: "expiring",
+					icons: <AlarmClock />,
+				};
+			case "Expired":
+				return {
+					badgeType: "destructive",
+					icons: <CircleX />,
+				};
+			case "Active":
+				return {
+					badgeType: "success",
+					icons: <CircleCheck />,
+				};
+		}
+	}
+
+	const handleUnsubcribe = (item: SubcriptionItem) => {
+		console.log("Unsubscribed from ", item.title);
+		toast.success(
+			"Unsubscribed",
+			`You have successfully unsubscribed from "${item.title} - ${item.description}".`
+		);
+	};
+
+	// Loading state
+	if (loading) {
+		return (
+			<div className="h-full">
+				<CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
+				<div className="flex items-center justify-center pt-20">
+					<div className="space-y-4 p-6 w-full">
+						{[...Array(3)].map((_, i) => (
+							<div key={i} className="flex gap-3 animate-pulse">
+								<div className="w-11 h-11 bg-gray-200 rounded"></div>
+								<div className="flex-1">
+									<div className="h-4 bg-gray-200 rounded w-3/4"></div>
+									<div className="h-3 bg-gray-200 rounded w-1/2 mt-2"></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<div className="h-full">
+				<CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
+				<ErrorState
+					title="Oops, Something Went Wrong"
+					description={error}
+					type="error"
+				/>
+			</div>
+		);
+	}
+
+	// Empty state
+	if (
+		subscriptions.every((group) => group.items.length === 0)
+	) {
+		return (
+			<div className="h-full">
+				<CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
+				<ErrorState
+					title="No Subscription Records Found"
+					description="Subscribe and find your active subscriptions here!"
+					type="empty"
+				/>
+			</div>
+		);
+	}
 
     return (
         <div className="h-full flex flex-col">

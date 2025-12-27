@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
 import { IMarketDataItem } from '../page';
+import { subscriptionService } from '@/lib/services/subscriptionService';
 // Type definitions
 interface DropDownItem {
     label: string;
@@ -24,168 +25,90 @@ interface MarketDataResponse {
     marketData: MarketItemData[];
 }
 
-// Giả lập API fetch với khả năng random error
-const fetchMarketData = async (): Promise<MarketDataResponse> => {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            const randomValue = Math.random();
+// Helper function to generate dropdown pricing tiers
+const generateDropdownItems = (monthlyPrice: number): DropDownItem[] => {
+	return [
+		{ label: "1 Month", value: `${monthlyPrice.toFixed(2)} SGD` },
+		{
+			label: "3 Months",
+			value: `${(monthlyPrice * 3 * 0.95).toFixed(2)} SGD`,
+		}, // 5% discount
+		{
+			label: "6 Months",
+			value: `${(monthlyPrice * 6 * 0.9).toFixed(2)} SGD`,
+		}, // 10% discount
+		{
+			label: "12 Months",
+			value: `${(monthlyPrice * 12 * 0.85).toFixed(2)} SGD`,
+		}, // 15% discount
+	];
+};
 
-            if (randomValue > 0.8) {
-                reject(console.error("Error fetching market data"));
-            } else {
-                resolve({
-                    researchArticles: [
-                        {
-                            id: 1,
-                            title: "CGSI Research",
-                            description: "From SGD 16.67/month",
-                            image: "/images/market-data/item-1.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "21.80 SGD" },
-                                { label: "3 Months", value: "50.00 SGD" },
-                                { label: "6 Months", value: "109.00 SGD" },
-                                { label: "12 Months", value: "218.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 2,
-                            title: "Market Insights & Analysis",
-                            description: "From SGD 12.50/month",
-                            image: "/images/market-data/item-4.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "15.00 SGD" },
-                                { label: "3 Months", value: "40.00 SGD" },
-                                { label: "6 Months", value: "85.00 SGD" },
-                                { label: "12 Months", value: "165.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 3,
-                            title: "Technical Analysis Reports",
-                            description: "From SGD 20.83/month",
-                            image: "/images/market-data/item-5.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "25.00 SGD" },
-                                { label: "3 Months", value: "70.00 SGD" },
-                                { label: "6 Months", value: "135.00 SGD" },
-                                { label: "12 Months", value: "250.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 4,
-                            title: "Weekly Market Commentary",
-                            description: "From SGD 8.33/month",
-                            image: "/images/market-data/item-6.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "10.00 SGD" },
-                                { label: "3 Months", value: "28.00 SGD" },
-                                { label: "6 Months", value: "55.00 SGD" },
-                                { label: "12 Months", value: "100.00 SGD" }
-                            ]
-                        }
-                    ],
-                    marketData: [
-                        {
-                            id: 1,
-                            title: "Singapore SGX Live Feed + Market Depth",
-                            description: "From SGD 16.67/month",
-                            image: "/images/market-data/item-2.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "21.80 SGD" },
-                                { label: "3 Months", value: "50.00 SGD" },
-                                { label: "6 Months", value: "109.00 SGD" },
-                                { label: "12 Months", value: "218.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 2,
-                            title: "Hong Kong HKEX Live Feed",
-                            description: "From SGD 16.67/month",
-                            image: "/images/market-data/item-3.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "21.80 SGD" },
-                                { label: "3 Months", value: "50.00 SGD" },
-                                { label: "6 Months", value: "109.00 SGD" },
-                                { label: "12 Months", value: "218.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 3,
-                            title: "US NYSE & NASDAQ Live Feed",
-                            description: "From SGD 25.00/month",
-                            image: "/images/market-data/item-4.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "30.00 SGD" },
-                                { label: "3 Months", value: "85.00 SGD" },
-                                { label: "6 Months", value: "165.00 SGD" },
-                                { label: "12 Months", value: "320.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 4,
-                            title: "China Shanghai & Shenzhen Live Feed",
-                            description: "From SGD 18.33/month",
-                            image: "/images/market-data/item-5.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "22.00 SGD" },
-                                { label: "3 Months", value: "60.00 SGD" },
-                                { label: "6 Months", value: "115.00 SGD" },
-                                { label: "12 Months", value: "220.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 5,
-                            title: "Malaysia Bursa Live Feed",
-                            description: "From SGD 12.50/month",
-                            image: "/images/market-data/item-6.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "15.00 SGD" },
-                                { label: "3 Months", value: "42.00 SGD" },
-                                { label: "6 Months", value: "80.00 SGD" },
-                                { label: "12 Months", value: "150.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 6,
-                            title: "Thailand SET Live Feed",
-                            description: "From SGD 12.50/month",
-                            image: "/images/market-data/item-4.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "15.00 SGD" },
-                                { label: "3 Months", value: "42.00 SGD" },
-                                { label: "6 Months", value: "80.00 SGD" },
-                                { label: "12 Months", value: "150.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 7,
-                            title: "Japan Tokyo Stock Exchange Live Feed",
-                            description: "From SGD 20.83/month",
-                            image: "/images/market-data/item-5.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "25.00 SGD" },
-                                { label: "3 Months", value: "70.00 SGD" },
-                                { label: "6 Months", value: "135.00 SGD" },
-                                { label: "12 Months", value: "250.00 SGD" }
-                            ]
-                        },
-                        {
-                            id: 8,
-                            title: "Australia ASX Live Feed",
-                            description: "From SGD 18.33/month",
-                            image: "/images/market-data/item-6.png",
-                            dropDownItems: [
-                                { label: "1 Month", value: "22.00 SGD" },
-                                { label: "3 Months", value: "60.00 SGD" },
-                                { label: "6 Months", value: "115.00 SGD" },
-                                { label: "12 Months", value: "220.00 SGD" }
-                            ]
-                        }
-                    ]
-                });
-            }
-        }, 1000);
-    });
+// Helper function to get image based on category
+const getMarketDataImage = (category: string, index: number): string => {
+	const imageMap: Record<string, string> = {
+		sgx: "/images/market-data/item-2.png",
+		singapore: "/images/market-data/item-2.png",
+		hkex: "/images/market-data/item-3.png",
+		"hong kong": "/images/market-data/item-3.png",
+		us: "/images/market-data/item-4.png",
+		nyse: "/images/market-data/item-4.png",
+		nasdaq: "/images/market-data/item-4.png",
+		china: "/images/market-data/item-5.png",
+		shanghai: "/images/market-data/item-5.png",
+		malaysia: "/images/market-data/item-6.png",
+		bursa: "/images/market-data/item-6.png",
+		thailand: "/images/market-data/item-4.png",
+		set: "/images/market-data/item-4.png",
+		japan: "/images/market-data/item-5.png",
+		tokyo: "/images/market-data/item-5.png",
+		australia: "/images/market-data/item-6.png",
+		asx: "/images/market-data/item-6.png",
+		research: "/images/market-data/item-1.png",
+	};
+
+	const categoryLower = category.toLowerCase();
+	const matchedKey = Object.keys(imageMap).find((key) =>
+		categoryLower.includes(key)
+	);
+
+	return matchedKey ? imageMap[matchedKey] : "/images/market-data/item-1.png";
+};
+
+// Fetch market data from API
+const fetchMarketData = async (): Promise<MarketDataResponse> => {
+	const response = await subscriptionService.getMarketDataSubscriptions();
+
+	if (!response.success || !response.data) {
+		throw new Error(
+			response.error || "Failed to fetch market data subscriptions"
+		);
+	}
+
+	const subscriptions = response.data;
+
+	// Separate research articles from market data based on category
+	const researchArticles: MarketItemData[] = subscriptions
+		.filter((sub) => sub.category.toLowerCase().includes("research"))
+		.map((sub, index) => ({
+			id: parseInt(sub.id) || index + 1,
+			title: sub.description,
+			description: `From SGD ${sub.amount.toFixed(2)}/month`,
+			image: getMarketDataImage(sub.category, index),
+			dropDownItems: generateDropdownItems(sub.amount),
+		}));
+
+	const marketData: MarketItemData[] = subscriptions
+		.filter((sub) => !sub.category.toLowerCase().includes("research"))
+		.map((sub, index) => ({
+			id: parseInt(sub.id) || index + 1,
+			title: sub.description,
+			description: `From SGD ${sub.amount.toFixed(2)}/month`,
+			image: getMarketDataImage(sub.category, index),
+			dropDownItems: generateDropdownItems(sub.amount),
+		}));
+
+	return { researchArticles, marketData };
 };
 
 interface NonProfessionalProps {
