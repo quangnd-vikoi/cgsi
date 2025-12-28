@@ -11,6 +11,12 @@ import DeclarationStep from "./_components/DeclarationStep";
 import NonProDeclarationStep from "./_components/NonProDeclarationStep";
 import TermsStep from "./_components/TermsStep";
 import SuccessState from "@/public/icons/success-state.svg";
+import {
+    getUserSubscriptionDetails,
+    getProductSubscriptionsByType,
+    getProductDetails
+} from "@/lib/services/subscriptionService";
+import { toast } from "sonner";
 
 export type Step = "select" | "cart" | "professional-declaration" | "non-professional-declaration" | "terms-and-conditions" | "success";
 
@@ -26,6 +32,10 @@ export interface IMarketDataItem {
 const MarketData = () => {
     const [currentStep, setCurrentStep] = useState<Step>("select");
     const [selectedItems, setSelectedItems] = useState<Array<IMarketDataItem>>([]);
+
+    // API Testing State
+    const [testLoading, setTestLoading] = useState(false);
+    const [showTestSection, setShowTestSection] = useState(true);
 
     console.log("Selected Items: ", selectedItems);
     const handleGoToCart = () => {
@@ -52,6 +62,91 @@ const MarketData = () => {
         });
         return totalAmount;
     };
+
+    // API Test Handlers
+    const testGetUserSubscriptionDetails = async () => {
+        setTestLoading(true);
+        try {
+            // Test with a sample subscription ID
+            const subscriptionId = "test-sub-123";
+            const response = await getUserSubscriptionDetails(subscriptionId);
+
+            if (response.success && response.data) {
+                toast.success("API Success: getUserSubscriptionDetails", {
+                    description: `Fetched details for subscription: ${subscriptionId}`
+                });
+                console.log("getUserSubscriptionDetails response:", response.data);
+            } else {
+                toast.error("API Error: getUserSubscriptionDetails", {
+                    description: response.error || "Unknown error"
+                });
+                console.error("getUserSubscriptionDetails error:", response.error);
+            }
+        } catch (error) {
+            toast.error("API Error: getUserSubscriptionDetails", {
+                description: error instanceof Error ? error.message : "Request failed"
+            });
+            console.error("getUserSubscriptionDetails exception:", error);
+        } finally {
+            setTestLoading(false);
+        }
+    };
+
+    const testGetProductSubscriptionsByType = async () => {
+        setTestLoading(true);
+        try {
+            // Test with product type "IPO"
+            const productType = "IPO";
+            const response = await getProductSubscriptionsByType(productType);
+
+            if (response.success && response.data) {
+                toast.success("API Success: getProductSubscriptionsByType", {
+                    description: `Fetched ${productType} subscriptions`
+                });
+                console.log("getProductSubscriptionsByType response:", response.data);
+            } else {
+                toast.error("API Error: getProductSubscriptionsByType", {
+                    description: response.error || "Unknown error"
+                });
+                console.error("getProductSubscriptionsByType error:", response.error);
+            }
+        } catch (error) {
+            toast.error("API Error: getProductSubscriptionsByType", {
+                description: error instanceof Error ? error.message : "Request failed"
+            });
+            console.error("getProductSubscriptionsByType exception:", error);
+        } finally {
+            setTestLoading(false);
+        }
+    };
+
+    const testGetProductDetails = async () => {
+        setTestLoading(true);
+        try {
+            // Test with a sample product code
+            const productCode = "test-prod-123";
+            const response = await getProductDetails(productCode);
+
+            if (response.success && response.data) {
+                toast.success("API Success: getProductDetails", {
+                    description: `Fetched details for product: ${productCode}`
+                });
+                console.log("getProductDetails response:", response.data);
+            } else {
+                toast.error("API Error: getProductDetails", {
+                    description: response.error || "Unknown error"
+                });
+                console.error("getProductDetails error:", response.error);
+            }
+        } catch (error) {
+            toast.error("API Error: getProductDetails", {
+                description: error instanceof Error ? error.message : "Request failed"
+            });
+            console.error("getProductDetails exception:", error);
+        } finally {
+            setTestLoading(false);
+        }
+    };
     return (
         <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
             <div className="shrink-0">
@@ -75,6 +170,55 @@ const MarketData = () => {
                     showBackButton={currentStep !== "select" && currentStep !== "success"}
                 />
             </div>
+
+            {/* API Test Section - Temporary for testing */}
+            {showTestSection && currentStep === "select" && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                    <div className="flex justify-between items-center mb-3">
+                        <h3 className="font-semibold text-sm">API Testing Section</h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowTestSection(false)}
+                            className="text-xs h-auto py-1"
+                        >
+                            Hide
+                        </Button>
+                    </div>
+                    <p className="text-xs text-typo-secondary mb-3">
+                        Test the three unused subscription APIs. Check console and toast notifications for results.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={testGetUserSubscriptionDetails}
+                            disabled={testLoading}
+                            className="text-xs justify-start"
+                        >
+                            {testLoading ? "Testing..." : "Test getUserSubscriptionDetails()"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={testGetProductSubscriptionsByType}
+                            disabled={testLoading}
+                            className="text-xs justify-start"
+                        >
+                            {testLoading ? "Testing..." : "Test getProductSubscriptionsByType()"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={testGetProductDetails}
+                            disabled={testLoading}
+                            className="text-xs justify-start"
+                        >
+                            {testLoading ? "Testing..." : "Test getProductDetails()"}
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Step 1 - Selection */}
             {currentStep === "select" && (
