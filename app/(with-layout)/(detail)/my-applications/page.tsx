@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/pagination";
 import Title from "@/components/Title";
 import { subscriptionService } from "@/lib/services/subscriptionService";
-import type { UserProductSubscriptionDto } from "@/types";
 import { ErrorState } from "@/components/ErrorState";
 
 type ApplicationType = "all" | "securities" | "alternatives";
@@ -95,11 +94,11 @@ export default function MyApplication() {
 	};
 
 	return (
-		<div className="flex-1 flex flex-col">
+		<div className="flex-1 flex flex-col h-full">
 			{/* Header */}
 			<Title showBackButton title="My Applications" />
 			{/* Content Box */}
-			<div className="bg-white pad rounded-lg flex-1 flex flex-col">
+			<div className="bg-white pad rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
 				{/* Tabs */}
 				<Tabs
 					value={activeTab}

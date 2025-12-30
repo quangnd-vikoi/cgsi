@@ -93,8 +93,7 @@ const Professional = () => {
       const data = await fetchMarketData();
       setResearchArticles(data.researchArticles);
       setMarketData(data.marketData);
-    } catch (err) {
-      console.log(err)
+    } catch {
       setError("Error fetching market data");
     } finally {
     }

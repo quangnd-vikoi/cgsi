@@ -119,8 +119,7 @@ const UpdateSignature = () => {
 				setError("Field cannot be empty");
 			} else {
 				setError("");
-				const dataURL = sigCanvas.current.toDataURL();
-				console.log(dataURL);
+				sigCanvas.current.toDataURL();
 				setStatus("success");
 			}
 		} else {
@@ -132,9 +131,8 @@ const UpdateSignature = () => {
 		}
 	};
 
-	console.log("Selected file", selectedFile);
 	return (
-		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col">
+		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
 					title="Update Signature"
@@ -151,7 +149,7 @@ const UpdateSignature = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6">
+			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
 				{status != "success" ? (
 					<Tabs defaultValue={tab} className="pad-x gap-0">
 						<TabsList className="">

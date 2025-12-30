@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
 import { IMarketDataItem } from '../page';
-import { subscriptionService } from '@/lib/services/subscriptionService';
+
 // Type definitions
 interface DropDownItem {
     label: string;
@@ -24,56 +24,6 @@ interface MarketDataResponse {
     researchArticles: MarketItemData[];
     marketData: MarketItemData[];
 }
-
-// Helper function to generate dropdown pricing tiers
-const generateDropdownItems = (monthlyPrice: number): DropDownItem[] => {
-	return [
-		{ label: "1 Month", value: `${monthlyPrice.toFixed(2)} SGD` },
-		{
-			label: "3 Months",
-			value: `${(monthlyPrice * 3 * 0.95).toFixed(2)} SGD`,
-		}, // 5% discount
-		{
-			label: "6 Months",
-			value: `${(monthlyPrice * 6 * 0.9).toFixed(2)} SGD`,
-		}, // 10% discount
-		{
-			label: "12 Months",
-			value: `${(monthlyPrice * 12 * 0.85).toFixed(2)} SGD`,
-		}, // 15% discount
-	];
-};
-
-// Helper function to get image based on category
-const getMarketDataImage = (category: string, index: number): string => {
-	const imageMap: Record<string, string> = {
-		sgx: "/images/market-data/item-2.png",
-		singapore: "/images/market-data/item-2.png",
-		hkex: "/images/market-data/item-3.png",
-		"hong kong": "/images/market-data/item-3.png",
-		us: "/images/market-data/item-4.png",
-		nyse: "/images/market-data/item-4.png",
-		nasdaq: "/images/market-data/item-4.png",
-		china: "/images/market-data/item-5.png",
-		shanghai: "/images/market-data/item-5.png",
-		malaysia: "/images/market-data/item-6.png",
-		bursa: "/images/market-data/item-6.png",
-		thailand: "/images/market-data/item-4.png",
-		set: "/images/market-data/item-4.png",
-		japan: "/images/market-data/item-5.png",
-		tokyo: "/images/market-data/item-5.png",
-		australia: "/images/market-data/item-6.png",
-		asx: "/images/market-data/item-6.png",
-		research: "/images/market-data/item-1.png",
-	};
-
-	const categoryLower = category.toLowerCase();
-	const matchedKey = Object.keys(imageMap).find((key) =>
-		categoryLower.includes(key)
-	);
-
-	return matchedKey ? imageMap[matchedKey] : "/images/market-data/item-1.png";
-};
 
 // Fetch market data from API
 const fetchMarketData = async (): Promise<MarketDataResponse> => {
@@ -109,8 +59,7 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
             const data = await fetchMarketData();
             setResearchArticles(data.researchArticles);
             setMarketData(data.marketData);
-        } catch (err) {
-            console.error(err);
+        } catch {
             setError("Error fetching market data");
         } finally {
         }

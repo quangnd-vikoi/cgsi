@@ -97,7 +97,6 @@ const SharesTransfer = () => {
             return;
         }
         // TODO: Handle shares transfer API call
-        console.log("Transfer to account:", transferAccount);
 
         // Move to success step
         setStep(2);
@@ -111,12 +110,12 @@ const SharesTransfer = () => {
     };
 
     return (
-        <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col">
+        <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
             <div className="shrink-0">
                 <Title title="Shares Transfer" showBackButton={step === 1} />
             </div>
 
-            <div className="bg-white rounded-lg flex-1 flex flex-col">
+            <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
                 {step === 2 ? (
                     <SuccessStep />
                 ) : (

@@ -1,6 +1,5 @@
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
-import type { APIResponse } from "@/lib/api/types";
 import { CorpActionSSOResponse } from "@/types";
 
 /**
@@ -33,13 +32,10 @@ export function submitSamlForm(postUrl: string, samlResponse: string): void {
 }
 
 export const getCorporateActionURL = async (): Promise<void> => {
-    const response = await fetchAPI<CorpActionSSOResponse>(
+    await fetchAPI<CorpActionSSOResponse>(
         ENDPOINTS.ssoCorporateAction(),
         { useAuth: true }
     );
-
-    if (response)
-        console.log(response)
 }
 
 

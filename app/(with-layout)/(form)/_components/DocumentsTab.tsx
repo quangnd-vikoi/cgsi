@@ -124,7 +124,7 @@ const DocumentsTab: React.FC = () => {
 		}
 	};
 
-	let documents = parseDocuments(productDetails.refDocs);
+	const documents = parseDocuments(productDetails.refDocs);
 
 	// Also check for tncUrl
 	if (productDetails.tncUrl) {

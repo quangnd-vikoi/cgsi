@@ -42,7 +42,7 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
 			const submissions = selectedItems.map((item) =>
 				subscriptionService.submitProductSubscription({
 					productCode: item.title, // Using title as productCode (workaround)
-					accountNo: selectedAccount?.accountNumber || "",
+					accountNo: selectedAccount?.id || "",
 					totalUnit: 1,
 					paymentCurrency: "SGD",
 					paymentMode: "PayNow",

@@ -1,10 +1,51 @@
 import { API_BASE_URL } from "./config";
 import type { APIResponse, StandardAPIResponse, DirectAPIResponse } from "./types";
-import { getAccessToken } from "@/lib/services/authService";
+import { getAccessToken, shouldRefreshToken, refreshAccessToken } from "@/lib/services/authService";
 
 // Extended fetch options with auth support
 interface FetchOptions extends RequestInit {
 	useAuth?: boolean; // Flag to include auth headers (default: false)
+	_isRetry?: boolean; // Internal flag to prevent infinite retry loops
+}
+
+// ============================================
+// TOKEN REFRESH MANAGEMENT
+// ============================================
+
+/**
+ * Global promise to ensure only one token refresh happens at a time
+ * Prevents race conditions when multiple requests trigger refresh simultaneously
+ */
+let refreshPromise: Promise<void> | null = null;
+
+/**
+ * Ensures the access token is valid before making an API request
+ * - Checks if token should be refreshed (within 5 minutes of expiry)
+ * - If already refreshing, waits for existing refresh to complete
+ * - Prevents multiple simultaneous refresh requests
+ */
+async function ensureValidToken(): Promise<void> {
+	// Check if token needs refresh
+	if (!shouldRefreshToken()) {
+		return;
+	}
+
+	// If already refreshing, wait for it to complete
+	if (refreshPromise) {
+		return refreshPromise;
+	}
+
+	// Start new refresh process
+	refreshPromise = refreshAccessToken()
+		.catch((error) => {
+			throw error; // Re-throw to propagate the error
+		})
+		.finally(() => {
+			// Clear the promise once refresh is complete (success or failure)
+			refreshPromise = null;
+		});
+
+	return refreshPromise;
 }
 
 /**
@@ -15,7 +56,7 @@ interface FetchOptions extends RequestInit {
  */
 export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Promise<APIResponse<T>> {
 	try {
-		const { useAuth = false, ...restOptions } = options;
+		const { useAuth = false, _isRetry = false, ...restOptions } = options;
 
 		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
 
@@ -24,11 +65,14 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			...(restOptions.headers as Record<string, string>),
 		};
 
-		// Add auth headers for endpoints that require authentication
+		// Ensure token is valid before making authenticated requests
 		if (useAuth) {
-			const token = getAccessToken();
+			await ensureValidToken();
 
+			const token = getAccessToken();
 			if (token) {
+				// Explicitly remove any old Authorization header and set the new one
+				delete headers["Authorization"];
 				headers["Authorization"] = `Bearer ${token}`;
 			}
 		}
@@ -46,6 +90,27 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 				statusCode: res.status,
 				error: null,
 			};
+		}
+
+		// Handle 401 Unauthorized - attempt token refresh and retry ONCE if token needs refresh
+		// IMPORTANT: Check this BEFORE parsing JSON to avoid consuming the response body
+		if (res.status === 401 && useAuth && !_isRetry) {
+			// Only retry if token actually should be refreshed
+			if (shouldRefreshToken()) {
+				try {
+					await ensureValidToken();
+					// Retry the request once with the new token
+					return fetchAPI<T>(url, { ...options, _isRetry: true });
+				} catch (error) {
+					// Return error immediately
+					return {
+						success: false,
+						error: "Authentication failed - unable to refresh token",
+						statusCode: 401,
+						data: null,
+					};
+				}
+			}
 		}
 
 		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();

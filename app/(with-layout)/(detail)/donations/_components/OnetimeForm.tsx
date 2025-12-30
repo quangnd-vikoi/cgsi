@@ -49,9 +49,9 @@ const OneTimeForm = () => {
 	};
 
 	return (
-		<div className="flex flex-col justify-between flex-1 min-h-0">
+		<div className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Nội dung chính */}
-			<div className="space-y-6 pad-x py-6 overflow-auto">
+			<div className="flex-1 space-y-6 pad-x py-6 overflow-y-auto">
 				<div className="space-y-4 text-sm font-normal text-typo-secondary">
 					<p>
 						Make a quick one-time donation today and uplift the lives of individuals who need
@@ -141,7 +141,7 @@ const OneTimeForm = () => {
 			</div>
 
 			{/* Footer form */}
-			<div>
+			<div className="shrink-0">
 				<div className="pad-x py-6 border-y border-stroke-secondary">
 					<div className="flex items-start gap-2">
 						<Checkbox

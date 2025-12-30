@@ -69,7 +69,7 @@ const OTPStep = ({
 	setOtp: (value: string) => void;
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 }) => {
-	const { countdown, formattedTime, isActive, reset } = useOTPCountdown({
+	const { formattedTime, isActive, reset } = useOTPCountdown({
 		initialSeconds: 120,
 	});
 
@@ -204,7 +204,7 @@ const UpdateEmail = () => {
 	};
 
 	return (
-		<div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col ">
+		<div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
 					title="Update Email"
@@ -221,7 +221,7 @@ const UpdateEmail = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-lg flex-1 flex flex-col justify-between pt-6 ">
+			<div className="bg-white rounded-lg flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
 				{step === 1 && (
 					<InputStep
 						newEmail={newEmail}
