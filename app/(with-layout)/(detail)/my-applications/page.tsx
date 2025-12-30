@@ -17,6 +17,7 @@ import {
 import Title from "@/components/Title";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import type { UserProductSubscriptionDto } from "@/types";
+import { ErrorState } from "@/components/ErrorState";
 
 type ApplicationType = "all" | "securities" | "alternatives";
 
@@ -139,22 +140,20 @@ export default function MyApplication() {
 					</div>
 				) : error ? (
 					/* Error State */
-					<div className="flex-1 w-full flex flex-col items-center justify-center text-center text-status-error gap-4 text-xs font-normal">
-						<p>Oops, something went wrong.</p>
-						<p>{error}</p>
-						<Button
-							size="sm"
-							onClick={fetchApplications}
-							className="bg-enhanced-blue rounded-sm"
-						>
-							Retry
-						</Button>
+					<div className="flex-1 w-full flex items-center justify-center">
+						<ErrorState
+							type="error"
+							description={error}
+						/>
 					</div>
 				) : filteredApplications.length === 0 ? (
 					/* Empty State */
-					<div className="flex-1 w-full flex flex-col items-center justify-center text-center text-typo-secondary gap-4 text-xs font-normal">
-						<p>No product applications available.</p>
-						<p>Check back here after you&apos;ve submitted your application.</p>
+					<div className="flex-1 w-full flex items-center justify-center">
+						<ErrorState
+							type="empty"
+							title="No product applications available."
+							description="Check back here after you've submitted your application."
+						/>
 					</div>
 				) : (
 					<>
