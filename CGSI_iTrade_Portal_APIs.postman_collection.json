@@ -1,0 +1,771 @@
+{
+	"info": {
+		"_postman_id": "cgsi-itrade-portal-2025",
+		"name": "CGSI iTrade Portal - All APIs",
+		"description": "Complete API collection for CGSI iTrade Portal including Profile, Subscription, Notification, Auth, External SSO, and Content APIs.\n\n**Base URLs:**\n- API Base: `https://stgitrade.cgsi.com.sg/portal`\n- Content Base: `https://www.cgsi.com.sg/cgsi/api/v1`\n\n**Authentication:**\n- Most endpoints require Bearer token in Authorization header\n- Get token from `/sso/api/v1/token` endpoint\n\n**Setup:**\n1. Set `{{base_url}}` = `https://stgitrade.cgsi.com.sg/portal`\n2. Set `{{content_base_url}}` = `https://www.cgsi.com.sg/cgsi/api/v1`\n3. Set `{{bearer_token}}` with your access token",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearer_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Auth APIs",
+			"item": [
+				{
+					"name": "Get Access Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code\": \"your_authorization_code\",\n  \"grant_type\": \"authorization_code\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sso/api/v1/token",
+							"host": ["{{base_url}}"],
+							"path": ["sso", "api", "v1", "token"]
+						},
+						"description": "Exchange authorization code for access and refresh tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"your_refresh_token\",\n  \"grant_type\": \"refresh_token\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sso/api/v1/token/refresh",
+							"host": ["{{base_url}}"],
+							"path": ["sso", "api", "v1", "token", "refresh"]
+						},
+						"description": "Refresh access token using refresh token"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication and authorization endpoints"
+		},
+		{
+			"name": "Profile APIs",
+			"item": [
+				{
+					"name": "Get TR Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/trInfo",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "trInfo"]
+						},
+						"description": "Get Trading Representative Info for authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get TR Info by Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/internal/trInfo?accountNo=1234567",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "internal", "trInfo"],
+							"query": [
+								{
+									"key": "accountNo",
+									"value": "1234567",
+									"description": "Optional account number"
+								}
+							]
+						},
+						"description": "Get Trading Representative Info by Account Number (Internal)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/internal/profile",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "internal", "profile"]
+						},
+						"description": "Get User Profile (Internal) - includes contact details"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "accounts"]
+						},
+						"description": "Get User Trading Accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Create BCAN Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountNo\": \"1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/tradingInfo/bcan/request",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "tradingInfo", "bcan", "request"]
+						},
+						"description": "Create BCAN Request"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Donation Plans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/donation/plan",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "donation", "plan"]
+						},
+						"description": "Get Donation Plans"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Donation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountNo\": \"1234567\",\n  \"amount\": 100,\n  \"currency\": \"SGD\",\n  \"paymentMethod\": \"PLAN\",\n  \"paymentMode\": \"DONATE\",\n  \"months\": 12\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/donation/submission",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "donation", "submission"]
+						},
+						"description": "Submit Donation"
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Donation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 123\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/donation/cancel",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "donation", "cancel"]
+						},
+						"description": "Cancel Donation"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Client Service Contact",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/contactUs/clientService",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "contactUs", "clientService"]
+						},
+						"description": "Get Client Service Contact Information (Public - No Auth)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Central Dealing Desk Contact",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/contactUs/centralDealingDesk",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "contactUs", "centralDealingDesk"]
+						},
+						"description": "Get Central Dealing Desk Contact Information (Public - No Auth)"
+					},
+					"response": []
+				}
+			],
+			"description": "Profile and user-related APIs including TR info, accounts, donations, and contact information"
+		},
+		{
+			"name": "Subscription APIs",
+			"item": [
+				{
+					"name": "Market Data",
+					"item": [
+						{
+							"name": "Get Market Data Subscriptions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/subscription",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "subscription"]
+								},
+								"description": "Get available Market Data Subscriptions"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Market Data Subscriptions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/userSubscription",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "userSubscription"]
+								},
+								"description": "Get User's Market Data Subscriptions"
+							},
+							"response": []
+						}
+					],
+					"description": "Market data subscription endpoints"
+				},
+				{
+					"name": "Product Subscriptions",
+					"item": [
+						{
+							"name": "Get My Product Subscriptions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/product/mySubscription",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "product", "mySubscription"]
+								},
+								"description": "Get User's Product Subscriptions (IPO, Bonds, etc.)"
+							},
+							"response": []
+						},
+						{
+							"name": "Submit Product Subscription",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"productCode\": \"40288a00889fb62901889fbacc111111\",\n  \"accountNo\": \"0000001\",\n  \"totalUnit\": 1,\n  \"paymentCurrency\": \"SGD\",\n  \"paymentMode\": \"PayNow\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/product/mySubscription",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "product", "mySubscription"]
+								},
+								"description": "Submit User Product Subscription"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product Subscriptions by Type",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/product/:productType",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "product", ":productType"],
+									"variable": [
+										{
+											"key": "productType",
+											"value": "IPO",
+											"description": "Product type (IPO, BOND, etc.)"
+										}
+									]
+								},
+								"description": "Get Product Subscriptions by Type (IPO, BOND, etc.)"
+							},
+							"response": []
+						},
+						{
+							"name": "Get My Subscription Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/product/mySubscription/:subscriptionId",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "product", "mySubscription", ":subscriptionId"],
+									"variable": [
+										{
+											"key": "subscriptionId",
+											"value": "abc123",
+											"description": "Subscription ID"
+										}
+									]
+								},
+								"description": "Get User Product Subscription Details"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product Subscription Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/product/details/:productCode",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "product", "details", ":productCode"],
+									"variable": [
+										{
+											"key": "productCode",
+											"value": "40288a00889fb62901889fbacc111111",
+											"description": "Product Code"
+										}
+									]
+								},
+								"description": "Get Product Subscription Details by Product Code"
+							},
+							"response": []
+						}
+					],
+					"description": "Product subscription endpoints (IPO, Bonds, etc.)"
+				}
+			],
+			"description": "Subscription APIs for Market Data and Product Subscriptions"
+		},
+		{
+			"name": "Notification APIs",
+			"item": [
+				{
+					"name": "Get Notification List (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/notification/api/v1/list?pageSize=10&pageIndex=0",
+							"host": ["{{base_url}}"],
+							"path": ["notification", "api", "v1", "list"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "10",
+									"description": "Number of notifications per page (min: 1)"
+								},
+								{
+									"key": "pageIndex",
+									"value": "0",
+									"description": "Page index, 0-based (min: 0)"
+								}
+							]
+						},
+						"description": "Get List of User Notifications (Paginated)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latest Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/notification/api/v1/latest?pastMins=5",
+							"host": ["{{base_url}}"],
+							"path": ["notification", "api", "v1", "latest"],
+							"query": [
+								{
+									"key": "pastMins",
+									"value": "5",
+									"description": "Number of past minutes to retrieve (min: 1)"
+								}
+							]
+						},
+						"description": "Get Latest User Notifications (for polling/real-time updates)"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notifications as Read",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [\"notif-id-1\", \"notif-id-2\", \"notif-id-3\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/notification/api/v1/markAsRead",
+							"host": ["{{base_url}}"],
+							"path": ["notification", "api", "v1", "markAsRead"]
+						},
+						"description": "Mark User Notifications as Read (updates status from 'U' to 'R')"
+					},
+					"response": []
+				}
+			],
+			"description": "Notification management APIs"
+		},
+		{
+			"name": "External SSO APIs",
+			"item": [
+				{
+					"name": "SSO - NTP (Next Trading Platform)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/ntp",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "ntp"]
+						},
+						"description": "Get SSO Parameter for NTP (Next Trading Platform)"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - Research Portal",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/research",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "research"]
+						},
+						"description": "Get SSO Parameter for Research Portal"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - eStatement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/estatement",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "estatement"]
+						},
+						"description": "Get SSO Parameter for eStatement (iTrade TruContent)"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - Corporate Action",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/corporateAction",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "corporateAction"]
+						},
+						"description": "Get SSO Parameter for Corporate Action"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - Stock Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/stockFilter",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "stockFilter"]
+						},
+						"description": "Get SSO Parameter for Stock Filter"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - EW8",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/ew8",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "ew8"]
+						},
+						"description": "Get SSO Parameter for EW8"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - ECRS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/ecrs",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "ecrs"]
+						},
+						"description": "Get SSO Parameter for ECRS"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - iScreener (Not Implemented)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/iscreener",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "iscreener"]
+						},
+						"description": "⚠️ NOTE: This endpoint is defined in spec but never implemented in iTrade Portal"
+					},
+					"response": []
+				}
+			],
+			"description": "External SSO endpoints for accessing third-party systems (NTP, Research, eStatement, etc.)"
+		},
+		{
+			"name": "Content APIs (Public)",
+			"item": [
+				{
+					"name": "Get Announcements",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{content_base_url}}/GetAnnouncement?lang=1",
+							"host": ["{{content_base_url}}"],
+							"path": ["GetAnnouncement"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "1",
+									"description": "Language: 1=EN, 2=CN"
+								}
+							]
+						},
+						"description": "Get Announcements (Public - No Auth)\nReference: https://www.cgsi.com.sg/notices?lang=EN"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notices",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{content_base_url}}/GetNotices?lang=1",
+							"host": ["{{content_base_url}}"],
+							"path": ["GetNotices"],
+							"query": [
+								{
+									"key": "lang",
+									"value": "1",
+									"description": "Language: 1=EN, 2=CN"
+								}
+							]
+						},
+						"description": "Get Notices (Public - No Auth)\nReference: https://www.cgsi.com.sg/notices?lang=EN"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaigns",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{content_base_url}}/GetCampaign?sort=Campaign_StartDate&order=desc&lang=1",
+							"host": ["{{content_base_url}}"],
+							"path": ["GetCampaign"],
+							"query": [
+								{
+									"key": "sort",
+									"value": "Campaign_StartDate",
+									"description": "Sort field"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort order: asc | desc"
+								},
+								{
+									"key": "lang",
+									"value": "1",
+									"description": "Language: 1=EN, 2=CN"
+								}
+							]
+						},
+						"description": "Get Campaigns/Promos (Public - No Auth)\nReference: https://www.cgsi.com.sg/campaigns/?lang=EN"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Events",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{content_base_url}}/GetEvent?sort=Event_StartDate&order=desc&lang=1",
+							"host": ["{{content_base_url}}"],
+							"path": ["GetEvent"],
+							"query": [
+								{
+									"key": "sort",
+									"value": "Event_StartDate",
+									"description": "Sort field"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort order: asc | desc"
+								},
+								{
+									"key": "lang",
+									"value": "1",
+									"description": "Language: 1=EN, 2=CN"
+								}
+							]
+						},
+						"description": "Get Events (Public - No Auth)\nReference: https://www.cgsi.com.sg/events/?lang=EN"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Research & Insights",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{content_base_url}}/GetResearchAndInsight?sort=Date&order=desc&lang=1",
+							"host": ["{{content_base_url}}"],
+							"path": ["GetResearchAndInsight"],
+							"query": [
+								{
+									"key": "sort",
+									"value": "Date",
+									"description": "Sort field"
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"description": "Sort order: asc | desc"
+								},
+								{
+									"key": "lang",
+									"value": "1",
+									"description": "Language: 1=EN, 2=CN"
+								}
+							]
+						},
+						"description": "Get Research & Insights (Public - No Auth)\nReference: https://www.cgsi.com.sg/insights/?lang=EN"
+					},
+					"response": []
+				}
+			],
+			"description": "Public content APIs (Announcements, Notices, Campaigns, Events, Insights) - No authentication required"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://stgitrade.cgsi.com.sg/portal",
+			"type": "string"
+		},
+		{
+			"key": "content_base_url",
+			"value": "https://www.cgsi.com.sg/cgsi/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "bearer_token",
+			"value": "your_access_token_here",
+			"type": "string"
+		}
+	]
+}

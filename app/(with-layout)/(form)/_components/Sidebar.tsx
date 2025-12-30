@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,63 +7,115 @@ import { usePathname } from "next/navigation";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { ErrorState } from "@/components/ErrorState";
+import { subscriptionService } from "@/lib/services/subscriptionService";
+import type { ProductSubscriptionDto } from "@/types";
 
 export default function Sidebar() {
 	const pathname = usePathname();
 	const { selectedId, setSelectedItem } = useSelectionStore();
+	const [productSubs, setProductSubs] = useState<ProductSubscriptionDto[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-	const etfData = [
-		{
-			id: 1,
-			name: "CGS Fullgoal CSI 1000 ETF",
-			code: "GRU.SGX",
-			issuePrice: "1.00 USD",
-			minUnits: "10",
-			openingDate: "20-Oct-2025, 10:00 SGT",
-			closingDate: "02-Nov-2025, 17:00 SGT",
-			hasDetails: true,
-			applied: true,
-		},
-		{
-			id: 2,
-			name: "CGS Fullgoal Vietnam 30 Sector Cap ETF",
-			code: "GRU.SGX",
-			issuePrice: "1.00 USD",
-			minUnits: "10",
-			openingDate: "20-Oct-2025, 10:00 SGT",
-			closingDate: "02-Nov-2025, 17:00 SGT",
-			hasDetails: false,
-			applied: false,
-		},
-		{
-			id: 3,
-			name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
-			code: "VND.SGX",
-			closingDate: "20-May-2025, 17:00 SGT",
-			hasDetails: false,
-			isCompact: true,
-			applied: false,
-		},
-		{
-			id: 4,
-			name: "CGS Fullgoal Vietnam 30 Sector Cap ETF Example Example Exa...",
-			code: "VND.SGX",
-			closingDate: "20-May-2025, 17:00 SGT",
-			hasDetails: false,
-			isCompact: true,
-			applied: true,
-		},
-	];
+	// Determine product type based on pathname
+	const productType = pathname.startsWith(INTERNAL_ROUTES.SECURITIES) ? "IOP" : "AI";
+	const title = pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
+		? "Initial Offering Price (IOP)"
+		: "Commercial Papers";
+
+	// Fetch product subscriptions
+	const fetchProductSubscriptions = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+
+		const result = await subscriptionService.getProductSubscriptionsByType(productType);
+
+		if (result.success && result.data) {
+			setProductSubs(result.data.productSubs);
+		} else {
+			setError(result.error || "Failed to load products. Please try again later.");
+		}
+
+		setLoading(false);
+	}, [productType]);
+
+	// Fetch data on mount and when product type changes
+	useEffect(() => {
+		fetchProductSubscriptions();
+	}, [fetchProductSubscriptions]);
+
+	// Format date string to display format
+	const formatDateTime = (isoString: string): string => {
+		const date = new Date(isoString);
+		return date.toLocaleDateString("en-GB", {
+			day: "2-digit",
+			month: "short",
+			year: "numeric",
+		}) + ", " + date.toLocaleTimeString("en-GB", {
+			hour: "2-digit",
+			minute: "2-digit",
+			timeZoneName: "short",
+		});
+	};
+
+	// Map API data to UI structure
+	const etfData = productSubs.map((sub) => ({
+		id: sub.productCode,
+		name: sub.productName,
+		code: `${sub.stockCode}.${sub.exchangeCode}`,
+		issuePrice: `${sub.issuePrice} ${sub.currency}`,
+		minUnits: sub.minQty.toString(),
+		openingDate: formatDateTime(sub.startTime),
+		closingDate: formatDateTime(sub.endTime),
+		hasDetails: true,
+		applied: sub.isSubscribed,
+		isCompact: false,
+	}));
+
+	// Loading state
+	if (loading) {
+		return (
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
+				<div className="flex-shrink-0 pad !pb-4">
+					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
+				</div>
+				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
+					<div className="space-y-4">
+						{[...Array(3)].map((_, i) => (
+							<div key={i} className="rounded border border-stroke-secondary p-4 animate-pulse">
+								<div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+								<div className="h-3 bg-gray-200 rounded w-1/2"></div>
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
+				<div className="flex-shrink-0 pad !pb-4">
+					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
+				</div>
+				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
+					<ErrorState
+						type="error"
+						title="Oops, Something Went Wrong"
+						description={error}
+					/>
+				</div>
+			</div>
+		);
+	}
 
 	return (
-		<div className="relative h-full flex flex-col bg-white rounded md:max-w-sm" id="sidebar_form">
+		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
 			{/* Header - Fixed */}
 			<div className="flex-shrink-0 pad !pb-4">
-				<h1 className="text-base font-semibold text-typo-primary">
-					{pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
-						? "Initial Offering Price (IOP)"
-						: "Commercial Papers"}
-				</h1>
+				<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
 			</div>
 
 			{/* Content - Scrollable */}
@@ -72,7 +124,7 @@ export default function Sidebar() {
 					<ErrorState
 						type="empty"
 						title="No Products Yet"
-						description="We are curating something exciting here -  Check back soon!"
+						description="We are curating something exciting here - Check back soon!"
 					/>
 				) : (
 					<div className="space-y-4">
@@ -113,7 +165,7 @@ export default function Sidebar() {
 											"gap-1 px-3 h-6 border border-enhanced-blue text-xs rounded-4xl flex items-center leading-2",
 											selectedId === etf.id
 												? "bg-enhanced-blue text-white"
-												: "bg-transparent text-enhanced-blue hover:bg-background-focus transition-colors "
+												: "bg-transparent text-enhanced-blue hover:bg-transparent hover:opacity-75 transition-colors "
 										)}
 										onClick={() => setSelectedItem(etf)}
 									>

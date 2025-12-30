@@ -80,7 +80,7 @@ const AccountLinkages = () => {
 					rightContent={
 						<Button
 							onClick={() => setOpenSheet("trading_representative")}
-							className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-black/5 font-normal transition-colors h-8"
+							className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-transparent hover:opacity-75 font-normal transition-colors h-8"
 						>
 							<Headset className="text-icon-light" size={24} />
 							<p className="hidden md:inline-block">Contact us</p>

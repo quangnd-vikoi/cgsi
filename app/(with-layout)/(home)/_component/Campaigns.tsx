@@ -115,7 +115,7 @@ const Campaigns = () => {
 								size={"icon"}
 								onClick={scrollPrev}
 								disabled={current === 0}
-								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-white/20 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
+								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-transparent hover:opacity-75 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
 								aria-label="Previous"
 							>
 								<ArrowLeft />
@@ -126,7 +126,7 @@ const Campaigns = () => {
 								size={"icon"}
 								onClick={scrollNext}
 								disabled={current === count - 1}
-								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-white/20 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
+								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-transparent hover:opacity-75 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
 								aria-label="Next"
 							>
 								<ArrowRight />
@@ -149,7 +149,7 @@ const Campaigns = () => {
 						</div>
 
 						{/* View All Button */}
-						<Button className="flex-shrink-0 bg-transparent hover:bg-white/20 px-3 border border-white rounded-full h-6 font-normal text-[12px] whitespace-nowrap cursor-pointer">
+						<Button className="flex-shrink-0 bg-transparent hover:bg-transparent hover:opacity-75 px-3 border border-white rounded-full h-6 font-normal text-[12px] whitespace-nowrap cursor-pointer">
 							<Link href={CGSI.CAMPAIGNS} target="_blank">
 								View All
 							</Link>

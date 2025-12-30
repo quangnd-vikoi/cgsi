@@ -1,391 +1,1024 @@
-# Profile API Implementation Plan
+# Profile API Implementation Guide
 
-## Overview
-This document outlines the implementation plan for integrating the Profile APIs (version 0.0.1-SNAPSHOT) into the CGSI iTrade Portal Next.js application.
+> **Implementation guide for Profile API endpoints following CGSI iTrade Portal conventions**
+>
+> This document provides step-by-step instructions for integrating Profile APIs using the established three-layer architecture pattern.
 
-**API Base URLs:**
-- UAT: `https://stgitrade.cgsi.com.sg/portal`
-- DEV: `https://sititrade.cgsi.com.sg/portal`
-- Local: `http://localhost:20002`
+---
 
-**Authentication:**
-- All authenticated endpoints require `Bearer Token` in Authorization header
+## Table of Contents
+
+1. [API Overview](#api-overview)
+2. [Implementation Steps](#implementation-steps)
+3. [Endpoint Definitions](#endpoint-definitions)
+4. [TypeScript Types](#typescript-types)
+5. [Service Layer](#service-layer)
+6. [Component Integration](#component-integration)
+7. [State Management](#state-management)
+8. [Testing Checklist](#testing-checklist)
+
+---
+
+## API Overview
+
+**Base URL:** `https://stgitrade.cgsi.com.sg/portal` (configurable via `API_BASE_URL`)
+
+**Base Path:** `/profile/api/v1`
+
+**Authentication:** All authenticated endpoints require Bearer token in Authorization header
+
+**Source:** `profile-api-0.0.1-snapshot.json` + `iTrade-ProfileAPI.yaml`
+
+### Available Endpoints
+
+| Category | Endpoint | Method | Auth | Status |
+|----------|----------|--------|------|--------|
+| **User Info** | `/userInfo` | GET | 🔒 | ❌ Not Implemented |
+| **Trading Rep** | `/trInfo` | GET | 🔒 | ✅ Implemented |
+| **Accounts** | `/accounts` | GET | 🔒 | ✅ Implemented |
+| **Trading Info** | `/tradingInfo` | GET | 🔒 | ❌ Not Implemented |
+| **BCAN Request** | `/tradingInfo/bcan/request` | POST | 🔒 | ✅ Implemented |
+| **Donation Plan** | `/donation/plan` | GET | 🔒 | ✅ Implemented |
+| **Submit Donation** | `/donation/submission` | POST | 🔒 | ✅ Implemented |
+| **Cancel Donation** | `/donation/cancel` | POST | 🔒 | ✅ Implemented |
+| **Client Service Contact** | `/contactUs/clientService` | GET | 🔓 | ✅ Implemented |
+| **Dealing Desk Contact** | `/contactUs/centralDealingDesk` | GET | 🔓 | ✅ Implemented |
+
+**Implementation Status:** 8/12 basic endpoints (67%)
 
 ---
 
 ## Implementation Steps
 
-### 1. TypeScript Type Definitions
-Create type definitions for all API request/response schemas.
+### Step 1: Define Endpoint Paths
 
-**File:** `types/profile-api.ts`
+**File:** `/lib/api/endpoints/profile.ts`
 
-**Types to Define:**
-- `CreateBcanRequest` / `CreateBcanResponse`
-- `DonationSubmissionRequest` / `DonationSubmissionResponse`
-- `DonationCancelRequest` / `DonationCancelResponse`
-- `DonationPlanResponse`
-- `TrInfoResponse` (Trading Representative Info)
-- `UserProfileResponse`
-- `UserAccountResponse`
-- `ContactUsClientServiceResponse`
-- `ContactUsCentralDealingDeskResponse`
+**Status:** ✅ Already exists, needs updates for missing endpoints
 
----
+**Add Missing Endpoints:**
 
-### 2. API Configuration Updates
-Update API configuration to support Profile API endpoints.
+```typescript
+/**
+ * Profile API Endpoints
+ * All paths are relative - base URL prepended in index.ts via withBaseUrl()
+ *
+ * Base URL: https://stgitrade.cgsi.com.sg/portal (from API_BASE_URL)
+ * Base Path: /profile/api/v1
+ * Source: profile-api-0.0.1-snapshot.json + iTrade-ProfileAPI.yaml
+ *
+ * Authentication:
+ * - Most endpoints require Bearer token (useAuth: true)
+ * - Contact Us endpoints are public (useAuth: false)
+ */
+export const profileEndpoints = {
+	// ============================================================================
+	// User Information Endpoints
+	// ============================================================================
 
-**File:** `lib/apiConfig.ts`
+	/**
+	 * Get User Information
+	 *
+	 * GET /profile/api/v1/userInfo
+	 *
+	 * @returns UserInfoResponse - User profile information
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<UserInfoResponse>(
+	 *   ENDPOINTS.getUserInfo(),
+	 *   { useAuth: true }
+	 * );
+	 */
+	getUserInfo: () => `/profile/api/v1/userInfo`,
 
-**Changes:**
-- Add Profile API base path constant
-- Create endpoint builders for:
-  - Trading Info (BCAN)
-  - Donations (submission, cancellation, plan retrieval)
-  - Trading Representative Info
-  - User Profile
-  - User Accounts
-  - Contact Us endpoints
+	/**
+	 * Get Trading Information
+	 *
+	 * GET /profile/api/v1/tradingInfo
+	 *
+	 * @returns TradingInfoResponse - User trading information
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	getTradingInfo: () => `/profile/api/v1/tradingInfo`,
 
----
-
-### 3. API Integration Functions
-Create wrapper functions for Profile API calls using the existing `fetchWrapper` pattern.
-
-**File:** `lib/profileAPI.ts` (new file)
-
-**Functions to Implement:**
-
-**User Profile & Accounts:**
-- `getUserProfile(profileId: string)` - Get user profile information
-- `getUserAccounts(profileId: string)` - Get user trading accounts
-- `getTradingRepInfo(profileId: string)` - Get trading representative information
-
-**BCAN Management:**
-- `createBcanRequest(profileId: string, accountNo: string)` - Create BCAN request
-
-**Donation Management:**
-- `submitDonation(profileId: string, data: DonationSubmissionRequest)` - Submit donation
-- `cancelDonation(profileId: string, donationId: number)` - Cancel donation
-- `getDonationPlan(profileId: string)` - Get active donation plans
-
-**Contact Information:**
-- `getClientServiceContact()` - Get client service contact info (no auth required)
-- `getCentralDealingDeskContact()` - Get central dealing desk contact info (no auth required)
-
-**Internal Endpoints:**
-- `getInternalTrInfo(accountNo?: string)` - Internal TR info (no auth)
-- `getInternalProfile(profileId: string)` - Internal profile (no auth)
-
-**Implementation Notes:**
-- Use existing `fetchAPI`, `postAPI` from `fetchWrapper.ts`
-- Use Bearer token from auth context/store
-- Implement proper error handling and response normalization
-
----
-
-### 4. State Management
-Evaluate and implement state management for profile-related data.
-
-**Potential New Stores:**
-
-**`stores/profileStore.ts`** (optional):
-- User profile state
-- Selected profile ID
-- Profile loading/error states
-
-**Updates to Existing Stores:**
-
-**`stores/userStore.ts`:**
-- Add profile ID field
-- Add profile data fields (name, IC, mobile, etc.)
-- Add method to sync with API response
-
-**`stores/tradingAccountStore.ts`:**
-- Update to sync with `getUserAccounts` API response
-- Map API response format to existing `TradingAccount` interface
-- Replace mock data with real API data
-
----
-
-### 5. Authentication Context
-Ensure authentication headers are properly managed.
-
-**File:** Create `contexts/AuthContext.tsx` or use existing auth mechanism
-
-**Requirements:**
-- Store and provide Bearer token
-- Store and provide Profile ID
-- Inject headers into API calls automatically
-- Handle token refresh if needed
-- Handle authentication errors
-
----
-
-### 6. Component Integration
-
-**6.1 User Profile Integration**
-**Pages/Components to Update:**
-- User profile sidebar (`app/(minimal)/sidebar/profile/`)
-- Header component (user info display)
-
-**Changes:**
-- Fetch user profile on app load
-- Display real user data instead of hardcoded values
-- Update user store with API response
-
-**6.2 Trading Accounts Integration**
-**Pages/Components to Update:**
-- Portfolio page (`app/(with-layout)/portfolio/`)
-- Account selection components
-
-**Changes:**
-- Replace mock data in `tradingAccountStore` with API data
-- Fetch accounts on app load or when accessing portfolio
-- Map API response fields to existing interface:
-  - `accountNo`, `accountType`, `trName`, `cdp`, `cpf`, `srs`, etc.
-
-**6.3 Donation Integration**
-**Pages/Components to Update:**
-- Donations page (`app/(with-layout)/(detail)/donations/`)
-- Donation submission forms
-- Donation plan display
-
-**Changes:**
-- Implement donation submission flow
-- Display active donation plans
-- Handle donation cancellation
-- Add success/error feedback with toast notifications
-
-**6.4 BCAN Request Integration**
-**Pages/Components to Update:**
-- Trading info page or account settings
-
-**Changes:**
-- Add BCAN request functionality
-- Display BCAN request status
-- Handle success/error states
-
-**6.5 Contact Us Integration**
-**Pages/Components to Update:**
-- Contact Us page or footer
-- Help/Support sections
-
-**Changes:**
-- Fetch and display client service contact info
-- Fetch and display central dealing desk contact info
-- Display operating hours, phone numbers, email, address
-
-**6.6 Trading Representative Info**
-**Pages/Components to Update:**
-- Account details view
-- Trading account cards
-
-**Changes:**
-- Display TR name, contact, email for each account
-- Fetch TR info when viewing account details
-
----
-
-### 7. Error Handling & Loading States
-Implement consistent error handling and loading states.
-
-**Standards:**
-- Use existing `fetchWrapper` error normalization
-- Display user-friendly error messages via toast
-- Implement loading skeletons for data fetching
-- Handle network failures gracefully
-- Implement retry logic where appropriate
-
----
-
-### 8. Environment Configuration
-Set up environment variables for API endpoints.
-
-**File:** `.env.local` (create if not exists)
-
-**Variables:**
-```
-NEXT_PUBLIC_PROFILE_API_URL=https://stgitrade.cgsi.com.sg/portal
+	// ... existing endpoints (trInfo, accounts, etc.)
+} as const;
 ```
 
-**Usage:**
-- Default to UAT environment
-- Override in local/dev/prod environments as needed
+**Export in index.ts:**
+
+```typescript
+// File: /lib/api/endpoints/index.ts
+import { profileEndpoints } from "./profile";
+
+export const ENDPOINTS = {
+	// ... existing endpoints
+	...profileEndpoints,
+};
+```
 
 ---
 
-### 9. Testing Strategy
+### Step 2: Define TypeScript Types
 
-**API Integration Testing:**
-- Test all API endpoints with mock responses
-- Validate request/response type safety
-- Test error scenarios (401, 404, 500, network errors)
-- Test header injection (Bearer token)
+**File:** `/types/index.ts`
 
-**Component Testing:**
-- Test components with loading states
-- Test components with error states
-- Test components with successful data
-- Test user interactions (submit donation, cancel donation, etc.)
+**Add Missing Types:**
 
-**Integration Testing:**
-- Test full user flows (e.g., view profile → edit → save)
-- Test donation submission flow
-- Test account switching with real data
+```typescript
+// ============================================
+// Profile API Types
+// ============================================
+
+/**
+ * User Information Response
+ * Returned from GET /profile/api/v1/userInfo
+ */
+export interface UserInfoResponse {
+	profileId: string;
+	name: string;
+	email: string;
+	mobile: string;
+	icNumber?: string;
+	nationality?: string;
+	dateOfBirth?: string;
+	address?: string;
+	postalCode?: string;
+	country?: string;
+}
+
+/**
+ * Trading Information Response
+ * Returned from GET /profile/api/v1/tradingInfo
+ */
+export interface TradingInfoResponse {
+	accountNo: string;
+	accountType: string;
+	accountStatus: string;
+	openDate?: string;
+	trName?: string;
+	bcanStatus?: string;
+	bcanNumber?: string;
+}
+
+/**
+ * BCAN Request
+ * Used for POST /profile/api/v1/tradingInfo/bcan/request
+ */
+export interface BcanRequest {
+	accountNo: string;
+	requestType?: string;
+}
+
+/**
+ * BCAN Response
+ * Returned from POST /profile/api/v1/tradingInfo/bcan/request
+ */
+export interface BcanResponse {
+	requestId: string;
+	accountNo: string;
+	status: string;
+	message?: string;
+	submittedDate?: string;
+}
+
+/**
+ * Donation Plan Response
+ * Returned from GET /profile/api/v1/donation/plan
+ */
+export interface DonationPlanResponse {
+	planId: string;
+	planName: string;
+	beneficiary: string;
+	amount: number;
+	frequency: string;
+	status: string;
+	startDate?: string;
+	endDate?: string;
+}
+
+/**
+ * Donation Submission Request
+ * Used for POST /profile/api/v1/donation/submission
+ */
+export interface DonationSubmissionRequest {
+	planId?: string;
+	beneficiary: string;
+	amount: number;
+	paymentMethod: string; // PLAN or LS_ACCSET
+	accountNo: string;
+	frequency?: string;
+	startDate?: string;
+}
+
+/**
+ * Donation Submission Response
+ * Returned from POST /profile/api/v1/donation/submission
+ */
+export interface DonationSubmissionResponse {
+	donationId: string;
+	status: string;
+	message?: string;
+	submittedDate?: string;
+}
+
+/**
+ * Donation Cancel Request
+ * Used for POST /profile/api/v1/donation/cancel
+ */
+export interface DonationCancelRequest {
+	donationId: number;
+}
+
+/**
+ * Donation Cancel Response
+ * Returned from POST /profile/api/v1/donation/cancel
+ */
+export interface DonationCancelResponse {
+	donationId: number;
+	status: string;
+	message?: string;
+	cancelledDate?: string;
+}
+```
+
+**Key Points:**
+- ✅ Use `interface` for all API types
+- ✅ Add JSDoc comments describing the endpoint
+- ✅ Use `?` for optional fields
+- ✅ Use `string` for dates (API returns ISO strings)
+- ✅ Match exact API response structure
 
 ---
 
-### 10. Migration from Mock Data
+### Step 3: Create/Update Service Layer
 
-**Current State:**
-- `tradingAccountStore` uses hardcoded mock data
-- User info is static or minimal
+**File:** `/lib/services/profileService.ts`
 
-**Migration Steps:**
-1. Create feature flag or environment variable to toggle between mock/real data
-2. Implement API integration alongside mock data
-3. Test thoroughly with real API
-4. Gradually replace mock data with API calls
-5. Remove mock data once verified
+**Status:** ✅ Already exists, needs to add missing functions
+
+**Add Missing Service Functions:**
+
+```typescript
+/**
+ * Profile Service
+ *
+ * Handles all profile-related API calls including:
+ * - User information
+ * - Trading accounts
+ * - Trading representative info
+ * - BCAN requests
+ * - Donation management
+ * - Contact information
+ *
+ * All functions return APIResponse<T> with consistent error handling.
+ */
+
+import { fetchAPI, postAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
+import type { APIResponse } from "@/lib/api/types";
+import type {
+	UserInfoResponse,
+	TradingInfoResponse,
+	BcanRequest,
+	BcanResponse,
+	DonationPlanResponse,
+	DonationSubmissionRequest,
+	DonationSubmissionResponse,
+	DonationCancelRequest,
+	DonationCancelResponse,
+} from "@/types";
+
+// ============================================
+// USER INFORMATION
+// ============================================
+
+/**
+ * Get user profile information
+ *
+ * @returns User profile data including name, email, mobile, etc.
+ * @requires Authentication - Bearer token
+ *
+ * @example
+ * const response = await getUserInfo();
+ * if (response.success && response.data) {
+ *   console.log('User:', response.data.name);
+ * }
+ */
+export const getUserInfo = async (): Promise<
+	APIResponse<UserInfoResponse>
+> => {
+	return await fetchAPI<UserInfoResponse>(ENDPOINTS.getUserInfo(), {
+		useAuth: true,
+	});
+};
+
+/**
+ * Get user trading information
+ *
+ * @returns Trading information including account status, BCAN, etc.
+ * @requires Authentication - Bearer token
+ */
+export const getTradingInfo = async (): Promise<
+	APIResponse<TradingInfoResponse>
+> => {
+	return await fetchAPI<TradingInfoResponse>(ENDPOINTS.getTradingInfo(), {
+		useAuth: true,
+	});
+};
+
+// ============================================
+// BCAN MANAGEMENT
+// ============================================
+
+/**
+ * Create BCAN request for a trading account
+ *
+ * @param accountNo - Trading account number
+ * @returns BCAN request details with status
+ * @requires Authentication - Bearer token
+ *
+ * @example
+ * const response = await createBcanRequest("1234567");
+ * if (response.success && response.data) {
+ *   toast.success('BCAN Request Submitted', {
+ *     description: `Request ID: ${response.data.requestId}`
+ *   });
+ * }
+ */
+export const createBcanRequest = async (
+	accountNo: string
+): Promise<APIResponse<BcanResponse>> => {
+	const requestData: BcanRequest = { accountNo };
+
+	return await postAPI<BcanResponse, BcanRequest>(
+		ENDPOINTS.createBcanRequest(),
+		requestData,
+		{ useAuth: true }
+	);
+};
+
+// ============================================
+// DONATION MANAGEMENT
+// ============================================
+
+/**
+ * Get active donation plans
+ *
+ * @returns List of active donation plans
+ * @requires Authentication - Bearer token
+ *
+ * @example
+ * const response = await getDonationPlans();
+ * if (response.success && response.data) {
+ *   setPlans(response.data);
+ * }
+ */
+export const getDonationPlans = async (): Promise<
+	APIResponse<DonationPlanResponse[]>
+> => {
+	return await fetchAPI<DonationPlanResponse[]>(
+		ENDPOINTS.getDonationPlan(),
+		{ useAuth: true }
+	);
+};
+
+/**
+ * Submit a new donation
+ *
+ * @param donationData - Donation submission details
+ * @returns Submitted donation details with status
+ * @requires Authentication - Bearer token
+ *
+ * @example
+ * const response = await submitDonation({
+ *   beneficiary: "Red Cross",
+ *   amount: 100,
+ *   paymentMethod: "PLAN",
+ *   accountNo: "1234567"
+ * });
+ */
+export const submitDonation = async (
+	donationData: DonationSubmissionRequest
+): Promise<APIResponse<DonationSubmissionResponse>> => {
+	return await postAPI<DonationSubmissionResponse, DonationSubmissionRequest>(
+		ENDPOINTS.submitDonation(),
+		donationData,
+		{ useAuth: true }
+	);
+};
+
+/**
+ * Cancel an existing donation
+ *
+ * @param donationId - ID of the donation to cancel
+ * @returns Cancellation confirmation with status
+ * @requires Authentication - Bearer token
+ *
+ * @example
+ * const response = await cancelDonation(123);
+ * if (response.success) {
+ *   toast.success('Donation Cancelled');
+ * }
+ */
+export const cancelDonation = async (
+	donationId: number
+): Promise<APIResponse<DonationCancelResponse>> => {
+	const requestData: DonationCancelRequest = { donationId };
+
+	return await postAPI<DonationCancelResponse, DonationCancelRequest>(
+		ENDPOINTS.cancelDonation(),
+		requestData,
+		{ useAuth: true }
+	);
+};
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+/**
+ * Get complete user profile with accounts and trading info
+ *
+ * Fetches user info, accounts, and trading info in parallel
+ *
+ * @returns Object containing all user profile data
+ *
+ * @example
+ * const data = await getCompleteUserProfile();
+ * if (data.userInfo?.success) {
+ *   setUserData(data.userInfo.data);
+ * }
+ */
+export const getCompleteUserProfile = async () => {
+	const [userInfoRes, accountsRes, tradingInfoRes] = await Promise.allSettled([
+		getUserInfo(),
+		getUserAccounts(),
+		getTradingInfo(),
+	]);
+
+	return {
+		userInfo: userInfoRes.status === "fulfilled" ? userInfoRes.value : null,
+		accounts: accountsRes.status === "fulfilled" ? accountsRes.value : null,
+		tradingInfo: tradingInfoRes.status === "fulfilled" ? tradingInfoRes.value : null,
+	};
+};
+
+// ============================================
+// DEFAULT EXPORT
+// ============================================
+
+/**
+ * Profile service object containing all profile-related functions
+ */
+export const profileService = {
+	// User information
+	getUserInfo,
+	getTradingInfo,
+	getUserAccounts,
+	getTrInfo,
+
+	// BCAN management
+	createBcanRequest,
+
+	// Donation management
+	getDonationPlans,
+	submitDonation,
+	cancelDonation,
+
+	// Contact information
+	getClientServiceContact,
+	getCentralDealingDeskContact,
+
+	// Helper functions
+	getCompleteUserProfile,
+};
+
+export default profileService;
+```
 
 ---
 
-### 11. Documentation
+### Step 4: Component Integration Examples
 
-**Updates Required:**
-- Update `CLAUDE.md` with Profile API integration patterns
-- Document authentication flow
-- Document API error handling patterns
-- Add examples of using Profile API functions
-- Document environment variables
+#### Example 1: Fetch User Info on App Load
+
+**File:** `app/layout.tsx` or `app/(with-layout)/layout.tsx`
+
+**Pattern:** Fetch on mount, store in Zustand
+
+```typescript
+"use client";
+import { useEffect } from 'react';
+import { useUserStore } from '@/stores/userStore';
+import { profileService } from '@/lib/services/profileService';
+
+export default function RootLayout({ children }) {
+	const setUserData = useUserStore((state) => state.setUserData);
+
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			const response = await profileService.getUserInfo();
+
+			if (response.success && response.data) {
+				setUserData({
+					name: response.data.name,
+					email: response.data.email,
+					mobile: response.data.mobile,
+				});
+			}
+		};
+
+		fetchUserProfile();
+	}, [setUserData]);
+
+	return <>{children}</>;
+}
+```
+
+#### Example 2: Donation Submission Form
+
+**File:** `app/(with-layout)/(detail)/donations/page.tsx`
+
+**Pattern:** Form submission with loading/error states
+
+```typescript
+"use client";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { profileService } from '@/lib/services/profileService';
+import { useTradingAccountStore } from '@/stores/tradingAccountStore';
+import type { DonationSubmissionRequest } from '@/types';
+
+export default function DonationsPage() {
+	const [submitting, setSubmitting] = useState(false);
+	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
+
+	const handleSubmit = async (formData: DonationSubmissionRequest) => {
+		setSubmitting(true);
+
+		try {
+			const response = await profileService.submitDonation({
+				...formData,
+				accountNo: selectedAccount?.accountNumber || "",
+			});
+
+			if (response.success && response.data) {
+				toast.success('Donation Submitted', {
+					description: `Thank you for your donation! Submission ID: ${response.data.donationId}`
+				});
+
+				// Reset form or navigate
+				router.push('/donations/success');
+			} else {
+				toast.error('Submission Failed', {
+					description: response.error || 'Please try again later.'
+				});
+			}
+		} catch (error) {
+			toast.error('Error', {
+				description: 'Failed to submit donation. Please check your connection.'
+			});
+		} finally {
+			setSubmitting(false);
+		}
+	};
+
+	return (
+		<form onSubmit={(e) => {
+			e.preventDefault();
+			const formData = new FormData(e.currentTarget);
+			handleSubmit({
+				beneficiary: formData.get('beneficiary') as string,
+				amount: Number(formData.get('amount')),
+				paymentMethod: formData.get('paymentMethod') as string,
+				accountNo: selectedAccount?.accountNumber || "",
+			});
+		}}>
+			{/* Form fields */}
+			<button type="submit" disabled={submitting}>
+				{submitting ? 'Submitting...' : 'Submit Donation'}
+			</button>
+		</form>
+	);
+}
+```
+
+#### Example 3: Display Donation Plans
+
+**File:** `app/(with-layout)/(detail)/donations/_components/DonationPlans.tsx`
+
+**Pattern:** Fetch on mount with loading/error/empty states
+
+```typescript
+"use client";
+import { useState, useEffect, useCallback } from 'react';
+import { profileService } from '@/lib/services/profileService';
+import { ErrorState } from '@/components/ErrorState';
+import type { DonationPlanResponse } from '@/types';
+
+export function DonationPlans() {
+	const [plans, setPlans] = useState<DonationPlanResponse[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const fetchPlans = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+
+		const response = await profileService.getDonationPlans();
+
+		if (response.success && response.data) {
+			setPlans(response.data);
+		} else {
+			setError(response.error || 'Failed to load donation plans');
+		}
+
+		setLoading(false);
+	}, []);
+
+	useEffect(() => {
+		fetchPlans();
+	}, [fetchPlans]);
+
+	// Loading state
+	if (loading) {
+		return (
+			<div className="space-y-4">
+				{[...Array(3)].map((_, i) => (
+					<div key={i} className="animate-pulse">
+						<div className="h-20 bg-gray-200 rounded"></div>
+					</div>
+				))}
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<ErrorState
+				title="Failed to Load Plans"
+				description={error}
+				type="error"
+			>
+				<button onClick={fetchPlans}>Retry</button>
+			</ErrorState>
+		);
+	}
+
+	// Empty state
+	if (plans.length === 0) {
+		return (
+			<ErrorState
+				title="No Active Donation Plans"
+				description="You don't have any active donation plans yet."
+				type="empty"
+			/>
+		);
+	}
+
+	// Success state
+	return (
+		<div className="space-y-4">
+			{plans.map((plan) => (
+				<div key={plan.planId} className="border rounded-lg p-4">
+					<h3 className="font-semibold">{plan.planName}</h3>
+					<p className="text-sm text-gray-600">
+						Beneficiary: {plan.beneficiary}
+					</p>
+					<p className="text-sm">
+						Amount: ${plan.amount} ({plan.frequency})
+					</p>
+					<span className="text-xs px-2 py-1 rounded bg-green-100">
+						{plan.status}
+					</span>
+				</div>
+			))}
+		</div>
+	);
+}
+```
+
+#### Example 4: BCAN Request
+
+**File:** `app/(with-layout)/portfolio/_components/BcanRequest.tsx`
+
+**Pattern:** Action button with loading state
+
+```typescript
+"use client";
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { profileService } from '@/lib/services/profileService';
+
+interface BcanRequestProps {
+	accountNo: string;
+}
+
+export function BcanRequestButton({ accountNo }: BcanRequestProps) {
+	const [submitting, setSubmitting] = useState(false);
+
+	const handleRequest = async () => {
+		setSubmitting(true);
+
+		try {
+			const response = await profileService.createBcanRequest(accountNo);
+
+			if (response.success && response.data) {
+				toast.success('BCAN Request Submitted', {
+					description: `Request ID: ${response.data.requestId}. Status: ${response.data.status}`
+				});
+			} else {
+				toast.error('Request Failed', {
+					description: response.error || 'Unable to submit BCAN request.'
+				});
+			}
+		} catch (error) {
+			toast.error('Error', {
+				description: 'Failed to submit request. Please try again.'
+			});
+		} finally {
+			setSubmitting(false);
+		}
+	};
+
+	return (
+		<Button
+			onClick={handleRequest}
+			disabled={submitting}
+			variant="outline"
+		>
+			{submitting ? 'Requesting...' : 'Request BCAN'}
+		</Button>
+	);
+}
+```
 
 ---
 
-## Implementation Phases
+## State Management
 
-### Phase 1: Foundation (Priority: High)
-- Create TypeScript type definitions
-- Update API configuration
-- Create `profileAPI.ts` wrapper functions
-- Set up authentication context/mechanism
-- Configure environment variables
+### User Store Updates
 
-### Phase 2: Core Features (Priority: High)
-- Integrate user profile API
-- Integrate user accounts API
-- Update `tradingAccountStore` with real data
-- Update user profile display components
+**File:** `/stores/userStore.ts`
 
-### Phase 3: Donation Features (Priority: Medium)
-- Integrate donation submission
-- Integrate donation plan retrieval
-- Integrate donation cancellation
-- Update donations page with real data
+**Add User Profile Fields:**
 
-### Phase 4: Additional Features (Priority: Medium)
-- Integrate Trading Representative info
-- Integrate Contact Us endpoints
-- Integrate BCAN request functionality
+```typescript
+import { create } from "zustand";
+import type { UserInfoResponse } from "@/types";
 
-### Phase 5: Polish & Testing (Priority: High)
-- Comprehensive error handling
-- Loading state improvements
-- Toast notification refinements
-- End-to-end testing
-- Performance optimization
+interface UserState {
+	// Existing fields
+	email: string;
+	mobile: string;
+
+	// New fields from API
+	profileId: string | null;
+	name: string | null;
+	icNumber: string | null;
+	nationality: string | null;
+	dateOfBirth: string | null;
+	address: string | null;
+	postalCode: string | null;
+	country: string | null;
+
+	// Methods
+	setUserData: (data: Partial<UserInfoResponse>) => void;
+	clearUserData: () => void;
+}
+
+export const useUserStore = create<UserState>((set) => ({
+	// Initial state
+	email: "",
+	mobile: "",
+	profileId: null,
+	name: null,
+	icNumber: null,
+	nationality: null,
+	dateOfBirth: null,
+	address: null,
+	postalCode: null,
+	country: null,
+
+	// Set user data from API response
+	setUserData: (data) => set((state) => ({
+		...state,
+		...data,
+	})),
+
+	// Clear user data on logout
+	clearUserData: () => set({
+		email: "",
+		mobile: "",
+		profileId: null,
+		name: null,
+		icNumber: null,
+		nationality: null,
+		dateOfBirth: null,
+		address: null,
+		postalCode: null,
+		country: null,
+	}),
+}));
+```
+
+### Trading Account Store Updates
+
+**File:** `/stores/tradingAccountStore.ts`
+
+**Replace Mock Data with API Data:**
+
+```typescript
+import { create } from "zustand";
+import { profileService } from "@/lib/services/profileService";
+import type { TradingAccount } from "@/types";
+
+interface TradingAccountState {
+	accounts: TradingAccount[];
+	selectedAccount: TradingAccount | null;
+	loading: boolean;
+	error: string | null;
+
+	// Actions
+	fetchAccounts: () => Promise<void>;
+	setSelectedAccount: (account: TradingAccount) => void;
+	clearAccounts: () => void;
+}
+
+export const useTradingAccountStore = create<TradingAccountState>((set) => ({
+	accounts: [],
+	selectedAccount: null,
+	loading: false,
+	error: null,
+
+	// Fetch accounts from API
+	fetchAccounts: async () => {
+		set({ loading: true, error: null });
+
+		try {
+			const response = await profileService.getUserAccounts();
+
+			if (response.success && response.data) {
+				set({
+					accounts: response.data,
+					loading: false,
+					error: null,
+				});
+			} else {
+				set({
+					loading: false,
+					error: response.error || 'Failed to load accounts'
+				});
+			}
+		} catch (error) {
+			set({
+				loading: false,
+				error: 'Network error. Please try again.'
+			});
+		}
+	},
+
+	setSelectedAccount: (account) => set({ selectedAccount: account }),
+
+	clearAccounts: () => set({
+		accounts: [],
+		selectedAccount: null,
+		loading: false,
+		error: null,
+	}),
+}));
+```
 
 ---
 
-## Questions to Clarify
+## Testing Checklist
 
-### Authentication & Authorization
-1. **Where is the Bearer token currently stored?**
-   - Is there an existing authentication system/context?
-   - How is the user logged in and token obtained?
-   - How should token refresh be handled?
+### API Integration Tests
 
+- [ ] **getUserInfo** - Returns user profile data
+- [ ] **getTradingInfo** - Returns trading information
+- [ ] **getUserAccounts** - Returns list of trading accounts
+- [ ] **createBcanRequest** - Submits BCAN request successfully
+- [ ] **getDonationPlans** - Returns active donation plans
+- [ ] **submitDonation** - Submits new donation successfully
+- [ ] **cancelDonation** - Cancels existing donation
+- [ ] **getClientServiceContact** - Returns contact info (no auth)
+- [ ] **getCentralDealingDeskContact** - Returns contact info (no auth)
 
-3. **What happens when authentication fails (401)?**
-   - Should the user be redirected to login?
-   - Should we show an error message?
-   - Is there a token refresh mechanism?
+### Component Tests
 
-### User Accounts Data Mapping
-4. **How should API account types map to existing account types?**
-   - API returns `accountType` as string
-   - Current store uses: "Cash Account", "Margin Account", "Shares Borrowing", "CUT", "iCash"
-   - Are these mappings 1:1 or do we need transformation logic?
+- [ ] User info displays after app load
+- [ ] Trading accounts load and display correctly
+- [ ] Donation form submission works with loading state
+- [ ] Donation form shows error on API failure
+- [ ] Donation plans display with loading/error/empty states
+- [ ] BCAN request button shows loading state
+- [ ] BCAN request shows success toast
+- [ ] Account store fetches and updates correctly
 
-5. **What fields from `UserAccountResponse` should populate `TradingAccount` interface?**
-   - API provides: `accountNo`, `accountType`, `trName`, `eps`, `giro`, `cdp`, `cpf`, `srs`, `accreditedInvestor`
-   - Current interface has additional fields (subCdp, paymentDetails, etc.)
-   - Should we keep the extended interface or simplify?
+### Error Scenarios
 
-### Donation Feature
-6. **What are the valid values for donation payment methods?**
-   - API pattern: `^(?i)(PLAN|LS_ACCSET)$`
-   - What do "PLAN" and "LS_ACCSET" represent in the UI?
-   - Should these be displayed to users or handled automatically?
+- [ ] 401 Unauthorized - Shows login prompt
+- [ ] 404 Not Found - Shows user-friendly error
+- [ ] 500 Server Error - Shows retry option
+- [ ] Network failure - Shows connection error
+- [ ] Empty response - Shows empty state
+- [ ] Partial failure in Promise.allSettled - Handles gracefully
 
-7. **What is the user flow for donation submission?**
-   - Is there a form for users to enter donation details?
-   - Should we validate amount ranges?
-   - What happens after successful submission?
+### State Management Tests
 
-8. **How should active donation plans be displayed?**
-   - Should they appear on a dashboard?
-   - Can users have multiple active plans?
-   - What actions can users take on existing plans?
+- [ ] User store updates with API data
+- [ ] Trading account store replaces mock data
+- [ ] Selected account persists across navigation
+- [ ] Store clears on logout
+- [ ] Multiple components can access same store data
 
-### BCAN Request
-9. **What is BCAN and when should users request it?**
-   - Is this a user-initiated action?
-   - Where in the UI should this feature be placed?
-   - What feedback should be shown after request submission?
+---
 
-### Contact Information
-10. **Where should Contact Us information be displayed?**
-    - Should it replace existing hardcoded contact info?
-    - Should it appear in footer, dedicated page, or both?
-    - Should we cache this data or fetch on every page load?
+## Migration from Mock Data
 
-### Trading Representative Info
-11. **How should TR (Trading Representative) info be displayed?**
-    - Should it appear in account details?
-    - Should it be shown in portfolio view?
-    - Is TR info specific to each account or shared across accounts?
+### Current Mock Data Locations
 
-### Environment & Deployment
-12. **Which environment should be used for development?**
-    - Local, DEV, or UAT?
-    - Are there different credentials for each environment?
-    - How should we switch between environments?
+1. **Trading Account Store** (`stores/tradingAccountStore.ts`)
+   - Currently has hardcoded accounts array
+   - Replace with `fetchAccounts()` API call
 
-13. **Is there API documentation for the login/authentication endpoint?**
-    - How do users obtain the Bearer token?
-    - Is there a separate authentication API spec?
+2. **User Store** (`stores/userStore.ts`)
+   - Currently has minimal user data
+   - Enhance with full user profile fields
 
-### Data Synchronization
-14. **When should we fetch user profile and accounts?**
-    - On app initialization?
-    - On every page load?
-    - Should we implement caching/revalidation?
+### Migration Strategy
 
-15. **How should we handle data updates?**
-    - Should we poll for updates?
-    - Is there a webhook/real-time update mechanism?
-    - How often should we refresh account data?
+**Phase 1: Side-by-side**
+- Keep mock data as fallback
+- Add API integration with feature flag
+- Test thoroughly in development
 
-### Error Handling
-16. **What error messages should be shown to users?**
-    - Should we display API error messages directly?
-    - Should we have custom user-friendly messages?
-    - Which errors should be silent vs. displayed?
+**Phase 2: Gradual rollout**
+- Enable API integration for internal users
+- Monitor for errors
+- Keep mock data as emergency fallback
 
-### Feature Flags
-17. **Should we implement feature flags for gradual rollout?**
-    - Toggle between mock data and real API
-    - Enable/disable specific features (donations, BCAN, etc.)
-    - A/B testing capabilities?
+**Phase 3: Complete migration**
+- Remove mock data completely
+- API integration becomes primary source
+- Keep error states for API failures
+
+**Feature Flag Example:**
+
+```typescript
+const USE_REAL_API = process.env.NEXT_PUBLIC_USE_PROFILE_API === "true";
+
+const fetchData = async () => {
+	if (USE_REAL_API) {
+		const response = await profileService.getUserInfo();
+		// ... handle API response
+	} else {
+		// Use mock data
+		setData(mockUserData);
+	}
+};
+```
+
+---
+
+## Summary
+
+### Implementation Checklist
+
+```
+✅ Step 1: Define missing endpoints in /lib/api/endpoints/profile.ts
+✅ Step 2: Add TypeScript types in /types/index.ts
+✅ Step 3: Create service functions in /lib/services/profileService.ts
+✅ Step 4: Update components to use service layer
+✅ Step 5: Update Zustand stores with API integration
+✅ Step 6: Replace mock data with API calls
+✅ Step 7: Test all endpoints and error scenarios
+✅ Step 8: Update documentation
+```
+
+### Core Principles
+
+1. **Follow Three-Layer Architecture**: Components → Services → API Client
+2. **Use Component State by Default**: Only Zustand for truly global data
+3. **Consistent Error Handling**: Always handle loading/error/success states
+4. **Type Safety**: Define all Request/Response types
+5. **JSDoc Documentation**: Document all service functions and endpoints
+
+### Reference Files
+
+- **API Client:** `/lib/api/client.ts`
+- **Endpoints:** `/lib/api/endpoints/profile.ts`
+- **Service:** `/lib/services/profileService.ts`
+- **Types:** `/types/index.ts`
+- **Example Component:** `/app/(minimal)/sidebar/MySubscriptions.tsx`
+
+---
+
+**Last Updated:** 2025-12-28
+**Status:** 8/12 endpoints implemented (67%)
+**Next Steps:** Implement getUserInfo() and getTradingInfo() endpoints

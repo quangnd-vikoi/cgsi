@@ -1,7 +1,10 @@
+"use client";
 import { Check, Dot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import Image from "@/components/Image";
+import { useProductDetails } from "./ProductDetailsContext";
+import { ErrorState } from "@/components/ErrorState";
 
 interface TimelineDate {
 	id: string;
@@ -20,129 +23,247 @@ interface FundamentalItem {
 }
 
 const OverviewTab = () => {
+	const { productDetails, loading, error } = useProductDetails();
+
+	// Format date-time to display format
+	const formatDateTime = (isoString?: string): { date: string; time: string } => {
+		if (!isoString) return { date: "N/A", time: "" };
+		const date = new Date(isoString);
+		return {
+			date: date.toLocaleDateString("en-GB", {
+				day: "2-digit",
+				month: "short",
+				year: "numeric",
+			}),
+			time: date.toLocaleTimeString("en-GB", {
+				hour: "2-digit",
+				minute: "2-digit",
+				timeZoneName: "short",
+			}),
+		};
+	};
+
+	// Determine timeline status based on current date
+	const getTimelineStatus = (dateStr?: string): "completed" | "active" | "upcoming" => {
+		if (!dateStr) return "upcoming";
+		const date = new Date(dateStr);
+		const now = new Date();
+		if (date < now) return "completed";
+		const daysDiff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+		if (daysDiff <= 7) return "active";
+		return "upcoming";
+	};
+
+	// Loading state
+	if (loading) {
+		return (
+			<div className="space-y-6 h-full md:pr-3 p-6">
+				<div className="animate-pulse space-y-4">
+					<div className="h-48 bg-gray-200 rounded w-full"></div>
+					<div className="h-4 bg-gray-200 rounded w-3/4"></div>
+					<div className="h-3 bg-gray-200 rounded w-1/2"></div>
+				</div>
+			</div>
+		);
+	}
+
+	// Error state
+	if (error || !productDetails) {
+		return (
+			<div className="h-full flex items-center justify-center">
+				<ErrorState
+					type="error"
+					title="Failed to Load Product Details"
+					description={error || "Unable to load product information. Please try again."}
+				/>
+			</div>
+		);
+	}
+
+	const openingDateTime = formatDateTime(productDetails.startTime);
+	const closingDateTime = formatDateTime(productDetails.endTime);
+	const paymentDateTime = formatDateTime(productDetails.paymentDate);
+	const listingDateTime = formatDateTime(productDetails.listingDate);
+	const allocationDateTime = formatDateTime(productDetails.allocationDate);
+	const acknowledgementDateTime = formatDateTime(productDetails.acknowledgementDate);
 	const dates: TimelineDate[] = [
 		{
 			id: "1",
 			label: "Opening Date",
-			date: "08-Aug-2024",
-			time: "09:00 SGT",
-			status: "completed",
-			daysRemaining: 733,
+			date: openingDateTime.date,
+			time: openingDateTime.time,
+			status: getTimelineStatus(productDetails.startTime),
 		},
 		{
 			id: "2",
 			label: "Closing Date",
-			date: "08-Aug-2024",
-			time: "17:00 SGT",
-			status: "completed",
+			date: closingDateTime.date,
+			time: closingDateTime.time,
+			status: getTimelineStatus(productDetails.endTime),
 		},
-		{
-			id: "3",
-			label: "Payment Due Date",
-			date: "08-Aug-2024",
-			time: "17:00 SGT",
-			status: "completed",
-		},
-		{
-			id: "4",
-			label: "Reserve Date",
-			date: "10-Aug-2024",
-			time: "17:00 SGT",
-			status: "active",
-			daysRemaining: 385.09,
-		},
-		{
-			id: "5",
-			label: "Closing Date",
-			date: "10-Aug-2024",
-			time: "17:00 SGT",
-			status: "upcoming",
-			daysRemaining: 385.09,
-		},
-		{
-			id: "6",
-			label: "Listing Date",
-			date: "10-Aug-2024",
-			time: "17:00 SGT",
-			status: "upcoming",
-			daysRemaining: 385.09,
-		},
+		...(productDetails.paymentDate
+			? [
+					{
+						id: "3",
+						label: "Payment Due Date",
+						date: paymentDateTime.date,
+						time: paymentDateTime.time,
+						status: getTimelineStatus(productDetails.paymentDate),
+					},
+			  ]
+			: []),
+		...(productDetails.allocationDate
+			? [
+					{
+						id: "4",
+						label: "Allocation Date",
+						date: allocationDateTime.date,
+						time: allocationDateTime.time,
+						status: getTimelineStatus(productDetails.allocationDate),
+					},
+			  ]
+			: []),
+		...(productDetails.acknowledgementDate
+			? [
+					{
+						id: "5",
+						label: "Acknowledgement Date",
+						date: acknowledgementDateTime.date,
+						time: acknowledgementDateTime.time,
+						status: getTimelineStatus(productDetails.acknowledgementDate),
+					},
+			  ]
+			: []),
+		...(productDetails.listingDate
+			? [
+					{
+						id: "6",
+						label: "Listing Date",
+						date: listingDateTime.date,
+						time: listingDateTime.time,
+						status: getTimelineStatus(productDetails.listingDate),
+					},
+			  ]
+			: []),
 	];
 
 	const fundamentals: FundamentalItem[] = [
+		...(productDetails.baseCurrency
+			? [
+					{
+						key: "Base Currency",
+						value: productDetails.baseCurrency,
+						highlighted: true,
+					},
+			  ]
+			: []),
+		...(productDetails.tradingCurrency
+			? [
+					{
+						key: "Trading Currency",
+						value: productDetails.tradingCurrency,
+					},
+			  ]
+			: []),
 		{
-			key: "Base Currency",
-			value: "USD",
-			highlighted: true,
-		},
-		{
-			key: "Trading Currency",
-			value: "USD, SGD",
-		},
-		{
-			key: "SGC Code",
-			value: "GRU (USD), GRO (SGD)",
+			key: "Stock Code",
+			value: `${productDetails.stockCode}`,
 		},
 		{
 			key: "Exchange",
-			value: "SGX",
-			badge: "196",
+			value: productDetails.exchangeCode,
 		},
 		{
 			key: "Issue Price",
-			value: "1.00 USD",
+			value: `${productDetails.issuePrice} ${productDetails.baseCurrency || ""}`,
 		},
-		{
-			key: "Brokerage",
-			value: "0.25 % (min. 8.00 USD)",
-		},
-		{
-			key: "Admin Fee",
-			value: "8.00 USD plus GST",
-			highlighted: true,
-		},
-		{
-			key: "Management Fee",
-			value: "0.9 %",
-		},
-		{
-			key: "Conversion Rate from Base Currency to SGD",
-			value: "1.39",
-		},
-		{
-			key: "Mode of Payment",
-			value: "Bank Transfer, PayNow, Telegraphic Transfer, GIRO, Trust Account, Margin Account",
-		},
+		...(productDetails.brokerageFee !== undefined
+			? [
+					{
+						key: "Brokerage",
+						value: `${productDetails.brokerageFee}%${
+							productDetails.minBrokerageFee
+								? ` (min. ${productDetails.minBrokerageFee} ${productDetails.baseCurrency || ""})`
+								: ""
+						}`,
+					},
+			  ]
+			: []),
+		...(productDetails.transferFee !== undefined
+			? [
+					{
+						key: "Admin Fee",
+						value: `${productDetails.transferFee} ${productDetails.baseCurrency || ""}${
+							productDetails.gst ? " plus GST" : ""
+						}`,
+						highlighted: true,
+					},
+			  ]
+			: []),
+		...(productDetails.managementFee !== undefined
+			? [
+					{
+						key: "Management Fee",
+						value: `${productDetails.managementFee}%`,
+					},
+			  ]
+			: []),
+		...(productDetails.conversionRate !== undefined
+			? [
+					{
+						key: "Conversion Rate from Base Currency to SGD",
+						value: `${productDetails.conversionRate}`,
+					},
+			  ]
+			: []),
+		...(productDetails.paymentMode
+			? [
+					{
+						key: "Mode of Payment",
+						value: productDetails.paymentMode,
+					},
+			  ]
+			: []),
 		{
 			key: "Minimum Subscription",
-			value: "1,000 Unit(s) (increments of 1,000 Unit(s))",
+			value: `${productDetails.minQty.toLocaleString()} Unit(s)${
+				productDetails.incrementQty
+					? ` (increments of ${productDetails.incrementQty.toLocaleString()} Unit(s))`
+					: ""
+			}`,
 		},
-		{
-			key: "Excluded/ Specific Investment",
-			value: "Excluded Investment Product (EIP)",
-		},
+		...(productDetails.excludedInvestment
+			? [
+					{
+						key: "Excluded/ Specific Investment",
+						value: productDetails.excludedInvestment,
+					},
+			  ]
+			: []),
 	];
 	return (
 		<div className="space-y-6 h-full md:pr-3">
 			{/* Banner */}
-			<div className="">
-				<Image
-					src={"/images/securitiy-overview.png"}
-					height={200}
-					width={400}
-					className="w-full mt-6"
-					alt="overview-item"
-				/>
-			</div>
+			{productDetails.bannerUrl && (
+				<div className="">
+					<Image
+						src={productDetails.bannerUrl}
+						height={200}
+						width={400}
+						className="w-full mt-6"
+						alt={productDetails.productName}
+					/>
+				</div>
+			)}
 			<div className="mb-4 md:mb-6">
 				<h4 className="text-base md:text-lg font-semibold text-typo-primary mb-2 md:mb-3">
-					CGS 3-month SGD Commercial Paper Series
+					{productDetails.productName}
 				</h4>
-				<p className="text-xs md:text-sm text-typo-secondary leading-relaxed">
-					Excellent pace of economic volatility, technological innovation in China continues to
-					flourish. With CSI 1000 constituents comprising high-growth and innovative industries that
-					align with Made in China 2025 policy goals.
-				</p>
+				{productDetails.content1 && (
+					<p className="text-xs md:text-sm text-typo-secondary leading-relaxed whitespace-pre-line">
+						{productDetails.content1}
+					</p>
+				)}
 			</div>
 			{/* Timeline */}
 			<div className="p-4 bg-background-section rounded-lg">

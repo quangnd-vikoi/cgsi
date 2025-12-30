@@ -3,54 +3,17 @@
  * All paths are relative - base URL prepended in index.ts via withBaseUrl()
  *
  * Base URL: https://stgitrade.cgsi.com.sg/portal (from API_BASE_URL)
- * Source: subscription-api-0.0.1-snapshot.json + ITrade-SubscriptionAPI.yaml
+ * Source: subscription-api-0.0.1-snapshot.json
  *
  * Authentication:
  * - All endpoints require Bearer token (useAuth: true)
+ *
+ * NOTE: Only PRODUCT subscription endpoints exist (IPO/IOP/AI).
+ * Market data subscription endpoints do NOT exist in the API.
  */
 export const subscriptionEndpoints = {
 	// ============================================================================
-	// Market Data Subscription Endpoints (from YAML)
-	// ============================================================================
-
-	/**
-	 * Get Subscriptions (Market Data Subscriptions)
-	 *
-	 * GET /subscription/api/v1/subscription
-	 *
-	 * Source: ITrade-SubscriptionAPI.yaml
-	 *
-	 * @returns SubscriptionResponse[] - Array of available market data subscriptions
-	 * @requires Authentication - Bearer token (useAuth: true)
-	 *
-	 * @example
-	 * const response = await fetchAPI<SubscriptionResponse[]>(
-	 *   ENDPOINTS.subscriptions(),
-	 *   { useAuth: true }
-	 * );
-	 */
-	subscriptions: () => `/subscription/api/v1/subscription`,
-
-	/**
-	 * Get User Subscriptions (User's Market Data Subscriptions)
-	 *
-	 * GET /subscription/api/v1/userSubscription
-	 *
-	 * Source: ITrade-SubscriptionAPI.yaml
-	 *
-	 * @returns UserSubscriptionResponse[] - Array of user's market data subscriptions
-	 * @requires Authentication - Bearer token (useAuth: true)
-	 *
-	 * @example
-	 * const response = await fetchAPI<UserSubscriptionResponse[]>(
-	 *   ENDPOINTS.userSubscriptions(),
-	 *   { useAuth: true }
-	 * );
-	 */
-	userSubscriptions: () => `/subscription/api/v1/userSubscription`,
-
-	// ============================================================================
-	// Product Subscription Endpoints (from JSON)
+	// Product Subscription Endpoints
 	// ============================================================================
 	/**
 	 * Get User Product Subscriptions

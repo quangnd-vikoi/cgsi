@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { useState } from "react";
 import Title from "@/components/Title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,19 +16,18 @@ import SuccessState from "@/public/icons/success-state.svg";
 export type Step = "select" | "cart" | "professional-declaration" | "non-professional-declaration" | "terms-and-conditions" | "success";
 
 export interface IMarketDataItem {
-    image: string,
-    title: string
-    description?: string,
+    image: string;
+    title: string;
+    description?: string;
     selectedOption: {
         value: string;
         label: string;
-    }
+    };
 }
+
 const MarketData = () => {
     const [currentStep, setCurrentStep] = useState<Step>("select");
-    const [selectedItems, setSelectedItems] = useState<Array<IMarketDataItem>>([]);
-
-    console.log("Selected Items: ", selectedItems);
+    const [selectedItems, setSelectedItems] = useState<IMarketDataItem[]>([]);
     const handleGoToCart = () => {
         setCurrentStep("cart");
     };
@@ -35,22 +35,25 @@ const MarketData = () => {
     const handleBack = () => {
         if (currentStep === "cart") {
             setCurrentStep("select");
-        } else if (currentStep === "professional-declaration" || currentStep === "non-professional-declaration") {
+        } else if (
+            currentStep === "professional-declaration" ||
+            currentStep === "non-professional-declaration"
+        ) {
             setCurrentStep("cart");
         } else if (currentStep === "terms-and-conditions") {
             setCurrentStep("professional-declaration");
         }
-    }
+    };
+
     const handleDeclarationConfirm = () => {
         setCurrentStep("terms-and-conditions");
     };
 
-    const caculateAmount = () => {
-        let totalAmount = 0;
-        selectedItems.forEach((item) => {
-            totalAmount += Number(item.selectedOption?.value.split(" ")[0]);
-        });
-        return totalAmount;
+    const calculateAmount = () => {
+        return selectedItems.reduce((total, item) => {
+            const price = Number(item.selectedOption?.value.split(" ")[0]);
+            return total + (isNaN(price) ? 0 : price);
+        }, 0);
     };
     return (
         <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
@@ -106,7 +109,7 @@ const MarketData = () => {
                     </Tabs>
                     <div className="px-6 py-4 border-t w-full flex justify-between relative gap-2">
                         <div>
-                            <p className="text-base font-semibold">{caculateAmount()} SGD</p>
+                            <p className="text-base font-semibold">{calculateAmount()} SGD</p>
                             <p className="text-xs text-typo-tertiary">Excluding GST</p>
                         </div>
                         <Button className="text-base font-normal px-3 rounded" onClick={handleGoToCart}>
@@ -135,31 +138,27 @@ const MarketData = () => {
             {currentStep === "non-professional-declaration" && (
                 <NonProDeclarationStep onConfirm={handleDeclarationConfirm} />
             )}
+
             {currentStep === "terms-and-conditions" && (
                 <TermsStep setCurrenStep={setCurrentStep} selectedItems={selectedItems} />
             )}
 
-
             {/* Success */}
             {currentStep === "success" && (
                 <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
-                    <div className={`flex flex-col justify-center items-center py-5 md:py-7 h-full`}>
+                    <div className="flex flex-col justify-center items-center py-5 md:py-7 h-full">
                         <SuccessState width={100} height={100} className="text-status-disable-primary" />
 
-                        <div
-                            className={`mt-6 font-semibold text-typo-primary text-base text-center leading-normal`}
-                        >
+                        <div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">
                             Subscription(s) Submitted
                         </div>
 
-                        <div
-                            className={`mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5 md:w-2/3`}
-                        >
+                        <div className="mt-1 font-normal text-typo-secondary text-sm text-center leading-tight px-5 md:w-2/3">
                             Settle the total amount due to enjoy your subscriptions!
                         </div>
 
                         <div className="mt-6 p-4 rounded-lg bg-background-section flex justify-between items-center w-[calc(100%-48px)]">
-                            <div className="">
+                            <div>
                                 <p className="text-sm font-semibold hidden md:block">Total Amount Due</p>
                                 <p className="text-sm font-semibold md:hidden">Total Price</p>
                                 <p className="text-xs">Inclusive of GST</p>
@@ -173,7 +172,6 @@ const MarketData = () => {
                         </Button>
                     </div>
                 </div>
-
             )}
         </div>
     );

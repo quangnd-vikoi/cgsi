@@ -13,25 +13,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Loader2 } from "lucide-react";
 import { cn, convertTo2DigitsNumber } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
 import Image from "@/components/Image";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
+import { useProductDetails } from "./ProductDetailsContext";
+import { subscriptionService } from "@/lib/services/subscriptionService";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
-};
-
-// Configuration constants
-const FORM_CONFIG = {
-	issuePrice: 100.0,
-	minQuantity: 20,
-	unitIncremental: 10,
-	productName: "CGS SG 3-month USD Commercial Paper Series 012",
-	productCode: "C012USD.ADDX",
 };
 
 // Select field configurations
@@ -85,6 +78,7 @@ const CURRENCY_OPTIONS = [
 ];
 
 export default function ApplicationForm({ pathname }: RouteProps) {
+	const { productDetails, refetch } = useProductDetails();
 	const [quantity, setQuantity] = useState<number | "">("");
 	const [agreed, setAgreed] = useState(false);
 	const [formValues, setFormValues] = useState({
@@ -94,7 +88,24 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	});
 	const [showError, setShowError] = useState(false);
 	const [showValidationErrors, setShowValidationErrors] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
 	const router = useRouter();
+
+	// If no product details, don't render
+	if (!productDetails) {
+		return null;
+	}
+
+	// Configuration from API
+	const FORM_CONFIG = {
+		issuePrice: productDetails.issuePrice,
+		minQuantity: productDetails.minQty,
+		unitIncremental: productDetails.incrementQty,
+		productName: productDetails.productName,
+		productCode: `${productDetails.stockCode}.${productDetails.exchangeCode}`,
+		baseCurrency: productDetails.baseCurrency || "USD",
+	};
 
 	// Validation logic
 	const currentQuantity = quantity === "" ? 0 : quantity;
@@ -108,7 +119,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const openNoteTab = () => {
 		window.open("/application-note", "_blank", "noopener,noreferrer");
 	};
-	const handleSubmit = () => {
+
+	const handleSubmit = async () => {
+		// Validate form
 		if (!formValues.account || !formValues.payment || !formValues.currency || !isValid || !agreed) {
 			setShowValidationErrors(true);
 			if (!agreed) setShowError(true);
@@ -117,20 +130,70 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 		setShowError(false);
 		setShowValidationErrors(false);
+		setIsSubmitting(true);
 
-		if (pathname === "alternatives") {
-			if (Math.random() < 0.5) {
+		try {
+			// Prepare submission data
+			const submissionData = {
+				productCode: productDetails.productCode,
+				accountNo: formValues.account.replace(/[^0-9]/g, ""), // Extract only numbers from account
+				totalUnit: currentQuantity,
+				paymentCurrency: formValues.currency.toUpperCase(),
+				paymentMode: formValues.payment,
+			};
+
+			// Call API
+			const result = await subscriptionService.submitProductSubscription(submissionData);
+
+			if (result.success && result.data) {
+				// Success
 				toast.success(
-					"Application Success!",
-					"Your Application for CGS Fullgoal CSI 1000 ETF has been submitted successfully."
+					"Application Submitted Successfully!",
+					`Your application for ${FORM_CONFIG.productName} has been submitted.`
 				);
 
-				openNoteTab();
+				// Refetch product details to update subscription status
+				await refetch();
+
+				// Close dialog
+				setDialogOpen(false);
+
+				// Reset form
+				setQuantity("");
+				setAgreed(false);
+				setFormValues({
+					account: "cash-0123456",
+					payment: "",
+					currency: "sgd",
+				});
+
+				// Open note tab or redirect based on pathname
+				if (pathname === "alternatives") {
+					openNoteTab();
+				} else {
+					// For IOP, check if we have subscriptionId to generate invoice token
+					if (result.data.subscriptionId) {
+						router.push(CGSI.INVOICE(result.data.subscriptionId));
+					} else {
+						openNoteTab();
+					}
+				}
 			} else {
-				toast.error("Error Encountered", "Something went wrong. Please try again later.");
+				// Error from API
+				toast.error(
+					"Submission Failed",
+					result.error || "Unable to submit your application. Please try again."
+				);
 			}
-		} else {
-			router.push(CGSI.INVOICE("itrade-token-12345"));
+		} catch (error) {
+			// Unexpected error
+			console.error("Submission error:", error);
+			toast.error(
+				"Error Encountered",
+				"An unexpected error occurred. Please try again later."
+			);
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -161,7 +224,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const quantityDetails = [
 		{
 			label: "Issue Price",
-			value: `${FORM_CONFIG.issuePrice.toFixed(2)} USD`,
+			value: `${FORM_CONFIG.issuePrice.toFixed(2)} ${FORM_CONFIG.baseCurrency}`,
 			isError: false,
 		},
 		{
@@ -177,11 +240,15 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	];
 
 	return (
-		<Dialog>
+		<Dialog open={dialogOpen} onOpenChange={(open) => !isSubmitting && setDialogOpen(open)}>
 			<DialogTrigger asChild>
 				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
-			<DialogContent className="p-0 gap-0 w-[346px] md:w-[530px] rounded">
+			<DialogContent
+				className="p-0 gap-0 w-[346px] md:w-[530px] rounded"
+				onInteractOutside={(e) => isSubmitting && e.preventDefault()}
+				onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
+			>
 				<DialogHeader className="pad pt-4">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
@@ -324,7 +391,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 h-5 w-5"
+								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Plus className="w-4 h-4" />
 							</Button>
@@ -355,7 +422,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									Est. Net Application Value
 								</span>
 								<span className="font-semibold text-typo-primary">
-									{convertTo2DigitsNumber(estNetValue)} USD
+									{convertTo2DigitsNumber(estNetValue)} {FORM_CONFIG.baseCurrency}
 								</span>
 							</div>
 						</div>
@@ -402,9 +469,17 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<DialogFooter className="">
 					<Button
 						onClick={handleSubmit}
+						disabled={isSubmitting}
 						className="bg-enhanced-blue hover:bg-enhanced-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						Submit Application
+						{isSubmitting ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Submitting...
+							</>
+						) : (
+							"Submit Application"
+						)}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

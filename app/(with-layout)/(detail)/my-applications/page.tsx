@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
-import { useSelectionStore } from "@/stores/selectionStore";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 import {
 	Pagination,
 	PaginationContent,
@@ -15,11 +15,13 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import Title from "@/components/Title";
+import { subscriptionService } from "@/lib/services/subscriptionService";
+import type { UserProductSubscriptionDto } from "@/types";
 
 type ApplicationType = "all" | "securities" | "alternatives";
 
 interface Application {
-	id: number;
+	subscriptionId: string;
 	productName: string;
 	code: string;
 	issuePrice: string;
@@ -31,38 +33,64 @@ interface Application {
 
 export default function MyApplication() {
 	const router = useRouter();
-	const { setSelectedId } = useSelectionStore();
 	const [activeTab, setActiveTab] = useState<ApplicationType>("all");
+	const [applications, setApplications] = useState<Application[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-	const applications: Application[] = [
-		{
-			id: 1,
-			productName: "CGS SG 3-month USD Commercial Paper Series 012",
-			code: "C012USD.ADDX",
-			issuePrice: "20,000.00 USD",
-			applied: 1000,
-			allocated: 0,
-			closingDate: "02-Nov-2025, 17:00 SGT",
-			type: "securities",
-		},
-		{
-			id: 2,
-			productName: "CGS SG 3-month USD Commercial Paper Series 018",
-			code: "C012USD.AAXD",
-			issuePrice: "20,000.00 USD",
-			applied: 1000,
-			allocated: 0,
-			closingDate: "02-Nov-2025, 17:00 SGT",
-			type: "securities",
-		},
-	];
+	// Fetch applications from API
+	const fetchApplications = useCallback(async () => {
+		setLoading(true);
+		setError(null);
+
+		const response = await subscriptionService.getUserProductSubscriptions();
+
+		if (response.success && response.data) {
+			// Map API data to Application structure
+			const mappedApplications: Application[] =
+				response.data.userProductSubs.map((sub) => ({
+					subscriptionId: sub.subscriptionId,
+					productName: sub.productName,
+					code: sub.stockCode,
+					issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
+					applied: sub.appliedQty || 0,
+					allocated: sub.allocatedQty || 0,
+					closingDate: sub.endTime
+						? new Date(sub.endTime).toLocaleString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+								hour: "2-digit",
+								minute: "2-digit",
+								timeZoneName: "short",
+						  })
+						: "N/A",
+					type:
+						sub.productType?.toLowerCase() === "securities"
+							? "securities"
+							: "alternatives",
+				}));
+
+			setApplications(mappedApplications);
+		} else {
+			setError(response.error || "Failed to load applications");
+		}
+
+		setLoading(false);
+	}, []);
+
+	// Fetch data on mount
+	useEffect(() => {
+		fetchApplications();
+	}, [fetchApplications]);
 
 	const filteredApplications =
-		activeTab === "all" ? applications : applications.filter((app) => app.type === activeTab);
+		activeTab === "all"
+			? applications
+			: applications.filter((app) => app.type === activeTab);
 
 	const handleViewClick = (application: Application) => {
-		setSelectedId(application.id);
-		router.push(`/${application.type}`);
+		router.push(`${INTERNAL_ROUTES.APPLICATION_NOTE}?subscriptionId=${application.subscriptionId}`);
 	};
 
 	return (
@@ -72,7 +100,10 @@ export default function MyApplication() {
 			{/* Content Box */}
 			<div className="bg-white pad rounded-lg flex-1 flex flex-col">
 				{/* Tabs */}
-				<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ApplicationType)}>
+				<Tabs
+					value={activeTab}
+					onValueChange={(v) => setActiveTab(v as ApplicationType)}
+				>
 					<TabsList className="mb-6 bg-transparent gap-2 border-b-0">
 						<TabsTrigger
 							value="all"
@@ -95,8 +126,32 @@ export default function MyApplication() {
 					</TabsList>
 				</Tabs>
 
-				{/* Table or Empty State */}
-				{filteredApplications.length === 0 ? (
+				{/* Loading State */}
+				{loading ? (
+					<div className="flex-1 w-full flex items-center justify-center">
+						<div className="space-y-4 w-full">
+							{[...Array(3)].map((_, i) => (
+								<div key={i} className="animate-pulse flex gap-4">
+									<div className="h-12 bg-gray-200 rounded flex-1"></div>
+								</div>
+							))}
+						</div>
+					</div>
+				) : error ? (
+					/* Error State */
+					<div className="flex-1 w-full flex flex-col items-center justify-center text-center text-status-error gap-4 text-xs font-normal">
+						<p>Oops, something went wrong.</p>
+						<p>{error}</p>
+						<Button
+							size="sm"
+							onClick={fetchApplications}
+							className="bg-enhanced-blue rounded-sm"
+						>
+							Retry
+						</Button>
+					</div>
+				) : filteredApplications.length === 0 ? (
+					/* Empty State */
 					<div className="flex-1 w-full flex flex-col items-center justify-center text-center text-typo-secondary gap-4 text-xs font-normal">
 						<p>No product applications available.</p>
 						<p>Check back here after you&apos;ve submitted your application.</p>
@@ -127,7 +182,7 @@ export default function MyApplication() {
 								</TableHeader>
 								<TableBody>
 									{filteredApplications.map((app) => (
-										<TableRow key={app.id} className="*:whitespace-normal">
+										<TableRow key={app.subscriptionId} className="*:whitespace-normal">
 											<TableCell className="font-medium text-enhanced-blue py-4 px-3">
 												{app.productName}
 											</TableCell>

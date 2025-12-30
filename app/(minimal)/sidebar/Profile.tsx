@@ -12,17 +12,19 @@ import {
 	FileText,
 	Headphones,
 	HeartHandshake,
+	Loader2,
 	Settings,
 	ShieldCheck,
 	X,
 } from "lucide-react";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 import Link from "next/link";
-import { SheetType } from "@/types";
+import { SheetType, CorpActionSSOResponse } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
+import { getCorporateActionURL } from "@/lib/services/ssoService";
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
@@ -30,106 +32,43 @@ interface IProfileMenuItem {
 	href?: string;
 	sheet?: SheetType;
 	target?: "_blank" | "_self";
+	onClick?: () => void | Promise<void>;
+	isLoading?: boolean;
 }
-
-const PROFILE_MENU_ITEM = {
-	"Account Centre": [
-		{
-			icon: <CircleUserRound />,
-			name: "User Profile",
-			sheet: "user_profile" as SheetType,
-		},
-		{
-			icon: <ShieldCheck />,
-			name: "Password & Security",
-			sheet: "password_and_security" as SheetType,
-		},
-		{
-			icon: <HeartHandshake />,
-			name: "Donations",
-			href: "/donations",
-		},
-	],
-	"Trading Centre": [
-		{
-			icon: <BookOpen />,
-			name: "Trading Accounts",
-			sheet: "trading_accounts" as SheetType,
-		},
-		{
-			icon: <FileCheck />,
-			name: "Trading Declarations",
-			sheet: "trading_declarations" as SheetType,
-		},
-		{
-			icon: <Building2 />,
-			name: "Corporate Actions",
-			href: "/trading/corporate-actions",
-		},
-		{
-			icon: <Box />,
-			name: "Market Data & Add-Ons",
-			href: "/market-data",
-		},
-		{
-			icon: <Boxes />,
-			name: "My Subscriptions",
-			sheet: "my_subscriptions" as SheetType,
-		},
-	],
-	Reports: [
-		{
-			icon: <FileText />,
-			name: "eStatements",
-			href: CGSI.ESTATEMENT,
-			target: "_blank" as IProfileMenuItem["target"],
-		},
-		{
-			icon: <FileCheck />,
-			name: "Acknowledgements",
-			sheet: "acknowledgements" as SheetType,
-		},
-	],
-	"Help & Support": [
-		{
-			icon: <Headphones />,
-			name: "Contact Us",
-			sheet: "contact" as SheetType,
-		},
-		{
-			icon: <CircleQuestionMark />,
-			name: "Help Centre",
-			href: CGSI.HELP_CENTRE,
-			target: "_blank" as IProfileMenuItem["target"],
-		},
-		{
-			icon: <Settings />,
-			name: "Settings",
-			href: "/settings",
-		},
-	],
-};
 
 const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+	const [isProcessing, setIsProcessing] = useState(false);
 
-	const handleClick = () => {
-		if (item.sheet !== undefined) {
+	const handleClick = async () => {
+		if (item.onClick) {
+			setIsProcessing(true);
+			try {
+				await item.onClick();
+			} finally {
+				setIsProcessing(false);
+			}
+		} else if (item.sheet !== undefined) {
 			setOpenSheet(item.sheet);
 		}
 	};
 
+	const isLoading = isProcessing || item.isLoading;
+
 	const content = (
 		<>
 			<div className="flex gap-4 items-center text-typo-secondary">
-				<div className="w-5 h-5 flex items-center justify-center">{item.icon}</div>
+				<div className="w-5 h-5 flex items-center justify-center">
+					{isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : item.icon}
+				</div>
 				<div className="text-sm font-normal">{item.name}</div>
 			</div>
 			<ChevronRight className="w-5 text-enhanced-blue" strokeWidth={2} />
 		</>
 	);
 
-	if (item.href) {
+	// Render Link for href items (without onClick)
+	if (item.href && !item.onClick) {
 		return (
 			<Link href={item.href} target={item.target || "_self"} className="flex justify-between">
 				{content}
@@ -137,19 +76,101 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 		);
 	}
 
-	if (item.sheet !== undefined) {
+	// Render clickable div for onClick or sheet items
+	if (item.onClick || item.sheet !== undefined) {
 		return (
-			<div className="flex justify-between cursor-pointer" onClick={handleClick}>
+			<div
+				className={`flex justify-between cursor-pointer ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+				onClick={handleClick}
+			>
 				{content}
 			</div>
 		);
 	}
 
-	// Fallback - không có action
+	// Fallback for items without actions
 	return <div className="flex justify-between">{content}</div>;
 };
 
 const Profile = () => {
+	const PROFILE_MENU_ITEM = {
+		"Account Centre": [
+			{
+				icon: <CircleUserRound />,
+				name: "User Profile",
+				sheet: "user_profile" as SheetType,
+			},
+			{
+				icon: <ShieldCheck />,
+				name: "Password & Security",
+				sheet: "password_and_security" as SheetType,
+			},
+			{
+				icon: <HeartHandshake />,
+				name: "Donations",
+				href: "/donations",
+			},
+		],
+		"Trading Centre": [
+			{
+				icon: <BookOpen />,
+				name: "Trading Accounts",
+				sheet: "trading_accounts" as SheetType,
+			},
+			{
+				icon: <FileCheck />,
+				name: "Trading Declarations",
+				sheet: "trading_declarations" as SheetType,
+			},
+			{
+				icon: <Building2 />,
+				name: "Corporate Actions",
+				onClick: getCorporateActionURL,
+			},
+			{
+				icon: <Box />,
+				name: "Market Data & Add-Ons",
+				href: "/market-data",
+			},
+			{
+				icon: <Boxes />,
+				name: "My Subscriptions",
+				sheet: "my_subscriptions" as SheetType,
+			},
+		],
+		Reports: [
+			{
+				icon: <FileText />,
+				name: "eStatements",
+				href: CGSI.ESTATEMENT,
+				target: "_blank" as IProfileMenuItem["target"],
+			},
+			{
+				icon: <FileCheck />,
+				name: "Acknowledgements",
+				sheet: "acknowledgements" as SheetType,
+			},
+		],
+		"Help & Support": [
+			{
+				icon: <Headphones />,
+				name: "Contact Us",
+				sheet: "contact" as SheetType,
+			},
+			{
+				icon: <CircleQuestionMark />,
+				name: "Help Centre",
+				href: CGSI.HELP_CENTRE,
+				target: "_blank" as IProfileMenuItem["target"],
+			},
+			{
+				icon: <Settings />,
+				name: "Settings",
+				href: "/settings",
+			},
+		],
+	};
+
 	return (
 		<div className="h-full flex flex-col">
 			<SheetHeader

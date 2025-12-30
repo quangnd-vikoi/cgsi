@@ -23,7 +23,11 @@
       "Bash(grep:*)",
       "Bash(npm run lint:*)",
       "Bash(bun run build:*)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []

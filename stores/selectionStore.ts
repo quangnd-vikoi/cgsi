@@ -2,7 +2,7 @@
 import { create } from "zustand";
 
 interface SelectedItem {
-	id: number;
+	id: string;
 	name: string;
 	code: string;
 	issuePrice?: string;
@@ -15,9 +15,9 @@ interface SelectedItem {
 }
 
 interface SelectionStore {
-	selectedId: number | null;
+	selectedId: string | null;
 	selectedItem: SelectedItem | null;
-	setSelectedId: (id: number | null) => void;
+	setSelectedId: (id: string | null) => void;
 	setSelectedItem: (item: SelectedItem | null) => void;
 	clearSelection: () => void;
 }

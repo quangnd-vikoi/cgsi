@@ -9,23 +9,75 @@ import { Separator } from "@/components/ui/separator";
 import { IMarketDataItem } from "../page";
 import CartItemsList from "./CartItemList";
 import { Step } from "../page";
+import { subscriptionService } from "@/lib/services/subscriptionService";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { toast } from "sonner";
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
     selectedItems: Array<IMarketDataItem>;
 }
 
 const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
-    const [agreed, setAgreed] = useState(false);
-    const [showTermsError, setShowTermsError] = useState(false);
+	const [agreed, setAgreed] = useState(false);
+	const [showTermsError, setShowTermsError] = useState(false);
+	const [submitting, setSubmitting] = useState(false);
 
-    const handleTermConfirm = () => {
-        if (agreed) {
-            setCurrenStep("success");
-        }
-        else {
-            setShowTermsError(true);
-        }
-    };
+	const selectedAccount = useTradingAccountStore(
+		(state) => state.selectedAccount
+	);
+
+	const handleTermConfirm = async () => {
+		if (!agreed) {
+			setShowTermsError(true);
+			return;
+		}
+
+		setSubmitting(true);
+
+		try {
+			// NOTE: Using product subscription endpoint as workaround
+			// TODO: Request proper market data submission endpoint from backend
+			// Expected endpoint: POST /subscription/api/v1/marketDataSubscription
+
+			const submissions = selectedItems.map((item) =>
+				subscriptionService.submitProductSubscription({
+					productCode: item.title, // Using title as productCode (workaround)
+					accountNo: selectedAccount?.accountNumber || "",
+					totalUnit: 1,
+					paymentCurrency: "SGD",
+					paymentMode: "PayNow",
+				})
+			);
+
+			const results = await Promise.allSettled(submissions);
+			const allSucceeded = results.every(
+				(r) => r.status === "fulfilled" && r.value.success
+			);
+
+			if (allSucceeded) {
+				setCurrenStep("success");
+				toast.success("Subscription Submitted", {
+					description:
+						"Your market data subscription has been submitted successfully.",
+				});
+			} else {
+				const failedCount = results.filter(
+					(r) => r.status === "rejected" || !r.value.success
+				).length;
+
+				toast.error("Submission Failed", {
+					description: `${failedCount} subscription(s) failed. Please try again.`,
+				});
+			}
+		} catch (error) {
+			console.error("Market data subscription error:", error);
+			toast.error("Error", {
+				description: "Failed to submit subscription. Please try again.",
+			});
+		} finally {
+			setSubmitting(false);
+		}
+	};
     return (
         <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 py-6 pad-x overflow-y-auto sidebar-scroll sidebar-offset-2">
@@ -105,9 +157,13 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                 </div>
                 <div className="pad-x py-6">
 
-                    <Button onClick={handleTermConfirm} className="w-full rounded">
-                        Continue
-                    </Button>
+					<Button
+						onClick={handleTermConfirm}
+						className="w-full rounded"
+						disabled={submitting}
+					>
+						{submitting ? "Submitting..." : "Continue"}
+					</Button>
                 </div>
             </div>
         </div>
