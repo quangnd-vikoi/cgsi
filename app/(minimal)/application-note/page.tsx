@@ -3,16 +3,14 @@
 import Image from "@/components/Image";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Clock, Printer, ArrowLeft } from "lucide-react";
+import { Clock, Printer } from "lucide-react";
 import React, { useEffect, useState, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import type { UserProductSubscriptionDetailResponse } from "@/types";
-import { Button } from "@/components/ui/button";
-import { INTERNAL_ROUTES } from "@/constants/routes";
+import { ErrorState } from "@/components/ErrorState";
 
 const NoteContent = () => {
-	const router = useRouter();
 	const searchParams = useSearchParams();
 	const subscriptionId = searchParams.get("subscriptionId");
 
@@ -47,10 +45,6 @@ const NoteContent = () => {
 
 	const handlePrint = () => {
 		window.print();
-	};
-
-	const handleBack = () => {
-		router.push(INTERNAL_ROUTES.MYAPPLICATION);
 	};
 
 	const formatDate = (dateString?: string) => {
@@ -99,18 +93,11 @@ const NoteContent = () => {
 		return (
 			<div className="bg-black/75 min-h-screen flex items-center justify-center">
 				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
-					<div className="flex flex-col items-center justify-center gap-4 text-center">
-						<p className="text-status-error text-sm font-medium">
-							{error || "Subscription details not found"}
-						</p>
-						<Button
-							size="sm"
-							onClick={handleBack}
-							className="bg-enhanced-blue rounded-sm"
-						>
-							<ArrowLeft className="w-4 h-4 mr-2" />
-							Back to My Applications
-						</Button>
+					<div className="flex items-center justify-center">
+						<ErrorState
+							type="error"
+							description={error || "Subscription details not found"}
+						/>
 					</div>
 				</div>
 			</div>

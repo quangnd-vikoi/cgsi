@@ -7,6 +7,7 @@ import Campaigns from "./_component/Campaigns";
 import Events from "./_component/Events";
 import Investment from "./_component/Investment";
 import ProductInformation from "./_component/ProductInformation";
+import { ErrorState } from "@/components/ErrorState";
 
 function HomeContent() {
 	const searchParams = useSearchParams();
@@ -71,20 +72,11 @@ function HomeContent() {
 	if (error) {
 		return (
 			<div className="flex items-center justify-center min-h-[400px]">
-				<div className="text-center max-w-md">
-					<h1 className="text-2xl font-bold text-status-error mb-4">Authentication Error</h1>
-					<p className="text-typo-secondary mb-6">{error}</p>
-					<button
-						onClick={() => {
-							setError(null);
-							setIsAuthenticating(true);
-							window.location.reload();
-						}}
-						className="px-6 py-2 bg-enhanced-blue text-white rounded-lg hover:opacity-90"
-					>
-						Try Again
-					</button>
-				</div>
+				<ErrorState
+					type="error"
+					title="Authentication Error"
+					description={error}
+				/>
 			</div>
 		);
 	}
