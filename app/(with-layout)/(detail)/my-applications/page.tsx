@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
-import { useSelectionStore } from "@/stores/selectionStore";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 import {
 	Pagination,
 	PaginationContent,
@@ -21,7 +21,7 @@ import type { UserProductSubscriptionDto } from "@/types";
 type ApplicationType = "all" | "securities" | "alternatives";
 
 interface Application {
-	id: number;
+	subscriptionId: string;
 	productName: string;
 	code: string;
 	issuePrice: string;
@@ -33,7 +33,6 @@ interface Application {
 
 export default function MyApplication() {
 	const router = useRouter();
-	const { setSelectedId } = useSelectionStore();
 	const [activeTab, setActiveTab] = useState<ApplicationType>("all");
 	const [applications, setApplications] = useState<Application[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -50,7 +49,7 @@ export default function MyApplication() {
 			// Map API data to Application structure
 			const mappedApplications: Application[] =
 				response.data.userProductSubs.map((sub) => ({
-					id: parseInt(sub.subscriptionId),
+					subscriptionId: sub.subscriptionId,
 					productName: sub.productName,
 					code: sub.stockCode,
 					issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
@@ -91,8 +90,7 @@ export default function MyApplication() {
 			: applications.filter((app) => app.type === activeTab);
 
 	const handleViewClick = (application: Application) => {
-		setSelectedId(application.id);
-		router.push(`/${application.type}`);
+		router.push(`${INTERNAL_ROUTES.APPLICATION_NOTE}?subscriptionId=${application.subscriptionId}`);
 	};
 
 	return (
@@ -184,7 +182,7 @@ export default function MyApplication() {
 								</TableHeader>
 								<TableBody>
 									{filteredApplications.map((app) => (
-										<TableRow key={app.id} className="*:whitespace-normal">
+										<TableRow key={app.subscriptionId} className="*:whitespace-normal">
 											<TableCell className="font-medium text-enhanced-blue py-4 px-3">
 												{app.productName}
 											</TableCell>

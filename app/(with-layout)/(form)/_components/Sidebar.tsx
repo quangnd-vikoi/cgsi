@@ -165,7 +165,7 @@ export default function Sidebar() {
 											"gap-1 px-3 h-6 border border-enhanced-blue text-xs rounded-4xl flex items-center leading-2",
 											selectedId === etf.id
 												? "bg-enhanced-blue text-white"
-												: "bg-transparent text-enhanced-blue hover:bg-background-focus transition-colors "
+												: "bg-transparent text-enhanced-blue hover:bg-transparent hover:opacity-75 transition-colors "
 										)}
 										onClick={() => setSelectedItem(etf)}
 									>
