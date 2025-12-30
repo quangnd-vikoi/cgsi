@@ -11,7 +11,7 @@ export default function MainLayout({ children }: Readonly<{ children: React.Reac
 				<SheetManager />
 			</header>
 
-			<main>{children}</main>
+			<main className="flex-1 flex flex-col min-h-0">{children}</main>
 
 			<footer>
 				<Footer />

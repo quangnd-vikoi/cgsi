@@ -32,7 +32,8 @@
       "Bash(bun add:*)",
       "Bash(tail:*)",
       "WebSearch",
-      "Bash(bun install:*)"
+      "Bash(bun install:*)",
+      "Bash(bun x tsc:*)"
     ],
     "deny": [],
     "ask": []

@@ -73,7 +73,7 @@ const AccountLinkages = () => {
 	};
 
 	return (
-		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col">
+		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
 					title="Account Linkages"
@@ -90,11 +90,11 @@ const AccountLinkages = () => {
 			</div>
 
 			{/* Content */}
-			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden">
+			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
 				<Tabs
 					value={activeTab}
 					onValueChange={handleTabChange}
-					className="flex flex-1 flex-col gap-0"
+					className="flex flex-1 flex-col gap-0 min-h-0"
 				>
 					<div className="pad-x overflow-x-auto">
 						<TabsList className="w-full pt-6 shrink-0 min-w-max">

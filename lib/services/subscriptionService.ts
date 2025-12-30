@@ -181,18 +181,15 @@ export const getAllUserSubscriptions = async () => {
  * NOTE: Market data subscription endpoints do not exist.
  * This function always returns true as we cannot check subscription status.
  *
- * @param subscriptionId - Subscription ID to check (unused)
  * @returns Always returns true
  *
  * @example
- * const canUserSubscribe = await canSubscribe("sub123");
+ * const canUserSubscribe = await canSubscribe();
  * if (canUserSubscribe) {
  *   // Show subscribe button
  * }
  */
-export const canSubscribe = async (
-	subscriptionId: string
-): Promise<boolean> => {
+export const canSubscribe = async (): Promise<boolean> => {
 	// Market data subscription endpoints do not exist
 	// Always return true as we cannot check subscription status
 	return true;

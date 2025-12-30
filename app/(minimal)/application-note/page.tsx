@@ -25,18 +25,14 @@ const NoteContent = () => {
 				setLoading(false);
 				return;
 			}
-
 			setLoading(true);
 			setError(null);
-
 			const response = await subscriptionService.getUserSubscriptionDetails(subscriptionId);
-
 			if (response.success && response.data) {
 				setDetails(response.data);
 			} else {
 				setError(response.error || "Failed to load subscription details");
 			}
-
 			setLoading(false);
 		};
 

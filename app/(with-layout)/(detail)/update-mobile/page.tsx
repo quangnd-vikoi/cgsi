@@ -177,7 +177,7 @@ const UpdateMobile = () => {
 	};
 
 	return (
-		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col">
+		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
 					title="Update Mobile Number"
@@ -194,7 +194,7 @@ const UpdateMobile = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6">
+			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
 				{step === 1 && (
 					<MobileInputStep
 						phoneNumber={phoneNumber}

@@ -94,6 +94,7 @@ export const refreshAccessToken = async (): Promise<void> => {
 	});
 
 	// For token refresh, just check if we have a response with token data
+	// Note: Auth API returns direct response, not wrapped in standard format
 	if (!response.data) {
 		clearTokens();
 		redirectToLogin();

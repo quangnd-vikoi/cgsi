@@ -35,7 +35,7 @@ type SubscriptionGroup = {
 };
 
 // Helper function to get subscription image based on category
-const getSubscriptionImage = (category: string, index: number): string => {
+const getSubscriptionImage = (category: string): string => {
 	const SUBSCRIPTION_IMAGES: Record<string, string> = {
 		sgx: "/images/market-data/item-2.png",
 		hkex: "/images/market-data/item-3.png",
@@ -106,7 +106,7 @@ const MySubscriptions = () => {
 	const subscriptions: SubscriptionGroup[] = [
 		{
 			category: "Product Subscriptions",
-			items: productSubs.map((sub, index) => ({
+			items: productSubs.map((sub) => ({
 				title: sub.productName,
 				description: sub.productType || "",
 				endDate: sub.endTime
@@ -116,7 +116,7 @@ const MySubscriptions = () => {
 							year: "numeric",
 					  })
 					: "N/A",
-				image: getSubscriptionImage(sub.productType || "", index),
+				image: getSubscriptionImage(sub.productType || ""),
 				status: determineProductStatus(sub),
 			})),
 		},
@@ -159,7 +159,6 @@ const MySubscriptions = () => {
 	}
 
 	const handleUnsubcribe = (item: SubcriptionItem) => {
-		console.log("Unsubscribed from ", item.title);
 		toast.success(
 			"Unsubscribed",
 			`You have successfully unsubscribed from "${item.title} - ${item.description}".`

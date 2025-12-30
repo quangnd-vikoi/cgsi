@@ -40,8 +40,7 @@ const paymentMethods: PaymentMethod[] = [
 ];
 
 export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
-    const handleSelectMethod = (methodId: string) => {
-        console.log("Selected payment method:", methodId);
+    const handleSelectMethod = () => {
         onOpenChange(false);
     };
 
@@ -58,7 +57,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
                     {paymentMethods.map((method) => (
                         <button
                             key={method.id}
-                            onClick={() => handleSelectMethod(method.id)}
+                            onClick={handleSelectMethod}
                             disabled={!method.available}
                             className="w-full flex items-center gap-4 py-2 px-4 rounded-lg border border-theme-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
                         >

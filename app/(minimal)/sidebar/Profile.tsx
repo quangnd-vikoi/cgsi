@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { JSX, useState } from "react";
 import Link from "next/link";
-import { SheetType, CorpActionSSOResponse } from "@/types";
+import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group

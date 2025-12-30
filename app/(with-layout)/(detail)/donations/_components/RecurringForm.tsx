@@ -114,7 +114,7 @@ const RecurringForm = () => {
 		toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 	};
 	return (
-		<div className="flex flex-col flex-1 min-h-0">
+		<div className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Nội dung chính */}
 			<div className="space-y-6 pad-x flex-shrink-0">
 				<div className="space-y-4 text-sm font-normal text-typo-secondary mt-6">
