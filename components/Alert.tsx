@@ -50,7 +50,7 @@ const Alert: React.FC<AlertProps> = ({
 				<AlertDialogHeader className="text-start pad-x shrink-0 py-6 ">
 					<AlertDialogTitle className="text-base font-semibold flex !h-6 justify-between items-center">
 						{title}
-						<AlertDialogCancel className="border-none shadow-none">
+						<AlertDialogCancel className="border-none shadow-none p-0 h-auto bg-transparent hover:bg-transparent hover:opacity-60 !outline-none !ring-0 !ring-offset-0" onClick={onCancel}>
 							<X size={16} />
 						</AlertDialogCancel>
 					</AlertDialogTitle>
@@ -64,7 +64,7 @@ const Alert: React.FC<AlertProps> = ({
 
 				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3 rounded-b-lg shrink-0">
 					<AlertDialogCancel
-						className="bg-transparent border-none shadow-none text-enhanced-blue font-normal"
+						className="bg-transparent border-none shadow-none text-enhanced-blue font-normal hover:bg-transparent hover:text-enhanced-blue/60 !outline-none !ring-0 !ring-offset-0"
 						onClick={onCancel}
 					>
 						{cancelText}

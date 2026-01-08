@@ -45,6 +45,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 	const handleAlert = () => {
 		toggle();
+		window.scrollTo({ top: 0, behavior: "smooth" });
 		setOpenSheet("contact");
 	};
 	return (
@@ -97,12 +98,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 					<span className="text-sm md:text-base">
 						Alternative Investments are available only to Accredited Investors. Please download
 						and fill the <span className="text-enhanced-blue font-medium">Declaration Form</span>,
-						then send it to us via “Contact Us” to proceed.
+						then send it to us via &quot;Contact Us&quot; to proceed.
 					</span>
 				}
 				cancelText="Cancel"
 				actionText="Contact Us"
 				onAction={handleAlert}
+				onCancel={toggle}
 			/>
 		</div>
 	);

@@ -99,14 +99,19 @@ export const refreshAccessToken = async (): Promise<void> => {
 
 	// For token refresh, just check if we have a response with token data
 	// Note: Auth API returns direct response, not wrapped in standard format
-	if (!response.data) {
+	if (!response.success || !response.data) {
 		clearTokens();
 		// Store error message for login page to display
 		if (isBrowser()) {
 			sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
 		}
 		redirectToLogin();
-		throw new Error("Failed to refresh token - no response data");
+		throw new Error(response.error || "Failed to refresh token - no response data");
+	}
+
+	// Verify response has all required fields
+	if (!response.data.accessToken || !response.data.refreshToken) {
+		throw new Error("Invalid token response - missing required fields");
 	}
 
 	// Store new tokens in Zustand store (persisted to localStorage)
