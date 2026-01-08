@@ -133,59 +133,9 @@ const Notification = () => {
 		}
 	};
 
-	// Fetch latest notifications for polling
-	const fetchLatestNotifications = async () => {
-		try {
-			const response = await fetchAPI<INotification[]>(
-				ENDPOINTS.notificationLatest(5), // Last 5 minutes
-				{ useAuth: true }
-			);
-
-			// Handle successful response
-			if (response.success) {
-				// Handle empty array or null/undefined data
-				if (!response.data || response.data.length === 0) {
-					return; // Exit early, nothing to process
-				}
-				const latestNotifications = response.data;
-				// Merge new notifications with existing ones (avoid duplicates)
-				setListNoti((prev) => {
-					const existingIds = new Set(prev.map((n) => n.id));
-					const newNotifications = latestNotifications.filter((n) => !existingIds.has(n.id));
-					if (newNotifications.length > 0) {
-						// Prepend new notifications to the list (red dot will show for unread)
-						return [...newNotifications, ...prev];
-					}
-					return prev;
-				});
-
-				// Update total count
-				setTotal((prev) => prev + latestNotifications.length);
-			} else {
-				// API returned an error - log but don't show toast (polling should be silent)
-				console.error("Failed to fetch latest notifications (polling):", response.error);
-			}
-		} catch (err) {
-			// Network error or unexpected exception - log but don't show toast
-			console.error("Error polling for latest notifications:", err);
-		}
-	};
-
 	// Initial fetch on mount
 	useEffect(() => {
 		fetchNotifications(0);
-	}, []);
-
-	// Polling: Fetch latest notifications every 5 minutes
-	useEffect(() => {
-		const POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
-
-		const intervalId = setInterval(() => {
-			fetchLatestNotifications();
-		}, POLLING_INTERVAL);
-
-		// Cleanup on unmount
-		return () => clearInterval(intervalId);
 	}, []);
 
 	// Infinite scroll observer
@@ -294,8 +244,8 @@ const Notification = () => {
 				) : error ? (
 					<ErrorState
 						type="error"
-						title="Failed to load notifications"
-						description={error}
+						title="Unable to Load Notifications"
+						description="We are unable to display notifications at this time. Please try again later."
 						className="!pt-[72px] justify-start"
 					/>
 				) : listNoti.length > 0 ? (

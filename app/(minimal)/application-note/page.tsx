@@ -92,7 +92,8 @@ const NoteContent = () => {
 					<div className="flex items-center justify-center">
 						<ErrorState
 							type="error"
-							description={error || "Subscription details not found"}
+							title="Unable to Load Application Note"
+							description="We are unable to display the application note at this time. Please try again later."
 						/>
 					</div>
 				</div>

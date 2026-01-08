@@ -179,7 +179,7 @@ const Header = () => {
 								<HeaderPerson
 									className={cn(
 										"cursor-pointer w-6 md:w-8",
-										openSheet
+										(openSheet && openSheet != "notification")
 											? "text-enhanced-blue"
 											: isIconFill
 												? "text-enhanced-blue [&_path]:fill-enhanced-blue"

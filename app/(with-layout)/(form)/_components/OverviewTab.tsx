@@ -73,8 +73,8 @@ const OverviewTab = () => {
 			<div className="h-full flex items-center justify-center">
 				<ErrorState
 					type="error"
-					title="Failed to Load Product Details"
-					description={error || "Unable to load product information. Please try again."}
+					title="Unable to Load Product Details"
+					description="We are unable to display the product details at this time. Please try again later."
 				/>
 			</div>
 		);

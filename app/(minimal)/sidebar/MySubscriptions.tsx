@@ -193,8 +193,8 @@ const MySubscriptions = () => {
 			<div className="h-full">
 				<CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
 				<ErrorState
-					title="Oops, Something Went Wrong"
-					description={error}
+					title="Unable to Load Subscriptions"
+					description="We are unable to display your subscriptions at this time. Please try again later."
 					type="error"
 				/>
 			</div>

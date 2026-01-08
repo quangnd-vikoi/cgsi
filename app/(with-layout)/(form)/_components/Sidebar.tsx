@@ -103,8 +103,8 @@ export default function Sidebar() {
 				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
 					<ErrorState
 						type="error"
-						title="Oops, Something Went Wrong"
-						description={error}
+						title="Unable to Load Subscription Details"
+						description="We are unable to display the subscription details at this time. Please try again later."
 					/>
 				</div>
 			</div>

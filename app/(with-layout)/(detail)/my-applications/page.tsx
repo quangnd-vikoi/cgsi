@@ -142,7 +142,8 @@ export default function MyApplication() {
 					<div className="flex-1 w-full flex items-center justify-center">
 						<ErrorState
 							type="error"
-							description={error}
+							title="Unable to Load Applications"
+							description="We are unable to display your applications at this time. Please try again later."
 						/>
 					</div>
 				) : filteredApplications.length === 0 ? (

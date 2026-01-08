@@ -49,8 +49,8 @@ const AnalysisTab: React.FC = () => {
 			<div className="h-full flex items-center justify-center py-6">
 				<ErrorState
 					type="error"
-					title="Failed to Load Analysis"
-					description={error || "Unable to load product analysis. Please try again."}
+					title="Unable to Load Analysis"
+					description="We are unable to display the product analysis at this time. Please try again later."
 				/>
 			</div>
 		);

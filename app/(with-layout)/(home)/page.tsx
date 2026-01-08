@@ -73,7 +73,7 @@ function HomeContent() {
 				<ErrorState
 					type="error"
 					title="Authentication Error"
-					description={error}
+					description="We are unable to authenticate your session. Please try again later."
 				/>
 			</div>
 		);

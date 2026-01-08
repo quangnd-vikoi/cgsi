@@ -54,8 +54,8 @@ const DocumentsTab: React.FC = () => {
 			<div className="h-full flex items-center justify-center pt-6">
 				<ErrorState
 					type="error"
-					title="Failed to Load Documents"
-					description={error || "Unable to load documents. Please try again."}
+					title="Unable to Load Documents"
+					description="We are unable to display the documents at this time. Please try again later."
 				/>
 			</div>
 		);
