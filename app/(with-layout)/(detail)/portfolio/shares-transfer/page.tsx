@@ -82,7 +82,7 @@ const SharesTransfer = () => {
     // Set first account as default value
     useEffect(() => {
         if (accounts.length > 0 && !transferAccount) {
-            setTransferAccount(accounts[0].id);
+            setTransferAccount(accounts[0].accountNo);
         }
     }, [accounts, transferAccount]);
 
@@ -146,10 +146,10 @@ const SharesTransfer = () => {
                                         </SelectTrigger>
                                         <SelectContent>
                                             {accounts.map((account) => (
-                                                <SelectItem key={account.id} value={account.id}>
+                                                <SelectItem key={account.accountNo} value={account.accountNo}>
                                                     <div className="flex flex-col items-start">
                                                         <span className="text-sm font-medium text-typo-primary">
-                                                            (CTA) {account.id}
+                                                            (CTA) {account.accountNo}
                                                         </span>
                                                     </div>
                                                 </SelectItem>
@@ -157,7 +157,7 @@ const SharesTransfer = () => {
                                         </SelectContent>
                                     </Select>
                                     <p className="text-xs text-typo-secondary mt-2">
-                                        Trading Representative: {accounts.find(a => a.id === transferAccount)?.trName || ""}
+                                        Trading Representative: {accounts.find(a => a.accountNo === transferAccount)?.trName || ""}
                                     </p>
                                 </div>
                             </div>

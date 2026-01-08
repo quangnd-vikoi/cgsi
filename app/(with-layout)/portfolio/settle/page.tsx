@@ -82,9 +82,9 @@ export default function SettlePage() {
 						{/* Account Selector & Export Button */}
 						<div className="mb-6 flex justify-between items-center">
 							<Select
-								value={selectedAccount?.id}
+								value={selectedAccount?.accountNo}
 								onValueChange={(value) => {
-									const account = accounts.find((acc) => acc.id === value);
+									const account = accounts.find((acc) => acc.accountNo === value);
 									setSelectedAccount(account || null);
 								}}
 							>
@@ -92,16 +92,16 @@ export default function SettlePage() {
 									<SelectValue placeholder="Select trading account">
 										{selectedAccount && (
 											<span className="text-sm text-typo-primary font-medium">
-												({getAccountTypeCode(selectedAccount.type)}) {selectedAccount.id}
+												({selectedAccount.accountType || ""}) {selectedAccount.accountNo}
 											</span>
 										)}
 									</SelectValue>
 								</SelectTrigger>
 								<SelectContent className="w-[--radix-select-trigger-width]">
 									{accounts.map((account) => (
-										<SelectItem key={account.id} value={account.id}>
+										<SelectItem key={account.accountNo} value={account.accountNo}>
 											<span className="text-sm">
-												({getAccountTypeCode(account.type)}) {account.id}
+												({account.accountType || ""}) {account.accountNo}
 											</span>
 										</SelectItem>
 									))}

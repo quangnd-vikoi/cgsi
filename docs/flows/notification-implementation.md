@@ -4,6 +4,9 @@
 **Status:** 🟢 ~85% Complete - Ready for Backend Integration
 **API Base URL:** `https://stgitrade.cgsi.com.sg/portal`
 
+> **📌 API Spec:** See `docs/swagger/api-doc-v2/notification-api-0.0.1-snapshot.json` for v2 specification
+> **Note:** v2 spec requires `X-PROFILE-ID` header for authenticated endpoints
+
 ---
 
 ## 📊 Quick Overview

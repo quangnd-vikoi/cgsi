@@ -44,9 +44,7 @@ function HomeContent() {
 				// Note: redirectUri must match the URI registered with SSO server
 				await authService.exchangeCode(code, "http://localhost:8080/authorize");
 
-				// Store token in cookie for middleware
-				document.cookie = `accessToken=${authService.getAccessToken()}; path=/; max-age=3600`;
-
+		
 				setIsAuthenticating(false);
 			} catch (err) {
 				console.error("Auth error:", err);

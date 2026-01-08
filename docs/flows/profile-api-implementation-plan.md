@@ -4,6 +4,8 @@
 >
 > This document provides step-by-step instructions for integrating Profile APIs using the established three-layer architecture pattern.
 
+> **⚠️ NEW v2 APIs Available:** See [IMPLEMENTATION_PLAN_V2_APIs.md](./IMPLEMENTATION_PLAN_V2_APIs.md) for new Profile v2 endpoints including Trading Info, Update Info, and Acknowledgements.
+
 ---
 
 ## Table of Contents

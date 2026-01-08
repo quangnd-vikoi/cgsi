@@ -1,5 +1,7 @@
 # Implementation Plan: Integrate Missing MySubscription APIs
 
+> **📌 API Spec:** See `docs/swagger/api-doc-v2/subscription-api-0.0.1-snapshot.json` for v2 specification
+
 ## Overview
 
 **Goal:** Integrate the 3 unused mySubscription APIs into the application to provide subscription detail views, product type filtering, and pre-populated resubscription flows.

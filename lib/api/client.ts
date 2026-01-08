@@ -92,24 +92,22 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			};
 		}
 
-		// Handle 401 Unauthorized - attempt token refresh and retry ONCE if token needs refresh
+		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
 		// IMPORTANT: Check this BEFORE parsing JSON to avoid consuming the response body
 		if (res.status === 401 && useAuth && !_isRetry) {
-			// Only retry if token actually should be refreshed
-			if (shouldRefreshToken()) {
-				try {
-					await ensureValidToken();
-					// Retry the request once with the new token
-					return fetchAPI<T>(url, { ...options, _isRetry: true });
-				} catch (error) {
-					// Return error immediately
-					return {
-						success: false,
-						error: "Authentication failed - unable to refresh token",
-						statusCode: 401,
-						data: null,
-					};
-				}
+			// Always attempt refresh on 401 (token might be invalidated server-side)
+			try {
+				await ensureValidToken();
+				// Retry the request once with the new token
+				return fetchAPI<T>(url, { ...options, _isRetry: true });
+			} catch (error) {
+				// Refresh failed - redirect to login will be handled by authService
+				return {
+					success: false,
+					error: "Authentication failed - unable to refresh token",
+					statusCode: 401,
+					data: null,
+				};
 			}
 		}
 

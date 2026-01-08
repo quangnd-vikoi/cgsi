@@ -65,7 +65,7 @@ export function SummarySection({ contracts }: SummarySectionProps) {
 
 				<SummaryCard
 					label="Trading Representative"
-					value={selectedAccount?.details.representative.name || "U7- Lim Yi Bin"}
+					value={selectedAccount?.trName || "U7- Lim Yi Bin"}
 				/>
 			</div>
 		</div>

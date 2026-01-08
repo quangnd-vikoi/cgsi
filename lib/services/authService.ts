@@ -84,6 +84,10 @@ export const refreshAccessToken = async (): Promise<void> => {
 	const refreshToken = getRefreshToken();
 
 	if (!refreshToken) {
+		// Store error message for login page to display
+		if (isBrowser()) {
+			sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
+		}
 		redirectToLogin();
 		throw new Error("No refresh token available");
 	}
@@ -97,6 +101,10 @@ export const refreshAccessToken = async (): Promise<void> => {
 	// Note: Auth API returns direct response, not wrapped in standard format
 	if (!response.data) {
 		clearTokens();
+		// Store error message for login page to display
+		if (isBrowser()) {
+			sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
+		}
 		redirectToLogin();
 		throw new Error("Failed to refresh token - no response data");
 	}

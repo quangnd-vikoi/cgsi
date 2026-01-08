@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "cgsi-itrade-portal-2025",
-		"name": "CGSI iTrade Portal - All APIs",
-		"description": "Complete API collection for CGSI iTrade Portal including Profile, Subscription, Notification, Auth, External SSO, and Content APIs.\n\n**Base URLs:**\n- API Base: `https://stgitrade.cgsi.com.sg/portal`\n- Content Base: `https://www.cgsi.com.sg/cgsi/api/v1`\n\n**Authentication:**\n- Most endpoints require Bearer token in Authorization header\n- Get token from `/sso/api/v1/token` endpoint\n\n**Setup:**\n1. Set `{{base_url}}` = `https://stgitrade.cgsi.com.sg/portal`\n2. Set `{{content_base_url}}` = `https://www.cgsi.com.sg/cgsi/api/v1`\n3. Set `{{bearer_token}}` with your access token",
+		"_postman_id": "cgsi-itrade-portal-2025-v2",
+		"name": "CGSI iTrade Portal - All APIs (v2 Updated)",
+		"description": "Complete API collection for CGSI iTrade Portal - Updated with api-doc-v2 endpoints.\n\n**Base URLs:**\n- API Base: `https://stgitrade.cgsi.com.sg/portal`\n- Content Base: `https://www.cgsi.com.sg/cgsi/api/v1`\n\n**Authentication:**\n- Most endpoints require Bearer token in Authorization header\n- Get token from `/sso/api/v1/token` endpoint\n\n**Setup:**\n1. Set `{{base_url}}` = `https://stgitrade.cgsi.com.sg/portal`\n2. Set `{{content_base_url}}` = `https://www.cgsi.com.sg/cgsi/api/v1`\n3. Set `{{bearer_token}}` with your access token\n\n**Changes from v1:**\n- Added new External SSO endpoints (research, stockFilter, ew8, estatement, ecrs)\n- Added Profile Update Info APIs (signature upload, mobile/email update)\n- Added Trading Info, Acknowledgement APIs\n- Added Internal Profile APIs (accounts, account by number)\n- Added Subscription Internal API (user subscription count)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -22,6 +22,9 @@
 				{
 					"name": "Get Access Token",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -31,7 +34,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"code\": \"your_authorization_code\",\n  \"grant_type\": \"authorization_code\"\n}"
+							"raw": "{\n  \"code\": \"your_authorization_code\",\n  \"clientId\": \"your_client_id\",\n  \"redirectUri\": \"https://stgitrade.cgsi.com.sg/portal/\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/sso/api/v1/token",
@@ -45,6 +48,9 @@
 				{
 					"name": "Refresh Token",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -54,7 +60,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"refresh_token\": \"your_refresh_token\",\n  \"grant_type\": \"refresh_token\"\n}"
+							"raw": "{\n  \"refreshToken\": \"your_refresh_token\",\n  \"clientId\": \"your_client_id\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/sso/api/v1/token/refresh",
@@ -72,6 +78,20 @@
 			"name": "Profile APIs",
 			"item": [
 				{
+					"name": "Get User Trading Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/tradingInfo",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "tradingInfo"]
+						},
+						"description": "Get User Trading Information (SIP, W8BEN, CRS, BCAN info) - NEW in v2"
+					},
+					"response": []
+				},
+				{
 					"name": "Get TR Info",
 					"request": {
 						"method": "GET",
@@ -86,8 +106,11 @@
 					"response": []
 				},
 				{
-					"name": "Get TR Info by Account",
+					"name": "Get TR Info by Account (Internal)",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -107,8 +130,11 @@
 					"response": []
 				},
 				{
-					"name": "Get User Profile",
+					"name": "Get User Profile (Internal)",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -131,6 +157,168 @@
 							"path": ["profile", "api", "v1", "accounts"]
 						},
 						"description": "Get User Trading Accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Accounts (Internal)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/internal/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "internal", "accounts"]
+						},
+						"description": "Get User Trading Accounts (Internal API) - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Account by Account Number (Internal)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/internal/account?accountNo=1234567",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "internal", "account"],
+							"query": [
+								{
+									"key": "accountNo",
+									"value": "1234567",
+									"description": "Account number (required)"
+								}
+							]
+						},
+						"description": "Get User Account Details by Account Number (Internal API) - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Signature",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "metadata",
+									"value": "{\"description\":\"Signature upload\"}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/update/signature/upload",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "update", "signature", "upload"]
+						},
+						"description": "Upload Signature - multipart/form-data with file and metadata - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Mobile - Request OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"mobileNumber\": \"+65-12345678\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/update/mobile/otp",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "update", "mobile", "otp"]
+						},
+						"description": "Request OTP for mobile number update - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Mobile - Submit OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"txn-123\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/update/mobile/submit",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "update", "mobile", "submit"]
+						},
+						"description": "Submit OTP to update mobile number - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email - Request OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/update/email/otp",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "update", "email", "otp"]
+						},
+						"description": "Request OTP for email update - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email - Submit OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"txn-123\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/update/email/submit",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "update", "email", "submit"]
+						},
+						"description": "Submit OTP to update email - NEW in v2"
 					},
 					"response": []
 				},
@@ -218,6 +406,41 @@
 					"response": []
 				},
 				{
+					"name": "Get User Acknowledgements",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/acknowledgement/user/list",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "acknowledgement", "user", "list"]
+						},
+						"description": "Get User Acknowledgements (textBase, onlineBase, interactiveBase, pdfBase) - NEW in v2"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Acknowledgement Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/profile/api/v1/acknowledgement/user/details/:id",
+							"host": ["{{base_url}}"],
+							"path": ["profile", "api", "v1", "acknowledgement", "user", "details", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "agreement-123",
+									"description": "Agreement ID"
+								}
+							]
+						},
+						"description": "Get User Acknowledgement Details by ID - NEW in v2"
+					},
+					"response": []
+				},
+				{
 					"name": "Get Client Service Contact",
 					"request": {
 						"auth": {
@@ -252,45 +475,11 @@
 					"response": []
 				}
 			],
-			"description": "Profile and user-related APIs including TR info, accounts, donations, and contact information"
+			"description": "Profile and user-related APIs including TR info, accounts, donations, contact information, and update info endpoints"
 		},
 		{
 			"name": "Subscription APIs",
 			"item": [
-				{
-					"name": "Market Data",
-					"item": [
-						{
-							"name": "Get Market Data Subscriptions",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/subscription/api/v1/subscription",
-									"host": ["{{base_url}}"],
-									"path": ["subscription", "api", "v1", "subscription"]
-								},
-								"description": "Get available Market Data Subscriptions"
-							},
-							"response": []
-						},
-						{
-							"name": "Get User Market Data Subscriptions",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/subscription/api/v1/userSubscription",
-									"host": ["{{base_url}}"],
-									"path": ["subscription", "api", "v1", "userSubscription"]
-								},
-								"description": "Get User's Market Data Subscriptions"
-							},
-							"response": []
-						}
-					],
-					"description": "Market data subscription endpoints"
-				},
 				{
 					"name": "Product Subscriptions",
 					"item": [
@@ -396,6 +585,36 @@
 						}
 					],
 					"description": "Product subscription endpoints (IPO, Bonds, etc.)"
+				},
+				{
+					"name": "Internal APIs",
+					"item": [
+						{
+							"name": "Get User Subscription Count",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/subscription/api/v1/internal/userSubscription/:subscriptionType/count",
+									"host": ["{{base_url}}"],
+									"path": ["subscription", "api", "v1", "internal", "userSubscription", ":subscriptionType", "count"],
+									"variable": [
+										{
+											"key": "subscriptionType",
+											"value": "SMS",
+											"description": "Subscription type: SMS, EMAIL, US_AMEX, US_NASDAQ, US_NYSE, HK_RT, SG_MD, BM_MD, HK_MD, US_MD, AFX, REUTERS, HSIMI, RESEARCH, BURSA_RT, US_NYSE_ARCA, TH_RT, AUTO_CHART_LIST, NEW_RESEARCH"
+										}
+									]
+								},
+								"description": "Get User Subscription Count by Type (Internal API) - NEW in v2"
+							},
+							"response": []
+						}
+					],
+					"description": "Internal subscription APIs"
 				}
 			],
 			"description": "Subscription APIs for Market Data and Product Subscriptions"
@@ -480,16 +699,24 @@
 			"name": "External SSO APIs",
 			"item": [
 				{
-					"name": "SSO - NTP (Next Trading Platform)",
+					"name": "SSO - Stock Filter",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/ntp",
+							"raw": "{{base_url}}/externalsso/api/v1/stockFilter?state=optional-state-param",
 							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "ntp"]
+							"path": ["externalsso", "api", "v1", "stockFilter"],
+							"query": [
+								{
+									"key": "state",
+									"value": "optional-state-param",
+									"description": "Optional state parameter",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get SSO Parameter for NTP (Next Trading Platform)"
+						"description": "Get SSO redirect URL for Stock Filter (v2)"
 					},
 					"response": []
 				},
@@ -499,53 +726,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/research",
+							"raw": "{{base_url}}/externalsso/api/v1/research?state=optional-state-param",
 							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "research"]
+							"path": ["externalsso", "api", "v1", "research"],
+							"query": [
+								{
+									"key": "state",
+									"value": "optional-state-param",
+									"description": "Optional state parameter",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get SSO Parameter for Research Portal"
-					},
-					"response": []
-				},
-				{
-					"name": "SSO - eStatement",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/estatement",
-							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "estatement"]
-						},
-						"description": "Get SSO Parameter for eStatement (iTrade TruContent)"
-					},
-					"response": []
-				},
-				{
-					"name": "SSO - Corporate Action",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/corporateAction",
-							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "corporateAction"]
-						},
-						"description": "Get SSO Parameter for Corporate Action"
-					},
-					"response": []
-				},
-				{
-					"name": "SSO - Stock Filter",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/stockFilter",
-							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "stockFilter"]
-						},
-						"description": "Get SSO Parameter for Stock Filter"
+						"description": "Get SSO redirect URL for Research Portal (v2)"
 					},
 					"response": []
 				},
@@ -555,11 +748,47 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/ew8",
+							"raw": "{{base_url}}/externalsso/api/v1/ew8?nric=INDIVIDUAL&state=optional-state-param",
 							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "ew8"]
+							"path": ["externalsso", "api", "v1", "ew8"],
+							"query": [
+								{
+									"key": "nric",
+									"value": "INDIVIDUAL",
+									"description": "NRIC type: INDIVIDUAL, MAIN, JOINT",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "optional-state-param",
+									"description": "Optional state parameter",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get SSO Parameter for EW8"
+						"description": "Get SSO redirect URL for EW8 (v2)"
+					},
+					"response": []
+				},
+				{
+					"name": "SSO - eStatement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/externalsso/api/v1/estatement?state=optional-state-param",
+							"host": ["{{base_url}}"],
+							"path": ["externalsso", "api", "v1", "estatement"],
+							"query": [
+								{
+									"key": "state",
+									"value": "optional-state-param",
+									"description": "Optional state parameter",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get SSO redirect URL for eStatement (iTrade TruContent) (v2)"
 					},
 					"response": []
 				},
@@ -569,30 +798,30 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/ecrs",
+							"raw": "{{base_url}}/externalsso/api/v1/ecrs?nric=INDIVIDUAL&state=optional-state-param",
 							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "ecrs"]
+							"path": ["externalsso", "api", "v1", "ecrs"],
+							"query": [
+								{
+									"key": "nric",
+									"value": "INDIVIDUAL",
+									"description": "NRIC type: INDIVIDUAL, MAIN, JOINT",
+									"disabled": true
+								},
+								{
+									"key": "state",
+									"value": "optional-state-param",
+									"description": "Optional state parameter",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get SSO Parameter for ECRS"
-					},
-					"response": []
-				},
-				{
-					"name": "SSO - iScreener (Not Implemented)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/externalsso/api/v1/iscreener",
-							"host": ["{{base_url}}"],
-							"path": ["externalsso", "api", "v1", "iscreener"]
-						},
-						"description": "⚠️ NOTE: This endpoint is defined in spec but never implemented in iTrade Portal"
+						"description": "Get SSO redirect URL for ECRS (v2)"
 					},
 					"response": []
 				}
 			],
-			"description": "External SSO endpoints for accessing third-party systems (NTP, Research, eStatement, etc.)"
+			"description": "External SSO endpoints for accessing third-party systems (Stock Filter, Research, EW8, eStatement, ECRS) - Updated for v2"
 		},
 		{
 			"name": "Content APIs (Public)",

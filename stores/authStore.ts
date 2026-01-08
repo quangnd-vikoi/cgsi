@@ -22,6 +22,7 @@ interface AuthState {
 }
 
 const REFRESH_BUFFER_MS = 5 * 60 * 1000; // 5 minutes
+const EXPIRY_BUFFER_MS = 30 * 1000; // 30 seconds buffer for network latency
 
 export const useAuthStore = create<AuthState>()(
 	persist(
@@ -58,7 +59,8 @@ export const useAuthStore = create<AuthState>()(
 			isTokenExpired: () => {
 				const { tokenExpiry } = get();
 				if (!tokenExpiry) return true;
-				return Date.now() >= tokenExpiry;
+				// Add buffer to account for network latency
+		return Date.now() >= tokenExpiry - EXPIRY_BUFFER_MS;
 			},
 
 			shouldRefreshToken: () => {

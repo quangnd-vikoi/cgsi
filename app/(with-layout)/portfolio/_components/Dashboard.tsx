@@ -79,23 +79,23 @@ const TypeSelect = () => {
     return (
         <div className='bg-background-section p-4 md:p-6 rounded-lg h-full flex flex-col justify-between'>
             <Select
-                value={selectedAccount?.id}
+                value={selectedAccount?.accountNo}
                 onValueChange={(value) => {
-                    const account = accounts.find(acc => acc.id === value)
+                    const account = accounts.find(acc => acc.accountNo === value)
                     setSelectedAccount(account || null)
                 }}
             >
                 <SelectTrigger className="w-full md:max-w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
                     <SelectValue placeholder="Select trading account">
                         {selectedAccount && (
-                            <span className="text-sm text-typo-primary font-medium">({getAccountTypeCode(selectedAccount.type)}) {selectedAccount.id}</span>
+                            <span className="text-sm text-typo-primary font-medium">{selectedAccount.accountType ? `(${selectedAccount.accountType})` : ""} {selectedAccount.accountNo}</span>
                         )}
                     </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="w-[--radix-select-trigger-width]">
                     {accounts.map((account) => (
-                        <SelectItem key={account.id} value={account.id}>
-                            <span className="text-sm">({getAccountTypeCode(account.type)}) {account.id}</span>
+                        <SelectItem key={account.accountNo} value={account.accountNo}>
+                            <span className="text-sm">{account.accountType ? `(${account.accountType})` : ""} {account.accountNo}</span>
                         </SelectItem>
                     ))}
                 </SelectContent>
@@ -113,7 +113,7 @@ const TypeSelect = () => {
                 <div className="w-full md:w-1/2">
                     <p className='text-xs md:text-sm text-typo-secondary'>Trading Representative</p>
                     <p className='mt-2 text-base leading-6 font-semibold'>
-                        {selectedAccount?.details.representative.name || "N/A"}
+                        {selectedAccount?.trName || "N/A"}
                     </p>
                 </div>
             </div>
@@ -189,7 +189,7 @@ type DashboardProps = {
 
 const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
     const { selectedAccount } = useTradingAccountStore()
-    const accountType = selectedAccount ? getAccountTypeCode(selectedAccount.type) : "CTA" as PortfolioType
+    const accountType = (selectedAccount?.accountType ? selectedAccount.accountType : "CTA") as PortfolioType
 
     const type = propType || accountType
 

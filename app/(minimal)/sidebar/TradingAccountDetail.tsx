@@ -107,8 +107,8 @@ const TradingAccountDetail = () => {
 
 	if (!selectedAccount) return null;
 
-	const isCashAccount = selectedAccount.type === "Cash Trading Account";
-	const isSharesBorrowing = selectedAccount.type === "Shares Borrowing Account";
+	const isCashAccount = selectedAccount.accountType === "Cash Trading Account";
+	const isSharesBorrowing = selectedAccount.accountType === "Shares Borrowing Account";
 
 	return (
 		<div className="flex flex-col h-full">
@@ -116,13 +116,13 @@ const TradingAccountDetail = () => {
 
 			<div className="flex-1 mt-6 pb-4 overflow-y-auto scrollbar-offset-laptop">
 				<div className="mb-9">
-					<p className="text-typo-secondary text-xs">{selectedAccount.type}</p>
+					<p className="text-typo-secondary text-xs">{selectedAccount.accountType}</p>
 					<div className="flex items-center gap-2">
-						<p className="font-semibold text-typo-primary text-lg">{selectedAccount.id}</p>
+						<p className="font-semibold text-typo-primary text-lg">{selectedAccount.accountNo}</p>
 						<Copy
 							className="text-enhanced-blue cursor-pointer"
 							size={20}
-							onClick={() => handleCopy(selectedAccount.id)}
+							onClick={() => handleCopy(selectedAccount.accountNo)}
 						/>
 					</div>
 				</div>
@@ -130,20 +130,14 @@ const TradingAccountDetail = () => {
 				{!isSharesBorrowing && (
 					<Group title="Account Linkages" childrenClassName="gap-4">
 						<LinkageItem
-							label={selectedAccount.details.subcdp ? "Sub-CDP" : "CDP"}
+							label="CDP"
 							tooltipContent="Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
-							value={
-								selectedAccount.details.subcdp
-									? selectedAccount.details.subcdp
-									: selectedAccount.details.cdp || undefined
-							}
+							value={selectedAccount.cdp || undefined}
 							actionContent={
-								!selectedAccount.details.subcdp && (
-									<div className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0">
-										Update to SUB-CDP
-										<ChevronRight size={16} />
-									</div>
-								)
+								<div className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0">
+									Update to SUB-CDP
+									<ChevronRight size={16} />
+								</div>
 							}
 							showSeparator={isCashAccount}
 						/>
@@ -153,8 +147,8 @@ const TradingAccountDetail = () => {
 								<LinkageItem
 									label="CPF"
 									tooltipContent="Link your CPF Investment Account to start investing in eligible assets under the CPF Investment Scheme (CPFIS)."
-									value={selectedAccount.details.cpfAccount || undefined}
-									isLinked={selectedAccount.details.cpfAccount != null}
+									value={selectedAccount.cpf || undefined}
+									isLinked={selectedAccount.cpf != null}
 									onUnlink={() => handleUnlink("cpf")}
 									actionContent={
 										<div
@@ -170,8 +164,8 @@ const TradingAccountDetail = () => {
 								<LinkageItem
 									label="SRS"
 									tooltipContent="Link your SRS account to your trading account to invest in approved products and enjoy potential tax savings under the Supplementary Retirement Scheme."
-									value={selectedAccount.details.srsAccount || undefined}
-									isLinked={selectedAccount.details.srsAccount != null}
+									value={selectedAccount.srs || undefined}
+									isLinked={selectedAccount.srs != null}
 									onUnlink={() => handleUnlink("srs")}
 									actionContent={
 										<div
@@ -185,14 +179,10 @@ const TradingAccountDetail = () => {
 								/>
 
 								<LinkageItem
-									label={
-										selectedAccount.details.paymentMethod
-											? selectedAccount.details.paymentMethod
-											: "Payment method"
-									}
+									label={selectedAccount.giro ? "GIRO" : selectedAccount.eps ? "EPS" : "Payment method"}
 									tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
-									value={selectedAccount.details.paymentAccount || undefined}
-									isLinked={selectedAccount.details.paymentAccount != null}
+									value={selectedAccount.giro || selectedAccount.eps || undefined}
+									isLinked={!!(selectedAccount.giro || selectedAccount.eps)}
 									onUnlink={() => handleUnlink("payment")}
 									actionContent={
 										<DropdownMenu onOpenChange={setIsPaymentMethodOpen}>
@@ -234,18 +224,18 @@ const TradingAccountDetail = () => {
 							{ label: "TR Name", value: selectedAccount.trName },
 							{
 								label: "Department",
-								value: selectedAccount.details.representative.department,
+								value: "Wealth Solutions",
 							},
-							{ label: "Rep. No.", value: selectedAccount.details.representative.repNo },
+							{ label: "Rep. No.", value: selectedAccount.trCode },
 							{
 								label: "Phone Number",
-								value: selectedAccount.details.representative.phone,
+								value: "",
 								hasCopy: true,
 								hasArrow: true,
 							},
 							{
 								label: "Email Add.",
-								value: selectedAccount.details.representative.email,
+								value: "",
 								hasCopy: true,
 								hasArrow: true,
 							},

@@ -99,11 +99,12 @@ export interface IUserProfile {
 
 export interface UserProfileResponse extends IUserProfile {}
 
-// User Account Types
-export interface IUserAccount {
+// Trading Account Types
+export interface TradingAccount {
 	accountNo: string;
 	accountType?: string;
 	trName?: string;
+	trCode?: string;
 	eps?: string;
 	giro?: string;
 	cdp?: string;
@@ -112,7 +113,8 @@ export interface IUserAccount {
 	accreditedInvestor?: string;
 }
 
-export interface UserAccountResponse extends IUserAccount {}
+// Alias for API responses (backwards compatibility)
+export interface UserAccountResponse extends TradingAccount {}
 
 // BCAN Request Types
 export interface CreateBcanRequest {
