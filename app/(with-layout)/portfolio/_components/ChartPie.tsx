@@ -7,7 +7,7 @@ import {
     ChartConfig,
     ChartContainer,
 } from "@/components/ui/chart"
-import { PortfolioType } from "../page"
+import { PortfolioType } from "@/types"
 
 export const description = "A donut chart with asset distribution"
 

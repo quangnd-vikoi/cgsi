@@ -19,9 +19,9 @@ import {
 import { ArrowRightLeft, EllipsisVertical, Expand, FileOutput } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { mockHoldingsData } from "./data";
-import { PortfolioType } from "../page";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
+import { PortfolioType } from "@/types";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 

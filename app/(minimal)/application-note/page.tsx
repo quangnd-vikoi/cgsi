@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import type { UserProductSubscriptionDetailResponse } from "@/types";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const NoteContent = () => {
 	const searchParams = useSearchParams();
@@ -75,9 +76,7 @@ const NoteContent = () => {
 				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
 					<div className="space-y-4">
 						{[...Array(5)].map((_, i) => (
-							<div key={i} className="animate-pulse flex gap-4">
-								<div className="h-12 bg-gray-200 rounded flex-1"></div>
-							</div>
+							<Skeleton key={i} className="h-12 w-full" />
 						))}
 					</div>
 				</div>
@@ -394,9 +393,7 @@ const Note = () => {
 					<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
 						<div className="space-y-4">
 							{[...Array(5)].map((_, i) => (
-								<div key={i} className="animate-pulse flex gap-4">
-									<div className="h-12 bg-gray-200 rounded flex-1"></div>
-								</div>
+								<Skeleton key={i} className="h-12 w-full" />
 							))}
 						</div>
 					</div>

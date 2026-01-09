@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { handleCopy, handleCall, handleEmail, handleOpenMap } from "@/lib/utils";
 import { getClientServiceContact } from "@/lib/services/profileService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ClientServiceData {
 	operatingHours: string;
@@ -41,8 +42,15 @@ const ClientServices = () => {
 				<div className="flex-shrink-0 pad-x">
 					<CustomSheetTitle title="Client Services" backTo={"contact"} />
 				</div>
-				<div className="flex-1 flex items-center justify-center">
-					<p className="text-sm text-typo-secondary">Loading...</p>
+				<div className="flex-1 pad-x pt-6">
+					<div className="space-y-6">
+						{[...Array(4)].map((_, i) => (
+							<div key={i} className="space-y-2">
+								<Skeleton className="h-4 w-1/4" />
+								<Skeleton className="h-6 w-full" />
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		);

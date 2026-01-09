@@ -16,18 +16,6 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { mockCashTransactions } from "../_components/data";
 import { CashTransactionsTable } from "./_components/CashTransactionsTable";
 
-// Helper function to map account type to short code
-const getAccountTypeCode = (type: string): string => {
-    const typeMap: Record<string, string> = {
-        "Cash Trading Account": "CTA",
-        "Margin Trading Account": "MTA",
-        "Shares Borrowing Account": "SBL",
-        "CUT Account": "CUT",
-        "iCash Account": "iCash",
-    };
-    return typeMap[type] || "CTA";
-};
-
 // Time period options
 const timePeriods = [
     { value: "last7days", label: "Last 7 Days" },

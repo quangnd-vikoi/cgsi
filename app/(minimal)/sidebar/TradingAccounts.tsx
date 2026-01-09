@@ -6,6 +6,7 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useSheetStore } from "@/stores/sheetStore";
 import { getUserAccounts } from "@/lib/services/profileService";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TradingAccounts = () => {
 	const accounts = useTradingAccountStore((state) => state.accounts);
@@ -59,9 +60,9 @@ const TradingAccounts = () => {
 				<div className="flex-1 flex items-center justify-center">
 					<div className="space-y-4 w-full p-4">
 						{[...Array(3)].map((_, i) => (
-							<div key={i} className="animate-pulse p-4 border border-stroke-secondary rounded-xl">
-								<div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
-								<div className="h-6 bg-gray-200 rounded w-1/2"></div>
+							<div key={i} className="p-4 border border-stroke-secondary rounded-xl space-y-2">
+								<Skeleton className="h-4 w-1/3" />
+								<Skeleton className="h-6 w-1/2" />
 							</div>
 						))}
 					</div>

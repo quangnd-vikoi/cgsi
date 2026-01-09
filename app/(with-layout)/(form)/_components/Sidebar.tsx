@@ -9,6 +9,7 @@ import { INTERNAL_ROUTES } from "@/constants/routes";
 import { ErrorState } from "@/components/ErrorState";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import type { ProductSubscriptionDto } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Sidebar() {
 	const pathname = usePathname();
@@ -82,9 +83,9 @@ export default function Sidebar() {
 				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
 					<div className="space-y-4">
 						{[...Array(3)].map((_, i) => (
-							<div key={i} className="rounded border border-stroke-secondary p-4 animate-pulse">
-								<div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-								<div className="h-3 bg-gray-200 rounded w-1/2"></div>
+							<div key={i} className="rounded border border-stroke-secondary p-4 space-y-2">
+								<Skeleton className="h-4 w-3/4" />
+								<Skeleton className="h-3 w-1/2" />
 							</div>
 						))}
 					</div>

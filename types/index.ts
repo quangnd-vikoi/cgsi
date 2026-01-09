@@ -31,6 +31,8 @@ export interface IEventProps {
 	location: string;
 }
 
+export type PortfolioType = "CTA" | "MTA" | "SBL" | "CUT" | "iCash";
+
 export type SheetType =
 	| "notification"
 	| "profile"
@@ -80,7 +82,7 @@ export interface ITrInfo {
 	trEmail: string;
 }
 
-export interface TrInfoResponse extends ITrInfo {}
+export type TrInfoResponse = ITrInfo;
 
 // User Profile Types
 export interface IUserProfile {
@@ -97,7 +99,7 @@ export interface IUserProfile {
 	officeNo?: string;
 }
 
-export interface UserProfileResponse extends IUserProfile {}
+export type UserProfileResponse = IUserProfile;
 
 // Trading Account Types
 export interface TradingAccount {
@@ -114,7 +116,7 @@ export interface TradingAccount {
 }
 
 // Alias for API responses (backwards compatibility)
-export interface UserAccountResponse extends TradingAccount {}
+export type UserAccountResponse = TradingAccount;
 
 // BCAN Request Types
 export interface CreateBcanRequest {
@@ -134,7 +136,7 @@ export interface IDonationPlan {
 	end: string; // ISO date string
 }
 
-export interface DonationPlanResponse extends IDonationPlan {}
+export type DonationPlanResponse = IDonationPlan;
 
 export interface DonationSubmissionRequest {
 	accountNo: string; // 7-digit, pattern: ^[0-9]{7}$
@@ -165,7 +167,7 @@ export interface IContactUsClientService {
 	companyAddress: string;
 }
 
-export interface ContactUsClientServiceResponse extends IContactUsClientService {}
+export type ContactUsClientServiceResponse = IContactUsClientService;
 
 export interface IContactUsCentralDealingDesk {
 	operatingHours: string;
@@ -173,7 +175,7 @@ export interface IContactUsCentralDealingDesk {
 	companyAddress: string;
 }
 
-export interface ContactUsCentralDealingDeskResponse extends IContactUsCentralDealingDesk {}
+export type ContactUsCentralDealingDeskResponse = IContactUsCentralDealingDesk;
 
 // ============================================================================
 // Subscription API Types
@@ -188,7 +190,7 @@ export interface ISubscription {
 	needDeclaration: boolean;
 }
 
-export interface SubscriptionResponse extends ISubscription {}
+export type SubscriptionResponse = ISubscription;
 
 // User Market Data Subscription Types (from YAML)
 export interface IUserSubscription {
@@ -201,7 +203,7 @@ export interface IUserSubscription {
 	allowRenew: boolean;
 }
 
-export interface UserSubscriptionResponse extends IUserSubscription {}
+export type UserSubscriptionResponse = IUserSubscription;
 
 // Product Subscription Types
 export interface IProductSubscription {
@@ -218,7 +220,7 @@ export interface IProductSubscription {
 	isSubscribed: boolean;
 }
 
-export interface ProductSubscriptionDto extends IProductSubscription {}
+export type ProductSubscriptionDto = IProductSubscription;
 
 export interface ProductionSubscriptionListResponse {
 	productSubs: ProductSubscriptionDto[];
@@ -264,7 +266,7 @@ export interface IProductSubscriptionDetail {
 	allocationStatus?: boolean;
 }
 
-export interface ProductSubscriptionDetailResponse extends IProductSubscriptionDetail {}
+export type ProductSubscriptionDetailResponse = IProductSubscriptionDetail;
 
 // User Product Subscription Types
 export interface IUserProductSubscription {
@@ -281,7 +283,7 @@ export interface IUserProductSubscription {
 	endTime?: string; // ISO 8601 date-time
 }
 
-export interface UserProductSubscriptionDto extends IUserProductSubscription {}
+export type UserProductSubscriptionDto = IUserProductSubscription;
 
 export interface UserProductSubsListResponse {
 	userProductSubs: UserProductSubscriptionDto[];
@@ -314,7 +316,7 @@ export interface IUserProductSubscriptionDetail {
 	conversionRate?: number;
 }
 
-export interface UserProductSubscriptionDetailResponse extends IUserProductSubscriptionDetail {}
+export type UserProductSubscriptionDetailResponse = IUserProductSubscriptionDetail;
 
 // User Product Subscription Submission Request
 export interface UserProductSubscriptionSubmissionRequest {

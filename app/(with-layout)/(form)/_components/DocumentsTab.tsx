@@ -3,6 +3,7 @@ import React from "react";
 import { FileText, ChevronRight } from "lucide-react";
 import { useProductDetails } from "./ProductDetailsContext";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // TypeScript Interface for Document Item
 interface DocumentItemProps {
@@ -37,11 +38,11 @@ const DocumentsTab: React.FC = () => {
 	if (loading) {
 		return (
 			<div className="pt-6">
-				<div className="animate-pulse space-y-4">
-					<div className="h-4 bg-gray-200 rounded w-1/3"></div>
+				<div className="space-y-4">
+					<Skeleton className="h-4 w-1/3" />
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div className="h-16 bg-gray-200 rounded"></div>
-						<div className="h-16 bg-gray-200 rounded"></div>
+						<Skeleton className="h-16 w-full" />
+						<Skeleton className="h-16 w-full" />
 					</div>
 				</div>
 			</div>

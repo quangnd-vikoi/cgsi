@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { handleCall, handleCopy, handleOpenMap } from "@/lib/utils";
 import { getCentralDealingDeskContact } from "@/lib/services/profileService";
-import { ContactUsCentralDealingDeskResponse } from "@/types"
+import { ContactUsCentralDealingDeskResponse } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 const CentralDealingDesk = () => {
@@ -37,8 +38,15 @@ const CentralDealingDesk = () => {
 				<div className="flex-shrink-0 pad-x">
 					<CustomSheetTitle title="Client Services" backTo={"contact"} />
 				</div>
-				<div className="flex-1 flex items-center justify-center">
-					<p className="text-sm text-typo-secondary">Loading...</p>
+				<div className="flex-1 pad-x pt-6">
+					<div className="space-y-6">
+						{[...Array(3)].map((_, i) => (
+							<div key={i} className="space-y-2">
+								<Skeleton className="h-4 w-1/4" />
+								<Skeleton className="h-6 w-full" />
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		);

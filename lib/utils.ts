@@ -1,7 +1,7 @@
 import { toast } from "@/components/ui/toaster";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-
+import { PortfolioType } from "@/types";
 export const getBasePath = () => process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export function cn(...inputs: ClassValue[]) {
@@ -43,3 +43,15 @@ export const withBasePath = (path: string): string => {
 export const getBgImageClass = (imagePath: string): string => {
 	return `url('${withBasePath(imagePath)}')`;
 };
+
+
+export const getAccountTypeCode = (type: string): PortfolioType => {
+	const typeMap: Record<string, PortfolioType> = {
+		"Cash Trading Account": "CTA",
+		"Margin Trading Account": "MTA",
+		"Shares Borrowing Account": "SBL",
+		"CUT Account": "CUT",
+		"iCash Account": "iCash"
+	}
+	return typeMap[type] || "CTA"
+}

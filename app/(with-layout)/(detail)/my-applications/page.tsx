@@ -17,6 +17,7 @@ import {
 import Title from "@/components/Title";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ApplicationType = "all" | "securities" | "alternatives";
 
@@ -131,9 +132,7 @@ export default function MyApplication() {
 					<div className="flex-1 w-full flex items-center justify-center">
 						<div className="space-y-4 w-full">
 							{[...Array(3)].map((_, i) => (
-								<div key={i} className="animate-pulse flex gap-4">
-									<div className="h-12 bg-gray-200 rounded flex-1"></div>
-								</div>
+								<Skeleton key={i} className="h-12 w-full" />
 							))}
 						</div>
 					</div>

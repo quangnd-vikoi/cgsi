@@ -3,6 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import React from "react";
 import { useProductDetails } from "./ProductDetailsContext";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // TypeScript Interface for AccordionItem Props
 interface AnalysisAccordionItemProps {
@@ -34,10 +35,10 @@ const AnalysisTab: React.FC = () => {
 	if (loading) {
 		return (
 			<div className="py-6">
-				<div className="animate-pulse space-y-4">
-					<div className="h-16 bg-gray-200 rounded"></div>
-					<div className="h-16 bg-gray-200 rounded"></div>
-					<div className="h-16 bg-gray-200 rounded"></div>
+				<div className="space-y-4">
+					<Skeleton className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" />
+					<Skeleton className="h-16 w-full" />
 				</div>
 			</div>
 		);

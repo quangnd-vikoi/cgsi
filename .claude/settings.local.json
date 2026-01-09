@@ -34,7 +34,10 @@
       "WebSearch",
       "Bash(bun install:*)",
       "Bash(bun x tsc:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "WebFetch(domain:ui.shadcn.com)"
     ],
     "deny": [],
     "ask": []

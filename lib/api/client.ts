@@ -100,7 +100,7 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 				await ensureValidToken();
 				// Retry the request once with the new token
 				return fetchAPI<T>(url, { ...options, _isRetry: true });
-			} catch (error) {
+			} catch {
 				// Refresh failed - redirect to login will be handled by authService
 				return {
 					success: false,

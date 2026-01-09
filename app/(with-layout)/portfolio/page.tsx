@@ -11,9 +11,7 @@ import Dashboard from "./_components/Dashboard";
 import { CashBalance } from "./_components/CashBalance";
 import { HoldingPosition } from "./_components/HoldingPosition";
 import { ExchangeRateTable } from "./_components/ExchangeRateTable";
-
-export type PortfolioType = "CTA" | "MTA" | "SBL" | "CUT" | "iCash";
-
+import { PortfolioType } from "@/types";
 const DevelopmentBanner = () => {
 	return (
 		<div className="bg-white shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] px-4 py-3 border-b rounded-lg w-full">

@@ -5,18 +5,13 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toaster";
-import {
-	INotification,
-	NotificationListResponse,
-	NotificationMarkAsReadRequest,
-	NotificationMarkAsReadResponse,
-} from "@/types";
+import type { INotification } from "@/types";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { ErrorState } from "@/components/ErrorState";
-import { fetchAPI, postAPI } from "@/lib/api/client";
-import { ENDPOINTS } from "@/lib/api/endpoints";
+import { notificationService } from "@/lib/services/notificationService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function formatDate(isoDate: string): string {
 	try {
@@ -99,10 +94,7 @@ const Notification = () => {
 			setError(null); // Clear previous errors on fresh load
 		}
 
-		const response = await fetchAPI<NotificationListResponse>(
-			ENDPOINTS.notificationList(pageSize, currentPageIndex),
-			{ useAuth: true } // Requires authentication
-		);
+		const response = await notificationService.getNotifications(pageSize, currentPageIndex);
 
 		if (response.success && response.data) {
 			const { notifications, total } = response.data;
@@ -181,13 +173,7 @@ const Notification = () => {
 			return;
 		}
 
-		const requestBody: NotificationMarkAsReadRequest = { ids: unreadIds };
-
-		const response = await postAPI<NotificationMarkAsReadResponse, NotificationMarkAsReadRequest>(
-			ENDPOINTS.notificationMarkAsRead(),
-			requestBody,
-			{ useAuth: true }
-		);
+		const response = await notificationService.markNotificationsAsRead(unreadIds);
 
 		if (response.success && response.data?.isSuccess) {
 			// Update local state - change status from "U" to "R"
@@ -238,8 +224,14 @@ const Notification = () => {
 
 			<div className="flex flex-col overflow-y-auto sidebar-scroll flex-1 mt-4">
 				{loading ? (
-					<div className="flex items-center justify-center pt-20">
-						<p className="text-typo-secondary text-sm">Loading notifications...</p>
+					<div className="px-4 pt-6 space-y-4">
+						{[...Array(3)].map((_, i) => (
+							<div key={i} className="space-y-2">
+								<Skeleton className="h-4 w-3/4" />
+								<Skeleton className="h-3 w-full" />
+								<Skeleton className="h-3 w-1/2" />
+							</div>
+						))}
 					</div>
 				) : error ? (
 					<ErrorState

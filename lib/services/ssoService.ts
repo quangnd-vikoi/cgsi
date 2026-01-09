@@ -1,44 +1,33 @@
-import { fetchAPI } from "@/lib/api/client";
-import { ENDPOINTS } from "@/lib/api/endpoints";
-import { CorpActionSSOResponse } from "@/types";
-
 /**
- * Submit a SAML POST form to an external SSO endpoint
+ * SSO Service (Legacy)
  *
- * Creates a hidden form with the SAML response and submits it to the specified URL.
- * This will redirect the user to the external system.
+ * This file is kept for backward compatibility.
+ * All new code should use externalSSOService.ts instead.
  *
- * @param postUrl - The URL to POST the SAML response to
- * @param samlResponse - The base64-encoded SAML response from the backend
+ * @deprecated Use externalSSOService instead
  */
-export function submitSamlForm(postUrl: string, samlResponse: string): void {
-    // Create form element
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = postUrl;
 
-    // Create hidden input for SAML response
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "SAMLResponse";
-    input.value = samlResponse;
+export {
+	externalSSOService as ssoService,
+	submitSamlForm,
+	redirectToSSO,
+	getNTPSSO,
+	redirectToNTP,
+	getResearchSSO,
+	redirectToResearch,
+	getStockFilterSSO,
+	redirectToStockFilter,
+	getCorporateActionSSO,
+	redirectToCorporateAction,
+	getEStatementSSO,
+	redirectToEStatement,
+	getIScreenerSSO,
+	redirectToIScreener,
+	getEW8SSO,
+	redirectToEW8,
+	getECRSSSO,
+	redirectToECRS,
+} from "./externalSSOService";
 
-    // Append input to form
-    form.appendChild(input);
-
-    // Append form to body and submit
-    document.body.appendChild(form);
-    form.submit();
-}
-
-export const getCorporateActionURL = async (): Promise<void> => {
-    await fetchAPI<CorpActionSSOResponse>(
-        ENDPOINTS.ssoCorporateAction(),
-        { useAuth: true }
-    );
-}
-
-
-export const ssoService = {
-    getCorporateActionURL
-}
+// Backward compatible alias
+export { getCorporateActionSSO as getCorporateActionURL } from "./externalSSOService";

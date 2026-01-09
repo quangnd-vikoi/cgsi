@@ -21,18 +21,6 @@ import { ContractsTable } from "./_components/ContractsTable";
 
 type TabType = "contracts" | "contra";
 
-// Helper function to map account type to short code
-const getAccountTypeCode = (type: string): string => {
-	const typeMap: Record<string, string> = {
-		"Cash Trading Account": "CTA",
-		"Margin Trading Account": "MTA",
-		"Shares Borrowing Account": "SBL",
-		"CUT Account": "CUT",
-		"iCash Account": "iCash",
-	};
-	return typeMap[type] || "CTA";
-};
-
 export default function SettlePage() {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
 	const [activeTab, setActiveTab] = useState<TabType>("contracts");

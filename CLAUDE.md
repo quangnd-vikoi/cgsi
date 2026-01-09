@@ -1,17 +1,19 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps without me having to explicitly ask.
 
 ## Project Overview
 
 CGSI iTrade Portal - A Next.js 15 web application for stock trading and investment management. This is a customer portal enabling users to manage portfolios, subscribe to market data, track investments, and access trading applications.
 
 **Key Technologies:**
-- Next.js 15.5 with App Router and Turbopack
-- React 19 + TypeScript 5
-- TailwindCSS 4 (inline theme configuration)
-- Radix UI + Shadcn/ui components
-- Zustand for state management
+
+-   Next.js 15.5 with App Router and Turbopack
+-   React 19 + TypeScript 5
+-   TailwindCSS 4 (inline theme configuration)
+-   Radix UI + Shadcn/ui components
+-   Zustand for state management
 
 ## Development Commands
 
@@ -34,33 +36,42 @@ The app runs on `http://localhost:3000` but is deployed at the `/portal` base pa
 ## Critical Configuration
 
 ### Base Path Configuration
+
 The application is configured to run at `/portal` base path:
-- **next.config.ts**: `basePath: "/portal"` and `assetPrefix: "/portal/"`
-- All internal routes must account for this base path
-- Environment variable: `NEXT_PUBLIC_BASE_PATH="/portal"`
+
+-   **next.config.ts**: `basePath: "/portal"` and `assetPrefix: "/portal/"`
+-   All internal routes must account for this base path
+-   Environment variable: `NEXT_PUBLIC_BASE_PATH="/portal"`
 
 ### SVG Handling
+
 SVGs are imported as React components via `@svgr/webpack`:
+
 ```typescript
 import Logo from "@/public/logo.svg";
 // Usage: <Logo />
 ```
+
 Both webpack and Turbopack are configured to handle this.
 
 ### Image Optimization
+
 Images are unoptimized (`unoptimized: true`) with remote patterns allowing `https://www.cgsi.com.sg`.
 
 ## Architecture Patterns
 
 ### Route Groups for Layouts
+
 The app uses Next.js route groups to manage different layout contexts:
 
 **`app/(with-layout)/`** - Full layout with Header, Footer, and SheetManager:
-- Most user-facing pages (home, portfolio, discover, market-data, donations, etc.)
-- Layout: `app/(with-layout)/layout.tsx`
+
+-   Most user-facing pages (home, portfolio, discover, market-data, donations, etc.)
+-   Layout: `app/(with-layout)/layout.tsx`
 
 **`app/(minimal)/`** - Minimal layout (if exists) for sidebar-based pages
-- Sidebar sheets for user profile, notifications, settings
+
+-   Sidebar sheets for user profile, notifications, settings
 
 **Page-specific components** are stored in `_components/` folders next to their pages (e.g., `app/(with-layout)/portfolio/_components/`).
 
@@ -69,14 +80,16 @@ The app uses Next.js route groups to manage different layout contexts:
 Centralized stores in `stores/`:
 
 **`tradingAccountStore.ts`**:
-- Manages multiple trading account types (Cash, Margin, Shares Borrowing, CUT, iCash)
-- Pre-populated with mock data
-- Methods: `setAccounts`, `setSelectedAccount`, `updateSelectedAccount`, `getAccountById`
+
+-   Manages multiple trading account types (Cash, Margin, Shares Borrowing, CUT, iCash)
+-   Pre-populated with mock data
+-   Methods: `setAccounts`, `setSelectedAccount`, `updateSelectedAccount`, `getAccountById`
 
 **`sheetStore.ts`**:
-- Controls sheet/modal visibility across the app
-- Methods: `setOpenSheet(type, payload?)`, `closeSheet()`
-- Used in conjunction with `SheetManager` component
+
+-   Controls sheet/modal visibility across the app
+-   Methods: `setOpenSheet(type, payload?)`, `closeSheet()`
+-   Used in conjunction with `SheetManager` component
 
 **`userStore.ts`**: User email and mobile information
 **`selectionStore.ts`**: Selection state management
@@ -84,9 +97,10 @@ Centralized stores in `stores/`:
 ### API Integration
 
 **Configuration** (`lib/apiConfig.ts`):
-- Base URL: `https://www.cgsi.com.sg/cgsi/api/v1` (configurable via `NEXT_PUBLIC_API_URL`)
-- Language constants: `LANG.EN = 1`, `LANG.CN = 2`
-- Endpoint builders for announcements, notices, campaigns, events, insights
+
+-   Base URL: `https://www.cgsi.com.sg/cgsi/api/v1` (configurable via `NEXT_PUBLIC_API_URL`)
+-   Language constants: `LANG.EN = 1`, `LANG.CN = 2`
+-   Endpoint builders for announcements, notices, campaigns, events, insights
 
 **Fetch Wrapper** (`lib/fetchWrapper.ts`):
 Provides normalized API responses with consistent error handling:
@@ -102,15 +116,16 @@ const response = await postAPI<ResponseType, BodyType>("/endpoint", { data });
 
 // Response format:
 interface APIResponse<T> {
-  success: boolean;
-  data: T | null;
-  error: string | null;
-  statusCode: number;
+	success: boolean;
+	data: T | null;
+	error: string | null;
+	statusCode: number;
 }
 ```
 
 **Standard API Response Format**:
 The backend returns:
+
 ```typescript
 {
   status: "SUCCESS" | "ERROR",
@@ -119,18 +134,21 @@ The backend returns:
   message?: string
 }
 ```
+
 The fetch wrapper normalizes this to `APIResponse<T>`.
 
 ### Routes and Navigation
 
 **Internal routes** (`constants/routes.ts`):
-- `INTERNAL_ROUTES` object for all app routes
-- Example: `INTERNAL_ROUTES.PORTFOLIO = "/portfolio"`
-- Account linkages with query params: `ACCOUNT_LINKAGES(type, unlink?)`
+
+-   `INTERNAL_ROUTES` object for all app routes
+-   Example: `INTERNAL_ROUTES.PORTFOLIO = "/portfolio"`
+-   Account linkages with query params: `ACCOUNT_LINKAGES(type, unlink?)`
 
 **External CGSI URLs**:
-- `CGSI` object contains links to external CGSI services (campaigns, events, trade platform, invoice, etc.)
-- Invoice URL builder: `CGSI.INVOICE(token)`
+
+-   `CGSI` object contains links to external CGSI services (campaigns, events, trade platform, invoice, etc.)
+-   Invoice URL builder: `CGSI.INVOICE(token)`
 
 ### Component Architecture
 
@@ -138,58 +156,65 @@ The fetch wrapper normalizes this to `APIResponse<T>`.
 Pre-built accessible components from Radix UI (button, dialog, sheet, tabs, accordion, etc.). These follow the Shadcn/ui pattern and can be customized via Tailwind classes.
 
 **Business Components** (`components/`):
-- `Header.tsx`, `Footer.tsx` - Main layout components
-- Custom components for specific features
+
+-   `Header.tsx`, `Footer.tsx` - Main layout components
+-   Custom components for specific features
 
 **Class Variance Authority (CVA)**:
 Use CVA for component variants with type-safe props:
+
 ```typescript
 import { cva, type VariantProps } from "class-variance-authority";
 
 const buttonVariants = cva("base-classes", {
-  variants: {
-    variant: { default: "...", destructive: "..." },
-    size: { default: "...", sm: "...", lg: "..." }
-  }
+	variants: {
+		variant: { default: "...", destructive: "..." },
+		size: { default: "...", sm: "...", lg: "..." },
+	},
 });
 ```
 
 ### Styling System
 
 **TailwindCSS 4** with inline theme configuration in `app/globals.css`:
-- Custom breakpoint: `xs: 375px`
-- Theme uses CSS variables defined in `:root` and `.dark`
-- Custom color system:
-  - Typography: `typo-primary`, `typo-secondary`, `typo-tertiary`
-  - Enhanced blue: `enhanced-blue` (#006ceb)
-  - Status colors: `status-error`, `status-success`, `status-warning`, `status-selected`
-  - Theme colors: `theme-blue-*`, `theme-neutral-*`
-  - Tone colors: `tone-green-*`, `tone-orange-*`, `tone-blue-*`, `tone-red-*`
+
+-   Custom breakpoint: `xs: 375px`
+-   Theme uses CSS variables defined in `:root` and `.dark`
+-   Custom color system:
+    -   Typography: `typo-primary`, `typo-secondary`, `typo-tertiary`
+    -   Enhanced blue: `enhanced-blue` (#006ceb)
+    -   Status colors: `status-error`, `status-success`, `status-warning`, `status-selected`
+    -   Theme colors: `theme-blue-*`, `theme-neutral-*`
+    -   Tone colors: `tone-green-*`, `tone-orange-*`, `tone-blue-*`, `tone-red-*`
 
 **Custom Utilities**:
-- `.container-default`: Responsive container (mx-4 md:mx-6 xl:max-w-1200px)
-- `.pad`: Responsive padding (p-4 md:p-6)
-- `.pad-x`: Responsive horizontal padding
-- `.investment-card`: Gradient card with border
-- `.sidebar-scroll`: Custom scrollbar styling
-- `.scrollbar-offset-right`, `.scrollbar-offset-laptop`: Mobile/desktop scrollbar offsets
+
+-   `.container-default`: Responsive container (mx-4 md:mx-6 xl:max-w-1200px)
+-   `.pad`: Responsive padding (p-4 md:p-6)
+-   `.pad-x`: Responsive horizontal padding
+-   `.investment-card`: Gradient card with border
+-   `.sidebar-scroll`: Custom scrollbar styling
+-   `.scrollbar-offset-right`, `.scrollbar-offset-laptop`: Mobile/desktop scrollbar offsets
 
 **Global Styles**:
-- User selection disabled by default (`user-select: none`)
-- Text selection enabled for inputs, textareas, contenteditable
-- Base font size: 16px
+
+-   User selection disabled by default (`user-select: none`)
+-   Text selection enabled for inputs, textareas, contenteditable
+-   Base font size: 16px
 
 ### TypeScript Configuration
 
-- Target: ES2017
-- Path alias: `@/*` maps to root directory
-- Strict mode enabled
-- Module resolution: bundler
+-   Target: ES2017
+-   Path alias: `@/*` maps to root directory
+-   Strict mode enabled
+-   Module resolution: bundler
 
 ## Common Patterns
 
 ### Multi-Step Forms
+
 Market data subscription uses step-based state management:
+
 1. Select products
 2. Cart review
 3. Declaration
@@ -199,13 +224,16 @@ Market data subscription uses step-based state management:
 Each step manages its own state, with navigation handled by a central stepper component.
 
 ### Sheet-based Navigation
+
 Instead of full page navigation, the app uses Radix Dialog sheets for:
-- User profile
-- Notifications
-- Settings
-- Other sidebar content
+
+-   User profile
+-   Notifications
+-   Settings
+-   Other sidebar content
 
 Pattern:
+
 ```typescript
 const { setOpenSheet } = useSheetStore();
 
@@ -216,37 +244,47 @@ setOpenSheet("profile", { userId: "123" });
 ```
 
 ### Responsive Design
+
 Mobile-first approach with breakpoints:
-- xs: 375px (custom)
-- md: 768px (Tailwind default)
-- lg, xl: Standard Tailwind
+
+-   xs: 375px (custom)
+-   md: 768px (Tailwind default)
+-   lg, xl: Standard Tailwind
 
 Use `useMediaQuery` hook for client-side responsive logic.
 
 ### Toast Notifications
+
 Using Sonner (`sonner` package):
-- Position: bottom-right
-- Configured in layout via `<Toaster position="bottom-right" />`
+
+-   Position: bottom-right
+-   Configured in layout via `<Toaster position="bottom-right" />`
 
 ## Important Considerations
 
 ### Trading Account Structure
+
 All trading accounts follow the `TradingAccount` interface with:
-- Multiple account types: Cash, Margin, Shares Borrowing, CUT, iCash
-- Detailed account information (CDP, Sub-CDP, CPF, SRS, payment details)
-- Representative information (name, department, rep number, contact)
+
+-   Multiple account types: Cash, Margin, Shares Borrowing, CUT, iCash
+-   Detailed account information (CDP, Sub-CDP, CPF, SRS, payment details)
+-   Representative information (name, department, rep number, contact)
 
 Currently populated with mock data in `tradingAccountStore.ts`.
 
 ### API Language Support
+
 All API endpoints accept a language parameter:
-- English: `LANG.EN = 1`
-- Chinese: `LANG.CN = 2`
+
+-   English: `LANG.EN = 1`
+-   Chinese: `LANG.CN = 2`
 
 Default to English unless explicitly specified.
 
 ### Path Aliasing
+
 Always use `@/` for imports:
+
 ```typescript
 // Correct
 import { Button } from "@/components/ui/button";
@@ -257,9 +295,10 @@ import { Button } from "../../components/ui/button";
 ```
 
 ### Security Notes
-- No environment variables currently defined beyond `NEXT_PUBLIC_BASE_PATH`
-- API base URL defaults to production: `https://www.cgsi.com.sg/cgsi/api/v1`
-- Use `NEXT_PUBLIC_API_URL` environment variable to override for development
+
+-   No environment variables currently defined beyond `NEXT_PUBLIC_BASE_PATH`
+-   API base URL defaults to production: `https://www.cgsi.com.sg/cgsi/api/v1`
+-   Use `NEXT_PUBLIC_API_URL` environment variable to override for development
 
 ## File Structure Reference
 

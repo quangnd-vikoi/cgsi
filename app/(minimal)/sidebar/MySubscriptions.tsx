@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import CustomSheetTitle from './_components/CustomSheetTitle'
 import { ErrorState } from '@/components/ErrorState'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import Image from '@/components/Image';
 import { Badge } from '@/components/ui/badge';
 import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass } from 'lucide-react';
@@ -173,11 +174,11 @@ const MySubscriptions = () => {
 				<div className="flex items-center justify-center pt-20">
 					<div className="space-y-4 p-6 w-full">
 						{[...Array(3)].map((_, i) => (
-							<div key={i} className="flex gap-3 animate-pulse">
-								<div className="w-11 h-11 bg-gray-200 rounded"></div>
-								<div className="flex-1">
-									<div className="h-4 bg-gray-200 rounded w-3/4"></div>
-									<div className="h-3 bg-gray-200 rounded w-1/2 mt-2"></div>
+							<div key={i} className="flex gap-3">
+								<Skeleton className="w-11 h-11 rounded" />
+								<div className="flex-1 space-y-2">
+									<Skeleton className="h-4 w-3/4" />
+									<Skeleton className="h-3 w-1/2" />
 								</div>
 							</div>
 						))}

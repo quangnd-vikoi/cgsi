@@ -8,6 +8,7 @@ import Events from "./_component/Events";
 import Investment from "./_component/Investment";
 import ProductInformation from "./_component/ProductInformation";
 import { ErrorState } from "@/components/ErrorState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function HomeContent() {
 	const searchParams = useSearchParams();
@@ -96,11 +97,10 @@ export default function Home() {
 	return (
 		<Suspense
 			fallback={
-				<div className="flex items-center justify-center min-h-[400px]">
-					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-enhanced-blue mx-auto mb-4"></div>
-						<p className="text-typo-secondary">Loading...</p>
-					</div>
+				<div className="container-default space-y-6 py-6">
+					<Skeleton className="h-48 w-full" />
+					<Skeleton className="h-64 w-full" />
+					<Skeleton className="h-48 w-full" />
 				</div>
 			}
 		>

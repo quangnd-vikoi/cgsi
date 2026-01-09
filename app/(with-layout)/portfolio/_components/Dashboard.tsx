@@ -14,8 +14,8 @@ import { useTradingAccountStore } from '@/stores/tradingAccountStore'
 import React from 'react'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { PortfolioType } from '@/types'
 import { ChartPie } from './ChartPie'
-import { PortfolioType } from '../page'
 import { PaymentModel } from '@/components/PaymentModel'
 import { useRouter } from 'next/navigation'
 import { INTERNAL_ROUTES } from '@/constants/routes'
@@ -58,19 +58,6 @@ const DashboardBlock = ({ title, amount, type = 'normal', showPayButton = false,
             </div>
         </div>
     )
-}
-
-// Các component của bạn
-// Helper function to map account type to short code
-const getAccountTypeCode = (type: string): PortfolioType => {
-    const typeMap: Record<string, PortfolioType> = {
-        "Cash Trading Account": "CTA",
-        "Margin Trading Account": "MTA",
-        "Shares Borrowing Account": "SBL",
-        "CUT Account": "CUT",
-        "iCash Account": "iCash"
-    }
-    return typeMap[type] || "CTA"
 }
 
 const TypeSelect = () => {

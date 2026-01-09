@@ -24,7 +24,7 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
-import { getCorporateActionURL } from "@/lib/services/ssoService";
+import { redirectToCorporateAction } from "@/lib/services/ssoService";
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
@@ -125,7 +125,7 @@ const Profile = () => {
 			{
 				icon: <Building2 />,
 				name: "Corporate Actions",
-				onClick: getCorporateActionURL,
+				onClick: redirectToCorporateAction,
 			},
 			{
 				icon: <Box />,

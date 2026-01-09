@@ -3,6 +3,7 @@ import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface NoticeItem {
 	Title: string;
@@ -52,7 +53,12 @@ const Announcements = () => {
 		return (
 			<div className="relative h-full flex flex-col">
 				<CustomSheetTitle title="Announcement" />
-				<div className="mt-6 text-center text-typo-secondary">Loading...</div>
+				<div className="mt-6 px-6 space-y-4">
+					<Skeleton className="h-6 w-3/4" />
+					<Skeleton className="h-4 w-full" />
+					<Skeleton className="h-4 w-full" />
+					<Skeleton className="h-4 w-2/3" />
+				</div>
 			</div>
 		);
 	}

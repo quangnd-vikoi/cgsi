@@ -22,6 +22,8 @@ These documents provide detailed technical guides with:
 - **`portfolio-api-implementation-plan.md`** - Portfolio API endpoints integration
 - **`notification-implementation.md`** - Notification system implementation
 - **`MySubscription-API-Integration-Plan.md`** - Subscription feature integration
+- **`donation-api-implementation-plan.md`** - Donation feature integration (one-time & recurring)
+- **`externalsso-api-implementation-plan.md`** - External SSO integration (8 external systems)
 
 ### Version 2 Migration
 - **`IMPLEMENTATION_PLAN_V2_APIs.md`** - V2 API migration plan (Profile, SSO, Subscription)
