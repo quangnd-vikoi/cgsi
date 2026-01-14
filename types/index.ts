@@ -376,3 +376,32 @@ export interface EW8SSOResponse {
 export interface ECRSSSOResponse {
 	redirectUrl: string;
 }
+
+// ============================================================================
+// Acknowledgement API Types
+// ============================================================================
+
+// Acknowledgement Item (individual agreement)
+export interface IAcknowledgementItem {
+	agreementId: string;
+	title: string;
+	versionNo: number;
+	acceptedOn: string; // ISO date format (YYYY-MM-DD)
+}
+
+// User Acknowledgement List Response
+export interface UserAcknowledgementListResponse {
+	textBase: IAcknowledgementItem[];
+	onlineBase: IAcknowledgementItem[];
+	interactiveBase: IAcknowledgementItem[];
+	pdfBase: IAcknowledgementItem[];
+}
+
+// Acknowledgement Detail Response
+export interface AcknowledgementDetailResponse {
+	title: string;
+	versionNo: number;
+	acceptedOn: string; // ISO date format
+	htmlContent?: string;
+	url?: string;
+}

@@ -1,8 +1,7 @@
 "use client";
-import { CGSI } from "@/constants/routes";
 import Image from "@/components/Image";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
 import { StockResearchLMobile, StockResearchRMobile } from "@/public/icons/discover";
 
 type StockResearchCardProps = {
@@ -13,7 +12,7 @@ type StockResearchCardProps = {
 	imageAlt?: string;
 	imageWidth?: number;
 	imageHeight?: number;
-	href: string;
+	onClick?: () => void | Promise<void>;
 };
 
 const StockResearchCard: React.FC<StockResearchCardProps> = ({
@@ -23,12 +22,11 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	imageAlt,
 	imageWidth = 110,
 	imageHeight = 125,
-	href = "/",
+	onClick,
 }) => {
-	const router = useRouter();
 	return (
 		<div
-			onClick={() => router.push(href)}
+			onClick={onClick}
 			className="relative rounded-lg shadow-sm w-full cursor-pointer "
 		>
 			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow h-full">
@@ -70,7 +68,7 @@ const StockResearch = () => {
 
 			<div className="mt-6 flex gap-4 justify-between">
 				<StockResearchCard
-					href={CGSI.ISCREENER}
+					onClick={redirectToIScreener}
 					title="iScreener"
 					available={1}
 					imageSrc="/icons/discover/Stock-Research-L.svg"
@@ -78,7 +76,7 @@ const StockResearch = () => {
 				/>
 
 				<StockResearchCard
-					href={CGSI.STOCK_FILTER}
+					onClick={redirectToStockFilter}
 					title="Stock Filter"
 					available={0}
 					imageSrc="/icons/discover/Stock-Research-R.svg"

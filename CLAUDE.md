@@ -137,6 +137,41 @@ The backend returns:
 
 The fetch wrapper normalizes this to `APIResponse<T>`.
 
+### External SSO Integration
+
+**Service Layer** (`lib/services/externalSSOService.ts`):
+Handles all external SSO (Single Sign-On) integrations with 8 external systems.
+
+```typescript
+import { externalSSOService } from "@/lib/services/externalSSOService";
+// or use legacy import:
+import { redirectToNTP, redirectToEW8 } from "@/lib/services/ssoService";
+
+// Available SSO methods (one-liner redirects):
+await externalSSOService.redirectToNTP();              // Next Trading Platform
+await externalSSOService.redirectToResearch();         // Research Portal
+await externalSSOService.redirectToStockFilter();      // Stock Filter
+await externalSSOService.redirectToCorporateAction();  // Corporate Action (SAML)
+await externalSSOService.redirectToEStatement();       // eStatement
+await externalSSOService.redirectToIScreener();        // iScreener (⚠️ never implemented)
+await externalSSOService.redirectToEW8();              // W8 Form
+await externalSSOService.redirectToECRS();             // CRS Declaration
+```
+
+**SSO Types:**
+- **Simple Redirect**: Most services (Research, Stock Filter, eStatement, EW8, ECRS)
+- **Form Submission**: NTP (multiple fields), Corporate Action (SAML)
+
+**UI Integration:**
+- Header "Trade Now" button → NTP SSO
+- Profile sidebar "Corporate Actions" → Corporate Action SSO
+- Profile sidebar "eStatements" → eStatement SSO
+- Profile sidebar Trading Declarations W8-BEN "Renew" → EW8 SSO
+- Profile sidebar Trading Declarations CRS "Renew" → ECRS SSO
+- Discover page Stock Research cards → iScreener & Stock Filter SSO
+
+**Documentation:** See `docs/flows/externalsso-api-implementation-plan.md`
+
 ### Routes and Navigation
 
 **Internal routes** (`constants/routes.ts`):

@@ -181,4 +181,37 @@ export const profileEndpoints = {
 	 * );
 	 */
 	contactUsCentralDealingDesk: () => `/profile/api/v1/contactUs/centralDealingDesk`,
+
+	/**
+	 * Get User Acknowledgement List
+	 *
+	 * GET /profile/api/v1/acknowledgement/user/list
+	 *
+	 * @returns UserAcknowledgementListResponse - User's accepted acknowledgements grouped by type
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<UserAcknowledgementListResponse>(
+	 *   ENDPOINTS.acknowledgementList(),
+	 *   { useAuth: true }
+	 * );
+	 */
+	acknowledgementList: () => `/profile/api/v1/acknowledgement/user/list`,
+
+	/**
+	 * Get User Acknowledgement Detail
+	 *
+	 * GET /profile/api/v1/acknowledgement/user/details/{id}
+	 *
+	 * @param id - Agreement ID
+	 * @returns AcknowledgementDetailResponse - Detailed acknowledgement information
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<AcknowledgementDetailResponse>(
+	 *   ENDPOINTS.acknowledgementDetail("8a1ba0813b3b8b4b013b4eb83b170e9e"),
+	 *   { useAuth: true }
+	 * );
+	 */
+	acknowledgementDetail: (id: string) => `/profile/api/v1/acknowledgement/user/details/${id}`,
 } as const;

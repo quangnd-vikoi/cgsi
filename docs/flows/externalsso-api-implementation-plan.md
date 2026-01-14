@@ -32,13 +32,24 @@ This plan outlines the **complete implementation** of the External SSO (Single S
 - ✅ All 8 SSO methods implemented
 - ✅ Helper functions for SAML form submission and redirects
 
+**UI Integration:**
+- ✅ Header "Trade Now" button → NTP SSO (`redirectToNTP`)
+- ✅ Profile sidebar "Corporate Actions" → Corporate Action SSO (`redirectToCorporateAction`)
+- ✅ Profile sidebar "eStatements" → eStatement SSO (`redirectToEStatement`)
+- ✅ Profile sidebar Trading Declarations W8-BEN "Renew" → EW8 SSO (`redirectToEW8`)
+- ✅ Profile sidebar Trading Declarations CRS "Renew" → ECRS SSO (`redirectToECRS`)
+- ✅ Discover page "iScreener" card → iScreener SSO (`redirectToIScreener`)
+- ✅ Discover page "Stock Filter" card → Stock Filter SSO (`redirectToStockFilter`)
+- ⚠️ Research Portal SSO - Service ready but not integrated in UI
+
 ### Implementation Goal
 
 **Ready to Use:**
-- All external SSO integrations are complete and ready to use
+- All external SSO integrations are complete and integrated in UI
 - Service provides both low-level API calls and high-level redirect functions
 - SAML form submission handled automatically for Corporate Action
 - Simple redirect URLs handled automatically for other systems
+- 7 out of 8 SSO services actively used in production UI
 
 ---
 
@@ -176,7 +187,108 @@ externalSSOService.redirectToSSO(redirectUrl);
 
 ---
 
-## 💡 Usage Examples
+## 🎨 UI Integration Examples
+
+### Example 1: Header "Trade Now" Button (NTP SSO)
+
+**File:** `components/Header.tsx`
+
+```typescript
+import { redirectToNTP } from "@/lib/services/ssoService";
+
+const Header = () => {
+  const handleTradeNowClick = async () => {
+    await redirectToNTP();
+  };
+
+  return (
+    <Button onClick={handleTradeNowClick} variant="default">
+      <span>Trade Now</span>
+    </Button>
+  );
+};
+```
+
+### Example 2: Profile Sidebar Menu Items
+
+**File:** `app/(minimal)/sidebar/Profile.tsx`
+
+```typescript
+import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
+
+const PROFILE_MENU_ITEM = {
+  "Trading Centre": [
+    {
+      icon: <Building2 />,
+      name: "Corporate Actions",
+      onClick: redirectToCorporateAction,
+    },
+  ],
+  Reports: [
+    {
+      icon: <FileText />,
+      name: "eStatements",
+      onClick: redirectToEStatement,
+    },
+  ],
+};
+```
+
+### Example 3: Trading Declarations Renew Buttons
+
+**File:** `app/(minimal)/sidebar/TradingDeclartions.tsx`
+
+```typescript
+import { redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
+
+const items: DeclarationItem[] = [
+  {
+    title: "W8-BEN",
+    status: "expiring",
+    onRenew: async () => {
+      await redirectToEW8();
+    },
+  },
+  {
+    title: "CRS",
+    status: "inactive",
+    onRenew: async () => {
+      await redirectToECRS();
+    },
+  },
+];
+```
+
+### Example 4: Discover Page Stock Research Cards
+
+**File:** `app/(with-layout)/discover/_components/StockResearch.tsx`
+
+```typescript
+import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
+
+const StockResearch = () => {
+  return (
+    <div className="mt-6 flex gap-4 justify-between">
+      <StockResearchCard
+        onClick={redirectToIScreener}
+        title="iScreener"
+        imageSrc="/icons/discover/Stock-Research-L.svg"
+        subtext="Explore stocks powered by advanced algorithms"
+      />
+      <StockResearchCard
+        onClick={redirectToStockFilter}
+        title="Stock Filter"
+        imageSrc="/icons/discover/Stock-Research-R.svg"
+        subtext="Use advanced filters powered by real-time data"
+      />
+    </div>
+  );
+};
+```
+
+---
+
+## 💡 Service Usage Examples
 
 ### Example 1: Redirect to Research Portal
 
@@ -470,42 +582,53 @@ const handleExternalLink = async () => {
 
 ## 🧪 Testing Checklist
 
-### Manual Testing
+### Manual Testing - UI Integration
 
-- [ ] **NTP SSO**
-  - [ ] Click NTP link
+- [ ] **NTP SSO (Header)**
+  - [ ] Click "Trade Now" button in Header
   - [ ] Verify form submission with togaToken and assertion
   - [ ] Verify redirect to NTP platform
   - [ ] Verify user is logged in automatically
 
 - [ ] **Research Portal SSO**
-  - [ ] Click Research link
-  - [ ] Verify redirect to Research Portal
-  - [ ] Verify user is logged in automatically
+  - [ ] ⚠️ Not integrated in UI - Service available for future use
 
-- [ ] **Stock Filter SSO**
-  - [ ] Click Stock Filter link
+- [ ] **Stock Filter SSO (Discover Page)**
+  - [ ] Navigate to Discover page
+  - [ ] Click "Stock Filter" card in Stock Research section
   - [ ] Verify redirect to Stock Filter
   - [ ] Verify user is logged in automatically
 
-- [ ] **Corporate Action SSO**
-  - [ ] Click Corporate Action link
+- [ ] **Corporate Action SSO (Profile Sidebar)**
+  - [ ] Open Profile sidebar
+  - [ ] Click "Corporate Actions" menu item under Trading Centre
   - [ ] Verify SAML form submission
   - [ ] Verify redirect to Corporate Action
   - [ ] Verify user is logged in automatically
 
-- [ ] **eStatement SSO**
-  - [ ] Click eStatement link
+- [ ] **eStatement SSO (Profile Sidebar)**
+  - [ ] Open Profile sidebar
+  - [ ] Click "eStatements" menu item under Reports
   - [ ] Verify redirect to eStatement
   - [ ] Verify user is logged in automatically
 
-- [ ] **EW8 SSO**
-  - [ ] Click EW8 link
+- [ ] **iScreener SSO (Discover Page)**
+  - [ ] Navigate to Discover page
+  - [ ] Click "iScreener" card in Stock Research section
+  - [ ] ⚠️ Backend endpoint never implemented - may return 404
+  - [ ] Verify redirect attempt (if backend available)
+
+- [ ] **EW8 SSO (Trading Declarations)**
+  - [ ] Open Profile sidebar → Trading Declarations
+  - [ ] Locate W8-BEN declaration with "expiring" or "success" status
+  - [ ] Click "Renew" button
   - [ ] Verify redirect to EW8 form
   - [ ] Verify user is logged in automatically
 
-- [ ] **ECRS SSO**
-  - [ ] Click ECRS link
+- [ ] **ECRS SSO (Trading Declarations)**
+  - [ ] Open Profile sidebar → Trading Declarations
+  - [ ] Locate CRS declaration with "expiring" or "success" status
+  - [ ] Click "Renew" button
   - [ ] Verify redirect to ECRS
   - [ ] Verify user is logged in automatically
 
@@ -622,6 +745,29 @@ await externalSSOService.redirectToCorporateAction();
 - All response types defined
 - Type safety for all SSO methods
 
+✅ **UI Integration (7 out of 8)**
+- Header: "Trade Now" → NTP
+- Profile Sidebar: "Corporate Actions" → Corporate Action
+- Profile Sidebar: "eStatements" → eStatement
+- Profile Sidebar Trading Declarations: W8-BEN "Renew" → EW8
+- Profile Sidebar Trading Declarations: CRS "Renew" → ECRS
+- Discover Page: "iScreener" card → iScreener
+- Discover Page: "Stock Filter" card → Stock Filter
+- ⚠️ Research Portal - Service ready but not in UI
+
+### UI Integration Map
+
+| System | Location | Component | Method |
+|--------|----------|-----------|--------|
+| **NTP** | Header | `components/Header.tsx` | `redirectToNTP` |
+| **Corporate Action** | Profile Sidebar | `app/(minimal)/sidebar/Profile.tsx` | `redirectToCorporateAction` |
+| **eStatement** | Profile Sidebar | `app/(minimal)/sidebar/Profile.tsx` | `redirectToEStatement` |
+| **EW8** | Trading Declarations | `app/(minimal)/sidebar/TradingDeclartions.tsx` | `redirectToEW8` |
+| **ECRS** | Trading Declarations | `app/(minimal)/sidebar/TradingDeclartions.tsx` | `redirectToECRS` |
+| **iScreener** | Discover Page | `app/(with-layout)/discover/_components/StockResearch.tsx` | `redirectToIScreener` |
+| **Stock Filter** | Discover Page | `app/(with-layout)/discover/_components/StockResearch.tsx` | `redirectToStockFilter` |
+| **Research** | - | - | Service available |
+
 ### How to Use
 
 **Simple one-liner for any external system:**
@@ -630,10 +776,12 @@ await externalSSOService.redirectToCorporateAction();
 import { externalSSOService } from "@/lib/services/externalSSOService";
 
 // Redirect to any external system
+await externalSSOService.redirectToNTP();
 await externalSSOService.redirectToResearch();
 await externalSSOService.redirectToStockFilter();
 await externalSSOService.redirectToCorporateAction();
 await externalSSOService.redirectToEStatement();
+await externalSSOService.redirectToIScreener();
 await externalSSOService.redirectToEW8();
 await externalSSOService.redirectToECRS();
 ```
@@ -646,6 +794,8 @@ await externalSSOService.redirectToECRS();
 
 ---
 
-**Implementation Status:** ✅ Complete & Ready to Use
+**Implementation Status:** ✅ Complete & Integrated (7/8 in UI)
+
+**Last Updated:** 2026-01-12
 
 **End of Implementation Plan**

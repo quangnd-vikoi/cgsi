@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
+import { redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
 
 interface DeclarationItem {
 	title: string;
@@ -64,6 +65,9 @@ const TradingDeclartions = () => {
 					`width=${975},height=${700},screenX=${500},screenY=${400},resizable=yes,scrollbars=yes`
 				);
 			},
+			onRenew: async () => {
+				await redirectToEW8();
+			},
 		},
 		{
 			title: "BCAN",
@@ -107,6 +111,9 @@ const TradingDeclartions = () => {
 					"TradeNow",
 					`width=${975},height=${700},screenX=${500},screenY=${400},resizable=yes,scrollbars=yes`
 				);
+			},
+			onRenew: async () => {
+				await redirectToECRS();
 			},
 		},
 		{

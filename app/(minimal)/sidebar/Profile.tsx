@@ -24,7 +24,7 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
-import { redirectToCorporateAction } from "@/lib/services/ssoService";
+import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
@@ -142,8 +142,7 @@ const Profile = () => {
 			{
 				icon: <FileText />,
 				name: "eStatements",
-				href: CGSI.ESTATEMENT,
-				target: "_blank" as IProfileMenuItem["target"],
+				onClick: redirectToEStatement,
 			},
 			{
 				icon: <FileCheck />,

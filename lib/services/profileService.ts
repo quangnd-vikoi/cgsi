@@ -14,6 +14,8 @@ import type {
 	DonationCancelResponse,
 	ContactUsClientServiceResponse,
 	ContactUsCentralDealingDeskResponse,
+	UserAcknowledgementListResponse,
+	AcknowledgementDetailResponse,
 } from "@/types";
 import type { APIResponse } from "@/lib/api/types";
 
@@ -124,6 +126,21 @@ export const getUserMobile = async (): Promise<string | null> => {
 	return response.data?.mobileNo || null;
 };
 
+export const getAcknowledgementList =
+	async (): Promise<APIResponse<UserAcknowledgementListResponse>> => {
+		return await fetchAPI<UserAcknowledgementListResponse>(ENDPOINTS.acknowledgementList(), {
+			useAuth: true,
+		});
+	};
+
+export const getAcknowledgementDetail = async (
+	id: string
+): Promise<APIResponse<AcknowledgementDetailResponse>> => {
+	return await fetchAPI<AcknowledgementDetailResponse>(ENDPOINTS.acknowledgementDetail(id), {
+		useAuth: true,
+	});
+};
+
 export const profileService = {
 	getUserProfile,
 	getUserAccounts,
@@ -138,4 +155,6 @@ export const profileService = {
 	refreshUserProfile,
 	getUserEmail,
 	getUserMobile,
+	getAcknowledgementList,
+	getAcknowledgementDetail,
 };

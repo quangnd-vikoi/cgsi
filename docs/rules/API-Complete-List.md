@@ -1,6 +1,7 @@
 # CGSI iTrade Portal - Complete API List
 
 **Generated:** 2025-12-27
+**Last Updated:** 2026-01-14
 **Source:** All YAML and JSON files in `docs/swagger/`
 **Note:** ✅ = Implemented in codebase, ❌ = Not implemented
 
@@ -81,10 +82,10 @@
 
 | Status | Method | Endpoint | Auth | Source | Notes |
 |--------|--------|----------|------|--------|-------|
-| ❌ | GET | `/acknowledgement/user/list` | 🔒 | YAML only | Get user accepted acknowledgement list |
-| ❌ | GET | `/acknowledgement/user/details/{id}` | 🔒 | YAML only | Get user accepted acknowledgement detail |
+| ✅ | GET | `/acknowledgement/user/list` | 🔒 | YAML only | Get user accepted acknowledgement list |
+| ✅ | GET | `/acknowledgement/user/details/{id}` | 🔒 | YAML only | Get user accepted acknowledgement detail |
 
-**Status:** 0/2 acknowledgement endpoints implemented (0%)
+**Status:** 2/2 acknowledgement endpoints implemented (100%)
 
 ---
 
@@ -203,9 +204,28 @@
 | ✅ | GET | `/ecrs` | 🔒 | YAML only | Get SSO params for ECRS |
 | ✅ | GET | `/iscreener` | 🔒 | YAML only | Get SSO params for iScreener (⚠️ Never implemented) |
 
-**Implementation:** `lib/api/endpoints/externalSSO.ts`
+**Implementation:**
+- **Endpoints:** `lib/api/endpoints/externalSSO.ts`
+- **Service:** `lib/services/externalSSOService.ts`
+- **Legacy Service:** `lib/services/ssoService.ts` (backward compatibility)
+
 **Source:** `docs/swagger/iTrade-ExternalSSOAPI.yaml`
-**Status:** 8/8 endpoints implemented (100%) - but iScreener noted as never implemented in portal
+
+**Status:** 8/8 endpoints implemented (100%), 7/8 integrated in UI
+
+**UI Integration:**
+| System | Location | Component | Status |
+|--------|----------|-----------|--------|
+| NTP | Header "Trade Now" | `components/Header.tsx` | ✅ |
+| Research | - | - | ⚠️ Not in UI |
+| Stock Filter | Discover Page | `app/(with-layout)/discover/_components/StockResearch.tsx` | ✅ |
+| Corporate Action | Profile Sidebar | `app/(minimal)/sidebar/Profile.tsx` | ✅ |
+| eStatement | Profile Sidebar | `app/(minimal)/sidebar/Profile.tsx` | ✅ |
+| iScreener | Discover Page | `app/(with-layout)/discover/_components/StockResearch.tsx` | ✅ (⚠️ Backend not implemented) |
+| EW8 | Trading Declarations | `app/(minimal)/sidebar/TradingDeclartions.tsx` | ✅ |
+| ECRS | Trading Declarations | `app/(minimal)/sidebar/TradingDeclartions.tsx` | ✅ |
+
+**Documentation:** `docs/flows/externalsso-api-implementation-plan.md`
 
 ---
 
@@ -234,13 +254,13 @@
 | **Profile (Basic)** | 10 | 12 | 83% |
 | **Profile (SIP)** | 0 | 3 | 0% |
 | **Profile (Update Info)** | 0 | 6 | 0% |
-| **Profile (Acknowledgement)** | 0 | 2 | 0% |
+| **Profile (Acknowledgement)** | 2 | 2 | 100% |
 | **Subscription** | 7 | 7 | 100% |
 | **Notification** | 3 | 5 | 60% |
 | **Portfolio** | 0 | 10 | 0% ⚠️ |
 | **External SSO** | 8 | 8 | 100% |
 | **Content (Public)** | 5 | 5 | 100% |
-| **TOTAL** | **35** | **62** | **56%** |
+| **TOTAL** | **37** | **62** | **60%** |
 
 ---
 
@@ -276,10 +296,6 @@
    - Email sending endpoints
    - **Impact:** Cannot send system notifications via email
 
-6. **Profile Acknowledgement (0/2)**
-   - User acknowledgement management
-   - **Impact:** Cannot track user agreement acceptance
-
 ### Low Priority
 
 7. **Internal Token Validation (0/1)**
@@ -312,7 +328,7 @@
 ```
 lib/api/endpoints/
 ├── auth.ts           ✅ 2/4 endpoints (50%)
-├── profile.ts        ✅ 10/21 endpoints (48%)
+├── profile.ts        ✅ 12/21 endpoints (57%)
 ├── subscription.ts   ✅ 7/7 endpoints (100%)
 ├── notifications.ts  ✅ 3/5 endpoints (60%)
 ├── externalSSO.ts    ✅ 8/8 endpoints (100%)
@@ -337,7 +353,6 @@ lib/api/endpoints/
 2. **Extend Profile Endpoints** (`lib/api/endpoints/profile.ts`)
    - Add SIP endpoints (3)
    - Add update info endpoints (6)
-   - Add acknowledgement endpoints (2)
 
 3. **Complete SSO Endpoints** (`lib/api/endpoints/auth.ts`)
    - Add `/token/info` endpoint
