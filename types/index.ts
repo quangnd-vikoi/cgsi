@@ -376,3 +376,118 @@ export interface EW8SSOResponse {
 export interface ECRSSSOResponse {
 	redirectUrl: string;
 }
+
+// ============================================================================
+// Trading Info API Types (Trading Declarations)
+// ============================================================================
+
+// SIP (Sophisticated Investor Program) Info
+export interface ITradingInfoSIP {
+	toDisplay: boolean;
+	isPassed: boolean;
+	dueForSubmission: boolean;
+	lastSubmissionID: string | null;
+}
+
+// W8-BEN Info
+export interface ITradingInfoW8BEN {
+	toDisplay: boolean;
+	isJointAcct: boolean;
+	expireDate: string | null;
+}
+
+// CRS Info
+export interface ITradingInfoCRS {
+	certified: boolean;
+	isJointAcct: boolean;
+	validationDate: string | null;
+}
+
+// BCAN Info
+export interface ITradingInfoBCAN {
+	toDisplay: boolean;
+	requestStatus: string | null;
+}
+
+// Trading Info Response (GET /profile/api/v1/tradingInfo)
+export interface TradingInfoResponse {
+	sip: ITradingInfoSIP;
+	w8ben: ITradingInfoW8BEN;
+	crs: ITradingInfoCRS;
+	bcan: ITradingInfoBCAN;
+}
+
+// ============================================================================
+// Acknowledgement API Types
+// ============================================================================
+
+// Acknowledgement Item (individual agreement)
+export interface IAcknowledgementItem {
+	agreementId: string;
+	title: string;
+	versionNo: number;
+	acceptedOn: string; // ISO date format (YYYY-MM-DD)
+}
+
+// User Acknowledgement List Response
+export interface UserAcknowledgementListResponse {
+	textBase: IAcknowledgementItem[];
+	onlineBase: IAcknowledgementItem[];
+	interactiveBase: IAcknowledgementItem[];
+	pdfBase: IAcknowledgementItem[];
+}
+
+// Acknowledgement Detail Response
+export interface AcknowledgementDetailResponse {
+	title: string;
+	versionNo: number;
+	acceptedOn: string; // ISO date format
+	htmlContent?: string;
+	url?: string;
+}
+
+// ============================================================================
+// Update Info API Types
+// ============================================================================
+
+// Mobile OTP Request/Response
+export interface MobileOtpRequest {
+	mobileNumber: string; // Pattern: ^(?=.{1,16}$)\+?\d{1,4}-\d+$
+}
+
+export interface MobileOtpResponse {
+	transactionId: string;
+}
+
+// Email OTP Request/Response
+export interface EmailOtpRequest {
+	email: string; // maxLength: 64
+}
+
+export interface EmailOtpResponse {
+	transactionId: string;
+}
+
+// Mobile/Email Submit Request/Response (shared)
+export interface UpdateSubmitRequest {
+	transactionId: string;
+	otp: string; // Pattern: ^\d{6}$
+}
+
+export interface UpdateSubmitResponse {
+	isSuccess: boolean;
+}
+
+// Signature Upload Response
+export interface SignatureUploadResponse {
+	transactionId: string;
+}
+
+// Signature Submit Request/Response
+export interface SignatureSubmitRequest {
+	transactionId: string;
+}
+
+export interface SignatureSubmitResponse {
+	isSuccess: boolean;
+}

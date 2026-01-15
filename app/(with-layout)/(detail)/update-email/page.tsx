@@ -13,6 +13,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
+import { sendEmailOtp, submitEmailUpdate } from "@/lib/services/profileService";
 
 const InputStep = ({
 	newEmail,
@@ -20,15 +21,17 @@ const InputStep = ({
 	error,
 	setError,
 	onContinue,
+	isSubmitting,
 }: {
 	newEmail: string;
 	setNewEmail: (value: string) => void;
 	error: string;
 	setError: (value: string) => void;
 	onContinue: () => void;
+	isSubmitting: boolean;
 }) => {
 	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === "Enter") {
+		if (e.key === "Enter" && !isSubmitting) {
 			onContinue();
 		}
 	};
@@ -51,6 +54,7 @@ const InputStep = ({
 				className="focus-visible:!border-b-enhanced-blue focus-visible:!border-b focus:bg-background-selected"
 				type="email"
 				error={error}
+				disabled={isSubmitting}
 			/>
 		</div>
 	);
@@ -62,12 +66,16 @@ const OTPStep = ({
 	error,
 	setOtp,
 	setStep,
+	onResend,
+	isSubmitting,
 }: {
 	email: string;
 	otp: string;
 	error: string;
 	setOtp: (value: string) => void;
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
+	onResend: () => void;
+	isSubmitting: boolean;
 }) => {
 	const { formattedTime, isActive, reset } = useOTPCountdown({
 		initialSeconds: 120,
@@ -80,8 +88,7 @@ const OTPStep = ({
 
 	const handleResendCode = () => {
 		reset();
-		// TODO: Implement actual resend OTP API call
-		toast.success("OTP Resent", "A new OTP code has been sent to your email.");
+		onResend();
 	};
 
 	return (
@@ -96,10 +103,10 @@ const OTPStep = ({
 				className="mb-6 text-enhanced-blue cursor-pointer text-sm font-normal mt-1"
 				onClick={() => setStep(1)}
 			>
-				Change Number?
+				Change Email?
 			</p>
 
-			<InputOTP maxLength={6} value={otp} onChange={handleChange}>
+			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting}>
 				<InputOTPGroup className="justify-between w-full">
 					<InputOTPSlot index={0} error={error} />
 					<InputOTPSlot index={1} error={error} />
@@ -148,6 +155,8 @@ const UpdateEmail = () => {
 	const [newEmail, setNewEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
+	const [transactionId, setTransactionId] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Validate email format
 	const isValidEmail = (email: string) => {
@@ -156,7 +165,7 @@ const UpdateEmail = () => {
 	};
 
 	// Handle form submission for step 1
-	const handleStep1Continue = () => {
+	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!newEmail.trim()) {
 			setError("Email cannot be empty");
@@ -175,21 +184,52 @@ const UpdateEmail = () => {
 			return;
 		}
 
-		// Move to OTP step
-		setStep(2);
+		setIsSubmitting(true);
+		setError("");
+
+		const response = await sendEmailOtp(newEmail);
+
+		setIsSubmitting(false);
+
+		if (response.success && response.data) {
+			setTransactionId(response.data.transactionId);
+			setStep(2);
+		} else {
+			toast.error("Failed to send OTP", response.error || "Please try again later.");
+		}
+	};
+
+	// Handle resend OTP
+	const handleResendOtp = async () => {
+		const response = await sendEmailOtp(newEmail);
+
+		if (response.success && response.data) {
+			setTransactionId(response.data.transactionId);
+			toast.success("OTP Resent", "A new OTP code has been sent to your email.");
+		} else {
+			toast.error("Failed to resend OTP", response.error || "Please try again later.");
+		}
 	};
 
 	// Handle continue for step 2
-	const handleStep2Continue = () => {
-		if (otp.length === 6) {
-			// TODO: Verify OTP with backend
-			// Simulate API call failure
-			toast.error("Failed to send Email OTP", "Please check your internet connection and try again.");
-
-			// Move to error step
-			setStep(3);
+	const handleStep2Continue = async () => {
+		if (otp.length !== 6) {
+			setError("Please enter the 6-digit OTP code");
+			return;
 		}
-		setError("Field cannot be empty");
+
+		setIsSubmitting(true);
+		setError("");
+
+		const response = await submitEmailUpdate(transactionId, otp);
+
+		setIsSubmitting(false);
+
+		if (response.success && response.data?.isSuccess) {
+			setStep(3);
+		} else {
+			setError(response.error || "Invalid OTP. Please try again.");
+		}
 	};
 
 	// Handle continue button click
@@ -229,23 +269,36 @@ const UpdateEmail = () => {
 						error={error}
 						setError={setError}
 						onContinue={handleStep1Continue}
+						isSubmitting={isSubmitting}
 					/>
 				)}
 
 				{step === 2 && (
-					<OTPStep email={newEmail} otp={otp} setOtp={setOtp} setStep={setStep} error={error} />
+					<OTPStep
+						email={newEmail}
+						otp={otp}
+						setOtp={setOtp}
+						setStep={setStep}
+						error={error}
+						onResend={handleResendOtp}
+						isSubmitting={isSubmitting}
+					/>
 				)}
 
 				{step === 3 && <ConfirmStep />}
 				<div className="">
 					{step === 2 && (
 						<div className="rounded-full bg-theme-blue-085 text-xs w-fit mx-auto mb-4 px-4 py-2 shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] text-theme-blue-03">
-							{`SMS OTP has been sent to ${newEmail}`}
+							{`OTP has been sent to ${newEmail}`}
 						</div>
 					)}
 					<div className="pad-x py-4 border-t w-full relative">
-						<Button className="w-full text-base font-normal" onClick={handleContinue}>
-							{step === 3 ? "Back to Home" : "Continue"}
+						<Button
+							className="w-full text-base font-normal"
+							onClick={handleContinue}
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>
 					</div>
 				</div>

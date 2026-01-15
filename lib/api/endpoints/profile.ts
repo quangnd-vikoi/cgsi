@@ -76,6 +76,22 @@ export const profileEndpoints = {
 	accounts: () => `/profile/api/v1/accounts`,
 
 	/**
+	 * Get User Trading Info (Trading Declarations)
+	 *
+	 * GET /profile/api/v1/tradingInfo
+	 *
+	 * @returns TradingInfoResponse - Trading declarations status (SIP, W8-BEN, CRS, BCAN)
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<TradingInfoResponse>(
+	 *   ENDPOINTS.tradingInfo(),
+	 *   { useAuth: true }
+	 * );
+	 */
+	tradingInfo: () => `/profile/api/v1/tradingInfo`,
+
+	/**
 	 * Create BCAN Request
 	 *
 	 * POST /profile/api/v1/tradingInfo/bcan/request
@@ -181,4 +197,153 @@ export const profileEndpoints = {
 	 * );
 	 */
 	contactUsCentralDealingDesk: () => `/profile/api/v1/contactUs/centralDealingDesk`,
+
+	/**
+	 * Get User Acknowledgement List
+	 *
+	 * GET /profile/api/v1/acknowledgement/user/list
+	 *
+	 * @returns UserAcknowledgementListResponse - User's accepted acknowledgements grouped by type
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<UserAcknowledgementListResponse>(
+	 *   ENDPOINTS.acknowledgementList(),
+	 *   { useAuth: true }
+	 * );
+	 */
+	acknowledgementList: () => `/profile/api/v1/acknowledgement/user/list`,
+
+	/**
+	 * Get User Acknowledgement Detail
+	 *
+	 * GET /profile/api/v1/acknowledgement/user/details/{id}
+	 *
+	 * @param id - Agreement ID
+	 * @returns AcknowledgementDetailResponse - Detailed acknowledgement information
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<AcknowledgementDetailResponse>(
+	 *   ENDPOINTS.acknowledgementDetail("8a1ba0813b3b8b4b013b4eb83b170e9e"),
+	 *   { useAuth: true }
+	 * );
+	 */
+	acknowledgementDetail: (id: string) => `/profile/api/v1/acknowledgement/user/details/${id}`,
+
+	// ============================================================================
+	// Update Info Endpoints
+	// ============================================================================
+
+	/**
+	 * Send OTP to New Mobile Number
+	 *
+	 * POST /profile/api/v1/update/mobile/otp
+	 *
+	 * @param body - MobileOtpRequest with mobileNumber
+	 * @returns MobileOtpResponse - Transaction ID for verification
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await postAPI<MobileOtpResponse, MobileOtpRequest>(
+	 *   ENDPOINTS.updateMobileOtp(),
+	 *   { mobileNumber: "+65-12345678" },
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateMobileOtp: () => `/profile/api/v1/update/mobile/otp`,
+
+	/**
+	 * Submit Mobile Number Update
+	 *
+	 * POST /profile/api/v1/update/mobile/submit
+	 *
+	 * @param body - UpdateSubmitRequest with transactionId and otp
+	 * @returns UpdateSubmitResponse - Success status
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await postAPI<UpdateSubmitResponse, UpdateSubmitRequest>(
+	 *   ENDPOINTS.updateMobileSubmit(),
+	 *   { transactionId: "...", otp: "123456" },
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateMobileSubmit: () => `/profile/api/v1/update/mobile/submit`,
+
+	/**
+	 * Send OTP to New Email Address
+	 *
+	 * POST /profile/api/v1/update/email/otp
+	 *
+	 * @param body - EmailOtpRequest with email
+	 * @returns EmailOtpResponse - Transaction ID for verification
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await postAPI<EmailOtpResponse, EmailOtpRequest>(
+	 *   ENDPOINTS.updateEmailOtp(),
+	 *   { email: "new@example.com" },
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateEmailOtp: () => `/profile/api/v1/update/email/otp`,
+
+	/**
+	 * Submit Email Address Update
+	 *
+	 * POST /profile/api/v1/update/email/submit
+	 *
+	 * @param body - UpdateSubmitRequest with transactionId and otp
+	 * @returns UpdateSubmitResponse - Success status
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await postAPI<UpdateSubmitResponse, UpdateSubmitRequest>(
+	 *   ENDPOINTS.updateEmailSubmit(),
+	 *   { transactionId: "...", otp: "123456" },
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateEmailSubmit: () => `/profile/api/v1/update/email/submit`,
+
+	/**
+	 * Upload Signature File
+	 *
+	 * POST /profile/api/v1/update/signature/upload
+	 *
+	 * @param body - FormData with file (binary) and metadata (string)
+	 * @returns SignatureUploadResponse - Transaction ID for submission
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const formData = new FormData();
+	 * formData.append("file", file);
+	 * formData.append("metadata", JSON.stringify({ type: "signature" }));
+	 * const response = await postFormData<SignatureUploadResponse>(
+	 *   ENDPOINTS.updateSignatureUpload(),
+	 *   formData,
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateSignatureUpload: () => `/profile/api/v1/update/signature/upload`,
+
+	/**
+	 * Submit Signature Update
+	 *
+	 * POST /profile/api/v1/update/singnature/submit
+	 * Note: Typo in spec ("singnature" instead of "signature")
+	 *
+	 * @param body - SignatureSubmitRequest with transactionId
+	 * @returns SignatureSubmitResponse - Success status
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await postAPI<SignatureSubmitResponse, SignatureSubmitRequest>(
+	 *   ENDPOINTS.updateSignatureSubmit(),
+	 *   { transactionId: "..." },
+	 *   { useAuth: true }
+	 * );
+	 */
+	updateSignatureSubmit: () => `/profile/api/v1/update/singnature/submit`,
 } as const;

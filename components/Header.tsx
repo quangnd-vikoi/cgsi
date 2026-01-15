@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Grip } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { redirectToNTP } from "@/lib/services/ssoService";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -19,7 +20,7 @@ import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { SheetType } from "@/types";
-import { INTERNAL_ROUTES } from "@/constants/routes";
+import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
@@ -118,17 +119,9 @@ const Header = () => {
 	const unreadCount = useNotificationStore((state) => state.unreadCount);
 	const pathName = usePathname();
 
-	const handleTradeNowClick = () => {
-		const width = 1370;
-		const height = 695;
-		const left = Math.round((window.screen.availWidth - width) / 4);
-		const top = Math.round((window.screen.availHeight - height) / 5);
-
-		window.open(
-			"/images/events/temp_tradenow.png",
-			"TradeNow",
-			`width=${width},height=${height},screenX=${left},screenY=${top},resizable=yes,scrollbars=yes`
-		);
+	const handleTradeNowClick = async () => {
+		// await redirectToNTP();
+		window.open(CGSI.TRADE, "_blank");
 	};
 
 	const isIconFill = !["/", "/discover", "/portfolio"].includes(pathName);

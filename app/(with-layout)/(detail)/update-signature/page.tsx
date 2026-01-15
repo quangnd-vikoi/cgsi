@@ -15,6 +15,8 @@ import Image from "@/components/Image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorState } from "@/components/ErrorState";
+import { toast } from "@/components/ui/toaster";
+import { uploadSignature, submitSignatureUpdate } from "@/lib/services/profileService";
 
 const UpdateSignature = () => {
 	const router = useRouter();
@@ -24,6 +26,7 @@ const UpdateSignature = () => {
 	const [tab, setTab] = useState<"draw" | "upload">("draw");
 	const { value, setTrue, toggle } = useToggle();
 	const [status, setStatus] = useState<"update" | "success" | "failed">("update");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	useEffect(() => {
 		if (showToast != "") {
@@ -45,14 +48,14 @@ const UpdateSignature = () => {
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
-			// Kiểm tra size
+			// Check size
 			if (file.size > 5 * 1024 * 1024) {
 				setError("File size exceed 5MB");
 				return;
 			}
 			setSelectedFile(file);
 
-			// Tạo preview nếu là image
+			// Create preview if image
 			if (file.type.startsWith("image/")) {
 				const reader = new FileReader();
 				reader.onloadend = () => {
@@ -63,7 +66,7 @@ const UpdateSignature = () => {
 				setPreviewUrl(null);
 			}
 
-			// Simulate upload progress
+			// Simulate upload progress (visual only)
 			simulateUpload();
 		}
 	};
@@ -84,6 +87,7 @@ const UpdateSignature = () => {
 	const removeFile = () => {
 		setSelectedFile(null);
 		setUploadProgress(0);
+		setPreviewUrl(null);
 	};
 
 	const formatFileSize = (bytes: number) => {
@@ -106,28 +110,84 @@ const UpdateSignature = () => {
 			}
 		} else {
 			setSelectedFile(null);
+			setPreviewUrl(null);
+			setUploadProgress(0);
 			setShowToast("Uploaded file has been cleared");
 		}
 	};
 
-	const handleSubmit = () => {
+	// Convert canvas to File
+	const canvasToFile = async (): Promise<File | null> => {
+		if (!sigCanvas.current) return null;
+
+		return new Promise((resolve) => {
+			const canvas = sigCanvas.current?.getCanvas();
+			if (!canvas) {
+				resolve(null);
+				return;
+			}
+
+			canvas.toBlob((blob) => {
+				if (blob) {
+					const file = new File([blob], "signature.png", { type: "image/png" });
+					resolve(file);
+				} else {
+					resolve(null);
+				}
+			}, "image/png");
+		});
+	};
+
+	const handleSubmit = async () => {
 		setError("");
+
+		let fileToUpload: File | null = null;
+
 		if (tab == "draw") {
 			if (!sigCanvas.current) return;
 
 			if (sigCanvas.current.isEmpty()) {
 				setError("Field cannot be empty");
-			} else {
-				setError("");
-				sigCanvas.current.toDataURL();
-				setStatus("success");
+				return;
+			}
+
+			// Convert canvas to file
+			fileToUpload = await canvasToFile();
+			if (!fileToUpload) {
+				setError("Failed to process signature");
+				return;
 			}
 		} else {
 			if (!selectedFile) {
 				setError("File cannot be empty");
+				return;
 			}
+			fileToUpload = selectedFile;
+		}
 
+		setIsSubmitting(true);
+
+		// Step 1: Upload the file
+		const uploadResponse = await uploadSignature(
+			fileToUpload,
+			JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
+		);
+
+		if (!uploadResponse.success || !uploadResponse.data) {
+			setIsSubmitting(false);
+			toast.error("Upload failed", uploadResponse.error || "Please try again later.");
+			return;
+		}
+
+		// Step 2: Submit the signature update
+		const submitResponse = await submitSignatureUpdate(uploadResponse.data.transactionId);
+
+		setIsSubmitting(false);
+
+		if (submitResponse.success && submitResponse.data?.isSuccess) {
 			setStatus("success");
+		} else {
+			toast.error("Update failed", submitResponse.error || "Please try again later.");
 		}
 	};
 
@@ -338,7 +398,7 @@ const UpdateSignature = () => {
 					<ErrorState
 						type="success"
 						title="Signature Updated"
-						description="Your signature will be stored securely but won’t be visible after upload."
+						description="Your signature will be stored securely but won't be visible after upload."
 						className="m-auto px-4"
 					/>
 				)}
@@ -355,11 +415,16 @@ const UpdateSignature = () => {
 							<Button
 								className="w-1/2 text-base font-normal bg-transparent border-none text-enhanced-blue hover:border-enhanced-blue/75 hover:bg-transparent hover:text-enhanced-blue/75"
 								onClick={() => handleClear()}
+								disabled={isSubmitting}
 							>
 								Clear
 							</Button>
-							<Button className="w-1/2 text-base font-normal" onClick={() => handleSubmit()}>
-								Submit
+							<Button
+								className="w-1/2 text-base font-normal"
+								onClick={() => handleSubmit()}
+								disabled={isSubmitting}
+							>
+								{isSubmitting ? "Submitting..." : "Submit"}
 							</Button>
 						</div>
 					</div>
