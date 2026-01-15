@@ -255,7 +255,7 @@ const MySubscriptions = () => {
 
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <button className="text-icon-light hover:text-icon-light/75 data-[state=open]:text-enhanced-blue shrink-0">
+                                                    <button className="text-icon-light hover:text-icon-light/75 data-[state=open]:text-cgs-blue shrink-0">
                                                         <EllipsisVertical size={20} />
                                                     </button>
                                                 </DropdownMenuTrigger>

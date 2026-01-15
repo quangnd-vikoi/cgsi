@@ -36,13 +36,13 @@ export default function Layout({ children }: LayoutProps) {
 							<div className="flex justify-between items-center mb-1.5">
 								<div className="flex items-center gap-2">
 									<ChevronLeft
-										className="inline-block cursor-pointer md:hidden hover:text-enhanced-blue transition-colors"
+										className="inline-block cursor-pointer md:hidden hover:text-cgs-blue transition-colors"
 										onClick={handleBackToSidebar}
 									/>
 									<p className="text-base font-semibold">Details</p>
 								</div>
 								<X
-									className="cursor-pointer hover:text-enhanced-blue transition-colors"
+									className="cursor-pointer hover:text-cgs-blue transition-colors"
 									onClick={handleBackToSidebar}
 								/>
 							</div>

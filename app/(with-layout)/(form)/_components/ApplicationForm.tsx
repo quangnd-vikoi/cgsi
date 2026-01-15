@@ -242,7 +242,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	return (
 		<Dialog open={dialogOpen} onOpenChange={(open) => !isSubmitting && setDialogOpen(open)}>
 			<DialogTrigger asChild>
-				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
+				<Button className="bg-primary hover:bg-cgs-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
 			<DialogContent
 				className="p-0 gap-0 w-[346px] md:w-[530px] rounded"
@@ -372,7 +372,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								disabled={quantity === "" || currentQuantity <= FORM_CONFIG.minQuantity}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Minus className="w-4 h-4" />
 							</Button>
@@ -391,7 +391,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Plus className="w-4 h-4" />
 							</Button>
@@ -449,7 +449,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									abide by the underlying{" "}
 									<a
 										href="#"
-										className="inline text-enhanced-blue hover:underline font-medium"
+										className="inline text-cgs-blue hover:underline font-medium"
 									>
 										Terms & Conditions
 									</a>
@@ -470,7 +470,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}
-						className="bg-enhanced-blue hover:bg-enhanced-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isSubmitting ? (
 							<>

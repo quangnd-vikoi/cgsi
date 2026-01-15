@@ -51,7 +51,7 @@ const InputStep = ({
 				value={newEmail}
 				onChange={handleEmailChange}
 				onKeyPress={handleKeyPress}
-				className="focus-visible:!border-b-enhanced-blue focus-visible:!border-b focus:bg-background-selected"
+				className="focus-visible:!border-b-cgs-blue focus-visible:!border-b focus:bg-background-selected"
 				type="email"
 				error={error}
 				disabled={isSubmitting}
@@ -100,7 +100,7 @@ const OTPStep = ({
 			</p>
 
 			<p
-				className="mb-6 text-enhanced-blue cursor-pointer text-sm font-normal mt-1"
+				className="mb-6 text-cgs-blue cursor-pointer text-sm font-normal mt-1"
 				onClick={() => setStep(1)}
 			>
 				Change Email?
@@ -128,7 +128,7 @@ const OTPStep = ({
 				{isActive ? (
 					<>Resend in : {formattedTime}</>
 				) : (
-					<span className="text-enhanced-blue cursor-pointer" onClick={handleResendCode}>
+					<span className="text-cgs-blue cursor-pointer" onClick={handleResendCode}>
 						Resend Code
 					</span>
 				)}

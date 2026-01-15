@@ -135,7 +135,7 @@ export default function Sidebar() {
 								className={cn(
 									"rounded border p-4 shadow-sm relative",
 									selectedId === etf.id
-										? "border-enhanced-blue"
+										? "border-cgs-blue"
 										: "border-stroke-secondary",
 									etf.isCompact ? "bg-theme-neutral-095" : "bg-white"
 								)}
@@ -163,17 +163,17 @@ export default function Sidebar() {
 									</div>
 									<Button
 										className={cn(
-											"gap-1 px-3 h-6 border border-enhanced-blue text-xs rounded-4xl flex items-center leading-2",
+											"gap-1 px-3 h-6 border border-cgs-blue text-xs rounded-4xl flex items-center leading-2",
 											selectedId === etf.id
-												? "bg-enhanced-blue text-white"
-												: "bg-transparent text-enhanced-blue hover:bg-transparent hover:opacity-75 transition-colors "
+												? "bg-cgs-blue text-white"
+												: "bg-transparent text-cgs-blue hover:bg-transparent hover:opacity-75 transition-colors "
 										)}
 										onClick={() => setSelectedItem(etf)}
 									>
 										{selectedId === etf.id && <Check className="text-sm" />}
 										Details
 										{selectedId !== etf.id && (
-											<ArrowRight className="text-sm text-enhanced-blue" />
+											<ArrowRight className="text-sm text-cgs-blue" />
 										)}
 									</Button>
 								</div>

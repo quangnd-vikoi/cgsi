@@ -36,7 +36,7 @@ const Contact = () => {
 				{contactOptions.map((option, index) => (
 					<div
 						key={index}
-						className="border border-stroke-secondary rounded-lg shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] hover:border-enhanced-blue transition-colors cursor-pointer"
+						className="border border-stroke-secondary rounded-lg shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] hover:border-cgs-blue transition-colors cursor-pointer"
 					>
 						<div className="p-4">
 							<div className="flex items-start justify-between">
@@ -53,7 +53,7 @@ const Contact = () => {
 
 										<ChevronRight
 											onClick={() => setOpenSheet(option.sheet)}
-											className="w-5 h-5 text-enhanced-blue flex-shrink-0 ml-2 mt-1"
+											className="w-5 h-5 text-cgs-blue flex-shrink-0 ml-2 mt-1"
 										/>
 									</div>
 									{option.available && (

@@ -45,7 +45,7 @@
 	--color-typo-secondary: var(--typo-secondary);
 	--color-typo-tertiary: var(--typo-tertiary);
 	--breakpoint-xs: 375px;
-	--color-enhanced-blue: var(--enhanced-blue);
+	--color-cgs-blue: var(--cgs-blue);
 	--color-stroke-primary: var(--stroke-primary);
 	--color-stroke-secondary: var(--stroke-secondary);
 	--color-status-selected: var(--status-selected);
@@ -118,7 +118,7 @@
 	--typo-primary: #242629;
 	--typo-secondary: #4b5563;
 	--typo-tertiary: #8492a2;
-	--enhanced-blue: #006ceb;
+	--cgs-blue: #003A8C;
 	--stroke-primary: #bac3d1;
 	--stroke-secondary: #dde4ec;
 	--status-selected: #eaf1ff;

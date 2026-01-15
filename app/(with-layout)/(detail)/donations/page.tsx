@@ -22,7 +22,7 @@ const Donations = () => {
 					rightContent={
 						<Dialog>
 							<DialogTrigger asChild>
-								<p className="px-3 text-enhanced-blue text-xs font-medium cursor-pointer hover:opacity-50">
+								<p className="px-3 text-cgs-blue text-xs font-medium cursor-pointer hover:opacity-50">
 									Learn More
 								</p>
 							</DialogTrigger>

@@ -72,7 +72,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 
                             <ChevronRight
                                 size={16}
-                                className="text-typo-tertiary group-hover:text-enhanced-blue transition-colors"
+                                className="text-typo-tertiary group-hover:text-cgs-blue transition-colors"
                             />
                         </button>
                     ))}

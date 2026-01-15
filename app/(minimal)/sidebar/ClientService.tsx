@@ -95,7 +95,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCopy(businessInfo.callCentreNumber)}
 							>
-								<Copy size={16} className="text-enhanced-blue" />
+								<Copy size={16} className="text-cgs-blue" />
 							</Button>
 							<Button
 								variant="ghost"
@@ -103,7 +103,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCall(businessInfo.callCentreNumber)}
 							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
+								<CircleArrowRight size={16} className="text-cgs-blue" />
 							</Button>
 						</div>
 					</div>
@@ -121,7 +121,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCopy(businessInfo.callCentreEmailAddress)}
 							>
-								<Copy size={16} className="text-enhanced-blue" />
+								<Copy size={16} className="text-cgs-blue" />
 							</Button>
 							<Button
 								variant="ghost"
@@ -129,7 +129,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleEmail(businessInfo.callCentreEmailAddress)}
 							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
+								<CircleArrowRight size={16} className="text-cgs-blue" />
 							</Button>
 						</div>
 					</div>
@@ -147,7 +147,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCopy(businessInfo.companyAddress)}
 							>
-								<Copy size={16} className="text-enhanced-blue" />
+								<Copy size={16} className="text-cgs-blue" />
 							</Button>
 							<Button
 								variant="ghost"
@@ -155,7 +155,7 @@ const ClientServices = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleOpenMap(businessInfo.companyAddress)}
 							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
+								<CircleArrowRight size={16} className="text-cgs-blue" />
 							</Button>
 						</div>
 					</div>

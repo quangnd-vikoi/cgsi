@@ -90,21 +90,21 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                 <div className="border border-stroke-secondary p-4 rounded-lg">
                     <div className="flex justify-between items-center">
                         <p className="text-sm">General T&C</p>
-                        <ChevronRight size={16} className="text-enhanced-blue cursor-pointer shrink-0" />
+                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
                     </div>
 
                     <Separator className="my-4" />
 
                     <div className="flex justify-between items-center">
                         <p className="text-sm">SGX L2 Market Depth Campaign T&C</p>
-                        <ChevronRight size={16} className="text-enhanced-blue cursor-pointer shrink-0" />
+                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
                     </div>
 
                     <Separator className="my-4" />
 
                     <div className="flex justify-between items-center">
                         <p className="text-sm">US Real-Time Market Data Online Agreement</p>
-                        <ChevronRight size={16} className="text-enhanced-blue cursor-pointer shrink-0" />
+                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
                     </div>
                 </div>
 

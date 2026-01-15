@@ -18,12 +18,12 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 			<DropdownMenuItem
 				className={cn(
 					"cursor-pointer px-3 py-[10px]",
-					isActive ? "text-enhanced-blue bg-status-selected" : "hover:bg-background-focus"
+					isActive ? "text-cgs-blue bg-status-selected" : "hover:bg-background-focus"
 				)}
 			>
 				<div className="flex justify-between items-center w-full">
 					{title}
-					{isActive && <CircleCheck className="text-enhanced-blue h-4 w-4" />}
+					{isActive && <CircleCheck className="text-cgs-blue h-4 w-4" />}
 				</div>
 			</DropdownMenuItem>
 		</Link>
@@ -43,7 +43,7 @@ const Navigation = () => {
 				<div className="font-semibold text-lg">{title}</div>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<ChevronDown className="text-enhanced-blue cursor-pointer" />
+						<ChevronDown className="text-cgs-blue cursor-pointer" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent className="w-64 px-0 py-2" align="start">
 						<MenuItem title="Securities" link={INTERNAL_ROUTES.SECURITIES} />
@@ -69,7 +69,7 @@ const Navigation = () => {
 
 				<Button
 					onClick={() => router.push(INTERNAL_ROUTES.MYAPPLICATION)}
-					className="h-fit md:h-8 border border-enhanced-blue text-enhanced-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 font-medium transition-colors "
+					className="h-fit md:h-8 border border-cgs-blue text-cgs-blue rounded-sm px-2 md:px-3 py-1 md:py-1.5 text-sm bg-transparent hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 font-medium transition-colors "
 				>
 					<Archive />
 					<p className="leading-4">My Applications</p>

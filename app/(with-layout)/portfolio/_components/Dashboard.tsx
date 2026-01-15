@@ -42,14 +42,14 @@ const DashboardBlock = ({ title, amount, type = 'normal', showPayButton = false,
     }
 
     return (
-        <div className='bg-background-selected p-3 md:p-4 rounded-lg border border-background-selected hover:border-enhanced-blue transition-colors cursor-pointer'>
+        <div className='bg-background-selected p-3 md:p-4 rounded-lg border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer'>
             <p className='text-xs md:text-sm text-typo-secondary'>{title}</p>
             <div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
                 <p className={`font-semibold ${getTextColor()}`}>{amount}</p>
                 {showPayButton && (
                     <Button
                         size="sm"
-                        className='hidden md:block bg-enhanced-blue hover:bg-enhanced-blue/90 rounded text-xs px-3 h-6'
+                        className='hidden md:block bg-cgs-blue hover:bg-cgs-blue/90 rounded text-xs px-3 h-6'
                         onClick={onPay}
                     >
                         Pay
@@ -234,7 +234,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 
                 type === "CTA" &&
                 <div className='flex w-full justify-end'>
-                    <Link href={INTERNAL_ROUTES.SETTLE} className="flex text-enhanced-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-enhanced-blue/75">
+                    <Link href={INTERNAL_ROUTES.SETTLE} className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75">
                         <p>View Contracts & Contra</p>
                         <ChevronRight className="inline-block ml-0.5" size={16} />
                     </Link>
@@ -243,7 +243,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
             {
                 ["SBL", "MTA"].includes(type) &&
                 <div className='flex w-full justify-end'>
-                    <Button variant={'ghost'} className="flex text-enhanced-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-enhanced-blue/75 hover:bg-transparent">
+                    <Button variant={'ghost'} className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75 hover:bg-transparent">
                         <p>Fund Account</p>
                         <ChevronRight className="inline-block ml-0.5" size={16} />
                     </Button>

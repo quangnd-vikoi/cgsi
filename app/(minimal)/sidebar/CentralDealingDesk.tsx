@@ -87,7 +87,7 @@ const CentralDealingDesk = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCopy(businessInfo.centralDealingNumber)}
 							>
-								<Copy size={16} className="text-enhanced-blue" />
+								<Copy size={16} className="text-cgs-blue" />
 							</Button>
 							<Button
 								variant="ghost"
@@ -95,7 +95,7 @@ const CentralDealingDesk = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCall(businessInfo.centralDealingNumber)}
 							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
+								<CircleArrowRight size={16} className="text-cgs-blue" />
 							</Button>
 						</div>
 					</div>
@@ -113,7 +113,7 @@ const CentralDealingDesk = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleCopy(businessInfo.companyAddress)}
 							>
-								<Copy size={16} className="text-enhanced-blue" />
+								<Copy size={16} className="text-cgs-blue" />
 							</Button>
 							<Button
 								variant="ghost"
@@ -121,7 +121,7 @@ const CentralDealingDesk = () => {
 								className="h-5 w-5 hover:bg-transparent"
 								onClick={() => handleOpenMap(businessInfo.companyAddress)}
 							>
-								<CircleArrowRight size={16} className="text-enhanced-blue" />
+								<CircleArrowRight size={16} className="text-cgs-blue" />
 							</Button>
 						</div>
 					</div>

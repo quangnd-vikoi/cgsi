@@ -121,17 +121,17 @@ const TradingAccounts = () => {
 								<div className="flex gap-2 items-center mt-1">
 									<p className="text-lg font-semibold">{acc.accountNo}</p>
 									<Copy
-										className="text-enhanced-blue cursor-pointer hover:text-enhanced-blue"
+										className="text-cgs-blue cursor-pointer hover:text-cgs-blue"
 										size={16}
 									/>
 								</div>
 							</div>
 							<Button
 								onClick={() => handleDetailsClick(acc.accountNo)}
-								className="gap-1 px-2.5 h-6 border border-enhanced-blue text-xs rounded-full flex items-center leading-2 bg-white text-enhanced-blue hover:bg-enhanced-blue hover:text-white group"
+								className="gap-1 px-2.5 h-6 border border-cgs-blue text-xs rounded-full flex items-center leading-2 bg-white text-cgs-blue hover:bg-cgs-blue hover:text-white group"
 							>
 								Details
-								<ArrowRight className="text-enhanced-blue group-hover:text-white" size={14} />
+								<ArrowRight className="text-cgs-blue group-hover:text-white" size={14} />
 							</Button>
 						</div>
 						<div className="flex justify-between mt-6 text-xs">

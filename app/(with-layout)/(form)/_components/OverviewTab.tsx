@@ -283,7 +283,7 @@ const OverviewTab = () => {
 										<div
 											className={`absolute left-[9px] top-5 w-0.5 ${isNextComing
 													? "border-l-2 border-dashed border-status-disable-primary bg-transparent"
-													: "bg-enhanced-blue"
+													: "bg-cgs-blue"
 												}`}
 											style={{ height: "calc(100% + 20px)" }}
 										></div>
@@ -293,9 +293,9 @@ const OverviewTab = () => {
 										<div className="flex items-center gap-2">
 											<div
 												className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 ${item.status === "completed"
-														? "bg-enhanced-blue border-enhanced-blue"
+														? "bg-cgs-blue border-cgs-blue"
 														: item.status === "active"
-															? "bg-white border-enhanced-blue"
+															? "bg-white border-cgs-blue"
 															: "bg-white border-status-disable-primary"
 													}`}
 											>
@@ -304,7 +304,7 @@ const OverviewTab = () => {
 												) : item.status === "active" ? (
 													<Dot
 														strokeWidth={10}
-														className="w-5 h-5 text-enhanced-blue"
+														className="w-5 h-5 text-cgs-blue"
 													/>
 												) : (
 													<Check className="w-5 h-5 text-status-disable-primary" />

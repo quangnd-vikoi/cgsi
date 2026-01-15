@@ -132,12 +132,12 @@ const RecurringForm = () => {
 				<div className="space-y-1.5">
 					<Dialog open={open} onOpenChange={setOpen}>
 						<DialogTrigger asChild>
-							<div className="border border-dashed border-enhanced-blue bg-background-section rounded-lg w-full py-4 flex flex-col items-center justify-center gap-1.5 shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer">
+							<div className="border border-dashed border-cgs-blue bg-background-section rounded-lg w-full py-4 flex flex-col items-center justify-center gap-1.5 shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer">
 								<CirclePlusIcon
-									className="text-enhanced-blue bg-background-section"
+									className="text-cgs-blue bg-background-section"
 									size={16}
 								/>
-								<p className="text-xs font-normal text-enhanced-blue">
+								<p className="text-xs font-normal text-cgs-blue">
 									Setup Recurring Donation
 								</p>
 							</div>
@@ -221,7 +221,7 @@ const RecurringForm = () => {
 											<Link
 												target="_blank"
 												href={CGSI.ONETIME_DONATION}
-												className="inline text-enhanced-blue mx-1 hover:underline font-medium"
+												className="inline text-cgs-blue mx-1 hover:underline font-medium"
 											>
 												Terms & Conditions
 											</Link>

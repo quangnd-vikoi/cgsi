@@ -64,7 +64,7 @@ const Alert: React.FC<AlertProps> = ({
 
 				<AlertDialogFooter className="bg-background-section py-4 px-6 flex flex-row justify-end gap-3 rounded-b-lg shrink-0">
 					<AlertDialogCancel
-						className="bg-transparent border-none shadow-none text-enhanced-blue font-normal hover:bg-transparent hover:text-enhanced-blue/60 !outline-none !ring-0 !ring-offset-0"
+						className="bg-transparent border-none shadow-none text-cgs-blue font-normal hover:bg-transparent hover:text-cgs-blue/60 !outline-none !ring-0 !ring-offset-0"
 						onClick={onCancel}
 					>
 						{cancelText}

@@ -50,7 +50,7 @@ const AgreementItem = ({
 			<div className="flex justify-between items-start mb-3">
 				<div className="text-sm font-normal text-typo-primary">{displayTitle}</div>
 				<ChevronRight
-					className="w-5 h-5 text-enhanced-blue flex-shrink-0 mt-0.5"
+					className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5"
 					strokeWidth={2}
 				/>
 			</div>
@@ -89,7 +89,7 @@ const AcknowledgementDetailDialog = ({
 				</DialogHeader>
 				{loading ? (
 					<div className="flex items-center justify-center py-8">
-						<Loader2 className="w-6 h-6 animate-spin text-enhanced-blue" />
+						<Loader2 className="w-6 h-6 animate-spin text-cgs-blue" />
 					</div>
 				) : detail?.htmlContent ? (
 					<div
@@ -101,7 +101,7 @@ const AcknowledgementDetailDialog = ({
 						href={detail.url}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="text-enhanced-blue underline"
+						className="text-cgs-blue underline"
 					>
 						View Agreement Document
 					</a>
@@ -167,7 +167,7 @@ const Acknowledgements = () => {
 					<CustomSheetTitle backTo={"profile"} title="Acknowledgements" />
 				</div>
 				<div className="flex-1 flex items-center justify-center">
-					<Loader2 className="w-8 h-8 animate-spin text-enhanced-blue" />
+					<Loader2 className="w-8 h-8 animate-spin text-cgs-blue" />
 				</div>
 			</div>
 		);

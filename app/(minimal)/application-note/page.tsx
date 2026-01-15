@@ -146,10 +146,10 @@ const NoteContent = () => {
 					<div className="flex justify-between">
 						<h1 className="text-lg font-semibold">Application Success!</h1>
 						<div
-							className="text-enhanced-blue flex gap-2 cursor-pointer hover:underline"
+							className="text-cgs-blue flex gap-2 cursor-pointer hover:underline"
 							onClick={handlePrint}
 						>
-							<Printer className="text-enhanced-blue" />
+							<Printer className="text-cgs-blue" />
 							Print
 						</div>
 					</div>
@@ -307,7 +307,7 @@ const NoteContent = () => {
 								<div className="space-y-2 text-xs">
 									<p className="text-typo-secondary">
 										Please click{" "}
-										<span className="text-enhanced-blue cursor-pointer">here</span> for
+										<span className="text-cgs-blue cursor-pointer">here</span> for
 										details.
 									</p>
 								</div>
@@ -372,7 +372,7 @@ const NoteContent = () => {
 								For any queries, please email to{" "}
 								<a
 									href="mailto:sg.retailmgmtsupport@cgsi.com"
-									className="text-enhanced-blue hover:underline"
+									className="text-cgs-blue hover:underline"
 								>
 									sg.retailmgmtsupport@cgsi.com
 								</a>

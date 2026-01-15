@@ -110,7 +110,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 					<div className="flex items-center gap-3">
 						<Link
 							href={CGSI.EVENTS}
-							className="font-normal text-enhanced-blue text-xs md:text-sm"
+							className="font-normal text-cgs-blue text-xs md:text-sm"
 							target="_blank"
 						>
 							View All

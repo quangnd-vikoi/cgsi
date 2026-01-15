@@ -52,7 +52,7 @@ const UserProfile = () => {
 						<Button
 							onClick={() => handleUpdateClick("mobile")}
 							variant="link"
-							className="text-enhanced-blue hover:no-underline text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
+							className="text-cgs-blue hover:no-underline text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
 						>
 							Update
 						</Button>
@@ -75,7 +75,7 @@ const UserProfile = () => {
 							<Button
 								onClick={() => handleUpdateClick("email")}
 								variant="link"
-								className="text-enhanced-blue hover:no-underline text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
+								className="text-cgs-blue hover:no-underline text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
 							>
 								Update
 							</Button>
@@ -95,7 +95,7 @@ const UserProfile = () => {
 						<Button
 							onClick={() => handleUpdateClick("signature")}
 							variant="outline"
-							className="border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:text-enhanced-blue/75 hover:border-enhanced-blue/75 w-fit font-normal px-3 py-1.5"
+							className="border-cgs-blue text-cgs-blue hover:bg-transparent hover:text-cgs-blue/75 hover:border-cgs-blue/75 w-fit font-normal px-3 py-1.5"
 						>
 							Update Signature
 							<ChevronRight className="w-4 h-4 -ml-1" />

@@ -217,7 +217,7 @@ const buttonVariants = cva("base-classes", {
 -   Theme uses CSS variables defined in `:root` and `.dark`
 -   Custom color system:
     -   Typography: `typo-primary`, `typo-secondary`, `typo-tertiary`
-    -   Enhanced blue: `enhanced-blue` (#006ceb)
+    -   CGS blue: `cgs-blue` (#003A8C)
     -   Status colors: `status-error`, `status-success`, `status-warning`, `status-selected`
     -   Theme colors: `theme-blue-*`, `theme-neutral-*`
     -   Tone colors: `tone-green-*`, `tone-orange-*`, `tone-blue-*`, `tone-red-*`

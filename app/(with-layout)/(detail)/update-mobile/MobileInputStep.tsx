@@ -28,7 +28,7 @@ const CountryItem = memo(
 			<div
 				onClick={onClick}
 				className={`w-full rounded-md border flex justify-between py-2 px-4 cursor-pointer ${isSelected
-						? "border-enhanced-blue bg-background-section"
+						? "border-cgs-blue bg-background-section"
 						: "border-stroke-secondary hover:bg-gray-50"
 					}`}
 			>
@@ -38,7 +38,7 @@ const CountryItem = memo(
 						{country.name} ({country.dialCode})
 					</p>
 				</div>
-				{isSelected && <CircleCheck size={20} className="text-enhanced-blue" />}
+				{isSelected && <CircleCheck size={20} className="text-cgs-blue" />}
 			</div>
 		);
 	}
@@ -247,7 +247,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 										<button
 											key={letter}
 											onClick={() => scrollToLetter(letter)}
-											className="text-[10px] text-enhanced-blue hover:text-xs hover:font-bold transition-all"
+											className="text-[10px] text-cgs-blue hover:text-xs hover:font-bold transition-all"
 										>
 											{letter}
 										</button>

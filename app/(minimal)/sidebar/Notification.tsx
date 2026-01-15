@@ -205,7 +205,7 @@ const Notification = () => {
 							disabled={!hasUnread}
 							className={cn(
 								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent",
-								hasUnread ? "text-enhanced-blue" : "text-status-disable-primary"
+								hasUnread ? "text-cgs-blue" : "text-status-disable-primary"
 							)}
 						>
 							<MailOpen className="w-4 p-0" />

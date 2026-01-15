@@ -65,7 +65,7 @@ const OTPStep = ({
 			</p>
 
 			<p
-				className="mb-6 text-enhanced-blue cursor-pointer text-sm font-normal mt-1"
+				className="mb-6 text-cgs-blue cursor-pointer text-sm font-normal mt-1"
 				onClick={() => setStep(1)}
 			>
 				Change Number?
@@ -93,7 +93,7 @@ const OTPStep = ({
 				{isActive ? (
 					<>Resend in : {formattedTime}</>
 				) : (
-					<span className="text-enhanced-blue cursor-pointer" onClick={handleResendCode}>
+					<span className="text-cgs-blue cursor-pointer" onClick={handleResendCode}>
 						Resend Code
 					</span>
 				)}

@@ -89,7 +89,7 @@ const Insight = () => {
 					</div>
 					<Link
 						href={CGSI.INSIGHTS}
-						className="font-normal text-enhanced-blue text-xs md:text-sm"
+						className="font-normal text-cgs-blue text-xs md:text-sm"
 						target="_blank"
 					>
 						View All

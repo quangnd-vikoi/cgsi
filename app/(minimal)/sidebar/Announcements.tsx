@@ -83,7 +83,7 @@ const Announcements = () => {
 
 				<div className="w-full h-[1px] border-t my-4"></div>
 				<div
-					className="text-sm text-typo-secondary leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_a]:text-enhanced-blue [&_a]:underline"
+					className="text-sm text-typo-secondary leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_a]:text-cgs-blue [&_a]:underline"
 					dangerouslySetInnerHTML={{ __html: notice.Content }}
 				/>
 			</div>

@@ -43,7 +43,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
             <div className="border-t pad-x py-4 justify-end flex gap-2">
                 <Alert
                     trigger={
-                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none text-enhanced-blue hover:text-enhanced-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary">
+                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none text-cgs-blue hover:text-cgs-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary">
                             Remove All
                         </Button>
                     }

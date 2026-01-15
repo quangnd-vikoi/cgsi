@@ -594,7 +594,7 @@ Add fields for:
 if (loading) {
   return (
     <div className="flex items-center justify-center p-8">
-      <Loader2 className="h-8 w-8 animate-spin text-enhanced-blue" />
+      <Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
       <p className="ml-2">Loading donation plans...</p>
     </div>
   );

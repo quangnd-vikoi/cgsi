@@ -31,8 +31,8 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 			href={link}
 			aria-current={isActive ? "page" : undefined}
 			className={cn(
-				"cursor-pointer font-medium text-typo-primary text-[18px] relative inline-block after:content-[''] after:absolute after:w-full after:h-[2px] after:-bottom-1 after:left-0 after:bg-enhanced-blue after-origin-left after:transition-transform after:duration-300 after:ease-out",
-				isActive ? "text-enhanced-blue after:scale-x-100" : "hover:after:scale-x-100 after:scale-x-0"
+				"cursor-pointer font-medium text-typo-primary text-[18px] relative inline-block after:content-[''] after:absolute after:w-full after:h-[2px] after:-bottom-1 after:left-0 after:bg-cgs-blue after-origin-left after:transition-transform after:duration-300 after:ease-out",
+				isActive ? "text-cgs-blue after:scale-x-100" : "hover:after:scale-x-100 after:scale-x-0"
 			)}
 		>
 			{title}
@@ -48,12 +48,12 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 			<DropdownMenuItem
 				className={cn(
 					"cursor-pointer px-3 py-[10px]",
-					isActive && "text-enhanced-blue bg-status-selected"
+					isActive && "text-cgs-blue bg-status-selected"
 				)}
 			>
 				<div className="flex justify-between items-center w-full">
 					{title}
-					{isActive && <CircleCheck className="text-enhanced-blue h-4 w-4" />}
+					{isActive && <CircleCheck className="text-cgs-blue h-4 w-4" />}
 				</div>
 			</DropdownMenuItem>
 		</Link>
@@ -173,9 +173,9 @@ const Header = () => {
 									className={cn(
 										"cursor-pointer w-6 md:w-8",
 										(openSheet && openSheet != "notification")
-											? "text-enhanced-blue"
+											? "text-cgs-blue"
 											: isIconFill
-												? "text-enhanced-blue [&_path]:fill-enhanced-blue"
+												? "text-cgs-blue [&_path]:fill-cgs-blue"
 												: "text-icon-light"
 									)}
 								/>
@@ -185,7 +185,7 @@ const Header = () => {
 						<Button
 							onClick={handleTradeNowClick}
 							variant={"default"}
-							className="h-6 md:h-8 rounded-sm bg-enhanced-blue px-2 md:px-3 font-normal hover:bg-enhanced-blue/70 text-xs md:text-sm"
+							className="h-6 md:h-8 rounded-sm bg-cgs-blue px-2 md:px-3 font-normal hover:bg-cgs-blue/70 text-xs md:text-sm"
 						>
 							<Image
 								src="/icons/Charts.svg"
@@ -202,7 +202,7 @@ const Header = () => {
 									<Button
 										variant="ghost"
 										size="icon"
-										className="h-6 w-6 md:h-8 md:w-8 p-0 data-[state=open]:text-enhanced-blue text-typo-secondary"
+										className="h-6 w-6 md:h-8 md:w-8 p-0 data-[state=open]:text-cgs-blue text-typo-secondary"
 									>
 										<Grip className="w-6 md:w-8" />
 									</Button>

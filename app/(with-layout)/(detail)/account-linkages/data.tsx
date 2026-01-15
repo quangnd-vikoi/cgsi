@@ -22,7 +22,7 @@ export const subcdp = {
 						<Globe size={20} className="text-icon-light" />
 						<p className="text-sm font-normal">SGX CDP Forms Website</p>
 					</div>
-					<ChevronRight size={20} className="text-enhanced-blue cursor-pointer" />
+					<ChevronRight size={20} className="text-cgs-blue cursor-pointer" />
 				</div>
 			),
 		},
@@ -41,9 +41,9 @@ export const subcdp = {
 						<Copy
 							onClick={() => handleCopy("sg.clientservices@cgsi.com")}
 							size={20}
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-enhanced-blue cursor-pointer" />
+						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -79,7 +79,7 @@ export const cpf = {
 						<Globe size={20} className="text-icon-light" />
 						<p className="text-sm font-normal">iTrade Application Forms</p>
 					</div>
-					<ChevronRight size={20} className="text-enhanced-blue cursor-pointer" />
+					<ChevronRight size={20} className="text-cgs-blue cursor-pointer" />
 				</div>
 			),
 		},
@@ -103,9 +103,9 @@ export const cpf = {
 						<Copy
 							onClick={() => handleCopy("sg.clientservices@cgsi.com")}
 							size={20}
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-enhanced-blue cursor-pointer" />
+						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -141,7 +141,7 @@ export const srs = {
 						<Globe size={20} className="text-icon-light" />
 						<p className="text-sm font-normal">iTrade Application Forms</p>
 					</div>
-					<ChevronRight size={20} className="text-enhanced-blue cursor-pointer" />
+					<ChevronRight size={20} className="text-cgs-blue cursor-pointer" />
 				</div>
 			),
 		},
@@ -165,9 +165,9 @@ export const srs = {
 						<Copy
 							onClick={() => handleCopy("sg.clientservices@cgsi.com")}
 							size={20}
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-enhanced-blue cursor-pointer" />
+						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -208,7 +208,7 @@ export const eps = {
 						<Globe size={20} className="text-icon-light" />
 						<p className="text-sm font-normal">iTrade Application Forms</p>
 					</div>
-					<ChevronRight size={20} className="text-enhanced-blue cursor-pointer" />
+					<ChevronRight size={20} className="text-cgs-blue cursor-pointer" />
 				</div>
 			),
 		},
@@ -232,9 +232,9 @@ export const eps = {
 						<Copy
 							onClick={() => handleCopy("sg.clientservices@cgsi.com")}
 							size={20}
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-enhanced-blue cursor-pointer" />
+						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -274,7 +274,7 @@ export const giro = {
 						<Globe size={20} className="text-icon-light" />
 						<p className="text-sm font-normal">iTrade Application Forms</p>
 					</div>
-					<ChevronRight size={20} className="text-enhanced-blue cursor-pointer" />
+					<ChevronRight size={20} className="text-cgs-blue cursor-pointer" />
 				</div>
 			),
 		},
@@ -298,9 +298,9 @@ export const giro = {
 						<Copy
 							onClick={() => handleCopy("sg.clientservices@cgsi.com")}
 							size={20}
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-enhanced-blue cursor-pointer" />
+						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),

@@ -182,7 +182,7 @@ const SharesTransfer = () => {
                                         I agree with the{" "}
                                         <a
                                             href="#"
-                                            className="text-enhanced-blue font-medium"
+                                            className="text-cgs-blue font-medium"
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             Term & Conditions
@@ -210,7 +210,7 @@ const SharesTransfer = () => {
                             <div className="flex gap-3 pad-x py-4">
                                 <Button
                                     variant="outline"
-                                    className="flex-1 border-none shadow-none text-enhanced-blue hover:bg-enhanced-blue/5"
+                                    className="flex-1 border-none shadow-none text-cgs-blue hover:bg-cgs-blue/5"
                                     onClick={() => router.back()}
                                 >
                                     Cancel

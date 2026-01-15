@@ -7,22 +7,22 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 const PRODUCT_ITEMS = [
 	{
-		icons: <HomeStock className="text-icon-light group-hover:text-enhanced-blue transition-colors" />,
+		icons: <HomeStock className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Stock",
 		href: "#",
 	},
 	{
-		icons: <HomeChart className="text-icon-light group-hover:text-enhanced-blue transition-colors" />,
+		icons: <HomeChart className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Margin Financing",
 		href: "#",
 	},
 	{
-		icons: <HomeCareer className="text-icon-light group-hover:text-enhanced-blue transition-colors" />,
+		icons: <HomeCareer className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Shares Borrowing & Lending",
 		href: "#",
 	},
 	{
-		icons: <HomeCountry className="text-icon-light group-hover:text-enhanced-blue transition-colors" />,
+		icons: <HomeCountry className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Shariah-Compliant Investment Products",
 		href: "#",
 	},
@@ -48,19 +48,19 @@ const ProductInformation = () => {
 					return (
 						<div
 							key={index}
-							className="group w-1/4 flex gap-4 p-4 items-center border border-stroke-secondary rounded-lg shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] cursor-pointer hover:border-enhanced-blue justify-between"
+							className="group w-1/4 flex gap-4 p-4 items-center border border-stroke-secondary rounded-lg shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] cursor-pointer hover:border-cgs-blue justify-between"
 						>
 							<div className="flex gap-5 items-center">
 								<div className="flex-0">{item.icons}</div>
 
 								<p
 									className="flex-1 pr-4 text-sm font-normal text-typo-secondary 
-          group-hover:text-enhanced-blue group-hover:font-bold"
+          group-hover:text-cgs-blue group-hover:font-bold"
 								>
 									{item.label}
 								</p>
 							</div>
-							<ChevronRight className="flex-none text-enhanced-blue" size={20} />
+							<ChevronRight className="flex-none text-cgs-blue" size={20} />
 						</div>
 					);
 				})}
@@ -79,7 +79,7 @@ const ProductInformation = () => {
 								</p>
 							</div>
 
-							<ChevronRight className="flex-none text-enhanced-blue" size={20} />
+							<ChevronRight className="flex-none text-cgs-blue" size={20} />
 						</Link>
 					);
 				})}

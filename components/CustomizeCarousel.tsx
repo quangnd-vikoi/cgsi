@@ -167,14 +167,14 @@ const CustomizeCarousel = <T,>({
 					<>
 						<CarouselPrevious
 							className={cn(
-								"hidden border-enhanced-blue text-enhanced-blue hover:text-enhanced-blue hover:bg-background-section",
+								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
 								"md:flex md:-left-4 xl:-left-12",
 								arrowClassName
 							)}
 						/>
 						<CarouselNext
 							className={cn(
-								"hidden border-enhanced-blue text-enhanced-blue hover:text-enhanced-blue hover:bg-background-section",
+								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
 								"md:flex md:-right-4 lg:-right-2 xl:-right-12",
 								arrowClassName
 							)}
@@ -193,7 +193,7 @@ const CustomizeCarousel = <T,>({
 							className={cn(
 								"rounded-full w-2 h-2 transition-all",
 								current === index
-									? "bg-enhanced-blue"
+									? "bg-cgs-blue"
 									: "bg-theme-neutral-08 hover:bg-theme-neutral-095",
 								dotClassName
 							)}

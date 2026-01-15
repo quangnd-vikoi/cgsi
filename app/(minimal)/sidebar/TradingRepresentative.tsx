@@ -76,7 +76,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCopy(rep.phone, "phone")}
 								>
-									<Copy size={16} className="text-enhanced-blue" />
+									<Copy size={16} className="text-cgs-blue" />
 								</Button>
 								<Button
 									variant="ghost"
@@ -84,7 +84,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCall(rep.phone)}
 								>
-									<CircleArrowRight size={16} className="text-enhanced-blue" />
+									<CircleArrowRight size={16} className="text-cgs-blue" />
 								</Button>
 							</div>
 						</div>
@@ -102,7 +102,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCopy(rep.email, "email")}
 								>
-									<Copy size={16} className="text-enhanced-blue" />
+									<Copy size={16} className="text-cgs-blue" />
 								</Button>
 								<Button
 									variant="ghost"
@@ -110,7 +110,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleEmail(rep.email)}
 								>
-									<CircleArrowRight size={16} className="text-enhanced-blue" />
+									<CircleArrowRight size={16} className="text-cgs-blue" />
 								</Button>
 							</div>
 						</div>

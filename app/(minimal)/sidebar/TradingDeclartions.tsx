@@ -139,14 +139,14 @@ const TradingDeclartions = () => {
 					description: (
 						<p>
 							<span className="inline-block">
-								Visit the <span className="text-enhanced-blue">iTrade Application Forms</span>{" "}
+								Visit the <span className="text-cgs-blue">iTrade Application Forms</span>{" "}
 								website and download the "AI Declaration" form.
 							</span>
 
 							<br className="" />
 							<span className="mt-6 inline-block">
 								Complete and email the form to our Client Services team at
-								<span className="text-enhanced-blue ml-1">sg.clientservices@cgsi.com</span>.
+								<span className="text-cgs-blue ml-1">sg.clientservices@cgsi.com</span>.
 								You will receive an email notification once your request has been processed.
 							</span>
 						</p>
@@ -189,10 +189,10 @@ const TradingDeclartions = () => {
 							<Button
 								onClick={item.status === "inactive" ? item.onDeclare : item.onRenew}
 								variant={"link"}
-								className="text-enhanced-blue !p-0 text-sm hover:underline h-fit"
+								className="text-cgs-blue !p-0 text-sm hover:underline h-fit"
 							>
 								{item.status === "inactive" ? "Declare Now" : "Renew"}
-								<ChevronRight className="size-4 -ml-1 text-enhanced-blue" />
+								<ChevronRight className="size-4 -ml-1 text-cgs-blue" />
 							</Button>
 						</div>
 

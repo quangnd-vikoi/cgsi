@@ -99,7 +99,7 @@ const OneTimeForm = () => {
 							}
 						}}
 						className={cn(
-							"focus-visible:bg-background-focus focus-visible:border-enhanced-blue text-sm font-normal"
+							"focus-visible:bg-background-focus focus-visible:border-cgs-blue text-sm font-normal"
 						)}
 					/>
 				</div>
@@ -163,7 +163,7 @@ const OneTimeForm = () => {
 								<Link
 									target="_blank"
 									href={CGSI.ONETIME_DONATION}
-									className="inline text-enhanced-blue mx-1 hover:underline font-medium"
+									className="inline text-cgs-blue mx-1 hover:underline font-medium"
 								>
 									Terms & Conditions
 								</Link>

@@ -17,7 +17,7 @@ const DevelopmentBanner = () => {
 		<div className="bg-white shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] px-4 py-3 border-b rounded-lg w-full">
 			<div className="flex flex-wrap justify-between items-center gap-3 mx-auto max-w-screen-2xl">
 				<div className="flex items-center gap-2">
-					<AlertCircle className="flex-shrink-0 w-4 h-4 text-enhanced-blue" />
+					<AlertCircle className="flex-shrink-0 w-4 h-4 text-cgs-blue" />
 					<p className="font-normal text-typo-primary text-sm">
 						Information herein is updated only up to the last business day and should not be relied upon in any way.
 					</p>
@@ -36,7 +36,7 @@ const DevelopmentBanner = () => {
 						trigger={
 							<Button
 								variant="ghost"
-								className="flex-1 md:flex-none p-0 h-auto font-normal text-enhanced-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent hover:text-enhanced-blue/75"
+								className="flex-1 md:flex-none p-0 h-auto font-normal text-cgs-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent hover:text-cgs-blue/75"
 							>
 								<Image src={"/icons/portfolio/dollar-sign.svg"} className="hidden md:block" alt="FX Rate" width={20} height={20} />
 								View FX Rate
@@ -54,7 +54,7 @@ const DevelopmentBanner = () => {
 							<Button
 								variant="outline"
 								size="sm"
-								className="flex-1 md:flex-none bg-white hover:bg-enhanced-blue/5 border-enhanced-blue hover:border-enhanced-blue/80 h-7 text-enhanced-blue hover:text-enhanced-blue/75 whitespace-nowrap"
+								className="flex-1 md:flex-none bg-white hover:bg-cgs-blue/5 border-cgs-blue hover:border-cgs-blue/80 h-7 text-cgs-blue hover:text-cgs-blue/75 whitespace-nowrap"
 							>
 								Learn More
 							</Button>

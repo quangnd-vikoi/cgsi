@@ -67,7 +67,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 				>
 					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-2/3">
 						<div className="flex md:flex-row flex-col items-baseline gap-4 md:mb-2">
-							<h2 className="font-semibold text-enhanced-blue text-sm md:text-lg">{title}</h2>
+							<h2 className="font-semibold text-cgs-blue text-sm md:text-lg">{title}</h2>
 							<span className="text-xs text-typo-tertiary md:text-sm">
 								{available != 0 ? `${available} Available` : "No Available"}
 							</span>
@@ -97,7 +97,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 				description={
 					<span className="text-sm md:text-base">
 						Alternative Investments are available only to Accredited Investors. Please download
-						and fill the <span className="text-enhanced-blue font-medium">Declaration Form</span>,
+						and fill the <span className="text-cgs-blue font-medium">Declaration Form</span>,
 						then send it to us via &quot;Contact Us&quot; to proceed.
 					</span>
 				}

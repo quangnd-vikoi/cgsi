@@ -63,7 +63,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 				</div>
 				<div className="text-sm font-normal">{item.name}</div>
 			</div>
-			<ChevronRight className="w-5 text-enhanced-blue" strokeWidth={2} />
+			<ChevronRight className="w-5 text-cgs-blue" strokeWidth={2} />
 		</>
 	);
 

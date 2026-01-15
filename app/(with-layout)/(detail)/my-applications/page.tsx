@@ -108,19 +108,19 @@ export default function MyApplication() {
 					<TabsList className="mb-6 bg-transparent gap-2 border-b-0">
 						<TabsTrigger
 							value="all"
-							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-enhanced-blue data-[state=active]:border-enhanced-blue hover:bg-transparent hover:border-enhanced-blue"
+							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-cgs-blue data-[state=active]:border-cgs-blue hover:bg-transparent hover:border-cgs-blue"
 						>
 							All
 						</TabsTrigger>
 						<TabsTrigger
 							value="securities"
-							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-enhanced-blue data-[state=active]:border-enhanced-blue hover:bg-transparent hover:border-enhanced-blue"
+							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-cgs-blue data-[state=active]:border-cgs-blue hover:bg-transparent hover:border-cgs-blue"
 						>
 							Securities
 						</TabsTrigger>
 						<TabsTrigger
 							value="alternatives"
-							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-enhanced-blue data-[state=active]:border-enhanced-blue hover:bg-transparent hover:border-enhanced-blue"
+							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-cgs-blue data-[state=active]:border-cgs-blue hover:bg-transparent hover:border-cgs-blue"
 						>
 							Alternatives
 						</TabsTrigger>
@@ -181,7 +181,7 @@ export default function MyApplication() {
 								<TableBody>
 									{filteredApplications.map((app) => (
 										<TableRow key={app.subscriptionId} className="*:whitespace-normal">
-											<TableCell className="font-medium text-enhanced-blue py-4 px-3">
+											<TableCell className="font-medium text-cgs-blue py-4 px-3">
 												{app.productName}
 											</TableCell>
 											<TableCell className="px-3">{app.code}</TableCell>
@@ -192,7 +192,7 @@ export default function MyApplication() {
 											<TableCell className="px-3 text-center">
 												<Button
 													size="sm"
-													className="bg-enhanced-blue rounded-sm font-normal hover:bg-enhanced-blue/90 text-white px-3"
+													className="bg-cgs-blue rounded-sm font-normal hover:bg-cgs-blue/90 text-white px-3"
 													onClick={() => handleViewClick(app)}
 												>
 													<FileText />
@@ -216,7 +216,7 @@ export default function MyApplication() {
 										<PaginationLink
 											href="#"
 											isActive
-											className="bg-enhanced-blue text-white hover:bg-enhanced-blue/90 hover:text-white"
+											className="bg-cgs-blue text-white hover:bg-cgs-blue/90 hover:text-white"
 										>
 											1
 										</PaginationLink>

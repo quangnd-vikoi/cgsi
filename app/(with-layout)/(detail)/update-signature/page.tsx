@@ -225,7 +225,7 @@ const UpdateSignature = () => {
 								<div
 									className={cn(
 										"border-2 border-dashed rounded-lg overflow-hidden bg-white",
-										error ? "border-status-error" : "border-enhanced-blue"
+										error ? "border-status-error" : "border-cgs-blue"
 									)}
 									style={{ width: "100%", height: "312px" }}
 								>
@@ -262,7 +262,7 @@ const UpdateSignature = () => {
 									<div className="mt-6">
 										For reference, please review this{" "}
 										<span
-											className="text-enhanced-blue font-semibold cursor-pointer"
+											className="text-cgs-blue font-semibold cursor-pointer"
 											onClick={() => setTrue()}
 										>
 											Sample Signature
@@ -282,7 +282,7 @@ const UpdateSignature = () => {
 													? "border-status-error bg-background-error text-status-error"
 													: selectedFile != null
 														? "border-stroke-secondary text-status-disable-primary bg-theme-neutral-095 cursor-not-allowed"
-														: "border-enhanced-blue text-enhanced-blue bg-background-section shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer "
+														: "border-cgs-blue text-cgs-blue bg-background-section shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer "
 											)}
 										>
 											<FileUp className="" size={24} strokeWidth={1.25} />
@@ -344,7 +344,7 @@ const UpdateSignature = () => {
 																{uploadProgress != 100 ? (
 																	<span>Uploading {uploadProgress}%</span>
 																) : (
-																	<span className="text-enhanced-blue">
+																	<span className="text-cgs-blue">
 																		Completed
 																	</span>
 																)}
@@ -365,7 +365,7 @@ const UpdateSignature = () => {
 											{/* Progress Bar at Bottom */}
 											<div className="w-full bg-gray-200 h-0.5">
 												<div
-													className="bg-enhanced-blue h-1.5 transition-all duration-300"
+													className="bg-cgs-blue h-1.5 transition-all duration-300"
 													style={{ width: `${uploadProgress}%` }}
 												/>
 											</div>
@@ -413,7 +413,7 @@ const UpdateSignature = () => {
 						)}
 						<div className="pad-x py-4 border-t w-full relative flex gap-2">
 							<Button
-								className="w-1/2 text-base font-normal bg-transparent border-none text-enhanced-blue hover:border-enhanced-blue/75 hover:bg-transparent hover:text-enhanced-blue/75"
+								className="w-1/2 text-base font-normal bg-transparent border-none text-cgs-blue hover:border-cgs-blue/75 hover:bg-transparent hover:text-cgs-blue/75"
 								onClick={() => handleClear()}
 								disabled={isSubmitting}
 							>
