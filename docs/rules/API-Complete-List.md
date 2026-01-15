@@ -13,7 +13,6 @@
 - **❌ Not Implemented** - API endpoint defined in spec but not in codebase
 - **🔒 Auth Required** - Requires Bearer token
 - **🔓 Public** - No authentication required
-- **🔧 Internal** - Internal API (not exposed to frontend)
 
 ---
 
@@ -26,10 +25,9 @@
 | ✅ | POST | `/token` | 🔓 | JSON + YAML | Get access token by authorization code |
 | ✅ | POST | `/token/refresh` | 🔓 | JSON + YAML | Refresh access token |
 | ❌ | GET | `/token/info` | 🔒 | YAML only | Get token information from claims |
-| ❌ | POST | `/internal/validate-token` | 🔧 | JSON only | Internal token validation |
 
 **Implementation:** `lib/api/endpoints/auth.ts`
-**Status:** 2/4 endpoints implemented (50%)
+**Status:** 2/3 endpoints implemented (67%)
 
 ---
 
@@ -41,10 +39,8 @@
 |--------|--------|----------|------|--------|-------|
 | ❌ | GET | `/userInfo` | 🔒 | YAML only | Get user information |
 | ✅ | GET | `/trInfo` | 🔒 | JSON + YAML | Get TR (Trading Representative) info |
-| ✅ | GET | `/internal/trInfo` | 🔧 | JSON only | Get TR info by account number (internal) |
-| ✅ | GET | `/internal/profile` | 🔧 | JSON only | Get user profile (internal) |
 | ✅ | GET | `/accounts` | 🔒 | JSON + YAML | Get user trading accounts |
-| ❌ | GET | `/tradingInfo` | 🔒 | YAML only | Get user trading information |
+| ✅ | GET | `/tradingInfo` | 🔒 | YAML only | Get user trading declarations (SIP, W8-BEN, CRS, BCAN) |
 | ✅ | POST | `/tradingInfo/bcan/request` | 🔒 | JSON + YAML | Create BCAN request |
 | ✅ | GET | `/donation/plan` | 🔒 | JSON + YAML | Get donation plans |
 | ✅ | POST | `/donation/submission` | 🔒 | JSON + YAML | Submit donation |
@@ -53,7 +49,7 @@
 | ✅ | GET | `/contactUs/centralDealingDesk` | 🔓 | JSON only | Get central dealing desk contact info |
 
 **Implementation:** `lib/api/endpoints/profile.ts`
-**Status:** 10/12 basic endpoints implemented (83%)
+**Status:** 9/10 basic endpoints implemented (90%)
 
 ### Profile - SIP (Sophisticated Investor Program) APIs
 
@@ -69,14 +65,14 @@
 
 | Status | Method | Endpoint | Auth | Source | Notes |
 |--------|--------|----------|------|--------|-------|
-| ❌ | POST | `/update/mobile/otp` | 🔒 | YAML only | Send SMS OTP to new mobile number |
-| ❌ | POST | `/update/mobile/submit` | 🔒 | YAML only | Submit update mobile number |
-| ❌ | POST | `/update/email/otp` | 🔒 | YAML only | Send OTP to new email |
-| ❌ | POST | `/update/email/submit` | 🔒 | YAML only | Submit update email |
-| ❌ | POST | `/update/signature/upload` | 🔒 | YAML only | Upload new signature documents |
-| ❌ | POST | `/update/singnature/submit` | 🔒 | YAML only | Submit update signature (typo in spec: "singnature") |
+| ✅ | POST | `/update/mobile/otp` | 🔒 | YAML only | Send SMS OTP to new mobile number |
+| ✅ | POST | `/update/mobile/submit` | 🔒 | YAML only | Submit update mobile number |
+| ✅ | POST | `/update/email/otp` | 🔒 | YAML only | Send OTP to new email |
+| ✅ | POST | `/update/email/submit` | 🔒 | YAML only | Submit update email |
+| ✅ | POST | `/update/signature/upload` | 🔒 | YAML only | Upload new signature documents |
+| ✅ | POST | `/update/singnature/submit` | 🔒 | YAML only | Submit update signature (typo in spec: "singnature") |
 
-**Status:** 0/6 update endpoints implemented (0%)
+**Status:** 6/6 update endpoints implemented (100%)
 
 ### Profile - Acknowledgement APIs
 
@@ -126,15 +122,9 @@
 | ✅ | GET | `/list` | 🔒 | JSON + YAML | Get paginated user notifications (pageSize, pageIndex) |
 | ✅ | GET | `/latest` | 🔒 | JSON + YAML | Get latest user notifications (pastMins) |
 | ✅ | POST | `/markAsRead` | 🔒 | JSON + YAML | Mark user notifications as read |
-| ❌ | POST | `/admin/email/send` | 🔒 | YAML only | Send email notification (admin) |
-| ❌ | POST | `/internal/email/send` | 🔧 | JSON only | Send email notification (internal) |
 
 **Implementation:** `lib/api/endpoints/notifications.ts`
-**Status:** 3/5 notification endpoints implemented (60%)
-
-**Note:** JSON and YAML have different paths for email sending:
-- JSON: `/internal/email/send` (internal API)
-- YAML: `/admin/email/send` (admin API)
+**Status:** 3/3 notification endpoints implemented (100%)
 
 ---
 
@@ -250,17 +240,17 @@
 
 | Category | Implemented | Total | Percentage |
 |----------|-------------|-------|------------|
-| **Authentication & SSO** | 2 | 4 | 50% |
-| **Profile (Basic)** | 10 | 12 | 83% |
+| **Authentication & SSO** | 2 | 3 | 67% |
+| **Profile (Basic)** | 9 | 10 | 90% |
 | **Profile (SIP)** | 0 | 3 | 0% |
-| **Profile (Update Info)** | 0 | 6 | 0% |
+| **Profile (Update Info)** | 6 | 6 | 100% |
 | **Profile (Acknowledgement)** | 2 | 2 | 100% |
 | **Subscription** | 7 | 7 | 100% |
-| **Notification** | 3 | 5 | 60% |
+| **Notification** | 3 | 3 | 100% |
 | **Portfolio** | 0 | 10 | 0% ⚠️ |
 | **External SSO** | 8 | 8 | 100% |
 | **Content (Public)** | 5 | 5 | 100% |
-| **TOTAL** | **37** | **62** | **60%** |
+| **TOTAL** | **42** | **57** | **74%** |
 
 ---
 
@@ -276,31 +266,19 @@
    - Contracts & contra
    - **Impact:** Users cannot view their portfolio data
 
-2. **Profile Update APIs (0/6)**
-   - Mobile number update
-   - Email update
-   - Signature upload
-   - **Impact:** Users cannot update their contact information
-
-3. **SIP APIs (0/3)**
+2. **SIP APIs (0/3)**
    - Sophisticated Investor Program management
    - **Impact:** Advanced users cannot manage SIP status
 
 ### Medium Priority
 
+3. **Profile APIs (1 missing)**
+   - `/userInfo` endpoint
+   - **Impact:** Cannot retrieve full user information
+
 4. **SSO Token Info (0/1)**
    - `/token/info` endpoint
    - **Impact:** Cannot retrieve token claims information
-
-5. **Internal Email Notification (0/2)**
-   - Email sending endpoints
-   - **Impact:** Cannot send system notifications via email
-
-### Low Priority
-
-7. **Internal Token Validation (0/1)**
-   - Internal-only validation endpoint
-   - May be handled differently in production
 
 ---
 
@@ -316,7 +294,7 @@
 - ✅ `ITrade-SubscriptionAPI.yaml` (Market data endpoints)
 - ✅ `iTrade-ProfileAPI.yaml` (Extended profile endpoints)
 - ✅ `iTrade-SSOAPI.yaml` (Token info endpoint)
-- ✅ `iTrade-NotificationAPI.yaml` (Admin email endpoint)
+- ✅ `iTrade-NotificationAPI.yaml`
 - ⚠️ `iTrade-PortfolioAPI.yaml` (NOT implemented - 10 endpoints missing)
 - ✅ `iTrade-ExternalSSOAPI.yaml` (All implemented)
 
@@ -327,10 +305,10 @@
 ### Current Implementation
 ```
 lib/api/endpoints/
-├── auth.ts           ✅ 2/4 endpoints (50%)
-├── profile.ts        ✅ 12/21 endpoints (57%)
+├── auth.ts           ✅ 2/3 endpoints (67%)
+├── profile.ts        ✅ 17/20 endpoints (85%)
 ├── subscription.ts   ✅ 7/7 endpoints (100%)
-├── notifications.ts  ✅ 3/5 endpoints (60%)
+├── notifications.ts  ✅ 3/3 endpoints (100%)
 ├── externalSSO.ts    ✅ 8/8 endpoints (100%)
 ├── content.ts        ✅ 5/5 endpoints (100%)
 └── index.ts          Aggregator
@@ -352,20 +330,16 @@ lib/api/endpoints/
 
 2. **Extend Profile Endpoints** (`lib/api/endpoints/profile.ts`)
    - Add SIP endpoints (3)
-   - Add update info endpoints (6)
+   - Add `/userInfo` endpoint
 
 3. **Complete SSO Endpoints** (`lib/api/endpoints/auth.ts`)
    - Add `/token/info` endpoint
-   - Add `/internal/validate-token` endpoint (if needed)
 
-4. **Extend Notification Endpoints** (`lib/api/endpoints/notifications.ts`)
-   - Add email sending endpoints
-
-5. **Update Types** (`lib/api/types.ts`)
+4. **Update Types** (`lib/api/types.ts`)
    - Add TypeScript types for all new endpoints
    - Ensure response types match spec
 
-6. **Testing**
+5. **Testing**
    - Test all new endpoints with Postman collection
    - Verify authentication requirements
    - Test pagination for portfolio endpoints
@@ -373,5 +347,5 @@ lib/api/endpoints/
 ---
 
 **Document Maintained By:** Development Team
-**Last Updated:** 2025-12-27
+**Last Updated:** 2026-01-14
 **Review Frequency:** When API specs are updated

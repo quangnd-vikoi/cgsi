@@ -28,6 +28,7 @@ import type {
 /**
  * Submit a SAML POST form to an external SSO endpoint
  * Used for Corporate Action SSO which requires SAML form submission
+ * Opens in a new tab
  *
  * @param postUrl - Target URL for SAML form submission
  * @param samlResponse - SAML response token
@@ -39,6 +40,7 @@ export function submitSamlForm(postUrl: string, samlResponse: string): void {
 	const form = document.createElement("form");
 	form.method = "POST";
 	form.action = postUrl;
+	form.target = "_blank";
 
 	const input = document.createElement("input");
 	input.type = "hidden";
@@ -48,10 +50,12 @@ export function submitSamlForm(postUrl: string, samlResponse: string): void {
 	form.appendChild(input);
 	document.body.appendChild(form);
 	form.submit();
+	document.body.removeChild(form);
 }
 
 /**
  * Generic redirect helper for SSO endpoints that return redirectUrl
+ * Opens in a new tab
  *
  * @param redirectUrl - Target URL to redirect to
  *
@@ -59,7 +63,7 @@ export function submitSamlForm(postUrl: string, samlResponse: string): void {
  * redirectToSSO("https://external.com/portal");
  */
 export function redirectToSSO(redirectUrl: string): void {
-	window.location.href = redirectUrl;
+	window.open(redirectUrl, "_blank", "noopener,noreferrer");
 }
 
 // ============================================
@@ -106,6 +110,7 @@ export const redirectToNTP = async (): Promise<void> => {
 		const form = document.createElement("form");
 		form.method = "POST";
 		form.action = postUrl;
+		form.target = "_blank";
 
 		// Add togaToken field
 		const togaInput = document.createElement("input");
@@ -123,6 +128,7 @@ export const redirectToNTP = async (): Promise<void> => {
 
 		document.body.appendChild(form);
 		form.submit();
+		document.body.removeChild(form);
 	}
 };
 

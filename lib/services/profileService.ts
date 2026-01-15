@@ -1,10 +1,11 @@
-import { fetchAPI, postAPI } from "@/lib/api/client";
+import { fetchAPI, postAPI, postFormData } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import { useUserStore } from "@/stores/userStore";
 import type {
 	UserProfileResponse,
 	UserAccountResponse,
 	TrInfoResponse,
+	TradingInfoResponse,
 	CreateBcanRequest,
 	CreateBcanResponse,
 	DonationPlanResponse,
@@ -16,6 +17,15 @@ import type {
 	ContactUsCentralDealingDeskResponse,
 	UserAcknowledgementListResponse,
 	AcknowledgementDetailResponse,
+	MobileOtpRequest,
+	MobileOtpResponse,
+	EmailOtpRequest,
+	EmailOtpResponse,
+	UpdateSubmitRequest,
+	UpdateSubmitResponse,
+	SignatureUploadResponse,
+	SignatureSubmitRequest,
+	SignatureSubmitResponse,
 } from "@/types";
 import type { APIResponse } from "@/lib/api/types";
 
@@ -48,6 +58,12 @@ export const getTradingRepInfoByAccount = async (
 	accountNo?: string
 ): Promise<APIResponse<TrInfoResponse[]>> => {
 	return await fetchAPI<TrInfoResponse[]>(ENDPOINTS.trInfoByAccount(accountNo), {
+		useAuth: true,
+	});
+};
+
+export const getTradingInfo = async (): Promise<APIResponse<TradingInfoResponse>> => {
+	return await fetchAPI<TradingInfoResponse>(ENDPOINTS.tradingInfo(), {
 		useAuth: true,
 	});
 };
@@ -141,11 +157,80 @@ export const getAcknowledgementDetail = async (
 	});
 };
 
+// ============================================================================
+// Update Info Service Functions
+// ============================================================================
+
+export const sendMobileOtp = async (
+	mobileNumber: string
+): Promise<APIResponse<MobileOtpResponse>> => {
+	return await postAPI<MobileOtpResponse, MobileOtpRequest>(
+		ENDPOINTS.updateMobileOtp(),
+		{ mobileNumber },
+		{ useAuth: true }
+	);
+};
+
+export const submitMobileUpdate = async (
+	transactionId: string,
+	otp: string
+): Promise<APIResponse<UpdateSubmitResponse>> => {
+	return await postAPI<UpdateSubmitResponse, UpdateSubmitRequest>(
+		ENDPOINTS.updateMobileSubmit(),
+		{ transactionId, otp },
+		{ useAuth: true }
+	);
+};
+
+export const sendEmailOtp = async (email: string): Promise<APIResponse<EmailOtpResponse>> => {
+	return await postAPI<EmailOtpResponse, EmailOtpRequest>(
+		ENDPOINTS.updateEmailOtp(),
+		{ email },
+		{ useAuth: true }
+	);
+};
+
+export const submitEmailUpdate = async (
+	transactionId: string,
+	otp: string
+): Promise<APIResponse<UpdateSubmitResponse>> => {
+	return await postAPI<UpdateSubmitResponse, UpdateSubmitRequest>(
+		ENDPOINTS.updateEmailSubmit(),
+		{ transactionId, otp },
+		{ useAuth: true }
+	);
+};
+
+export const uploadSignature = async (
+	file: File,
+	metadata?: string
+): Promise<APIResponse<SignatureUploadResponse>> => {
+	const formData = new FormData();
+	formData.append("file", file);
+	if (metadata) {
+		formData.append("metadata", metadata);
+	}
+	return await postFormData<SignatureUploadResponse>(ENDPOINTS.updateSignatureUpload(), formData, {
+		useAuth: true,
+	});
+};
+
+export const submitSignatureUpdate = async (
+	transactionId: string
+): Promise<APIResponse<SignatureSubmitResponse>> => {
+	return await postAPI<SignatureSubmitResponse, SignatureSubmitRequest>(
+		ENDPOINTS.updateSignatureSubmit(),
+		{ transactionId },
+		{ useAuth: true }
+	);
+};
+
 export const profileService = {
 	getUserProfile,
 	getUserAccounts,
 	getTradingRepInfo,
 	getTradingRepInfoByAccount,
+	getTradingInfo,
 	createBcanRequest,
 	getDonationPlans,
 	submitDonation,
@@ -157,4 +242,10 @@ export const profileService = {
 	getUserMobile,
 	getAcknowledgementList,
 	getAcknowledgementDetail,
+	sendMobileOtp,
+	submitMobileUpdate,
+	sendEmailOtp,
+	submitEmailUpdate,
+	uploadSignature,
+	submitSignatureUpdate,
 };

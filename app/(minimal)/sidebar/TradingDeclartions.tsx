@@ -140,7 +140,7 @@ const TradingDeclartions = () => {
 						<p>
 							<span className="inline-block">
 								Visit the <span className="text-enhanced-blue">iTrade Application Forms</span>{" "}
-								website and download the “AI Declaration” form.
+								website and download the "AI Declaration" form.
 							</span>
 
 							<br className="" />

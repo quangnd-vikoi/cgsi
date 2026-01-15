@@ -241,3 +241,133 @@ export async function deleteAPI<T>(url: string, options: FetchOptions = {}): Pro
 		...options,
 	});
 }
+
+/**
+ * Helper for POST requests with FormData (multipart/form-data)
+ * Used for file uploads like signature upload
+ */
+export async function postFormData<T>(
+	url: string,
+	formData: FormData,
+	options: Omit<FetchOptions, "body"> = {}
+): Promise<APIResponse<T>> {
+	try {
+		const { useAuth = false, _isRetry = false, ...restOptions } = options;
+
+		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+
+		const headers: Record<string, string> = {
+			// Note: Do NOT set Content-Type for FormData - browser will set it with boundary
+			...(restOptions.headers as Record<string, string>),
+		};
+
+		// Ensure token is valid before making authenticated requests
+		if (useAuth) {
+			await ensureValidToken();
+
+			const token = getAccessToken();
+			if (token) {
+				delete headers["Authorization"];
+				headers["Authorization"] = `Bearer ${token}`;
+			}
+		}
+
+		const res = await fetch(fullUrl, {
+			method: "POST",
+			body: formData,
+			...restOptions,
+			headers,
+		});
+
+		// Handle empty responses
+		if (res.status === 204 || res.headers.get("content-length") === "0") {
+			return {
+				success: true,
+				data: null,
+				statusCode: res.status,
+				error: null,
+			};
+		}
+
+		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
+		if (res.status === 401 && useAuth && !_isRetry) {
+			try {
+				await ensureValidToken();
+				return postFormData<T>(url, formData, { ...options, _isRetry: true });
+			} catch {
+				return {
+					success: false,
+					error: "Authentication failed - unable to refresh token",
+					statusCode: 401,
+					data: null,
+				};
+			}
+		}
+
+		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();
+
+		if (!res.ok) {
+			let errorMsg = `HTTP Error: ${res.status}`;
+			if ("message" in json && typeof json.message === "string") {
+				errorMsg = json.message;
+			} else if ("error" in json && typeof json.error === "string") {
+				errorMsg = json.error;
+			}
+			return {
+				success: false,
+				error: errorMsg,
+				statusCode: res.status,
+				data: null,
+			};
+		}
+
+		const isStandardResponse = "status" in json && "statuscode" in json;
+
+		if (isStandardResponse) {
+			const standardJson = json as StandardAPIResponse<T>;
+
+			if (standardJson.status !== "SUCCESS" || standardJson.statuscode !== "200") {
+				return {
+					success: false,
+					error: standardJson.message || "API returned error status",
+					statusCode: parseInt(standardJson.statuscode) || res.status,
+					data: null,
+				};
+			}
+
+			const data = (standardJson.article || standardJson.data || json) as T;
+
+			return {
+				success: true,
+				data,
+				statusCode: parseInt(standardJson.statuscode),
+				error: null,
+			};
+		} else {
+			const directJson = json as DirectAPIResponse<T>;
+
+			if ("error" in directJson && directJson.error) {
+				return {
+					success: false,
+					error: directJson.error as string,
+					statusCode: res.status,
+					data: null,
+				};
+			}
+
+			return {
+				success: true,
+				data: json as T,
+				statusCode: res.status,
+				error: null,
+			};
+		}
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Network error",
+			statusCode: 500,
+			data: null,
+		};
+	}
+}

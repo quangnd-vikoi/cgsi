@@ -3,7 +3,7 @@
 > **For complete API details, see [API-Complete-List.md](./API-Complete-List.md)**
 
 **Last Updated:** 2026-01-14
-**Total Endpoints:** 44 across 7 API categories
+**Total Endpoints:** 57 across 7 API categories
 
 ---
 
@@ -11,15 +11,16 @@
 
 ### ✅ Fully Implemented & Ready
 
-#### 1. Auth APIs (2/2)
+#### 1. Auth APIs (2/3)
 - [x] Get Access Token (POST `/sso/api/v1/token`)
 - [x] Refresh Token (POST `/sso/api/v1/token/refresh`)
+- [ ] Get Token Info (GET `/sso/api/v1/token/info`) ❌
 
-#### 2. Profile APIs (10/10)
+#### 2. Profile APIs (9/10)
+- [ ] Get User Info ❌
 - [x] Get TR Info
-- [x] Get TR Info by Account
-- [x] Get User Profile
 - [x] Get User Accounts
+- [x] Get Trading Info → **UI: Trading Declarations sidebar**
 - [x] Create BCAN Request
 - [x] Get Donation Plans
 - [x] Submit Donation
@@ -30,6 +31,19 @@
 #### Acknowledgement APIs (2/2)
 - [x] Get User Acknowledgement List → **UI: Profile sidebar "Acknowledgements"**
 - [x] Get User Acknowledgement Detail → **UI: Detail dialog in Acknowledgements**
+
+#### Update Info APIs (6/6)
+- [x] Send Mobile OTP → **UI: Update Mobile page step 1**
+- [x] Submit Mobile Update → **UI: Update Mobile page step 2**
+- [x] Send Email OTP → **UI: Update Email page step 1**
+- [x] Submit Email Update → **UI: Update Email page step 2**
+- [x] Upload Signature → **UI: Update Signature page (Draw/Upload)**
+- [x] Submit Signature Update → **UI: Update Signature page submit**
+
+#### SIP APIs (0/3) ❌
+- [ ] Get SIP Products
+- [ ] Get SIP Submission
+- [ ] Post SIP Submission
 
 #### 3. Subscription APIs (7/7)
 **Market Data:**
@@ -66,6 +80,36 @@
 - [x] Get Research & Insights
 
 **Note:** Content APIs use different base URL: `https://www.cgsi.com.sg/cgsi/api/v1`
+
+#### 7. Portfolio APIs (0/10) ❌ NOT IMPLEMENTED
+- [ ] Get Account Summary
+- [ ] Get Trust Balance
+- [ ] Get Trust Balance Details
+- [ ] Get Custody Holdings
+- [ ] Get Margin Summary
+- [ ] Get Margin Details
+- [ ] Get Contracts
+- [ ] Get Contracts Past Due
+- [ ] Get Contra
+- [ ] Get Contra Details
+
+---
+
+## Summary
+
+| Category | Implemented | Total | Status |
+|----------|-------------|-------|--------|
+| Auth | 2 | 3 | 67% |
+| Profile (Basic) | 9 | 10 | 90% |
+| Profile (SIP) | 0 | 3 | 0% ❌ |
+| Profile (Update) | 6 | 6 | 100% ✅ |
+| Profile (Acknowledgement) | 2 | 2 | 100% ✅ |
+| Subscription | 7 | 7 | 100% ✅ |
+| Notification | 3 | 3 | 100% ✅ |
+| External SSO | 8 | 8 | 100% ✅ |
+| Content | 5 | 5 | 100% ✅ |
+| Portfolio | 0 | 10 | 0% ❌ |
+| **TOTAL** | **42** | **57** | **74%** |
 
 ---
 

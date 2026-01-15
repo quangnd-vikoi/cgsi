@@ -15,6 +15,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { MobileInputStep } from "./MobileInputStep";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import en from "react-phone-number-input/locale/en.json";
+import { sendMobileOtp, submitMobileUpdate } from "@/lib/services/profileService";
 
 interface Country {
 	code: CountryCode;
@@ -29,6 +30,8 @@ const OTPStep = ({
 	setOtp,
 	setStep,
 	dialCode,
+	onResend,
+	isSubmitting,
 }: {
 	phoneNumber: string;
 	otp: string;
@@ -36,6 +39,8 @@ const OTPStep = ({
 	setOtp: (value: string) => void;
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	dialCode: string;
+	onResend: () => void;
+	isSubmitting: boolean;
 }) => {
 	const { formattedTime, isActive, reset } = useOTPCountdown({
 		initialSeconds: 120,
@@ -46,10 +51,9 @@ const OTPStep = ({
 		setOtp(numeric);
 	};
 
-	const handleResendCode = () => {
+	const handleResendCode = async () => {
 		reset();
-		// TODO: Implement actual resend OTP API call
-		toast.success("OTP Resent", "A new OTP code has been sent to your mobile number.");
+		onResend();
 	};
 
 	return (
@@ -67,7 +71,7 @@ const OTPStep = ({
 				Change Number?
 			</p>
 
-			<InputOTP maxLength={6} value={otp} onChange={handleChange}>
+			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting}>
 				<InputOTPGroup className="justify-between w-full">
 					<InputOTPSlot index={0} error={error} />
 					<InputOTPSlot index={1} error={error} />
@@ -116,6 +120,8 @@ const UpdateMobile = () => {
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
+	const [transactionId, setTransactionId] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [selectedCountry, setSelectedCountry] = useState<Country>({
 		code: "SG",
 		name: en["SG"],
@@ -128,8 +134,14 @@ const UpdateMobile = () => {
 		return phone.length >= 8;
 	};
 
+	// Format mobile number for API (dialCode-phoneNumber)
+	const formatMobileForApi = () => {
+		const dialCode = selectedCountry.dialCode.replace("+", "");
+		return `+${dialCode}-${phoneNumber}`;
+	};
+
 	// Handle continue for step 1
-	const handleStep1Continue = () => {
+	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!phoneNumber.trim()) {
 			setError("Phone number cannot be empty");
@@ -148,21 +160,52 @@ const UpdateMobile = () => {
 			return;
 		}
 
-		// Move to OTP step
-		setStep(2);
+		setIsSubmitting(true);
+		setError("");
+
+		const response = await sendMobileOtp(formatMobileForApi());
+
+		setIsSubmitting(false);
+
+		if (response.success && response.data) {
+			setTransactionId(response.data.transactionId);
+			setStep(2);
+		} else {
+			toast.error("Failed to send OTP", response.error || "Please try again later.");
+		}
+	};
+
+	// Handle resend OTP
+	const handleResendOtp = async () => {
+		const response = await sendMobileOtp(formatMobileForApi());
+
+		if (response.success && response.data) {
+			setTransactionId(response.data.transactionId);
+			toast.success("OTP Resent", "A new OTP code has been sent to your mobile number.");
+		} else {
+			toast.error("Failed to resend OTP", response.error || "Please try again later.");
+		}
 	};
 
 	// Handle continue for step 2
-	const handleStep2Continue = () => {
-		if (otp.length === 6) {
-			// TODO: Verify OTP with backend
-			// Simulate API call failure
-			toast.error("Failed to send Mobile OTP", "Please check your internet connection and try again.");
-
-			// Move to error step
-			setStep(3);
+	const handleStep2Continue = async () => {
+		if (otp.length !== 6) {
+			setError("Please enter the 6-digit OTP code");
+			return;
 		}
-		setError("Field cannot be empty");
+
+		setIsSubmitting(true);
+		setError("");
+
+		const response = await submitMobileUpdate(transactionId, otp);
+
+		setIsSubmitting(false);
+
+		if (response.success && response.data?.isSuccess) {
+			setStep(3);
+		} else {
+			setError(response.error || "Invalid OTP. Please try again.");
+		}
 	};
 
 	// Handle continue button click
@@ -214,6 +257,8 @@ const UpdateMobile = () => {
 						setOtp={setOtp}
 						setStep={setStep}
 						error={error}
+						onResend={handleResendOtp}
+						isSubmitting={isSubmitting}
 					/>
 				)}
 
@@ -226,8 +271,12 @@ const UpdateMobile = () => {
 						</div>
 					)}
 					<div className="pad-x py-4 border-t w-full relative">
-						<Button className="w-full text-base font-normal" onClick={handleContinue}>
-							{step === 3 ? "Back to Home" : "Continue"}
+						<Button
+							className="w-full text-base font-normal"
+							onClick={handleContinue}
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>
 					</div>
 				</div>
