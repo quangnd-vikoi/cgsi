@@ -31,15 +31,7 @@ const ProductInformation = () => {
 	return (
 		<div className="container-default py-6 md:py-12">
 			<div className="flex items-center gap-2">
-				<span className="hidden md:inline font-semibold text-base">Product Offering & Services</span>
-				<span className="md:hidden font-semibold text-base">Product Information</span>
-				<Image
-					src={"/icons/Warning.svg"}
-					alt="icon"
-					width={16}
-					height={16}
-					className="hidden md:inline"
-				/>
+				<span className="hidden md:inline font-semibold text-base">Explore Products</span>
 			</div>
 
 			{/* Table menu */}
@@ -48,14 +40,13 @@ const ProductInformation = () => {
 					return (
 						<div
 							key={index}
-							className="group w-1/4 flex gap-4 p-4 items-center border border-stroke-secondary rounded-lg shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] cursor-pointer hover:border-cgs-blue justify-between"
+							className="group w-1/4 flex gap-4 p-6 items-center border border-stroke-secondary rounded hover:shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] cursor-pointer hover:border-cgs-blue justify-between min-w-0"
 						>
-							<div className="flex gap-5 items-center">
-								<div className="flex-0">{item.icons}</div>
+							<div className="flex gap-5 items-center min-w-0 overflow-hidden">
+								<div className="flex-none">{item.icons}</div>
 
 								<p
-									className="flex-1 pr-4 text-sm font-normal text-typo-secondary 
-          group-hover:text-cgs-blue group-hover:font-bold"
+									className="text-sm font-medium text-typo-secondary group-hover:text-cgs-blue  truncate"
 								>
 									{item.label}
 								</p>

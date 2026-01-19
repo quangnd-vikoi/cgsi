@@ -28,8 +28,8 @@ const CountryItem = memo(
 			<div
 				onClick={onClick}
 				className={`w-full rounded-md border flex justify-between py-2 px-4 cursor-pointer ${isSelected
-						? "border-cgs-blue bg-background-section"
-						: "border-stroke-secondary hover:bg-gray-50"
+					? "border-cgs-blue bg-background-section"
+					: "border-stroke-secondary hover:bg-gray-50"
 					}`}
 			>
 				<div className="flex items-center">
@@ -55,21 +55,14 @@ interface MobileInputStepProps {
 	setSelectedCountry: (value: Country) => void;
 }
 
-export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }: MobileInputStepProps) => {
+export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, selectedCountry, setSelectedCountry }: MobileInputStepProps) => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [selectedCountry, setSelectedCountry] = useState<Country>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
 	const [open, setOpen] = useState(false);
-	const [tempSelected, setTempSelected] = useState<Country | null>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
+	const [tempSelected, setTempSelected] = useState<Country | null>(selectedCountry);
 
 	const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+	console.log(selectedCountry)
 
 	const countries = useMemo(() => {
 		return getCountries().map((code) => ({
@@ -128,7 +121,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 	const handleApply = useCallback(() => {
 		if (tempSelected) setSelectedCountry(tempSelected);
 		setOpen(false);
-	}, [tempSelected]);
+	}, [tempSelected, setSelectedCountry]);
 
 	const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);

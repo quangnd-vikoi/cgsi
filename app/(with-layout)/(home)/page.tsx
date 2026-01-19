@@ -1,5 +1,4 @@
 "use client";
-
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authService } from "@/lib/services/authService";
@@ -41,11 +40,9 @@ function HomeContent() {
 					}
 				}
 
-				// Exchange code for tokens
-				// Note: redirectUri must match the URI registered with SSO server
 				await authService.exchangeCode(code, "http://localhost:8080/authorize");
 
-		
+
 				setIsAuthenticating(false);
 			} catch (err) {
 				console.error("Auth error:", err);

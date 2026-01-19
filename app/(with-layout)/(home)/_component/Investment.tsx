@@ -7,6 +7,7 @@ import { INTERNAL_ROUTES } from "@/constants/routes";
 import useToggle from "@/hooks/useToggle";
 import Alert from "@/components/Alert";
 import { useSheetStore } from "@/stores/sheetStore";
+import { cn } from "@/lib/utils";
 
 type InvestmentCardProps = {
 	title: string;
@@ -51,41 +52,33 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	return (
 		<div
 			onClick={() => handleClick()}
-			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full"
-			style={{
-				backgroundImage:
-					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
-			}}
+			className="cursor-pointer relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm"
 		>
-			<div className="relative border border-transparent rounded-lg w-full cursor-pointer hover:shadow-sm">
+			<div className="relative border border-transparent rounded w-full hover:shadow-sm">
 				<div
-					className="bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg overflow-hidden"
-					style={{
-						backgroundImage:
-							"linear-gradient(90deg, white 0%, #f6fbff 20%, #d9edff 50%, #f6fbff 80%, white 100%)",
-					}}
+					className="overflow-hidden"
 				>
-					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-2/3">
-						<div className="flex md:flex-row flex-col items-baseline gap-4 md:mb-2">
-							<h2 className="font-semibold text-cgs-blue text-sm md:text-lg">{title}</h2>
+					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-3/4">
+						<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
+							<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
 							<span className="text-xs text-typo-tertiary md:text-sm">
 								{available != 0 ? `${available} Available` : "No Available"}
 							</span>
 						</div>
 						<p
 							hidden={isMobile}
-							className="max-w-[70%] lg:max-w-[90%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
+							className="max-w-[70%] lg:max-w-[82%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
 						>
 							{subtext}
 						</p>
 					</div>
 				</div>
 			</div>
-			<div className="right-6 md:right-8 bottom-0 absolute h-[110%]">
+			<div className={cn("right-6 md:right-5 bottom-0 absolute ", title === "Securities" ? "h-[105%]" : "h-full")}>
 				<Image
 					src={imageSrc}
 					alt={imageAlt ?? title}
-					className="w-auto h-full object-contain scale-x-90"
+					className="w-auto h-full object-contain"
 					width={imageWidth}
 					height={imageHeight}
 				/>
@@ -114,8 +107,7 @@ const Investment = () => {
 	return (
 		<div className="bg-white container-default">
 			<div className="flex items-center gap-2">
-				<span className="font-semibold text-base">Investment Products</span>
-				<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
+				<span className="font-semibold text-2xl">Investment Products</span>
 			</div>
 
 			<div className="flex flex-col md:flex-row justify-between gap-4 mt-6">
@@ -132,7 +124,7 @@ const Investment = () => {
 					title="Alternatives"
 					available={0}
 					imageSrc="/icons/Investment-right.svg"
-					subtext="Diversify with curated funds that match different risk profiles and investment horizons"
+					subtext="Looking for short-term, high-quality corporate debt instruments? Explore our commercial papers!"
 				/>
 			</div>
 		</div>

@@ -170,7 +170,8 @@ const UpdateSignature = () => {
 		// Step 1: Upload the file
 		const uploadResponse = await uploadSignature(
 			fileToUpload,
-			JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
+			// JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
+			"main"
 		);
 
 		if (!uploadResponse.success || !uploadResponse.data) {

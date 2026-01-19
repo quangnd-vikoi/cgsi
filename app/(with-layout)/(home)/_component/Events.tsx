@@ -27,36 +27,36 @@ interface EventAPIItem {
 // Event Card Component
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
-		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block h-[calc(100%-1px)]">
-			<div className="bg-white shadow mb-[1px] rounded-lg h-full flex flex-col">
+		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block">
+			<div className="bg-white shadow mb-[1px] rounded flex flex-col">
 				<Image
-					className={cn("rounded-t-lg w-full h-auto", imageClassName)}
+					className={cn("rounded-t w-full h-auto", imageClassName)}
 					src={event.imageUrl}
 					alt={event.title}
 					width={283}
 					height={283}
 				/>
-				<div className="flex flex-col gap-[14px] md:gap-4 px-3 py-[14px] flex-grow">
-					<div className="min-h-[32px] font-semibold text-xs line-clamp-2 leading-4">{event.title}</div>
+				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 ">
+					<div className="h-12 text-base md:text-lg font-semibold line-clamp-2 leading-6">{event.title}</div>
 
-					<div className="justify-start text-xs md:text-sm text-typo-secondary line-clamp-4 md:line-clamp-3 leading-4 flex-grow">
+					<div className="text-sm md:text-base text-typo-secondary line-clamp-3 md:line-clamp-3 h-[72px] overflow-hidden">
 						{event.description}
 					</div>
-					<div className="flex flex-col gap-2 mt-auto">
-						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary">
-							<Calendar className="w-4 h-4" />
+					<div className="flex flex-col gap-3 text-sm md:text-base text-typo-secondary">
+						<div className="flex items-center gap-4  ">
+							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.25} />
 							{event.date}
 						</div>
 
 						{event.time && (
-							<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-								<Clock className="w-4 h-4" />
+							<div className="flex items-center gap-4 leading-6">
+								<Clock className="w-5 h-5 text-cgs-blue" strokeWidth={1.25} />
 								{event.time}
 							</div>
 						)}
 
-						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-							<MapPin className="w-4 h-4" />
+						<div className="flex items-center gap-4 leading-6">
+							<MapPin className="w-5 h-5 text-cgs-blue" strokeWidth={1.25} />
 							{event.location}
 						</div>
 					</div>
@@ -73,8 +73,11 @@ interface EventsProps {
 const Events = ({ imageClassName }: EventsProps) => {
 	const [events, setEvents] = useState<EventAPIItem[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
+		setMounted(true);
+
 		const fetchEvents = async () => {
 			try {
 				const url = ENDPOINTS.events();
@@ -93,24 +96,23 @@ const Events = ({ imageClassName }: EventsProps) => {
 		fetchEvents();
 	}, []);
 
-	if (loading) {
+	if (!mounted || loading) {
 		return null; // Or a loading skeleton
 	}
 
 	return (
 		<div
 			className="bg-background-section md:bg-cover py-6 md:py-12"
-			style={{ backgroundImage: getBgImageClass('/images/bg-event.png') }}
 		>
-			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
+			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1320px]">
 				<div className="flex justify-between items-center pr-4 md:pr-0">
 					<div className="flex items-center gap-2">
-						<span className="font-semibold text-base">Event & Seminars</span>
+						<span className="font-semibold text-2xl">Event & Seminars</span>
 					</div>
 					<div className="flex items-center gap-3">
 						<Link
 							href={CGSI.EVENTS}
-							className="font-normal text-cgs-blue text-xs md:text-sm"
+							className="text-cgs-blue text-xs md:text-sm font-semibold underline underline-offset-2"
 							target="_blank"
 						>
 							View All
@@ -119,7 +121,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 				</div>
 
 				{/* Event Carousel */}
-				<div className="mt-6">
+				<div className="mt-7">
 					{events.length === 0 ? (
 						<ErrorState
 							type="empty"
@@ -146,6 +148,17 @@ const Events = ({ imageClassName }: EventsProps) => {
 							)}
 							getItemKey={(item) => item.SEO_Page_Name}
 							loop={true}
+							itemsPerView={{
+								"mobile": "basis-[75.2%]",
+								"tablet": "md:basis-[50.8%]",
+								"laptop": "lg:basis-[33.4%]",
+								"desktop": "xl:basis-[33.3%]",
+							}}
+							centerThreshold={{
+								"tablet": 2,
+								"laptop": 3,
+								"desktop": 3,
+							}}
 						/>
 					)}
 				</div>

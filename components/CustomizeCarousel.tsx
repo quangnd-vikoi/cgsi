@@ -75,11 +75,13 @@ const CustomizeCarousel = <T,>({
 }: CustomizeCarousel<T>) => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
-	const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 0);
+	const [windowWidth, setWindowWidth] = useState(
+		typeof window !== "undefined" ? window.innerWidth : 1280
+	);
 
 	const itemsCount = items.length;
 
-	// Handle window resize
+	// Handle window resize and initial mount
 	useEffect(() => {
 		const handleResize = () => {
 			setWindowWidth(window.innerWidth);
@@ -95,9 +97,9 @@ const CustomizeCarousel = <T,>({
 	const isDesktop = windowWidth >= breakpoints.desktop;
 
 	const threshold = {
-		tablet: centerThreshold.tablet ?? 3,
-		laptop: centerThreshold.laptop ?? 4,
-		desktop: centerThreshold.desktop ?? 5,
+		tablet: centerThreshold.tablet ?? 2,
+		laptop: centerThreshold.laptop ?? 3,
+		desktop: centerThreshold.desktop ?? 4,
 	};
 
 	const shouldCenter =
@@ -121,7 +123,7 @@ const CustomizeCarousel = <T,>({
 	}, [api]);
 
 	// Show dots only on mobile when there are 2+ items
-	const shouldShowDots = showDots && itemsCount >= 0;
+	const shouldShowDots = showDots && itemsCount >= 2;
 
 	// Show arrows only when not centering
 	const shouldShowArrows = showArrows && !shouldCenter;
@@ -138,7 +140,7 @@ const CustomizeCarousel = <T,>({
 			>
 				<CarouselContent
 					className={cn(
-						"justify-start w-full overflow-y-visible",
+						"justify-start w-full",
 						shouldCenter && "justify-center",
 						"gap-0",
 						"lg:gap-1 xl:gap-2",
@@ -168,14 +170,14 @@ const CustomizeCarousel = <T,>({
 						<CarouselPrevious
 							className={cn(
 								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
-								"md:flex md:-left-4 xl:-left-12",
+								"md:flex md:-left-4",
 								arrowClassName
 							)}
 						/>
 						<CarouselNext
 							className={cn(
 								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
-								"md:flex md:-right-4 lg:-right-2 xl:-right-12",
+								"md:flex md:-right-4",
 								arrowClassName
 							)}
 						/>
@@ -185,7 +187,7 @@ const CustomizeCarousel = <T,>({
 
 			{/* Dot Navigation - only show on mobile when there are 2+ items */}
 			{shouldShowDots && (
-				<div className="md:hidden flex justify-center gap-3 mt-4">
+				<div className="flex justify-center gap-3 mt-4 md:mt-6">
 					{Array.from({ length: itemsCount }).map((_, index) => (
 						<button
 							key={index}

@@ -118,7 +118,7 @@
 	--typo-primary: #242629;
 	--typo-secondary: #4b5563;
 	--typo-tertiary: #8492a2;
-	--cgs-blue: #003A8C;
+	--cgs-blue: #003a8c;
 	--stroke-primary: #bac3d1;
 	--stroke-secondary: #dde4ec;
 	--status-selected: #eaf1ff;
@@ -192,12 +192,6 @@
 		@apply border-border outline-ring/50;
 	}
 
-	* {
-		user-select: none;
-		-webkit-user-select: none;
-		/* cursor: default; */
-	}
-
 	/* Giữ cursor pointer cho các element có thể click */
 	button,
 	a,
@@ -223,7 +217,7 @@
 
 @layer components {
 	.container-default {
-		@apply mx-4 md:mx-6 xl:mx-auto xl:max-w-[1200px];
+		@apply mx-4 md:mx-6 xl:mx-auto xl:max-w-[1320px];
 	}
 
 	.investment-card {
