@@ -19,7 +19,7 @@ interface ContractsTableProps {
 
 export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: ContractsTableProps) {
 	return (
-		<div className="overflow-x-auto rounded-lg border border-stroke-secondary mb-4">
+		<div className="overflow-x-auto rounded border border-stroke-secondary mb-4">
 			<Table>
 				<TableHeader>
 					<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:px-4 [&>th]:py-4">
@@ -46,9 +46,8 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 							<TableCell>{contract.contractId}</TableCell>
 							<TableCell>
 								<span
-									className={`px-2 py-1 rounded text-xs ${
-										contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"
-									}`}
+									className={`px-2 py-1 rounded text-xs ${contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"
+										}`}
 								>
 									{contract.status}
 								</span>
@@ -57,9 +56,8 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 							<TableCell>{contract.dueDate}</TableCell>
 							<TableCell className="text-right">{contract.settlementCcy}</TableCell>
 							<TableCell
-								className={`text-right ${
-									contract.gainLoss > 0 ? "!text-status-success" : "!text-status-error"
-								}`}
+								className={`text-right ${contract.gainLoss > 0 ? "!text-status-success" : "!text-status-error"
+									}`}
 							>
 								{contract.gainLoss > 0 ? "+" : "-"}{" "}
 								{Math.abs(contract.gainLoss).toLocaleString("en-US", {

@@ -89,7 +89,7 @@
 	--card-foreground: oklch(0.145 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
-	--primary: #006ceb;
+	--primary: #003a8c;
 	/* --primary: oklch(0.205 0 0); */
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.97 0 0);
@@ -221,10 +221,11 @@
 	}
 
 	.investment-card {
-		@apply border border-transparent rounded-lg;
+		@apply border border-transparent rounded;
 		/* áp dụng utility cơ bản */
 
-		border-image-source: linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
+		border-image-source:
+			linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
 			linear-gradient(
 				90deg,
 				color(display-p3 0.886 0.941 1) 0%,
@@ -262,7 +263,9 @@
 			#dff0ff 50.48%,
 			rgba(255, 255, 255, 0.8) 100%
 		);
-		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		mask-composite: exclude;
 		-webkit-mask-composite: xor;
 		pointer-events: none;
@@ -384,10 +387,17 @@
 				#dff0ff 50.48%,
 				rgba(255, 255, 255, 0.8) 100%
 			);
-			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+			-webkit-mask:
+				linear-gradient(#fff 0 0) content-box,
+				linear-gradient(#fff 0 0);
 			mask-composite: exclude;
 			-webkit-mask-composite: xor;
 			pointer-events: none;
 		}
+	}
+
+	/* === Custom Shadows === */
+	.shadow-light-blue {
+		box-shadow: 0px 3px 16px 0px rgba(0, 108, 235, 0.2);
 	}
 }

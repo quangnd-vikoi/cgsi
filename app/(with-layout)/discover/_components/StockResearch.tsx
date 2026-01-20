@@ -27,10 +27,10 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	return (
 		<div
 			onClick={onClick}
-			className="relative rounded-lg shadow-sm w-full cursor-pointer "
+			className="relative rounded shadow-sm w-full cursor-pointer "
 		>
-			<div className="relative rounded-lg w-full border border-transparent hover:border-background-selected hover:shadow h-full">
-				<div className="overflow-hidden rounded-lg bg-stockresearch-gradient shadow-sm h-full">
+			<div className="relative rounded w-full border border-transparent hover:border-background-selected hover:shadow h-full">
+				<div className="overflow-hidden rounded bg-stockresearch-gradient shadow-sm h-full">
 					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-full md:w-1/2">
 						<div className="flex items-center gap-4 md:mb-2">
 							<div className="md:hidden bg-white p-2 rounded-full">

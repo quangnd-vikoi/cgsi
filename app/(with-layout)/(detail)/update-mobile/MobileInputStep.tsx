@@ -158,7 +158,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 							<div className="relative">
 								<Input
 									placeholder="Search country name or code"
-									className="rounded-lg px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary text-sm"
+									className="rounded px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary text-sm"
 									value={searchTerm}
 									onChange={handleSearchChange}
 								/>
@@ -175,7 +175,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 							{selectedCountry && (
 								<div>
 									<p className="text-xs text-typo-secondary">Selected</p>
-									<div className="mt-3 rounded-lg bg-background-section p-4">
+									<div className="mt-3 rounded bg-background-section p-4">
 										<div className="border border-stroke-secondary rounded-md px-4 py-2 flex justify-between items-center">
 											<div className="flex justify-center">
 												<CircleFlag

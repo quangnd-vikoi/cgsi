@@ -261,7 +261,7 @@ const UpdateEmail = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-lg flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
+			<div className="bg-white rounded flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
 				{step === 1 && (
 					<InputStep
 						newEmail={newEmail}

@@ -23,7 +23,7 @@ interface InsightAPIItem {
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
 		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="mb-[1px] block h-[calc(100%-1px)]">
-			<div className="bg-white shadow mb-[1px] rounded-lg overflow-hidden h-full flex flex-col">
+			<div className="bg-white shadow mb-[1px] rounded overflow-hidden h-full flex flex-col">
 				<div className="relative w-full aspect-[16/9]">
 					<Image
 						src={article.imageUrl}

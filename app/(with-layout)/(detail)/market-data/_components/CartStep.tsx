@@ -25,7 +25,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
         toast.success("Item Removed", "The selected item has been removed from your cart")
     };
     return (
-        <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2 pad-x py-6">
                 <p className="text-typo-primary text-base font-semibold">Subscription Items</p>

@@ -17,7 +17,7 @@ const FORM_FIELDS = [
 
 const DeclarationStep = ({ onConfirm }: DeclarationStepProps) => {
     return (
-        <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2">
                 <div className="py-6 pad-x space-y-6">
                     <div>

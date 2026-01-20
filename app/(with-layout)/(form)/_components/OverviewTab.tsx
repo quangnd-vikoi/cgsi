@@ -104,67 +104,67 @@ const OverviewTab = () => {
 		},
 		...(productDetails.paymentDate
 			? [
-					{
-						id: "3",
-						label: "Payment Due Date",
-						date: paymentDateTime.date,
-						time: paymentDateTime.time,
-						status: getTimelineStatus(productDetails.paymentDate),
-					},
-			  ]
+				{
+					id: "3",
+					label: "Payment Due Date",
+					date: paymentDateTime.date,
+					time: paymentDateTime.time,
+					status: getTimelineStatus(productDetails.paymentDate),
+				},
+			]
 			: []),
 		...(productDetails.allocationDate
 			? [
-					{
-						id: "4",
-						label: "Allocation Date",
-						date: allocationDateTime.date,
-						time: allocationDateTime.time,
-						status: getTimelineStatus(productDetails.allocationDate),
-					},
-			  ]
+				{
+					id: "4",
+					label: "Allocation Date",
+					date: allocationDateTime.date,
+					time: allocationDateTime.time,
+					status: getTimelineStatus(productDetails.allocationDate),
+				},
+			]
 			: []),
 		...(productDetails.acknowledgementDate
 			? [
-					{
-						id: "5",
-						label: "Acknowledgement Date",
-						date: acknowledgementDateTime.date,
-						time: acknowledgementDateTime.time,
-						status: getTimelineStatus(productDetails.acknowledgementDate),
-					},
-			  ]
+				{
+					id: "5",
+					label: "Acknowledgement Date",
+					date: acknowledgementDateTime.date,
+					time: acknowledgementDateTime.time,
+					status: getTimelineStatus(productDetails.acknowledgementDate),
+				},
+			]
 			: []),
 		...(productDetails.listingDate
 			? [
-					{
-						id: "6",
-						label: "Listing Date",
-						date: listingDateTime.date,
-						time: listingDateTime.time,
-						status: getTimelineStatus(productDetails.listingDate),
-					},
-			  ]
+				{
+					id: "6",
+					label: "Listing Date",
+					date: listingDateTime.date,
+					time: listingDateTime.time,
+					status: getTimelineStatus(productDetails.listingDate),
+				},
+			]
 			: []),
 	];
 
 	const fundamentals: FundamentalItem[] = [
 		...(productDetails.baseCurrency
 			? [
-					{
-						key: "Base Currency",
-						value: productDetails.baseCurrency,
-						highlighted: true,
-					},
-			  ]
+				{
+					key: "Base Currency",
+					value: productDetails.baseCurrency,
+					highlighted: true,
+				},
+			]
 			: []),
 		...(productDetails.tradingCurrency
 			? [
-					{
-						key: "Trading Currency",
-						value: productDetails.tradingCurrency,
-					},
-			  ]
+				{
+					key: "Trading Currency",
+					value: productDetails.tradingCurrency,
+				},
+			]
 			: []),
 		{
 			key: "Stock Code",
@@ -180,66 +180,63 @@ const OverviewTab = () => {
 		},
 		...(productDetails.brokerageFee !== undefined
 			? [
-					{
-						key: "Brokerage",
-						value: `${productDetails.brokerageFee}%${
-							productDetails.minBrokerageFee
-								? ` (min. ${productDetails.minBrokerageFee} ${productDetails.baseCurrency || ""})`
-								: ""
+				{
+					key: "Brokerage",
+					value: `${productDetails.brokerageFee}%${productDetails.minBrokerageFee
+							? ` (min. ${productDetails.minBrokerageFee} ${productDetails.baseCurrency || ""})`
+							: ""
 						}`,
-					},
-			  ]
+				},
+			]
 			: []),
 		...(productDetails.transferFee !== undefined
 			? [
-					{
-						key: "Admin Fee",
-						value: `${productDetails.transferFee} ${productDetails.baseCurrency || ""}${
-							productDetails.gst ? " plus GST" : ""
+				{
+					key: "Admin Fee",
+					value: `${productDetails.transferFee} ${productDetails.baseCurrency || ""}${productDetails.gst ? " plus GST" : ""
 						}`,
-						highlighted: true,
-					},
-			  ]
+					highlighted: true,
+				},
+			]
 			: []),
 		...(productDetails.managementFee !== undefined
 			? [
-					{
-						key: "Management Fee",
-						value: `${productDetails.managementFee}%`,
-					},
-			  ]
+				{
+					key: "Management Fee",
+					value: `${productDetails.managementFee}%`,
+				},
+			]
 			: []),
 		...(productDetails.conversionRate !== undefined
 			? [
-					{
-						key: "Conversion Rate from Base Currency to SGD",
-						value: `${productDetails.conversionRate}`,
-					},
-			  ]
+				{
+					key: "Conversion Rate from Base Currency to SGD",
+					value: `${productDetails.conversionRate}`,
+				},
+			]
 			: []),
 		...(productDetails.paymentMode
 			? [
-					{
-						key: "Mode of Payment",
-						value: productDetails.paymentMode,
-					},
-			  ]
+				{
+					key: "Mode of Payment",
+					value: productDetails.paymentMode,
+				},
+			]
 			: []),
 		{
 			key: "Minimum Subscription",
-			value: `${productDetails.minQty.toLocaleString()} Unit(s)${
-				productDetails.incrementQty
+			value: `${productDetails.minQty.toLocaleString()} Unit(s)${productDetails.incrementQty
 					? ` (increments of ${productDetails.incrementQty.toLocaleString()} Unit(s))`
 					: ""
-			}`,
+				}`,
 		},
 		...(productDetails.excludedInvestment
 			? [
-					{
-						key: "Excluded/ Specific Investment",
-						value: productDetails.excludedInvestment,
-					},
-			  ]
+				{
+					key: "Excluded/ Specific Investment",
+					value: productDetails.excludedInvestment,
+				},
+			]
 			: []),
 	];
 	return (
@@ -267,7 +264,7 @@ const OverviewTab = () => {
 				)}
 			</div>
 			{/* Timeline */}
-			<div className="p-4 bg-background-section rounded-lg">
+			<div className="p-4 bg-background-section rounded">
 				<div className="relative">
 					{/* Timeline items */}
 					<div className="space-y-5">
@@ -282,8 +279,8 @@ const OverviewTab = () => {
 									{!isLast && (
 										<div
 											className={`absolute left-[9px] top-5 w-0.5 ${isNextComing
-													? "border-l-2 border-dashed border-status-disable-primary bg-transparent"
-													: "bg-cgs-blue"
+												? "border-l-2 border-dashed border-status-disable-primary bg-transparent"
+												: "bg-cgs-blue"
 												}`}
 											style={{ height: "calc(100% + 20px)" }}
 										></div>
@@ -293,21 +290,21 @@ const OverviewTab = () => {
 										<div className="flex items-center gap-2">
 											<div
 												className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 ${item.status === "completed"
-														? "bg-cgs-blue border-cgs-blue"
-														: item.status === "active"
-															? "bg-white border-cgs-blue"
-															: "bg-white border-status-disable-primary"
+													? "bg-cgs-blue border-cgs-blue"
+													: item.status === "active"
+														? "bg-white border-cgs-blue"
+														: "bg-white border-status-disable-primary"
 													}`}
 											>
 												{item.status === "completed" ? (
-													<Check className="w-5 h-5 text-white" />
+													<Check className="w-3 h-3 text-white" strokeWidth={4} />
 												) : item.status === "active" ? (
 													<Dot
 														strokeWidth={10}
 														className="w-5 h-5 text-cgs-blue"
 													/>
 												) : (
-													<Check className="w-5 h-5 text-status-disable-primary" />
+													<Check className="w-3 h-3 text-status-disable-primary" strokeWidth={4} />
 												)}
 											</div>
 											<span className="text-typo-primary text-xs font-medium">
@@ -331,7 +328,7 @@ const OverviewTab = () => {
 			<Separator className="mt-6" />
 			{/* Fundamental */}
 
-			<div className="rounded-lg pb-4">
+			<div className="rounded pb-4">
 				<h5 className="text-base font-semibold text-typo-primary">Fundamentals</h5>
 				<table className="w-full mt-4 text-xs">
 					<tbody className="">

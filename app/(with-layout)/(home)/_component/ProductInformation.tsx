@@ -59,7 +59,7 @@ const ProductInformation = () => {
 
 			{/* Mobile Menu */}
 
-			<div className="border border-stroke-secondary rounded-lg mt-6 md:hidden">
+			<div className="border border-stroke-secondary rounded mt-6 md:hidden">
 				{PRODUCT_ITEMS.map((item, index) => {
 					return (
 						<Link href={item.href} key={index} className="flex p-4 items-center justify-between">

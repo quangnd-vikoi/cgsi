@@ -34,7 +34,7 @@ export function SummarySection({ contracts }: SummarySectionProps) {
 	const buyCurrency = "SGD";
 
 	return (
-		<div className="bg-background-section p-4 rounded-lg border border-stroke-secondary mb-6">
+		<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
 				<SummaryCard
 					label={`Sell Contracts (${sellContracts.length})`}

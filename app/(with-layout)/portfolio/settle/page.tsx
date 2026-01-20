@@ -66,7 +66,7 @@ export default function SettlePage() {
 					<Title showBackButton title="Outstanding Payments" />
 
 					{/* Content Box */}
-					<div className="bg-white pad rounded-lg flex-1 flex flex-col">
+					<div className="bg-white pad rounded flex-1 flex flex-col">
 						{/* Account Selector & Export Button */}
 						<div className="mb-6 flex justify-between items-center">
 							<Select

@@ -10,7 +10,7 @@ import { getBgImageClass } from "@/lib/utils";
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
 	return (
 		<Link href={article.url} target="_blank">
-			<div className="bg-white shadow rounded-lg mb-[1px]">
+			<div className="bg-white shadow rounded mb-[1px]">
 				<div className="flex flex-col gap-4 px-3 py-[14px]">
 					<div className="text-[10px] font-medium text-typo-tertiary">{article.tag}</div>
 					<div className="font-semibold text-xs leading-4 line-clamp-2 min-h-[32px]">

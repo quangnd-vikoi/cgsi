@@ -61,7 +61,7 @@ const CentralDealingDesk = () => {
 
 			<div className="flex-1 overflow-y-auto pad-x pr-2 md:pr-3">
 				{/* Business Hours */}
-				<div className="mt-6 p-4 rounded-lg bg-background-section">
+				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center mb-3">
 						<Clock size={16} className="text-icon-light" />
 						<p className="text-sm font-semibold text-typo-primary">Business Hours</p>

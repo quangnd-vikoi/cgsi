@@ -76,12 +76,9 @@ export default function Sidebar() {
 	// Loading state
 	if (loading) {
 		return (
-			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-				<div className="flex-shrink-0 pad !pb-4">
-					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-				</div>
-				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
-					<div className="space-y-4">
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
+				<div className="flex-1 flex items-center justify-center pad">
+					<div className="space-y-4 w-full">
 						{[...Array(3)].map((_, i) => (
 							<div key={i} className="rounded border border-stroke-secondary p-4 space-y-2">
 								<Skeleton className="h-4 w-3/4" />
@@ -97,10 +94,7 @@ export default function Sidebar() {
 	// Error state
 	if (error) {
 		return (
-			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-				<div className="flex-shrink-0 pad !pb-4">
-					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-				</div>
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
 				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
 					<ErrorState
 						type="error"
@@ -113,14 +107,12 @@ export default function Sidebar() {
 	}
 
 	return (
-		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-			{/* Header - Fixed */}
-			<div className="flex-shrink-0 pad !pb-4">
-				<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-			</div>
-
+		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
 			{/* Content - Scrollable */}
-			<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
+			<div className="flex-1 overflow-y-auto sidebar-scroll pad">
+				<div className="flex-shrink-0 pb-6">
+					<h1 className="text-base font-semibold text-typo-primary">Products</h1>
+				</div>
 				{etfData.length === 0 ? (
 					<ErrorState
 						type="empty"
@@ -163,10 +155,10 @@ export default function Sidebar() {
 									</div>
 									<Button
 										className={cn(
-											"gap-1 px-3 h-6 border border-cgs-blue text-xs rounded-4xl flex items-center leading-2",
+											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue  text-xs rounded flex items-center leading-2",
 											selectedId === etf.id
-												? "bg-cgs-blue text-white"
-												: "bg-transparent text-cgs-blue hover:bg-transparent hover:opacity-75 transition-colors "
+												? "bg-background-selected hover:bg-background-selected cursor-default"
+												: "bg-white hover:bg-transparent hover:opacity-80 transition-colors"
 										)}
 										onClick={() => setSelectedItem(etf)}
 									>
@@ -184,7 +176,7 @@ export default function Sidebar() {
 
 								{/* Details */}
 								{!etf.isCompact && (
-									<div className="flex flex-col gap-3 mt-4 *:text-xs">
+									<div className="flex flex-col gap-3 mt-6 *:text-xs">
 										<div className="flex justify-between items-center">
 											<span className=" text-typo-secondary">Issue Price</span>
 											<span className=" font-medium text-typo-primary">

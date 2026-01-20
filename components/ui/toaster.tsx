@@ -71,7 +71,7 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 
 	return (
 		<div
-			className={`${inter.className} relative w-full sm:w-[344px] bg-white border rounded-lg shadow-lg overflow-hidden`}
+			className={`${inter.className} relative w-full sm:w-[344px] bg-white border rounded shadow-lg overflow-hidden`}
 		>
 			<div className="flex items-start gap-1 p-3">
 				{/* Icon */}

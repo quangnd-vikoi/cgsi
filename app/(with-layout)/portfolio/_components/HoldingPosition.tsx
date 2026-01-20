@@ -39,7 +39,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg border border-stroke-secondary">
+        <div className="bg-white rounded border border-stroke-secondary">
             <div className="pad-x py-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4 md:mb-6">
@@ -98,7 +98,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                 </div>
 
                 {/* Table */}
-                <div className="overflow-x-auto  rounded-lg">
+                <div className="overflow-x-auto  rounded">
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">

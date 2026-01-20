@@ -225,7 +225,7 @@ const UpdateSignature = () => {
 							<div className="w-full mt-6">
 								<div
 									className={cn(
-										"border-2 border-dashed rounded-lg overflow-hidden bg-white",
+										"border-2 border-dashed rounded overflow-hidden bg-white",
 										error ? "border-status-error" : "border-cgs-blue"
 									)}
 									style={{ width: "100%", height: "312px" }}
@@ -278,12 +278,12 @@ const UpdateSignature = () => {
 									>
 										<div
 											className={cn(
-												"border border-dashed bg-background-section rounded-lg w-full py-4 flex flex-col items-center justify-center gap-1.5  mt-6",
+												"border border-dashed bg-background-section rounded w-full py-4 flex flex-col items-center justify-center gap-1.5  mt-6",
 												error
 													? "border-status-error bg-background-error text-status-error"
 													: selectedFile != null
 														? "border-stroke-secondary text-status-disable-primary bg-theme-neutral-095 cursor-not-allowed"
-														: "border-cgs-blue text-cgs-blue bg-background-section shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer "
+														: "border-cgs-blue text-cgs-blue bg-background-section shadow-light-blue cursor-pointer "
 											)}
 										>
 											<FileUp className="" size={24} strokeWidth={1.25} />
@@ -312,7 +312,7 @@ const UpdateSignature = () => {
 									</p>
 
 									{selectedFile && (
-										<div className="mt-4 border border-gray-200 rounded-lg overflow-hidden bg-background-section">
+										<div className="mt-4 border border-gray-200 rounded overflow-hidden bg-background-section">
 											<div className="p-3">
 												<div className="flex items-stretch gap-3">
 													{/* File Icon/Image Preview */}

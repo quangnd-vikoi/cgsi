@@ -20,7 +20,7 @@ const DocumentItem: React.FC<DocumentItemProps> = ({ title, filePath }) => {
 	return (
 		<button
 			onClick={handleClick}
-			className="w-full flex items-center justify-between p-4 bg-white border rounded-lg hover:bg-gray-50 transition-colors group"
+			className="w-full flex items-center justify-between p-4 bg-white border rounded hover:bg-gray-50 transition-colors group"
 		>
 			<div className="flex items-center gap-3">
 				<FileText className="w-5 h-5 text-typo-secondary" />

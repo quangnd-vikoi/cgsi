@@ -14,7 +14,7 @@ import { ExchangeRateTable } from "./_components/ExchangeRateTable";
 import { PortfolioType } from "@/types";
 const DevelopmentBanner = () => {
 	return (
-		<div className="bg-white shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] px-4 py-3 border-b rounded-lg w-full">
+		<div className="bg-white shadow-light-blue px-4 py-3 border-b rounded w-full">
 			<div className="flex flex-wrap justify-between items-center gap-3 mx-auto max-w-screen-2xl">
 				<div className="flex items-center gap-2">
 					<AlertCircle className="flex-shrink-0 w-4 h-4 text-cgs-blue" />

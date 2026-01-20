@@ -33,18 +33,18 @@
 
 ### Available Endpoints
 
-| Category | Endpoint | Method | Auth | Status |
-|----------|----------|--------|------|--------|
-| **User Info** | `/userInfo` | GET | 🔒 | ❌ Not Implemented |
-| **Trading Rep** | `/trInfo` | GET | 🔒 | ✅ Implemented |
-| **Accounts** | `/accounts` | GET | 🔒 | ✅ Implemented |
-| **Trading Info** | `/tradingInfo` | GET | 🔒 | ❌ Not Implemented |
-| **BCAN Request** | `/tradingInfo/bcan/request` | POST | 🔒 | ✅ Implemented |
-| **Donation Plan** | `/donation/plan` | GET | 🔒 | ✅ Implemented |
-| **Submit Donation** | `/donation/submission` | POST | 🔒 | ✅ Implemented |
-| **Cancel Donation** | `/donation/cancel` | POST | 🔒 | ✅ Implemented |
-| **Client Service Contact** | `/contactUs/clientService` | GET | 🔓 | ✅ Implemented |
-| **Dealing Desk Contact** | `/contactUs/centralDealingDesk` | GET | 🔓 | ✅ Implemented |
+| Category                   | Endpoint                        | Method | Auth | Status             |
+| -------------------------- | ------------------------------- | ------ | ---- | ------------------ |
+| **User Info**              | `/userInfo`                     | GET    | 🔒   | ❌ Not Implemented |
+| **Trading Rep**            | `/trInfo`                       | GET    | 🔒   | ✅ Implemented     |
+| **Accounts**               | `/accounts`                     | GET    | 🔒   | ✅ Implemented     |
+| **Trading Info**           | `/tradingInfo`                  | GET    | 🔒   | ❌ Not Implemented |
+| **BCAN Request**           | `/tradingInfo/bcan/request`     | POST   | 🔒   | ✅ Implemented     |
+| **Donation Plan**          | `/donation/plan`                | GET    | 🔒   | ✅ Implemented     |
+| **Submit Donation**        | `/donation/submission`          | POST   | 🔒   | ✅ Implemented     |
+| **Cancel Donation**        | `/donation/cancel`              | POST   | 🔒   | ✅ Implemented     |
+| **Client Service Contact** | `/contactUs/clientService`      | GET    | 🔓   | ✅ Implemented     |
+| **Dealing Desk Contact**   | `/contactUs/centralDealingDesk` | GET    | 🔓   | ✅ Implemented     |
 
 **Implementation Status:** 8/12 basic endpoints (67%)
 
@@ -246,6 +246,7 @@ export interface DonationCancelResponse {
 ```
 
 **Key Points:**
+
 - ✅ Use `interface` for all API types
 - ✅ Add JSDoc comments describing the endpoint
 - ✅ Use `?` for optional fields
@@ -308,9 +309,7 @@ import type {
  *   console.log('User:', response.data.name);
  * }
  */
-export const getUserInfo = async (): Promise<
-	APIResponse<UserInfoResponse>
-> => {
+export const getUserInfo = async (): Promise<APIResponse<UserInfoResponse>> => {
 	return await fetchAPI<UserInfoResponse>(ENDPOINTS.getUserInfo(), {
 		useAuth: true,
 	});
@@ -322,9 +321,7 @@ export const getUserInfo = async (): Promise<
  * @returns Trading information including account status, BCAN, etc.
  * @requires Authentication - Bearer token
  */
-export const getTradingInfo = async (): Promise<
-	APIResponse<TradingInfoResponse>
-> => {
+export const getTradingInfo = async (): Promise<APIResponse<TradingInfoResponse>> => {
 	return await fetchAPI<TradingInfoResponse>(ENDPOINTS.getTradingInfo(), {
 		useAuth: true,
 	});
@@ -349,16 +346,12 @@ export const getTradingInfo = async (): Promise<
  *   });
  * }
  */
-export const createBcanRequest = async (
-	accountNo: string
-): Promise<APIResponse<BcanResponse>> => {
+export const createBcanRequest = async (accountNo: string): Promise<APIResponse<BcanResponse>> => {
 	const requestData: BcanRequest = { accountNo };
 
-	return await postAPI<BcanResponse, BcanRequest>(
-		ENDPOINTS.createBcanRequest(),
-		requestData,
-		{ useAuth: true }
-	);
+	return await postAPI<BcanResponse, BcanRequest>(ENDPOINTS.createBcanRequest(), requestData, {
+		useAuth: true,
+	});
 };
 
 // ============================================
@@ -377,13 +370,8 @@ export const createBcanRequest = async (
  *   setPlans(response.data);
  * }
  */
-export const getDonationPlans = async (): Promise<
-	APIResponse<DonationPlanResponse[]>
-> => {
-	return await fetchAPI<DonationPlanResponse[]>(
-		ENDPOINTS.getDonationPlan(),
-		{ useAuth: true }
-	);
+export const getDonationPlans = async (): Promise<APIResponse<DonationPlanResponse[]>> => {
+	return await fetchAPI<DonationPlanResponse[]>(ENDPOINTS.getDonationPlan(), { useAuth: true });
 };
 
 /**
@@ -402,12 +390,12 @@ export const getDonationPlans = async (): Promise<
  * });
  */
 export const submitDonation = async (
-	donationData: DonationSubmissionRequest
+	donationData: DonationSubmissionRequest,
 ): Promise<APIResponse<DonationSubmissionResponse>> => {
 	return await postAPI<DonationSubmissionResponse, DonationSubmissionRequest>(
 		ENDPOINTS.submitDonation(),
 		donationData,
-		{ useAuth: true }
+		{ useAuth: true },
 	);
 };
 
@@ -424,15 +412,13 @@ export const submitDonation = async (
  *   toast.success('Donation Cancelled');
  * }
  */
-export const cancelDonation = async (
-	donationId: number
-): Promise<APIResponse<DonationCancelResponse>> => {
+export const cancelDonation = async (donationId: number): Promise<APIResponse<DonationCancelResponse>> => {
 	const requestData: DonationCancelRequest = { donationId };
 
 	return await postAPI<DonationCancelResponse, DonationCancelRequest>(
 		ENDPOINTS.cancelDonation(),
 		requestData,
-		{ useAuth: true }
+		{ useAuth: true },
 	);
 };
 
@@ -685,7 +671,7 @@ export function DonationPlans() {
 	return (
 		<div className="space-y-4">
 			{plans.map((plan) => (
-				<div key={plan.planId} className="border rounded-lg p-4">
+				<div key={plan.planId} className="border rounded p-4">
 					<h3 className="font-semibold">{plan.planName}</h3>
 					<p className="text-sm text-gray-600">
 						Beneficiary: {plan.beneficiary}
@@ -807,24 +793,26 @@ export const useUserStore = create<UserState>((set) => ({
 	country: null,
 
 	// Set user data from API response
-	setUserData: (data) => set((state) => ({
-		...state,
-		...data,
-	})),
+	setUserData: (data) =>
+		set((state) => ({
+			...state,
+			...data,
+		})),
 
 	// Clear user data on logout
-	clearUserData: () => set({
-		email: "",
-		mobile: "",
-		profileId: null,
-		name: null,
-		icNumber: null,
-		nationality: null,
-		dateOfBirth: null,
-		address: null,
-		postalCode: null,
-		country: null,
-	}),
+	clearUserData: () =>
+		set({
+			email: "",
+			mobile: "",
+			profileId: null,
+			name: null,
+			icNumber: null,
+			nationality: null,
+			dateOfBirth: null,
+			address: null,
+			postalCode: null,
+			country: null,
+		}),
 }));
 ```
 
@@ -873,25 +861,26 @@ export const useTradingAccountStore = create<TradingAccountState>((set) => ({
 			} else {
 				set({
 					loading: false,
-					error: response.error || 'Failed to load accounts'
+					error: response.error || "Failed to load accounts",
 				});
 			}
 		} catch (error) {
 			set({
 				loading: false,
-				error: 'Network error. Please try again.'
+				error: "Network error. Please try again.",
 			});
 		}
 	},
 
 	setSelectedAccount: (account) => set({ selectedAccount: account }),
 
-	clearAccounts: () => set({
-		accounts: [],
-		selectedAccount: null,
-		loading: false,
-		error: null,
-	}),
+	clearAccounts: () =>
+		set({
+			accounts: [],
+			selectedAccount: null,
+			loading: false,
+			error: null,
+		}),
 }));
 ```
 
@@ -946,26 +935,29 @@ export const useTradingAccountStore = create<TradingAccountState>((set) => ({
 ### Current Mock Data Locations
 
 1. **Trading Account Store** (`stores/tradingAccountStore.ts`)
-   - Currently has hardcoded accounts array
-   - Replace with `fetchAccounts()` API call
+    - Currently has hardcoded accounts array
+    - Replace with `fetchAccounts()` API call
 
 2. **User Store** (`stores/userStore.ts`)
-   - Currently has minimal user data
-   - Enhance with full user profile fields
+    - Currently has minimal user data
+    - Enhance with full user profile fields
 
 ### Migration Strategy
 
 **Phase 1: Side-by-side**
+
 - Keep mock data as fallback
 - Add API integration with feature flag
 - Test thoroughly in development
 
 **Phase 2: Gradual rollout**
+
 - Enable API integration for internal users
 - Monitor for errors
 - Keep mock data as emergency fallback
 
 **Phase 3: Complete migration**
+
 - Remove mock data completely
 - API integration becomes primary source
 - Keep error states for API failures

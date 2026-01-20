@@ -114,7 +114,7 @@ const OneTimeForm = () => {
 						}}
 						className="space-y-2 mt-1.5"
 					>
-						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded-lg cursor-pointer mb-0">
+						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded cursor-pointer mb-0">
 							<div className="flex gap-3 items-center">
 								<PaynowIcon />
 								PayNow
@@ -122,7 +122,7 @@ const OneTimeForm = () => {
 							<RadioGroupItem value="now" className="w-6 h-6" />
 						</Label>
 
-						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded-lg cursor-pointer">
+						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded cursor-pointer">
 							<div className="flex gap-3 items-center">
 								<Wallet size={24} className="text-icon-light" />
 								Trust Account

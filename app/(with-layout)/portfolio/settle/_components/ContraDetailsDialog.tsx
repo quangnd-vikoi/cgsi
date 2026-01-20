@@ -111,7 +111,7 @@ export function ContraDetailsDialog({
 					</div>
 
 					{/* Table Section */}
-					<div className="overflow-x-auto rounded-lg">
+					<div className="overflow-x-auto rounded">
 						<Table>
 							<TableHeader>
 								<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:px-4 [&>th]:py-3">

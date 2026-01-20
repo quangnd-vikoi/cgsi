@@ -31,18 +31,18 @@
 
 ### Available Endpoints
 
-| Category | Endpoint | Method | Auth | Status |
-|----------|----------|--------|------|--------|
-| **Account Summary** | `/accountSummary` | GET | 🔒 | ❌ Not Implemented |
-| **Trust Balance** | `/trustBalance` | GET | 🔒 | ❌ Not Implemented |
-| **Trust Balance Details** | `/trustBalance/{accountNo}/details/{currency}` | GET | 🔒 | ❌ Not Implemented |
-| **Custody** | `/custody/{accountNo}` | GET | 🔒 | ❌ Not Implemented |
-| **Margin Summary** | `/margin/{accountNo}` | GET | 🔒 | ❌ Not Implemented |
-| **Margin Details** | `/margin/{accountNo}/details` | GET | 🔒 | ❌ Not Implemented |
-| **Contracts** | `/contracts/{accountNo}` | GET | 🔒 | ❌ Not Implemented |
-| **Contracts Past Due** | `/contracts/{accountNo}/pastdue` | GET | 🔒 | ❌ Not Implemented |
-| **Contra** | `/contra/{accountNo}` | GET | 🔒 | ❌ Not Implemented |
-| **Contra Details** | `/contra/{accountNo}/details/{statementNo}` | GET | 🔒 | ❌ Not Implemented |
+| Category                  | Endpoint                                       | Method | Auth | Status             |
+| ------------------------- | ---------------------------------------------- | ------ | ---- | ------------------ |
+| **Account Summary**       | `/accountSummary`                              | GET    | 🔒   | ❌ Not Implemented |
+| **Trust Balance**         | `/trustBalance`                                | GET    | 🔒   | ❌ Not Implemented |
+| **Trust Balance Details** | `/trustBalance/{accountNo}/details/{currency}` | GET    | 🔒   | ❌ Not Implemented |
+| **Custody**               | `/custody/{accountNo}`                         | GET    | 🔒   | ❌ Not Implemented |
+| **Margin Summary**        | `/margin/{accountNo}`                          | GET    | 🔒   | ❌ Not Implemented |
+| **Margin Details**        | `/margin/{accountNo}/details`                  | GET    | 🔒   | ❌ Not Implemented |
+| **Contracts**             | `/contracts/{accountNo}`                       | GET    | 🔒   | ❌ Not Implemented |
+| **Contracts Past Due**    | `/contracts/{accountNo}/pastdue`               | GET    | 🔒   | ❌ Not Implemented |
+| **Contra**                | `/contra/{accountNo}`                          | GET    | 🔒   | ❌ Not Implemented |
+| **Contra Details**        | `/contra/{accountNo}/details/{statementNo}`    | GET    | 🔒   | ❌ Not Implemented |
 
 **Implementation Status:** 0/10 endpoints implemented (0%)
 
@@ -181,8 +181,7 @@ export const portfolioEndpoints = {
 	 *   { useAuth: true }
 	 * );
 	 */
-	getMarginSummary: (accountNo: string) =>
-		`/portfolio/api/v1/margin/${accountNo}`,
+	getMarginSummary: (accountNo: string) => `/portfolio/api/v1/margin/${accountNo}`,
 
 	/**
 	 * Get Collateral Financing Details
@@ -201,8 +200,7 @@ export const portfolioEndpoints = {
 	 *   { useAuth: true }
 	 * );
 	 */
-	getMarginDetails: (accountNo: string) =>
-		`/portfolio/api/v1/margin/${accountNo}/details`,
+	getMarginDetails: (accountNo: string) => `/portfolio/api/v1/margin/${accountNo}/details`,
 
 	// ============================================================================
 	// Contracts
@@ -226,8 +224,7 @@ export const portfolioEndpoints = {
 	 *   { useAuth: true }
 	 * );
 	 */
-	getContracts: (accountNo: string) =>
-		`/portfolio/api/v1/contracts/${accountNo}`,
+	getContracts: (accountNo: string) => `/portfolio/api/v1/contracts/${accountNo}`,
 
 	/**
 	 * Get Contracts Past Due (Share Awaiting)
@@ -247,8 +244,7 @@ export const portfolioEndpoints = {
 	 *   { useAuth: true }
 	 * );
 	 */
-	getContractsPastDue: (accountNo: string) =>
-		`/portfolio/api/v1/contracts/${accountNo}/pastdue`,
+	getContractsPastDue: (accountNo: string) => `/portfolio/api/v1/contracts/${accountNo}/pastdue`,
 
 	// ============================================================================
 	// Contra
@@ -519,6 +515,7 @@ export interface PaginationParams {
 ```
 
 **Key Points:**
+
 - ✅ All types match exact API response structure
 - ✅ Use `string` for date-time fields (ISO 8601)
 - ✅ Note API quirks (typo "accoutNumber", inconsistent key names)
@@ -581,13 +578,8 @@ import type {
  *   console.log('Accounts:', response.data);
  * }
  */
-export const getAccountSummary = async (): Promise<
-	APIResponse<AccountSummaryResponse[]>
-> => {
-	return await fetchAPI<AccountSummaryResponse[]>(
-		ENDPOINTS.getAccountSummary(),
-		{ useAuth: true }
-	);
+export const getAccountSummary = async (): Promise<APIResponse<AccountSummaryResponse[]>> => {
+	return await fetchAPI<AccountSummaryResponse[]>(ENDPOINTS.getAccountSummary(), { useAuth: true });
 };
 
 // ============================================
@@ -608,13 +600,8 @@ export const getAccountSummary = async (): Promise<
  *   });
  * }
  */
-export const getTrustBalance = async (): Promise<
-	APIResponse<TrustBalancesResponse[]>
-> => {
-	return await fetchAPI<TrustBalancesResponse[]>(
-		ENDPOINTS.getTrustBalance(),
-		{ useAuth: true }
-	);
+export const getTrustBalance = async (): Promise<APIResponse<TrustBalancesResponse[]>> => {
+	return await fetchAPI<TrustBalancesResponse[]>(ENDPOINTS.getTrustBalance(), { useAuth: true });
 };
 
 /**
@@ -635,7 +622,7 @@ export const getTrustBalance = async (): Promise<
 export const getTrustBalanceDetails = async (
 	accountNo: string,
 	currency: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<TrustBalanceDetailsResponse>> => {
 	let url = ENDPOINTS.getTrustBalanceDetails(accountNo, currency);
 
@@ -672,7 +659,7 @@ export const getTrustBalanceDetails = async (
  */
 export const getCustodyHoldings = async (
 	accountNo: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<CustodyResponse>> => {
 	let url = ENDPOINTS.getCustody(accountNo);
 
@@ -705,12 +692,11 @@ export const getCustodyHoldings = async (
  * }
  */
 export const getMarginSummary = async (
-	accountNo: string
+	accountNo: string,
 ): Promise<APIResponse<CollateralFinancingResponse>> => {
-	return await fetchAPI<CollateralFinancingResponse>(
-		ENDPOINTS.getMarginSummary(accountNo),
-		{ useAuth: true }
-	);
+	return await fetchAPI<CollateralFinancingResponse>(ENDPOINTS.getMarginSummary(accountNo), {
+		useAuth: true,
+	});
 };
 
 /**
@@ -729,7 +715,7 @@ export const getMarginSummary = async (
  */
 export const getMarginDetails = async (
 	accountNo: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<CollateralFinancingDetailsResponse>> => {
 	let url = ENDPOINTS.getMarginDetails(accountNo);
 
@@ -767,7 +753,7 @@ export const getMarginDetails = async (
 export const getContracts = async (
 	accountNo: string,
 	marketCode?: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<ContractsResponse>> => {
 	let url = ENDPOINTS.getContracts(accountNo);
 
@@ -801,7 +787,7 @@ export const getContracts = async (
 export const getContractsPastDue = async (
 	accountNo: string,
 	marketCode?: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<ContractsPastDueResponse>> => {
 	let url = ENDPOINTS.getContractsPastDue(accountNo);
 
@@ -839,7 +825,7 @@ export const getContractsPastDue = async (
 export const getContraStatements = async (
 	accountNo: string,
 	marketCode?: string,
-	pagination?: PaginationParams
+	pagination?: PaginationParams,
 ): Promise<APIResponse<ContraResponse>> => {
 	let url = ENDPOINTS.getContra(accountNo);
 
@@ -871,12 +857,11 @@ export const getContraStatements = async (
  */
 export const getContraDetails = async (
 	accountNo: string,
-	statementNo: string
+	statementNo: string,
 ): Promise<APIResponse<ContraDetailsResponse>> => {
-	return await fetchAPI<ContraDetailsResponse>(
-		ENDPOINTS.getContraDetails(accountNo, statementNo),
-		{ useAuth: true }
-	);
+	return await fetchAPI<ContraDetailsResponse>(ENDPOINTS.getContraDetails(accountNo, statementNo), {
+		useAuth: true,
+	});
 };
 
 // ============================================
@@ -898,13 +883,12 @@ export const getContraDetails = async (
  * }
  */
 export const getCompletePortfolio = async (accountNo: string) => {
-	const [summaryRes, trustBalanceRes, custodyRes, contractsRes] =
-		await Promise.allSettled([
-			getAccountSummary(),
-			getTrustBalance(),
-			getCustodyHoldings(accountNo, { pageSize: 100, pageIndex: 0 }),
-			getContracts(accountNo, undefined, { pageSize: 100, pageIndex: 0 }),
-		]);
+	const [summaryRes, trustBalanceRes, custodyRes, contractsRes] = await Promise.allSettled([
+		getAccountSummary(),
+		getTrustBalance(),
+		getCustodyHoldings(accountNo, { pageSize: 100, pageIndex: 0 }),
+		getContracts(accountNo, undefined, { pageSize: 100, pageIndex: 0 }),
+	]);
 
 	return {
 		summary: summaryRes.status === "fulfilled" ? summaryRes.value : null,
@@ -1073,7 +1057,7 @@ export default function PortfolioPage() {
 				<div className="space-y-4">
 					{[...Array(3)].map((_, i) => (
 						<div key={i} className="animate-pulse">
-							<div className="h-32 bg-gray-200 rounded-lg"></div>
+							<div className="h-32 bg-gray-200 rounded"></div>
 						</div>
 					))}
 				</div>
@@ -1104,7 +1088,7 @@ export default function PortfolioPage() {
 			<section className="mb-8">
 				<h2 className="text-xl font-semibold mb-4">Trust Balance</h2>
 				{trustBalance.map((account) => (
-					<div key={account.accountNo} className="border rounded-lg p-4 mb-4">
+					<div key={account.accountNo} className="border rounded p-4 mb-4">
 						<h3 className="font-medium mb-2">Account: {account.accountNo}</h3>
 						<div className="grid grid-cols-2 gap-4">
 							{account.balances.map((balance, idx) => (
@@ -1234,7 +1218,7 @@ export function MarginDetails({ accountNo }: MarginDetailsProps) {
 	return (
 		<div className="space-y-6">
 			{/* Summary Card */}
-			<div className="border rounded-lg p-6">
+			<div className="border rounded p-6">
 				<h3 className="text-lg font-semibold mb-4">Margin Summary</h3>
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 					<div>
@@ -1266,7 +1250,7 @@ export function MarginDetails({ accountNo }: MarginDetailsProps) {
 
 			{/* Details Table */}
 			{details && details.collateralFinancingDetails.length > 0 && (
-				<div className="border rounded-lg p-6">
+				<div className="border rounded p-6">
 					<h3 className="text-lg font-semibold mb-4">
 						Collateral Details ({details.total})
 					</h3>
@@ -1402,7 +1386,7 @@ export function ContractsTable({ accountNo }: ContractsTableProps) {
 			</div>
 
 			{/* Table */}
-			<div className="overflow-x-auto border rounded-lg">
+			<div className="overflow-x-auto border rounded">
 				<table className="w-full">
 					<thead className="bg-gray-50">
 						<tr>
@@ -1542,7 +1526,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
 		} catch (error) {
 			set({
 				loading: false,
-				error: 'Failed to load portfolio data',
+				error: "Failed to load portfolio data",
 			});
 		}
 	},
@@ -1661,6 +1645,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
 ## Priority Notes
 
 ⚠️ **CRITICAL PRIORITY:** Portfolio APIs are the most important missing feature. Users cannot:
+
 - View their account balances
 - Check custody holdings
 - Monitor margin positions
@@ -1670,6 +1655,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
 This should be implemented **before** other missing APIs (Profile SIP, Update Info, etc.)
 
 **Recommended Implementation Order:**
+
 1. Phase 1: Account Summary + Trust Balance (core portfolio view)
 2. Phase 2: Custody Holdings + Contracts (trading data)
 3. Phase 3: Margin/Collateral + Contra (advanced features)

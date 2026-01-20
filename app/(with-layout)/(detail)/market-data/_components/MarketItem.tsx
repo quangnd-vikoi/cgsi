@@ -67,7 +67,7 @@ const MarketItem = ({ title, image, description, dropDownItems, onSelectItem }: 
 
     return (
         <Select open={open} onOpenChange={handleOpenChange}>
-            <SelectTrigger className={cn('w-full flex justify-between items-center border border-stroke-secondary p-4 rounded-lg group cursor-pointer py-4 !h-auto', selectedItem ? 'bg-background-selected border-cgs-blue' : '')}>
+            <SelectTrigger className={cn('w-full flex justify-between items-center border border-stroke-secondary p-4 rounded group cursor-pointer py-4 !h-auto', selectedItem ? 'bg-background-selected border-cgs-blue' : '')}>
                 <div className="flex gap-4 w-full overflow-hidden">
                     <div className="shrink-0">
                         <Image src={image} alt={title} width={44} height={44} />

@@ -260,7 +260,7 @@ const MySubscriptions = () => {
                                                     </button>
                                                 </DropdownMenuTrigger>
 
-                                                <DropdownMenuContent align="end" className='shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] min-w-3xs'>
+                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs'>
                                                     {
                                                         item.status === "Expired" &&
                                                         <Link href={INTERNAL_ROUTES.MARKET_DATA}>

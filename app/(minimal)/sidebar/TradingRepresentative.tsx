@@ -39,7 +39,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 			{representatives.map((rep) => (
 				<div
 					key={rep.id}
-					className="p-4 rounded-lg border border-stroke-secondary bg-background-primary"
+					className="p-4 rounded border border-stroke-secondary bg-background-primary"
 				>
 					{/* Header */}
 					<div className="flex justify-between items-start mb-4">
@@ -160,7 +160,7 @@ const TradingRepresentative = () => {
 			</div>
 
 			<div className="flex-1 overflow-y-auto sidebar-scroll scrollbar-offset-laptop scrollbar-offset-right">
-				<div className="mt-6 p-4 rounded-lg bg-background-section">
+				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center">
 						<CircleQuestionMark size={16} className="text-icon-light" />
 						<p className="text-sm font-semibold text-typo-primary">Information</p>

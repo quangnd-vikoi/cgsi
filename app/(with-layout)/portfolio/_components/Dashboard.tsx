@@ -42,7 +42,7 @@ const DashboardBlock = ({ title, amount, type = 'normal', showPayButton = false,
     }
 
     return (
-        <div className='bg-background-selected p-3 md:p-4 rounded-lg border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer'>
+        <div className='bg-background-selected p-3 md:p-4 rounded border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer'>
             <p className='text-xs md:text-sm text-typo-secondary'>{title}</p>
             <div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
                 <p className={`font-semibold ${getTextColor()}`}>{amount}</p>
@@ -64,7 +64,7 @@ const TypeSelect = () => {
     const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore()
 
     return (
-        <div className='bg-background-section p-4 md:p-6 rounded-lg h-full flex flex-col justify-between'>
+        <div className='bg-background-section p-4 md:p-6 rounded h-full flex flex-col justify-between'>
             <Select
                 value={selectedAccount?.accountNo}
                 onValueChange={(value) => {
@@ -211,7 +211,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
     const currentLayout = layoutConfig[type]
 
     return (
-        <div className='bg-white pad-x py-6 rounded-lg border border-stroke-secondary'>
+        <div className='bg-white pad-x py-6 rounded border border-stroke-secondary'>
             <div className="flex flex-col md:flex-row gap-4">
                 <div className={cn('w-full', type == "iCash" || type == "CUT" ? '' : 'md:w-1/2')}>
                     <TypeSelect />

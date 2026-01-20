@@ -38,7 +38,7 @@ const Discover = () => {
 
 			<div className="container-default py-6 md:py-12 flex gap-4 justify-center items-center relative">
 				<div
-					className="relative bg-cover px-3 md:px-6 py-[14px] md:py-5 flex justify-between w-full max-w-[588px] border border-blue-200 rounded-lg"
+					className="relative bg-cover px-3 md:px-6 py-[14px] md:py-5 flex justify-between w-full max-w-[588px] border border-blue-200 rounded"
 					style={{ backgroundImage: getBgImageClass('/images/discover/bg-mobile-donate.png') }}
 				>
 					<div className="">

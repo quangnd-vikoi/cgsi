@@ -115,7 +115,7 @@ const SharesTransfer = () => {
                 <Title title="Shares Transfer" showBackButton={step === 1} />
             </div>
 
-            <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+            <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
                 {step === 2 ? (
                     <SuccessStep />
                 ) : (

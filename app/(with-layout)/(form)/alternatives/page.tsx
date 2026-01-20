@@ -14,7 +14,7 @@ const Alternatives = () => {
 	if (!selectedId) {
 		return (
 			<div className="relative h-[calc(100%-58px)] flex flex-col justify-center items-center">
-				<p className="text-xs text-typo-secondary text-center">No product selected yet</p>
+				<p className="text-xs text-typo-secondary text-center">Select an item from Product Listing</p>
 			</div>
 		);
 	}

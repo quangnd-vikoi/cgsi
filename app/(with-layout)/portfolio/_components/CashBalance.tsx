@@ -40,7 +40,7 @@ export const CashBalance = () => {
     const canCollapse = displayCount > INITIAL_DISPLAY_COUNT;
 
     return (
-        <div className="bg-white rounded-lg border border-stroke-secondary">
+        <div className="bg-white rounded border border-stroke-secondary">
             <div className="p-4 md:p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-base font-bold text-typo-primary">Cash Balance</h2>

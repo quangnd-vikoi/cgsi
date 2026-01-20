@@ -47,7 +47,7 @@ function InputOTPSlot({
 			data-active={isActive}
 			data-error={hasError}
 			className={cn(
-				"relative flex h-12 w-12 items-center justify-center text-lg font-semibold rounded-lg",
+				"relative flex h-12 w-12 items-center justify-center text-lg font-semibold rounded",
 				"border border-stroke-primary shadow-xs transition-all outline-none",
 				// Active state
 				"data-[active=true]:z-10 data-[active=true]:ring-[3px] data-[active=true]:border-ring data-[active=true]:ring-ring/50",

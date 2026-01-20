@@ -28,10 +28,10 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ step, title, description, i
 			</div>
 
 			{/* Content */}
-			<div className="bg-background-section p-3 rounded-lg mb-6 flex-1 min-w-0">
+			<div className="bg-background-section p-3 rounded mb-6 flex-1 min-w-0">
 				<div className={cn("text-typo-primary font-normal text-sm break-words")}>{title}</div>
 				{description && (
-					<div className="mt-2 bg-white rounded-lg p-3 border border-stroke-secondary break-words">
+					<div className="mt-2 bg-white rounded p-3 border border-stroke-secondary break-words">
 						{description}
 					</div>
 				)}

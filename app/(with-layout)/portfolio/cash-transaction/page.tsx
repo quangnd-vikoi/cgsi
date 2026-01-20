@@ -51,7 +51,7 @@ export default function CashTransactionPage() {
                     <Title showBackButton title="Cash Transactions" />
 
                     {/* Content Box */}
-                    <div className="bg-white pad rounded-lg flex-1 flex flex-col">
+                    <div className="bg-white pad rounded flex-1 flex flex-col">
                         {/* Account Selector & Time Period & Export Button */}
                         <div className="mb-6 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
                             <div className="flex flex-col gap-4 md:flex-row md:items-center">

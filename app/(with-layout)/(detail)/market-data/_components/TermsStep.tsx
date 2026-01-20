@@ -79,7 +79,7 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
         }
     };
     return (
-        <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 py-6 pad-x overflow-y-auto sidebar-scroll sidebar-offset-2">
                 <h2 className="text-lg font-semibold mb-2">
                     Terms & Conditions
@@ -87,7 +87,7 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
 
                 {/* Terms & Conditions */}
 
-                <div className="border border-stroke-secondary p-4 rounded-lg">
+                <div className="border border-stroke-secondary p-4 rounded">
                     <div className="flex justify-between items-center">
                         <p className="text-sm">General T&C</p>
                         <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />

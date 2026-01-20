@@ -58,13 +58,13 @@ export default function MyApplication() {
 					allocated: sub.allocatedQty || 0,
 					closingDate: sub.endTime
 						? new Date(sub.endTime).toLocaleString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-								hour: "2-digit",
-								minute: "2-digit",
-								timeZoneName: "short",
-						  })
+							day: "2-digit",
+							month: "short",
+							year: "numeric",
+							hour: "2-digit",
+							minute: "2-digit",
+							timeZoneName: "short",
+						})
 						: "N/A",
 					type:
 						sub.productType?.toLowerCase() === "securities"
@@ -99,7 +99,7 @@ export default function MyApplication() {
 			{/* Header */}
 			<Title showBackButton title="My Applications" />
 			{/* Content Box */}
-			<div className="bg-white pad rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+			<div className="bg-white pad rounded flex-1 flex flex-col overflow-hidden min-h-0">
 				{/* Tabs */}
 				<Tabs
 					value={activeTab}
