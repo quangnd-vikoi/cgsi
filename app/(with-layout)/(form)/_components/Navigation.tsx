@@ -42,7 +42,6 @@ const Navigation = () => {
 	const title = isSecurities ? "Initial Offering Price" : "Alternatives";
 
 	const handleContactClick = () => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
 		setOpenSheet("trading_representative");
 	};
 

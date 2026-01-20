@@ -400,4 +400,9 @@
 	.shadow-light-blue {
 		box-shadow: 0px 3px 16px 0px rgba(0, 108, 235, 0.2);
 	}
+
+	.shadow-light-dark {
+		/* shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] */
+		box-shadow: 0px 2px 16px -1px rgba(33, 64, 154, 0.1);
+	}
 }

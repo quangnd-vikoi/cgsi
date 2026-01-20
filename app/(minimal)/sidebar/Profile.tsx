@@ -26,6 +26,9 @@ import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
 import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
 
+// Centralized icon stroke width - easy to change
+const ICON_STROKE_WIDTH = 1.5;
+
 interface IProfileMenuItem {
 	icon: JSX.Element;
 	name: string;
@@ -96,74 +99,74 @@ const Profile = () => {
 	const PROFILE_MENU_ITEM = {
 		"Account Centre": [
 			{
-				icon: <CircleUserRound />,
+				icon: <CircleUserRound strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "User Profile",
 				sheet: "user_profile" as SheetType,
 			},
 			{
-				icon: <ShieldCheck />,
+				icon: <ShieldCheck strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Password & Security",
 				sheet: "password_and_security" as SheetType,
 			},
 			{
-				icon: <HeartHandshake />,
+				icon: <HeartHandshake strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Donations",
 				href: "/donations",
 			},
 		],
 		"Trading Centre": [
 			{
-				icon: <BookOpen />,
+				icon: <BookOpen strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Trading Accounts",
 				sheet: "trading_accounts" as SheetType,
 			},
 			{
-				icon: <FileCheck />,
+				icon: <FileCheck strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Trading Declarations",
 				sheet: "trading_declarations" as SheetType,
 			},
 			{
-				icon: <Building2 />,
+				icon: <Building2 strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Corporate Actions",
 				onClick: redirectToCorporateAction,
 			},
 			{
-				icon: <Box />,
+				icon: <Box strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Market Data & Add-Ons",
 				href: "/market-data",
 			},
 			{
-				icon: <Boxes />,
+				icon: <Boxes strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "My Subscriptions",
 				sheet: "my_subscriptions" as SheetType,
 			},
 		],
 		Reports: [
 			{
-				icon: <FileText />,
+				icon: <FileText strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "eStatements",
 				onClick: redirectToEStatement,
 			},
 			{
-				icon: <FileCheck />,
+				icon: <FileCheck strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Acknowledgements",
 				sheet: "acknowledgements" as SheetType,
 			},
 		],
 		"Help & Support": [
 			{
-				icon: <Headphones />,
+				icon: <Headphones strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Contact Us",
 				sheet: "contact" as SheetType,
 			},
 			{
-				icon: <CircleQuestionMark />,
+				icon: <CircleQuestionMark strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Help Centre",
 				href: CGSI.HELP_CENTRE,
 				target: "_blank" as IProfileMenuItem["target"],
 			},
 			{
-				icon: <Settings />,
+				icon: <Settings strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Settings",
 				href: "/settings",
 			},
@@ -199,7 +202,7 @@ const Profile = () => {
 					</div>
 				</div>
 			</SheetHeader>
-			<div className="pad pt-6 md:pt-10 flex flex-col gap-10 overflow-y-auto flex-1">
+			<div className="pad pt-6 flex flex-col gap-6 overflow-y-auto flex-1">
 				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => (
 					<Group key={title} title={title}>
 						{items.map((item, index) => (

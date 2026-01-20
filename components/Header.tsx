@@ -127,7 +127,6 @@ const Header = () => {
 	const isIconFill = !["/", "/discover", "/portfolio"].includes(pathName);
 
 	const handleSheetOpen = (type: "profile" | "notification") => {
-		window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
 		if (type == "profile") setOpenSheet("profile");
 		else setOpenSheet("notification");
 	};

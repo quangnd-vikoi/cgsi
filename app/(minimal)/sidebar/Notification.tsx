@@ -204,12 +204,12 @@ const Notification = () => {
 						<Button
 							disabled={!hasUnread}
 							className={cn(
-								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent",
-								hasUnread ? "text-cgs-blue" : "text-status-disable-primary"
+								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent border ",
+								hasUnread ? "text-cgs-blue border-cgs-blue underline underline-offset-2 md:no-underline" : "text-status-disable-primary border-status-disable-primary bg-status-disable-secondary"
 							)}
 						>
 							<MailOpen className="w-4 p-0" />
-							<p className="text-xs">Mark All as Read</p>
+							<span className="text-xs">Mark All as Read</span>
 						</Button>
 					}
 					title="Mark All as Read"
@@ -236,7 +236,7 @@ const Notification = () => {
 				) : error ? (
 					<ErrorState
 						type="error"
-						title="Unable to Load Notifications"
+						title="Oops, Something Went Wrong"
 						description="We are unable to display notifications at this time. Please try again later."
 						className="!pt-[72px] justify-start"
 					/>

@@ -81,7 +81,7 @@ const Announcements = () => {
 				{/* Date removed as it is not in the provided API response shape */}
 				<p className="text-xs text-typo-tertiary leading-4 mt-4">24-Aug-2025, 06:30 SGT (TBC)</p>
 
-				<div className="w-full h-[1px] border-t my-4"></div>
+				<div className="w-full h-[1px] border-t my-6"></div>
 				<div
 					className="text-sm text-typo-secondary leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_a]:text-cgs-blue [&_a]:underline"
 					dangerouslySetInnerHTML={{ __html: notice.Content }}

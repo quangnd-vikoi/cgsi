@@ -46,7 +46,6 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 	const handleAlert = () => {
 		toggle();
-		window.scrollTo({ top: 0, behavior: "smooth" });
 		setOpenSheet("contact");
 	};
 	return (

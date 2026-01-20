@@ -1,5 +1,6 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, Children } from "react";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 type GroupProps = {
 	title: string;
@@ -8,12 +9,21 @@ type GroupProps = {
 };
 
 const Group = ({ title, children, childrenClassName }: GroupProps) => {
+	const childArray = Children.toArray(children);
+
 	return (
-		<div className="relative p-4 pt-6 border rounded-xl w-full">
-			<div className="top-0 left-0 absolute bg-theme-blue-09 px-2 py-1 rounded-sm font-normal text-xs -translate-y-1/2">
+		<div className="w-full">
+			<div className="bg-theme-blue-09 px-2 py-1 rounded-t font-normal text-xs border border-b-0 border-theme-blue-09 w-fit text-typo-tertiary">
 				{title}
 			</div>
-			<div className={cn("flex flex-col gap-6", childrenClassName)}>{children}</div>
+			<div className={cn("flex flex-col border rounded rounded-tl-none px-4", childrenClassName)}>
+				{childArray.map((child, index) => (
+					<React.Fragment key={index}>
+						<div className="py-4">{child}</div>
+						{index < childArray.length - 1 && <Separator className="px-5"/>}
+					</React.Fragment>
+				))}
+			</div>
 		</div>
 	);
 };

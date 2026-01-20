@@ -92,8 +92,8 @@ export const SheetManager = () => {
 			<SheetContent
 				side="right"
 				className={cn(
-					"max-w-full w-[352px] lg:w-[432px] rounded-l-lg border border-stroke-secondary border-r-0",
-					"top-[56px] md:top-[72px] h-[calc(100vh-56px)] md:h-[calc(100vh-72px)]",
+					"max-w-full w-[352px] lg:w-[480px] rounded-l-lg border border-stroke-secondary border-r-0",
+					"h-screen",
 					"focus:outline-none pad-x py-6",
 					config.className ?? ""
 				)}

@@ -55,3 +55,13 @@ export const getAccountTypeCode = (type: string): PortfolioType => {
 	}
 	return typeMap[type] || "CTA"
 }
+
+/**
+ * Scroll to top of the page
+ * @param behavior - 'smooth' for smooth scrolling, 'instant' for immediate jump, 'auto' for browser default
+ */
+export const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
+	if (typeof window !== "undefined") {
+		window.scrollTo({ top: 0, behavior });
+	}
+}
