@@ -6,6 +6,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import { useSelectionStore } from "@/stores/selectionStore";
+import { cn } from "@/lib/utils";
 import {
 	Pagination,
 	PaginationContent,
@@ -34,6 +36,7 @@ interface Application {
 
 export default function MyApplication() {
 	const router = useRouter();
+	const setSelectedItem = useSelectionStore((state) => state.setSelectedItem);
 	const [activeTab, setActiveTab] = useState<ApplicationType>("all");
 	const [applications, setApplications] = useState<Application[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -49,28 +52,47 @@ export default function MyApplication() {
 		if (response.success && response.data) {
 			// Map API data to Application structure
 			const mappedApplications: Application[] =
-				response.data.userProductSubs.map((sub) => ({
-					subscriptionId: sub.subscriptionId,
-					productName: sub.productName,
-					code: sub.stockCode,
-					issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
-					applied: sub.appliedQty || 0,
-					allocated: sub.allocatedQty || 0,
-					closingDate: sub.endTime
-						? new Date(sub.endTime).toLocaleString("en-GB", {
-							day: "2-digit",
-							month: "short",
-							year: "numeric",
-							hour: "2-digit",
-							minute: "2-digit",
-							timeZoneName: "short",
-						})
-						: "N/A",
-					type:
-						sub.productType?.toLowerCase() === "securities"
-							? "securities"
-							: "alternatives",
-				}));
+				response.data.userProductSubs.map((sub) => {
+					// Normalize product type - match exactly or default based on known alternatives
+					const normalizedType = sub.productType?.toLowerCase().trim();
+					let type: "securities" | "alternatives";
+
+					if (normalizedType === "securities" || normalizedType === "security") {
+						type = "securities";
+					} else if (
+						normalizedType === "alternatives" ||
+						normalizedType === "alternative" ||
+						normalizedType === "structured products" ||
+						normalizedType === "funds" ||
+						normalizedType === "bonds"
+					) {
+						type = "alternatives";
+					} else {
+						// Default to securities for unknown types
+						console.warn(`Unknown product type: ${sub.productType}, defaulting to securities`);
+						type = "securities";
+					}
+
+					return {
+						subscriptionId: sub.subscriptionId,
+						productName: sub.productName,
+						code: sub.stockCode,
+						issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
+						applied: sub.appliedQty || 0,
+						allocated: sub.allocatedQty || 0,
+						closingDate: sub.endTime
+							? new Date(sub.endTime).toLocaleString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+								hour: "2-digit",
+								minute: "2-digit",
+								timeZoneName: "short",
+							})
+							: "N/A",
+						type,
+					};
+				});
 
 			setApplications(mappedApplications);
 		} else {
@@ -92,6 +114,25 @@ export default function MyApplication() {
 
 	const handleViewClick = (application: Application) => {
 		router.push(`${INTERNAL_ROUTES.APPLICATION_NOTE}?subscriptionId=${application.subscriptionId}`);
+	};
+
+	const handleProductNameClick = (application: Application) => {
+		// Set the selected item in the store
+		setSelectedItem({
+			id: application.subscriptionId,
+			name: application.productName,
+			code: application.code,
+			issuePrice: application.issuePrice,
+			closingDate: application.closingDate,
+			hasDetails: true,
+			applied: true,
+		});
+
+		// Navigate to securities or alternatives page based on type
+		const route = application.type === "securities"
+			? INTERNAL_ROUTES.SECURITIES
+			: INTERNAL_ROUTES.ALTERNATIVE;
+		router.push(route);
 	};
 
 	return (
@@ -181,8 +222,19 @@ export default function MyApplication() {
 								<TableBody>
 									{filteredApplications.map((app) => (
 										<TableRow key={app.subscriptionId} className="*:whitespace-normal">
-											<TableCell className="font-medium text-cgs-blue py-4 px-3">
-												{app.productName}
+											<TableCell className="py-4 px-3">
+												<span className="font-medium text-cgs-blue md:hidden">
+													{app.productName}
+												</span>
+												<button
+													onClick={() => handleProductNameClick(app)}
+													className={cn(
+														"font-medium text-cgs-blue hidden md:inline cursor-pointer",
+														"hover:underline text-left"
+													)}
+												>
+													{app.productName}
+												</button>
 											</TableCell>
 											<TableCell className="px-3">{app.code}</TableCell>
 											<TableCell className="px-3">{app.issuePrice}</TableCell>

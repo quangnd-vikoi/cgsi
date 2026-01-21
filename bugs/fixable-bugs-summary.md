@@ -240,10 +240,10 @@ After fixing each bug, verify:
 - [x] TC-195: No image placeholder when no image; title truncates
 - [x] TC-124: Mobile shows "View Application Note"
 - [x] TC-105: Modal scrollable, footer always visible
-- [ ] TC-44: Close announcement, refresh page, stays closed
-- [ ] TC-186: Newest notification at top
-- [ ] TC-121: Web - product name clickable, goes to details
-- [ ] TC-122: Mobile - product name not clickable
-- [ ] TC-100: All analysis cards collapsed initially
-- [ ] TC-102: Expand card, switch tab, return - stays expanded
-- [ ] TC-118: Securities in Securities tab, Alternatives in Alternatives tab
+- [x] TC-44: Close announcement, refresh page, stays closed
+- [x] TC-186: Newest notification at top
+- [x] TC-121: Web - product name clickable, goes to details
+- [x] TC-122: Mobile - product name not clickable
+- [x] TC-100: All analysis cards collapsed initially
+- [x] TC-102: Expand card, switch tab, return - stays expanded
+- [x] TC-118: Securities in Securities tab, Alternatives in Alternatives tab

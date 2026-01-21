@@ -9,6 +9,8 @@ interface ProductDetailsContextType {
 	loading: boolean;
 	error: string | null;
 	refetch: () => Promise<void>;
+	openAccordionValue: string | undefined;
+	setOpenAccordionValue: (value: string | undefined) => void;
 }
 
 const ProductDetailsContext = createContext<ProductDetailsContextType>({
@@ -16,6 +18,8 @@ const ProductDetailsContext = createContext<ProductDetailsContextType>({
 	loading: false,
 	error: null,
 	refetch: async () => {},
+	openAccordionValue: undefined,
+	setOpenAccordionValue: () => {},
 });
 
 export const useProductDetails = () => {
@@ -33,6 +37,7 @@ export const ProductDetailsProvider: React.FC<{ children: React.ReactNode }> = (
 	);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [openAccordionValue, setOpenAccordionValue] = useState<string | undefined>(undefined);
 
 	const fetchProductDetails = useCallback(async () => {
 		if (!selectedId) {
@@ -68,6 +73,8 @@ export const ProductDetailsProvider: React.FC<{ children: React.ReactNode }> = (
 				loading,
 				error,
 				refetch: fetchProductDetails,
+				openAccordionValue,
+				setOpenAccordionValue,
 			}}
 		>
 			{children}
