@@ -68,6 +68,7 @@ const OTPStep = ({
 	setStep,
 	onResend,
 	isSubmitting,
+	setError,
 }: {
 	email: string;
 	otp: string;
@@ -76,6 +77,7 @@ const OTPStep = ({
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	onResend: () => void;
 	isSubmitting: boolean;
+	setError: (value: string) => void;
 }) => {
 	const { formattedTime, isActive, reset } = useOTPCountdown({
 		initialSeconds: 120,
@@ -84,6 +86,8 @@ const OTPStep = ({
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
+		// Clear error when user types
+		if (error) setError("");
 	};
 
 	const handleResendCode = () => {
@@ -216,9 +220,12 @@ const UpdateEmail = () => {
 	// Handle continue for step 2
 	const handleStep2Continue = async () => {
 		if (otp.length !== 6) {
-			setError("Please enter the 6-digit OTP code");
+			setError("Please enter the 6 digit numbers that sent to your email");
 			return;
 		}
+
+		// TODO: Add OTP expiry check here
+		// Example: if (isOtpExpired) { setError("Sorry, your entries do not match. Please try again."); return; }
 
 		setIsSubmitting(true);
 		setError("");
@@ -232,7 +239,8 @@ const UpdateEmail = () => {
 			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "OTP Code Authentication Failed");
+			// Check if error is due to OTP expiry or mismatch
+			setError(response.error || "Sorry, your entries do not match. Please try again.");
 		}
 	};
 
@@ -284,6 +292,7 @@ const UpdateEmail = () => {
 						setOtp={setOtp}
 						setStep={setStep}
 						error={error}
+						setError={setError}
 						onResend={handleResendOtp}
 						isSubmitting={isSubmitting}
 					/>
@@ -300,7 +309,7 @@ const UpdateEmail = () => {
 						<Button
 							className="w-full text-base font-normal"
 							onClick={handleContinue}
-							disabled={isSubmitting}
+							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
 							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>

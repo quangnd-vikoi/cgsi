@@ -25,6 +25,7 @@ const OTPStep = ({
 	dialCode,
 	onResend,
 	isSubmitting,
+	setError,
 }: {
 	phoneNumber: string;
 	otp: string;
@@ -34,6 +35,7 @@ const OTPStep = ({
 	dialCode: string;
 	onResend: () => void;
 	isSubmitting: boolean;
+	setError: (value: string) => void;
 }) => {
 	const { formattedTime, isActive, reset } = useOTPCountdown({
 		initialSeconds: 120,
@@ -42,6 +44,8 @@ const OTPStep = ({
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
+		// Clear error when user types
+		if (error) setError("");
 	};
 
 	const handleResendCode = async () => {
@@ -186,9 +190,12 @@ const UpdateMobile = () => {
 	// Handle continue for step 2
 	const handleStep2Continue = async () => {
 		if (otp.length !== 6) {
-			setError("Please enter the 6-digit OTP code");
+			setError("Please enter the 6 digit numbers that sent to your mobile number");
 			return;
 		}
+
+		// TODO: Add OTP expiry check here
+		// Example: if (isOtpExpired) { setError("Sorry, your entries do not match. Please try again."); return; }
 
 		setIsSubmitting(true);
 		setError("");
@@ -202,7 +209,8 @@ const UpdateMobile = () => {
 			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "OTP Code Authentication Failed");
+			// Check if error is due to OTP expiry or mismatch
+			setError(response.error || "Sorry, your entries do not match. Please try again.");
 		}
 	};
 
@@ -255,6 +263,7 @@ const UpdateMobile = () => {
 						setOtp={setOtp}
 						setStep={setStep}
 						error={error}
+						setError={setError}
 						onResend={handleResendOtp}
 						isSubmitting={isSubmitting}
 					/>
@@ -272,7 +281,7 @@ const UpdateMobile = () => {
 						<Button
 							className="w-full text-base font-normal"
 							onClick={handleContinue}
-							disabled={isSubmitting}
+							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
 							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>

@@ -31,7 +31,8 @@ const TradingList = ({ representatives }: TradingListProps) => {
 	};
 
 	const handleEmail = (email: string) => {
-		window.location.href = `mailto:${email}`;
+		const subject = encodeURIComponent("iTrade Client Enquiry");
+		window.location.href = `mailto:${email}?subject=${subject}`;
 	};
 
 	return (
