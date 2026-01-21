@@ -25,9 +25,27 @@ import { CGSI } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
 import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
+import { useUserStore } from "@/stores/userStore";
 
 // Centralized icon stroke width - easy to change
 const ICON_STROKE_WIDTH = 1.5;
+
+const ProfileInfo = () => {
+	const profile = useUserStore((state) => state.profile);
+
+	// Fallback values when API returns null/undefined
+	const displayName = profile?.name || profile?.userId || "Guest User";
+	const displayEmail = profile?.email || "email@example.com";
+	const displayMobile = profile?.mobileNo || "+65 XXXX XXXX";
+
+	return (
+		<div className="flex flex-col gap-1.5 text-white">
+			<p className="text-base font-semibold">{displayName}</p>
+			<p className="text-xs font-normal">{displayEmail}</p>
+			<p className="text-xs font-normal">{displayMobile}</p>
+		</div>
+	);
+};
 
 interface IProfileMenuItem {
 	icon: JSX.Element;
@@ -195,11 +213,7 @@ const Profile = () => {
 							height={64}
 						/>
 					</div>
-					<div className="flex flex-col gap-1.5 text-white">
-						<p className="text-base font-semibold">rayrayhanabhirama28</p>
-						<p className="text-xs font-normal">rayhan.abhir@gmail.com</p>
-						<p className="text-xs font-normal">+62 81234567899</p>
-					</div>
+					<ProfileInfo />
 				</div>
 			</SheetHeader>
 			<div className="pad pt-6 flex flex-col gap-6 overflow-y-auto flex-1">

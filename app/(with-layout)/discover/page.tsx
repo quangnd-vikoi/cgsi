@@ -10,7 +10,7 @@ import { getBgImageClass } from "@/lib/utils";
 const Discover = () => {
 	return (
 		<div>
-			{/* Banner */}
+			{/* Banner
 			<div className="bg-discover-banner w-full aspect-[7/1] min-h-28 max-h-52 overflow-hidden">
 				<div className="container-default flex items-center justify-between h-full">
 					<p className="text-lg md:text-[32px] font-semibold text-white">Discover</p>
@@ -24,11 +24,9 @@ const Discover = () => {
 						/>
 					</div>
 				</div>
-			</div>
+			</div> */}
 
-			<div className="py-6 md:py-12">
-				<StockResearch />
-			</div>
+			<StockResearch />
 
 			<ResearchArticles />
 
@@ -36,37 +34,30 @@ const Discover = () => {
 
 			{/* Donate  */}
 
-			<div className="container-default py-6 md:py-12 flex gap-4 justify-center items-center relative">
-				<div
-					className="relative bg-cover px-3 md:px-6 py-[14px] md:py-5 flex justify-between w-full max-w-[588px] border border-blue-200 rounded"
-					style={{ backgroundImage: getBgImageClass('/images/discover/bg-mobile-donate.png') }}
-				>
-					<div className="">
-						<div className="space-x-4">
-							<p className="font-semibold text-base md:text-[32px] text-typo-primary">
-								Invest in Kindness
-							</p>
-							<p className="text-[10px] md:text-sm font-medium md:font-normal text-typo-secondary">
-								Let your money grow & your kindness flow
-							</p>
-						</div>
-
-						<div className="mt-6 md:mt-12">
-							<Link href={INTERNAL_ROUTES.DONATIONS}>
-								<Button className="px-3 py-2 rounded-sm text-sm md:text-base font-normal">
-									Donate Now
-								</Button>
-							</Link>
-						</div>
+			<div className="container-default py-6 md:py-12 flex justify-center">
+				<div className="bg-background-section px-3 md:px-6 flex w-full max-w-[660px] md:h-[200px] border rounded overflow-hidden">
+					<div className="w-2/3 py-[14px] md:py-6">
+						<p className="font-semibold text-base md:text-2xl text-typo-primary">
+							Invest in Kindness
+						</p>
+						<p className="text-base mt-2 font-medium md:font-normal text-typo-secondary">
+							Let your money grow & your kindness flow
+						</p>
+						<Link href={INTERNAL_ROUTES.DONATIONS} className="inline-block mt-6 md:mt-12">
+							<Button className="px-3 py-2 rounded-sm text-sm md:text-base font-normal">
+								Donate Now
+							</Button>
+						</Link>
 					</div>
-
-					<Image
-						src={"/icons/discover/Donate.svg"}
-						alt="donate icon"
-						width={221}
-						height={192}
-						className="h-full w-fit absolute right-0 md:right-6 bottom-0 md:bottom-3"
-					/>
+					<div className="w-1/3 flex items-center justify-center relative md:right-4 shrink-0 flex-none">
+						<Image
+							src="/icons/discover/Donate.svg"
+							alt="donate icon"
+							width={221}
+							height={200}
+							className="h-full w-auto object-contain"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

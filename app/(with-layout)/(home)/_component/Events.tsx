@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import { getBgImageClass } from "@/lib/utils";
+import ViewAll from "@/components/ViewAll";
 
 // API Response Interface
 interface EventAPIItem {
@@ -110,13 +111,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 						<span className="font-semibold text-2xl">Event & Seminars</span>
 					</div>
 					<div className="flex items-center gap-3">
-						<Link
-							href={CGSI.EVENTS}
-							className="text-cgs-blue text-xs md:text-sm font-semibold underline underline-offset-2"
-							target="_blank"
-						>
-							View All
-						</Link>
+						<ViewAll href={CGSI.EVENTS} />
 					</div>
 				</div>
 

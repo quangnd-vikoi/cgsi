@@ -119,10 +119,7 @@ export interface TradingAccount {
 export type UserAccountResponse = TradingAccount;
 
 // BCAN Request Types
-export interface CreateBcanRequest {
-	accountNo: string; // minLength: 1
-}
-
+// Note: POST /tradingInfo/bcan/request has no request body per swagger spec
 export interface CreateBcanResponse {
 	isSuccess: boolean;
 }

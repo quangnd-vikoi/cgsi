@@ -12,6 +12,7 @@ import { Step } from "../page";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { toast } from "@/components/ui/toaster";
+import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -125,36 +126,18 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
 
             {/* Action Buttons */}
             <div className="">
-                <div className="pad-x py-6 border-y border-stroke-secondary">
-                    <div className="flex items-start gap-2">
-                        <Checkbox
-                            id="terms"
-                            checked={agreed}
-                            error={showTermsError}
-                            onCheckedChange={(checked) => {
-                                setAgreed(checked as boolean);
-                                if (checked) setShowTermsError(false);
-                            }}
-                            className="mt-0.5 shrink-0"
-                        />
-
-                        <Label
-                            htmlFor="terms"
-                            className="text-xs md:text-sm text-typo-secondary cursor-pointer leading-5 font-normal"
-                        >
-                            <span>
-                                I declare that I have fully read and understood all the Terms & Conditions above
-                            </span>
-                        </Label>
-                    </div>
-
-                    {showTermsError && (
-                        <p className="text-status-error text-xs mt-1 flex items-center gap-1">
-                            <CustomCircleAlert />
-                            Please acknowledge the Terms & Conditions to proceed
-                        </p>
-                    )}
-                </div>
+                <TermsAndConditionsCheckbox
+                    id="terms"
+                    checked={agreed}
+                    onCheckedChange={(checked) => {
+                        setAgreed(checked);
+                        if (checked) setShowTermsError(false);
+                    }}
+                    showError={showTermsError}
+                    labelText="I declare that I have fully read and understood all the Terms & Conditions above"
+                    showLink={false}
+                    className="pad-x py-6 border-y border-stroke-secondary"
+                />
                 <div className="pad-x py-6">
 
                     <Button

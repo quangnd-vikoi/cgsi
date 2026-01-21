@@ -22,6 +22,7 @@ import Image from "@/components/Image";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
+import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
@@ -432,41 +433,17 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</div>
 
 					{/* Terms & Conditions */}
-					<div className="mb-4">
-						<div className="flex items-start gap-2">
-							<Checkbox
-								id="terms"
-								checked={agreed}
-								onCheckedChange={(checked) => {
-									setAgreed(checked as boolean);
-									if (checked) setShowError(false);
-								}}
-								className={cn("mt-0.5 shrink-0", showError && "border-status-error")}
-							/>
-							<Label
-								htmlFor="terms"
-								className="text-sm text-typo-secondary cursor-pointer leading-5"
-							>
-								<span>
-									By checking this box, you acknowledge that you have read and agree to
-									abide by the underlying{" "}
-									<a
-										href="#"
-										className="inline text-cgs-blue hover:underline font-medium underline underline-offset-2"
-									>
-										Terms & Conditions
-									</a>
-								</span>
-							</Label>
-						</div>
-
-						{showError && (
-							<p className="text-status-error text-xs mt-1 flex items-center gap-1">
-								<CustomCircleAlert />
-								Please acknowledge the Terms & Conditions to proceed
-							</p>
-						)}
-					</div>
+					<TermsAndConditionsCheckbox
+						id="terms"
+						checked={agreed}
+						onCheckedChange={(checked) => {
+							setAgreed(checked);
+							if (checked) setShowError(false);
+						}}
+						showError={showError}
+						labelText="By checking this box, you acknowledge that you have read and agree to abide by the underlying"
+						className="mb-4"
+					/>
 				</div>
 
 				<DialogFooter className="">

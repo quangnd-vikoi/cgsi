@@ -10,6 +10,7 @@ interface TradingAccountStore {
 	updateSelectedAccount: (updates: Partial<TradingAccount>) => void;
 	getAccounts: () => TradingAccount[];
 	getAccountById: (accountNo: string) => TradingAccount | undefined;
+	getDefaultAccountNo: () => string | null;
 	setInitialized: (value: boolean) => void;
 	resetStore: () => void;
 }
@@ -35,6 +36,36 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 	},
 	getAccounts: () => get().accounts,
 	getAccountById: (accountNo) => get().accounts.find((acc) => acc.accountNo === accountNo),
+
+	// Get default account number with priority logic
+	// Priority: CTA > CUT > iCash > MTA > SBL
+	// If only 1 account, select it regardless of type
+	getDefaultAccountNo: () => {
+		const accounts = get().accounts;
+
+		if (!accounts || accounts.length === 0) {
+			return null;
+		}
+
+		// Only 1 account → select it
+		if (accounts.length === 1) {
+			return accounts[0].accountNo;
+		}
+
+		// Multiple accounts → select by priority
+		const priorityOrder = ["CTA", "CUT", "iCash", "MTA", "SBL"];
+
+		for (const type of priorityOrder) {
+			const found = accounts.find((acc) => acc.accountType === type);
+			if (found) {
+				return found.accountNo;
+			}
+		}
+
+		// Fallback: return first account
+		return accounts[0].accountNo;
+	},
+
 	setInitialized: (value) => set({ isInitialized: value }),
 	resetStore: () =>
 		set({

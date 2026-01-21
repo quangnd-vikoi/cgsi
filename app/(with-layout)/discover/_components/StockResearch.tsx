@@ -27,61 +27,55 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	return (
 		<div
 			onClick={onClick}
-			className="relative rounded shadow-sm w-full cursor-pointer "
+			className="relative bg-white rounded border border-stroke-secondary hover:border-background-selected hover:shadow w-full cursor-pointer overflow-visible"
 		>
-			<div className="relative rounded w-full border border-transparent hover:border-background-selected hover:shadow h-full">
-				<div className="overflow-hidden rounded bg-stockresearch-gradient shadow-sm h-full">
-					<div className="pl-2 py-3 md:pl-6 md:pt-5 md:pb-4 w-full md:w-1/2">
-						<div className="flex items-center gap-4 md:mb-2">
-							<div className="md:hidden bg-white p-2 rounded-full">
-								{title == "iScreener" ? <StockResearchLMobile /> : <StockResearchRMobile />}
-							</div>
-							<h2 className="text-xs md:text-lg font-semibold text-typo-primary">{title}</h2>
-						</div>
-						<p className="hidden md:inline text-typo-tertiary leading-relaxed text-sm max-w-[70%] lg:max-w-[70%] line-clamp-2">
-							{subtext}
-						</p>
-					</div>
+			<div className="p-4 md:pl-6 md:pt-5 md:pb-4 w-2/3">
+				<div className="flex items-center gap-4 md:mb-2">
+					<h2 className="text-lg font-semibold text-typo-primary">{title}</h2>
 				</div>
+				<p className="text-typo-tertiary text-sm max-w-[95%] line-clamp-2">
+					{subtext}
+				</p>
 			</div>
-			<div className="hidden md:block absolute right-0 lg:right-8 bottom-0 h-[90%] md:h-[70%] lg:h-[110%] xl:h-[120%]">
-				<Image
-					src={imageSrc}
-					alt={imageAlt ?? title}
-					className="h-full w-auto object-contain scale-x-80 md:scale-x-90 md:left-2 lg:left-10 xl:left-4 relative"
-					width={imageWidth}
-					height={imageHeight}
-				/>
-			</div>
+
+			<Image
+				src={imageSrc}
+				alt={imageAlt ?? title}
+				className="absolute right-0 lg:right-8 bottom-0 p-3 md:p-0 h-full md:h-[120%] w-auto object-contain"
+				width={imageWidth}
+				height={imageHeight}
+			/>
 		</div>
 	);
 };
 
 const StockResearch = () => {
 	return (
-		<div className="container-default bg-white">
-			<div className="flex md:hidden justify-between items-center">
-				<div className="flex gap-2 items-center">
-					<span className="font-semibold text-base">Stock Research</span>
+		<div className="bg-background-section">
+			<div className="container-default py-4 md:py-8">
+				<div className="flex  justify-between items-center">
+					<div className="flex gap-2 items-center">
+						<span className="font-semibold text-base">Tools</span>
+					</div>
 				</div>
-			</div>
 
-			<div className="mt-6 flex gap-4 justify-between">
-				<StockResearchCard
-					onClick={redirectToIScreener}
-					title="iScreener"
-					available={1}
-					imageSrc="/icons/discover/Stock-Research-L.svg"
-					subtext="Explore stocks powered by advanced algorithms to simplify stock analysis"
-				/>
+				<div className="mt-6 flex flex-col md:flex-row gap-4 justify-between">
+					<StockResearchCard
+						onClick={redirectToIScreener}
+						title="iScreener"
+						available={1}
+						imageSrc="/icons/discover/Stock-Research-L.svg"
+						subtext="Explore stocks powered by advanced algorithms to simplify stock analysis"
+					/>
 
-				<StockResearchCard
-					onClick={redirectToStockFilter}
-					title="Stock Filter"
-					available={0}
-					imageSrc="/icons/discover/Stock-Research-R.svg"
-					subtext="Use advanced filters powered by real-time data to screen stocks"
-				/>
+					<StockResearchCard
+						onClick={redirectToStockFilter}
+						title="Stock Filter"
+						available={0}
+						imageSrc="/icons/discover/Stock-Research-R.svg"
+						subtext="Use advanced filters powered by real-time data to screen stocks"
+					/>
+				</div>
 			</div>
 		</div>
 	);

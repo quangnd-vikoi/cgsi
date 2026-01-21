@@ -14,14 +14,13 @@ import { useState } from "react";
 import RecurringDonation from "@/public/icons/discover/RecurringDonation.svg";
 import { CirclePlusIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import { CGSI } from "@/constants/routes";
-import { Checkbox } from "@/components/ui/checkbox";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import Alert from "@/components/Alert";
 import { useFormErrors } from "@/hooks/form/useFormErrors";
+import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 
 const SELECT_FIELDS = [
 	{
@@ -119,27 +118,24 @@ const RecurringForm = () => {
 			<div className="space-y-6 pad-x flex-shrink-0">
 				<div className="space-y-4 text-sm font-normal text-typo-secondary mt-6">
 					<p className="md:hidden">
-						Automatically donate a portion every time you execute a trade within your chosen time
-						period.
+						Automatically donate a portion every time you execute a trade within your chosen time period.
 					</p>
 					<p className="hidden md:inline-block">
-						Automatically donate a fixed amount every time you execute a trade within your chosen
-						time period. You may view your donation transactions on your monthly account
-						statements.
+						Automatically donate a fixed amount every time you execute a trade within your chosen time period. You may view your donation transactions on your monthly account statements.
 					</p>
 				</div>
 
 				<div className="space-y-1.5">
 					<Dialog open={open} onOpenChange={setOpen}>
 						<DialogTrigger asChild>
-							<div className="border border-dashed border-cgs-blue bg-background-section rounded w-full py-4 flex flex-col items-center justify-center gap-1.5 shadow-light-blue cursor-pointer">
+							<div className="border border-dashed border-cgs-blue bg-background-section rounded w-full py-3 px-4 flex items-center justify-between shadow-light-blue cursor-pointer">
+								<p className="text-base font-medium text-cgs-blue">
+									Setup Recurring Donation
+								</p>
 								<CirclePlusIcon
 									className="text-cgs-blue bg-background-section"
 									size={16}
 								/>
-								<p className="text-xs font-normal text-cgs-blue">
-									Setup Recurring Donation
-								</p>
 							</div>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-[530px] p-0 max-h-[730px] flex flex-col gap-0 ">
@@ -199,44 +195,19 @@ const RecurringForm = () => {
 								);
 							})}
 
-							<div className="pad-x mb-4 md:mb-6">
-								<div className="flex items-start gap-2">
-									<Checkbox
-										id="terms"
-										checked={agreed}
-										error={showValidationErrors && hasError("terms")}
-										onCheckedChange={(checked) => {
-											setAgreed(checked as boolean);
-											if (checked) clearError("terms");
-										}}
-										className="mt-0.5 shrink-0"
-									/>
-
-									<Label
-										htmlFor="terms"
-										className="text-xs md:text-sm text-typo-secondary cursor-pointer leading-5 font-normal"
-									>
-										<span>
-											I declare that I have fully read and understood the
-											<Link
-												target="_blank"
-												href={CGSI.ONETIME_DONATION}
-												className="inline text-cgs-blue mx-1 hover:underline font-medium"
-											>
-												Terms & Conditions
-											</Link>
-											for this donation
-										</span>
-									</Label>
-								</div>
-
-								{showValidationErrors && hasError("terms") && (
-									<p className="text-status-error text-xs mt-1 flex items-center gap-1">
-										<CustomCircleAlert />
-										Please acknowledge the Terms & Conditions to proceed
-									</p>
-								)}
-							</div>
+							<TermsAndConditionsCheckbox
+								id="terms"
+								checked={agreed}
+								onCheckedChange={(checked) => {
+									setAgreed(checked);
+									if (checked) clearError("terms");
+								}}
+								showError={showValidationErrors && hasError("terms")}
+								labelText="I declare that I have fully read and understood the"
+								termsUrl={CGSI.ONETIME_DONATION}
+								additionalContent=" for this donation"
+								className="pad-x mb-4 md:mb-6"
+							/>
 							<DialogFooter className="justify-end rounded-b-lg pad-x flex-row">
 								<Button
 									type="button"
@@ -254,14 +225,14 @@ const RecurringForm = () => {
 			<div className="pad-x flex-shrink-0">
 				<Separator className="my-6" />
 				<p className="hidden md:inline-block text-base font-semibold text-typo-primary">
-					Active Recurring Donations
+					Recurring Donation List
 				</p>
 				<p className="md:hidden text-base font-semibold text-typo-primary">Recurring Donation List</p>
 			</div>
 			{recurringDonations.length === 0 ? (
 				<div className="mt-6 flex-1 pad-x flex flex-col gap-6 justify-center items-center">
 					<RecurringDonation />
-					<p className="text-sm font-normal text-typo-tertiary text-center md:w-[65%]">
+					<p className="text-sm font-normal text-typo-tertiary text-center px-2">
 						There are currently no active recurring donations. Setup one now to support our cause!
 					</p>
 				</div>
@@ -287,7 +258,7 @@ const RecurringForm = () => {
 										onAction={() => handleCancelDonations(index)}
 									/>
 								</div>
-								<div className="flex justify-between items-center text-xs font-medium text-typo-tertiary">
+								<div className="flex justify-between items-center text-xs font-medium text-typo-tertiary mt-3">
 									<p>{item.duration.replace("-", " ")}</p>
 									<p>End Date: 15-Jan-2026</p>
 								</div>

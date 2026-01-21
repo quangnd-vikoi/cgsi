@@ -2,8 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, useMemo, useRef, useCallback, memo } from "react";
-import { getCountries, getCountryCallingCode, Country as CountryCode } from "react-phone-number-input";
-import en from "react-phone-number-input/locale/en.json";
 import { CircleFlag } from "react-circle-flags";
 import { ChevronDown, CircleCheck, Search, X } from "lucide-react";
 import {
@@ -14,12 +12,9 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-
-interface Country {
-	code: CountryCode;
-	name: string;
-	dialCode: string;
-}
+import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en.json";
+import type { Country } from "@/lib/utils/phoneHelper";
 
 // Memo hóa CountryItem để tránh re-render không cần thiết
 const CountryItem = memo(
@@ -258,7 +253,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 					</DialogContent>
 				</Dialog>
 				<Input
-					className="flex-1 pl-24 text-sm"
+					className="flex-1 pl-24 text-sm focus:bg-background-section focus:!border-b-cgs-blue"
 					placeholder="Enter here"
 					value={phoneNumber}
 					onChange={handlePhoneChange}

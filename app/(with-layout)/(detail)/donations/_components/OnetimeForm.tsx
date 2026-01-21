@@ -13,12 +13,18 @@ import PaynowIcon from "@/public/icons/discover/Paynow.svg";
 import { Loader2, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
+import { submitDonation } from "@/lib/services/profileService";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 
 const OneTimeForm = () => {
 	const [inputValue, setInputValue] = useState<string>("");
+	const [isApiSubmitting, setIsApiSubmitting] = useState(false);
+	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 
 	const {
 		setAmount,
+		amount,
 		paymentMethod,
 		setPaymentMethod,
 		agreed,
@@ -27,18 +33,43 @@ const OneTimeForm = () => {
 		handleSubmit,
 		isSubmitting,
 	} = useDonationForm({
-		onSuccess: (values) => {
-			if (values.paymentMethod === "now") {
-				setTimeout(() => {
+		onSuccess: async (values) => {
+			// Validate and call actual API
+			const accountNo = getDefaultAccountNo();
+
+			if (!accountNo) {
+				toast.error("No trading account found", "Please contact support to set up your account");
+				return;
+			}
+
+			if (!values.amount) {
+				toast.error("Invalid amount", "Please enter a valid donation amount");
+				return;
+			}
+
+			setIsApiSubmitting(true);
+
+			try {
+				const response = await submitDonation({
+					accountNo,
+					amount: values.amount,
+					currency: "SGD",
+					paymentMethod: values.paymentMethod === "now" ? "PLAN" : "LS_ACCSET",
+					paymentMode: "DONATE",
+				});
+
+				if (response.success && response.data?.isSuccess) {
 					toast.success(
 						"Thank you!",
 						"Your donation will go a long way in uplifting lives. We truly appreciate it."
 					);
-				}, 2000);
-			} else {
-				setTimeout(() => {
-					toast.error("Error Encountered", "Something went wrong. Please try again later.");
-				}, 2000);
+				} else {
+					toast.error("Error Encountered", response.error || "Something went wrong. Please try again later.");
+				}
+			} catch (error) {
+				toast.error("Error Encountered", "Something went wrong. Please try again later.");
+			} finally {
+				setIsApiSubmitting(false);
 			}
 		},
 		minAmount: 1.0,
@@ -114,7 +145,16 @@ const OneTimeForm = () => {
 						}}
 						className="space-y-2 mt-1.5"
 					>
-						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded cursor-pointer mb-0">
+						<Label
+							className={cn(
+								"flex justify-between w-full px-4 py-2 border rounded cursor-pointer mb-0",
+								paymentMethod === "now"
+									? "border-cgs-blue bg-background-focus text-cgs-blue"
+									: !paymentMethod && errors.paymentMethod
+										? "border-status-error bg-background-error"
+										: "border-stroke-secondary"
+							)}
+						>
 							<div className="flex gap-3 items-center">
 								<PaynowIcon />
 								PayNow
@@ -122,19 +162,28 @@ const OneTimeForm = () => {
 							<RadioGroupItem value="now" className="w-6 h-6" />
 						</Label>
 
-						<Label className="flex justify-between w-full px-4 py-2 border border-stroke-secondary rounded cursor-pointer">
+						<Label
+							className={cn(
+								"flex justify-between w-full px-4 py-2 border rounded cursor-pointer",
+								paymentMethod === "trust"
+									? "border-cgs-blue bg-background-focus text-cgs-blue"
+									: !paymentMethod && errors.paymentMethod
+										? "border-status-error bg-background-error"
+										: "border-stroke-secondary"
+							)}
+						>
 							<div className="flex gap-3 items-center">
-								<Wallet size={24} className="text-icon-light" />
+								<Wallet size={24} className={paymentMethod === "trust" ? "text-cgs-blue" : "text-icon-light"} />
 								Trust Account
 							</div>
 							<RadioGroupItem value="trust" className="w-6 h-6" />
 						</Label>
 					</RadioGroup>
 
-					{errors.paymentMethod && (
+					{!paymentMethod && errors.paymentMethod && (
 						<p className="text-status-error text-xs mt-1 flex items-center gap-1">
 							<CustomCircleAlert />
-							Please select a Payment Method
+							Field cannot be empty
 						</p>
 					)}
 				</div>
@@ -142,51 +191,26 @@ const OneTimeForm = () => {
 
 			{/* Footer form */}
 			<div className="shrink-0">
-				<div className="pad-x py-6 border-y border-stroke-secondary">
-					<div className="flex items-start gap-2">
-						<Checkbox
-							id="terms"
-							checked={agreed}
-							error={errors.terms}
-							onCheckedChange={(checked) => {
-								setAgreed(checked as boolean);
-							}}
-							className="mt-0.5 shrink-0"
-						/>
-
-						<Label
-							htmlFor="terms"
-							className="text-sm text-typo-secondary cursor-pointer leading-5"
-						>
-							<span>
-								I declare that I have fully read and understood the
-								<Link
-									target="_blank"
-									href={CGSI.ONETIME_DONATION}
-									className="inline text-cgs-blue mx-1 hover:underline font-medium"
-								>
-									Terms & Conditions
-								</Link>
-								for this donation
-							</span>
-						</Label>
-					</div>
-
-					{errors.terms && (
-						<p className="text-status-error text-xs mt-1 flex items-center gap-1">
-							<CustomCircleAlert />
-							Please acknowledge the Terms & Conditions to proceed
-						</p>
-					)}
-				</div>
+				<TermsAndConditionsCheckbox
+					id="terms"
+					checked={agreed}
+					onCheckedChange={(checked) => {
+						setAgreed(checked);
+					}}
+					showError={errors.terms}
+					labelText="I declare that I have fully read and understood the"
+					termsUrl={CGSI.ONETIME_DONATION}
+					additionalContent=" for this donation"
+					className="pad-x py-6 border-y border-stroke-secondary"
+				/>
 				<div className="pad-x py-4">
 					<Button
 						className="w-full h-10 text-base font-normal"
 						onClick={handleDonate}
-						disabled={isSubmitting}
-						aria-busy={isSubmitting}
+						disabled={isSubmitting || isApiSubmitting}
+						aria-busy={isSubmitting || isApiSubmitting}
 					>
-						{isSubmitting ? (
+						{(isSubmitting || isApiSubmitting) ? (
 							<>
 								<Loader2 className="animate-spin" />
 							</>

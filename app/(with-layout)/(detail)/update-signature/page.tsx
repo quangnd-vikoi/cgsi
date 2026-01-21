@@ -263,7 +263,7 @@ const UpdateSignature = () => {
 									<div className="mt-6">
 										For reference, please review this{" "}
 										<span
-											className="text-cgs-blue font-semibold cursor-pointer"
+											className="text-cgs-blue underline underline-offset-2 cursor-pointer font-medium"
 											onClick={() => setTrue()}
 										>
 											Sample Signature
@@ -278,7 +278,7 @@ const UpdateSignature = () => {
 									>
 										<div
 											className={cn(
-												"border border-dashed bg-background-section rounded w-full py-4 flex flex-col items-center justify-center gap-1.5  mt-6",
+												"border border-dashed bg-background-section rounded w-full px-4 py-3 flex items-center justify-between mt-6",
 												error
 													? "border-status-error bg-background-error text-status-error"
 													: selectedFile != null
@@ -286,8 +286,8 @@ const UpdateSignature = () => {
 														: "border-cgs-blue text-cgs-blue bg-background-section shadow-light-blue cursor-pointer "
 											)}
 										>
-											<FileUp className="" size={24} strokeWidth={1.25} />
 											<p className="text-sm font-normal">Upload Signature</p>
+											<FileUp className="" size={24} strokeWidth={1.25} />
 										</div>
 										{error && (
 											<p className="text-status-error text-xs mt-1 flex items-center gap-1">
@@ -414,7 +414,7 @@ const UpdateSignature = () => {
 						)}
 						<div className="pad-x py-4 border-t w-full relative flex gap-2">
 							<Button
-								className="w-1/2 text-base font-normal bg-transparent border-none text-cgs-blue hover:border-cgs-blue/75 hover:bg-transparent hover:text-cgs-blue/75"
+								className="w-1/2 text-base font-medium bg-transparent border-none text-cgs-blue hover:border-cgs-blue/75 hover:bg-transparent hover:text-cgs-blue/75"
 								onClick={() => handleClear()}
 								disabled={isSubmitting}
 							>

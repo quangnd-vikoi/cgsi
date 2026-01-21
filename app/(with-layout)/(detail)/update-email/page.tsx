@@ -13,7 +13,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
-import { sendEmailOtp, submitEmailUpdate } from "@/lib/services/profileService";
+import { sendEmailOtp, submitEmailUpdate, refreshUserProfile } from "@/lib/services/profileService";
 
 const InputStep = ({
 	newEmail,
@@ -94,13 +94,13 @@ const OTPStep = ({
 	return (
 		<div className="pad-x">
 			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
-			<p className="text-sm text-typo-secondary mt-6">
+			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
 				<span className="ml-1">{email}</span>
 			</p>
 
 			<p
-				className="mb-6 text-cgs-blue cursor-pointer text-sm font-normal mt-1"
+				className="mb-6 text-cgs-blue cursor-pointer text-base font-normal mt-1 underline underline-offset-2"
 				onClick={() => setStep(1)}
 			>
 				Change Email?
@@ -150,7 +150,9 @@ const ConfirmStep = () => {
 
 const UpdateEmail = () => {
 	const router = useRouter();
-	const { email: currentEmail } = useUserStore();
+	const profile = useUserStore((state) => state.profile);
+	// Fallback to empty string if no email in profile
+	const currentEmail = profile?.email || "";
 	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [newEmail, setNewEmail] = useState("");
 	const [otp, setOtp] = useState("");
@@ -168,19 +170,19 @@ const UpdateEmail = () => {
 	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!newEmail.trim()) {
-			setError("Email cannot be empty");
-			return;
-		}
-
-		// Check if same as old email
-		if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
-			setError("Please enter a different email");
+			setError("Field cannot be empty");
 			return;
 		}
 
 		// Check if valid email format
 		if (!isValidEmail(newEmail)) {
-			setError("Please enter a valid email address");
+			setError("Email Address do not meet the minimum criteria");
+			return;
+		}
+
+		// Check if same as old email
+		if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
+			setError("Kindly provide a new email address to continue");
 			return;
 		}
 
@@ -226,9 +228,11 @@ const UpdateEmail = () => {
 		setIsSubmitting(false);
 
 		if (response.success && response.data?.isSuccess) {
+			// Refresh user profile to update store with new email
+			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "Invalid OTP. Please try again.");
+			setError(response.error || "OTP Code Authentication Failed");
 		}
 	};
 

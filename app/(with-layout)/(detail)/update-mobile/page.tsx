@@ -7,21 +7,14 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
 import Alert from "@/components/Alert";
-import { getCountryCallingCode, Country as CountryCode } from "react-phone-number-input";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import { MobileInputStep } from "./MobileInputStep";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
-import en from "react-phone-number-input/locale/en.json";
-import { sendMobileOtp, submitMobileUpdate } from "@/lib/services/profileService";
-
-interface Country {
-	code: CountryCode;
-	name: string;
-	dialCode: string;
-}
+import { sendMobileOtp, submitMobileUpdate, refreshUserProfile } from "@/lib/services/profileService";
+import { parsePhoneNumber, createCountry, formatPhoneForApi, type Country } from "@/lib/utils/phoneHelper";
 
 const OTPStep = ({
 	phoneNumber,
@@ -59,13 +52,13 @@ const OTPStep = ({
 	return (
 		<div className="pad-x">
 			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
-			<p className="text-sm text-typo-secondary mt-6">
+			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
 				<span className="ml-1">{dialCode + phoneNumber}</span>
 			</p>
 
 			<p
-				className="mb-6 text-cgs-blue cursor-pointer text-sm font-normal mt-1"
+				className="mb-6 text-cgs-blue cursor-pointer text-base font-medium mt-1 underline underline-offset-2"
 				onClick={() => setStep(1)}
 			>
 				Change Number?
@@ -89,7 +82,7 @@ const OTPStep = ({
 				</p>
 			)}
 
-			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
+			<div className="text-center w-full text-sm text-status-disable-primary font-medium mt-6">
 				{isActive ? (
 					<>Resend in : {formattedTime}</>
 				) : (
@@ -115,18 +108,21 @@ const ConfirmStep = () => {
 
 const UpdateMobile = () => {
 	const router = useRouter();
-	const { mobile: currentMobile } = useUserStore();
+	const profile = useUserStore((state) => state.profile);
+
+	// Parse current mobile number to pre-fill form
+	const parsedCurrentMobile = parsePhoneNumber(profile?.mobileNo);
+	const currentMobileFormatted = profile?.mobileNo || ""; // Keep original format for comparison
+
 	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [selectedCountry, setSelectedCountry] = useState<Country>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
+	const [selectedCountry, setSelectedCountry] = useState<Country>(
+		createCountry(parsedCurrentMobile.countryCode)
+	);
 
 	// Validate phone number
 	const isValidPhone = (phone: string) => {
@@ -136,27 +132,27 @@ const UpdateMobile = () => {
 
 	// Format mobile number for API (dialCode-phoneNumber)
 	const formatMobileForApi = () => {
-		const dialCode = selectedCountry.dialCode.replace("+", "");
-		return `+${dialCode}-${phoneNumber}`;
+		return formatPhoneForApi(selectedCountry.code, phoneNumber);
 	};
 
 	// Handle continue for step 1
 	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!phoneNumber.trim()) {
-			setError("Phone number cannot be empty");
+			setError("Please fill in your mobile no. and country code");
 			return;
 		}
 
-		// Check if same as old phone
-		if (phoneNumber === currentMobile) {
-			setError("Please enter a different phone number");
-			return;
-		}
-
-		// Check if valid phone format
+		// Check if valid phone format (minimum criteria)
 		if (!isValidPhone(phoneNumber)) {
-			setError("Please enter a valid phone number");
+			setError("Mobile Number do not meet the minimum criteria");
+			return;
+		}
+
+		// Check if same as old phone (compare full formatted number)
+		const newFormattedNumber = formatMobileForApi();
+		if (newFormattedNumber === currentMobileFormatted) {
+			setError("Kindly provide a new mobile number to continue");
 			return;
 		}
 
@@ -202,9 +198,11 @@ const UpdateMobile = () => {
 		setIsSubmitting(false);
 
 		if (response.success && response.data?.isSuccess) {
+			// Refresh user profile to update store with new mobile number
+			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "Invalid OTP. Please try again.");
+			setError(response.error || "OTP Code Authentication Failed");
 		}
 	};
 

@@ -5,6 +5,8 @@ import { IResearchArticleProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import { getBgImageClass } from "@/lib/utils";
+import ViewAll from "@/components/ViewAll";
+import { CGSI } from "@/constants/routes";
 
 // Research Article Card Component
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
@@ -80,14 +82,14 @@ const articles: Array<IResearchArticleProps> = [
 const ResearchArticles = () => {
 	return (
 		<div
-			className="bg-background-section md:bg-cover py-6 md:py-12"
-			style={{ backgroundImage: getBgImageClass('/images/bg-event.png') }}
+			className="bg-white md:bg-cover py-6 md:py-12"
 		>
-			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
-				<div className="flex justify-between items-center pr-4 md:pr-0">
+			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
+				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-base">Research Articles</span>
 					</div>
+					<ViewAll href={CGSI.RESEARCH} />
 				</div>
 
 				{/* Research Articles Carousel */}
@@ -97,13 +99,24 @@ const ResearchArticles = () => {
 							type="empty"
 							title="Currently No New Research Articles"
 							description="Check back soon - new articles are on the way!"
-							className="pr-4 md:pr-0"
 						/>
 					) : (
 						<CustomizeCarousel<IResearchArticleProps>
 							items={articles}
 							renderItem={(article) => <ResearchArticleCard article={article} />}
 							getItemKey={(article) => article.id}
+							itemsPerView={{
+								mobile: "basis-[70%]",
+								tablet: "md:basis-[50.8%]",
+								laptop: "lg:basis-[33.8%]",
+								desktop: "xl:basis-[33.3%]",
+							}}
+							centerThreshold={{
+								desktop: 3,
+								laptop: 3,
+								tablet: 2,
+							}}
+							arrowClassName="bg-background-section shadow-light-blue"
 						/>
 					)}
 				</div>

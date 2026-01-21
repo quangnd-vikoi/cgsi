@@ -50,7 +50,7 @@ function InputOTPSlot({
 				"relative flex h-12 w-12 items-center justify-center text-lg font-semibold rounded",
 				"border border-stroke-primary shadow-xs transition-all outline-none",
 				// Active state
-				"data-[active=true]:z-10 data-[active=true]:ring-[3px] data-[active=true]:border-ring data-[active=true]:ring-ring/50",
+				"data-[active=true]:z-10 data-[active=true]:border-cgs-blue data-[active=true]:bg-background-section",
 				// Error styles
 				hasError && "border-status-error bg-background-error",
 				className

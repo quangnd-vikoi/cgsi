@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import { cn } from "@/lib/utils";
+import ViewAll from "@/components/ViewAll";
 
 interface Campaign {
 	SEO_Page_Name: string;
@@ -160,13 +161,7 @@ const Campaigns = () => {
 					<h2 className="font-semibold text-lg md:text-xl lg:text-2xl text-typo-primary">
 						Promotions & Campaigns
 					</h2>
-					<Link
-						href={CGSI.CAMPAIGNS}
-						target="_blank"
-						className="text-sm md:text-base text-cgs-blue hover:underline font-medium underline underline-offset-2"
-					>
-						View All
-					</Link>
+					<ViewAll href={CGSI.CAMPAIGNS} />
 				</div>
 
 				{/* Carousel Container */}

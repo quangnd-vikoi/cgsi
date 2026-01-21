@@ -8,6 +8,7 @@ import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
+import ViewAll from "@/components/ViewAll";
 
 // API Response Interface
 interface InsightAPIItem {
@@ -35,14 +36,13 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 					/>
 				</div>
 				<div className="flex flex-col gap-3 px-3 py-[14px] flex-grow">
-					<div className="font-medium text-[10px] text-typo-tertiary">{article.tag}</div>
-					<div className="min-h-8 font-semibold text-xs line-clamp-2">{article.title}</div>
-
-					<div className="min-h-[4em] text-[10px] text-typo-secondary line-clamp-4 leading-4 flex-grow">
+					<div className="font-medium text-xs text-typo-tertiary">{article.tag}</div>
+					<div className="h-12 font-semibold text-base line-clamp-2 leading-6">{article.title}</div>
+					<div className="h-[60px] text-sm text-typo-secondary line-clamp-3 leading-5 flex-grow">
 						{article.description}
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">
-						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
+						<div className="flex self-stretch gap-2 font-medium text-xs text-typo-tertiary leading-4">
 							<Calendar className="w-4 h-4" />
 							{article.date}
 						</div>
@@ -81,19 +81,13 @@ const Insight = () => {
 	}
 
 	return (
-		<div className="bg-white bg-cover py-6 md:py-12">
-			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1200px]">
-				<div className="flex justify-between items-center pr-4 md:pr-0">
+		<div className="bg-background-section bg-cover py-6 md:py-12">
+			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
+				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-base">CGSI Insights</span>
 					</div>
-					<Link
-						href={CGSI.INSIGHTS}
-						className="font-normal text-cgs-blue text-xs md:text-sm"
-						target="_blank"
-					>
-						View All
-					</Link>
+					<ViewAll href={CGSI.INSIGHTS} />
 				</div>
 
 				{/* Event Carousel */}
@@ -116,16 +110,17 @@ const Insight = () => {
 							getItemKey={(item) => item.SEO_Page_Name}
 							contentClassName="lg:gap-0 xl:gap-2"
 							centerThreshold={{
-								desktop: 5,
-								laptop: 5,
-								tablet: 4,
+								desktop: 3,
+								laptop: 3,
+								tablet: 2,
 							}}
 							itemsPerView={{
-								mobile: "basis-[74%]",
-								tablet: "md:basis-[25.5%]",
-								laptop: "lg:basis-[20.1%]",
-								desktop: "xl:basis-[19.7%]",
+								mobile: "basis-[75%]",
+								tablet: "md:basis-[50.8%]",
+								laptop: "lg:basis-[33.8%]",
+								desktop: "xl:basis-[33.3%]",
 							}}
+							arrowClassName="bg-background-section shadow-light-blue"
 						/>
 					)}
 				</div>
