@@ -25,23 +25,17 @@ function HomeContent() {
 				}
 
 				// Get code from URL
-				let code = searchParams.get("code");
+				const code = searchParams.get("code");
 
-				// If no code in URL, prompt for manual input (dev mode)
+				// If no code, redirect to login
 				if (!code) {
-					code = window.prompt(
-						"Enter authorization code:\n\n(In production, this will come from the redirect URL automatically)"
-					);
-
-					if (!code) {
-						setError("Authorization code is required");
-						setIsAuthenticating(false);
-						return;
-					}
+					authService.redirectToLogin();
+					return;
 				}
-
+				// Exchange code for tokens
 				await authService.exchangeCode(code, "http://localhost:8080/authorize");
-
+				// Clean up URL by removing query parameters
+				router.replace("/");
 
 				setIsAuthenticating(false);
 			} catch (err) {

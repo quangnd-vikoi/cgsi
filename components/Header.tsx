@@ -90,11 +90,11 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 
 	return (
 		<div
-			className={cn("bg-status-warning w-full px-4 md:px-14 py-2 relative", value ? "block" : "hidden")}
+			className={cn("bg-status-warning w-full px-4  py-2 relative", value ? "block" : "hidden")}
 		>
-			<div className="flex justify-center items-center gap-4">
+			<div className="flex justify-center items-center gap-4 max-w-[1320px] mx-auto">
 				<TriangleAlert size={16} className="shrink-0" />
-				<p className="text-xs text-typo-primary text-ellipsis line-clamp-2 md:line-clamp-1 ">
+				<p className="text-xs text-typo-primary line-clamp-2 md:line-clamp-1 flex-1 min-w-0">
 					{announcement.Announcement_Desc}
 				</p>
 				<div className="flex gap-4 shrink-0">
@@ -104,11 +104,11 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 					>
 						Learn More
 					</div>
-					<X size={16} className="block md:hidden" onClick={() => setFalse()} />
+					<X size={16} className="block" onClick={() => setFalse()} />
 				</div>
 			</div>
 
-			<X size={16} className="hidden md:block absolute right-4 top-2" onClick={() => setFalse()} />
+			{/* <X size={16} className="hidden md:block absolute right-4 top-2" onClick={() => setFalse()} /> */}
 		</div >
 	);
 };
@@ -132,7 +132,7 @@ const Header = () => {
 	};
 	return (
 		<>
-			<div className="p-4 xl:px-0 py-5 max-w-[1320px] xl:mx-auto z-[100]">
+			<div className="p-4 xl:px-0 max-w-[1320px] xl:mx-auto z-[100]">
 				<div className="flex justify-between h-full">
 					<div className="flex items-center my-auto gap-12">
 						<Link href={"/"}>
@@ -184,7 +184,7 @@ const Header = () => {
 						<Button
 							onClick={handleTradeNowClick}
 							variant={"default"}
-							className="h-6 md:h-8 rounded-sm bg-cgs-blue px-2 md:px-3 font-normal hover:bg-cgs-blue/70 text-xs md:text-sm"
+							className="h-8 rounded bg-cgs-blue px-2 md:px-3 font-normal hover:bg-cgs-blue/70 text-xs md:text-sm"
 						>
 							<Image
 								src="/icons/Charts.svg"

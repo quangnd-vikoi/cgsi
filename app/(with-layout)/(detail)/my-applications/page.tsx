@@ -196,7 +196,8 @@ export default function MyApplication() {
 													onClick={() => handleViewClick(app)}
 												>
 													<FileText />
-													View
+													<span className="md:hidden">View Application Note</span>
+													<span className="hidden md:inline">View</span>
 												</Button>
 											</TableCell>
 										</TableRow>

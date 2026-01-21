@@ -11,9 +11,8 @@ export default function MainLayout({ children }: Readonly<{ children: React.Reac
 			<NotificationPolling />
 			<DataInitializer />
 
-			<header className="bg-white z-10">
+			<header className="bg-white z-[100] relative">
 				<Header />
-				<SheetManager />
 			</header>
 
 			<main className="flex-1 flex flex-col min-h-0">{children}</main>
@@ -22,6 +21,7 @@ export default function MainLayout({ children }: Readonly<{ children: React.Reac
 				<Footer />
 			</footer>
 
+			<SheetManager />
 			<Toaster position="bottom-right" />
 		</div>
 	);

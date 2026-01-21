@@ -93,7 +93,6 @@ export const SheetManager = () => {
 				side="right"
 				className={cn(
 					"max-w-full w-[352px] lg:w-[480px] rounded-l-lg border border-stroke-secondary border-r-0",
-					"h-screen",
 					"focus:outline-none pad-x py-6",
 					config.className ?? ""
 				)}

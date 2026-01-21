@@ -249,11 +249,11 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<Button className="bg-cgs-blue hover:bg-cgs-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
 			<DialogContent
-				className="p-0 gap-0 w-[346px] md:w-[530px] rounded"
+				className="p-0 gap-0 w-[346px] md:w-[530px] rounded max-h-[90vh] flex flex-col"
 				onInteractOutside={(e) => isSubmitting && e.preventDefault()}
 				onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
 			>
-				<DialogHeader className="pad pt-4">
+				<DialogHeader className="pad pt-4 flex-shrink-0">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
@@ -261,7 +261,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</DialogTitle>
 				</DialogHeader>
 
-				<div className="pad-x">
+				<div className="pad-x overflow-y-auto flex-1 min-h-0">
 					{/* Product Info */}
 					<div className="bg-background-section rounded p-4 mb-6">
 						<h3 className="font-semibold text-base text-typo-primary mb-2 leading-6">
@@ -446,7 +446,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					/>
 				</div>
 
-				<DialogFooter className="">
+				<DialogFooter className="flex-shrink-0 border-t border-stroke-secondary">
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}

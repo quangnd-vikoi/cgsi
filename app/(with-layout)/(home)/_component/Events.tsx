@@ -6,7 +6,7 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 import { IEventProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
@@ -134,7 +134,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 										title: item.MastheadBasic_Article_Title,
 										imageUrl: item.MastheadBasic_Article_Card_Thumbnail_Image,
 										description: item.MastheadBasic_Article_Short,
-										date: item.Event_StartDate,
+										date: formatDate(item.Event_StartDate),
 										time: item.Tagging_Timing || "7.30pm SGT (TBC)",
 										location: item.Tagging_EventType || "Webinar",
 									}}

@@ -65,3 +65,24 @@ export const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
 		window.scrollTo({ top: 0, behavior });
 	}
 }
+
+/**
+ * Format date string to DD-MMM-YYYY format
+ * @param dateString - Date string in any valid format (e.g., YYYY-MM-DD)
+ * @returns Formatted date string (e.g., "20-Jan-2026")
+ */
+export const formatDate = (dateString: string): string => {
+	const date = new Date(dateString);
+
+	// Check if date is valid
+	if (isNaN(date.getTime())) {
+		return dateString; // Return original string if invalid
+	}
+
+	const day = date.getDate().toString().padStart(2, "0");
+	const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	const month = monthNames[date.getMonth()];
+	const year = date.getFullYear();
+
+	return `${day}-${month}-${year}`;
+}

@@ -26,6 +26,7 @@ import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
 import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
 import { useUserStore } from "@/stores/userStore";
+import { authService } from "@/lib/services/authService";
 
 // Centralized icon stroke width - easy to change
 const ICON_STROKE_WIDTH = 1.5;
@@ -114,6 +115,10 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 };
 
 const Profile = () => {
+	const handleLogout = () => {
+		authService.logout();
+	};
+
 	const PROFILE_MENU_ITEM = {
 		"Account Centre": [
 			{
@@ -225,7 +230,7 @@ const Profile = () => {
 					</Group>
 				))}
 
-				<div className="-mt-3 flex justify-center gap-2 cursor-pointer">
+				<div className="-mt-3 flex justify-center gap-2 cursor-pointer" onClick={handleLogout}>
 					{/* <LogOut className="text-status-error" size={18} /> */}
 					<Image src={"/icons/logout.svg"} alt="" height={18} width={18} />
 					<p className="text-sm font-medium text-status-error">Log Out</p>

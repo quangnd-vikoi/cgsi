@@ -233,13 +233,13 @@ components/ui/
 
 After fixing each bug, verify:
 
-- [ ] TC-46: Announcement truncates on all screen sizes
-- [ ] TC-142: Article description shows exactly 3 lines max
-- [ ] TC-143: Dates show as "20-Jan-2026" format
-- [ ] TC-189: Notification titles show 2 lines max with ellipsis
-- [ ] TC-195: No image placeholder when no image; title truncates
-- [ ] TC-124: Mobile shows "View Application Note"
-- [ ] TC-105: Modal scrollable, footer always visible
+- [x] TC-46: Announcement truncates on all screen sizes
+- [x] TC-142: Article description shows exactly 3 lines max
+- [x] TC-143: Dates show as "20-Jan-2026" format
+- [x] TC-189: Notification titles show 2 lines max with ellipsis
+- [x] TC-195: No image placeholder when no image; title truncates
+- [x] TC-124: Mobile shows "View Application Note"
+- [x] TC-105: Modal scrollable, footer always visible
 - [ ] TC-44: Close announcement, refresh page, stays closed
 - [ ] TC-186: Newest notification at top
 - [ ] TC-121: Web - product name clickable, goes to details
