@@ -1,9 +1,11 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
 import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
+import { IMarketDataItem } from '../page';
+
 // Type definitions
 interface DropDownItem {
   label: string;
@@ -79,7 +81,12 @@ const fetchMarketData = async (): Promise<MarketDataResponse> => {
   });
 };
 
-const Professional = () => {
+interface ProfessionalProps {
+  selectedItems: Array<IMarketDataItem>;
+  setSelectedItems: Dispatch<SetStateAction<Array<IMarketDataItem>>>;
+}
+
+const Professional = ({ setSelectedItems }: ProfessionalProps) => {
   const [researchArticles, setResearchArticles] = useState<MarketItemData[]>([]);
   const [marketData, setMarketData] = useState<MarketItemData[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -110,14 +117,14 @@ const Professional = () => {
   return (
     <div className="py-6 pad-x max-w-4xl mx-auto">
       <div>
-        <p className="text-sm text-typo-teritary">
-          <span className="font-semibold mr-0.5">
+        <p className="text-sm text-typo-secondary">
+          <span className="font-bold mr-0.5">
             &quot;Professional Subscriber&quot;
           </span>
           refers to individuals or entities that use market data for business, commercial/ professional purpose.
           <Alert
             trigger={
-              <span className="text-blue-600 ml-1 cursor-pointer hover:underline">
+              <span className="text-cgs-blue ml-1 cursor-pointer underline underline-offset-2">
                 Learn More
               </span>
             }
@@ -125,8 +132,8 @@ const Professional = () => {
             cancelText=""
             title="Professional Subscriber"
             description={
-              <div className="text-base text-typo-teritary">
-                <span>&quot;Professional Subscriber&quot; refers to any person or entity that uses market data for business, commercial, or professional purposes, including but not limited to individuals or organizations that meet any of the following criteria:</span>
+              <div className="text-base text-typo-secondary">
+                <span className='font-bold'>&quot;Professional Subscriber&quot;</span> <span>refers to any person or entity that uses market data for business, commercial, or professional purposes, including but not limited to individuals or organizations that meet any of the following criteria:</span>
                 <ul className="list-disc space-y-4 pl-4 md:pl-7 mt-5">
                   <li>
                     Registered or qualified with the Securities and Exchange Commission, the Commodities Futures Trading Commission, any state securities agency, any securities exchange or association, or any commodities/futures contract market or association;
@@ -156,6 +163,16 @@ const Professional = () => {
       <div className="mt-2 space-y-3">
         {researchArticles.map((item) => (
           <MarketItem
+            onSelectItem={(item) => {
+              setSelectedItems((prev) => [...prev, {
+                image: item.image,
+                title: item.title,
+                selectedOption: {
+                  value: item.selectedOption.value,
+                  label: item.selectedOption.label
+                }
+              }]);
+            }}
             key={item.id}
             title={item.title}
             description={item.description}
@@ -172,6 +189,16 @@ const Professional = () => {
       <div className="mt-2 space-y-3">
         {marketData.map((item) => (
           <MarketItem
+            onSelectItem={(item) => {
+              setSelectedItems((prev) => [...prev, {
+                image: item.image,
+                title: item.title,
+                selectedOption: {
+                  value: item.selectedOption.value,
+                  label: item.selectedOption.label
+                }
+              }]);
+            }}
             key={item.id}
             title={item.title}
             description={item.description}

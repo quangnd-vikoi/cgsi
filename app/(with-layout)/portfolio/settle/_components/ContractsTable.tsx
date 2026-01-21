@@ -73,7 +73,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 										size="sm"
 										variant="outline"
 										onClick={() => onOpenContraDetails(contract)}
-										className="shadow-none border-none font-normal text-cgs-blue hover:bg-cgs-blue/10 rounded px-3"
+										className="shadow-none border-none font-medium text-cgs-blue hover:text-cgs-blue/80 hover:bg-white rounded px-3"
 									>
 										Detail
 									</Button>
@@ -82,7 +82,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 									<Button
 										size="sm"
 										disabled={contract.gainLoss >= 0}
-										className="bg-cgs-blue font-normal hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
+										className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
 									>
 										Pay
 									</Button>

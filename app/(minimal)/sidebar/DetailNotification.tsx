@@ -59,7 +59,7 @@ const DetailNotification = () => {
 					{/* Category badge (optional) */}
 					{notification.category && (
 						<div className="mt-2">
-							<span className="inline-block px-2 py-1 text-xs bg-theme-blue-100 text-theme-blue-600 rounded">
+							<span className="inline-block px-2 py-1 text-xs bg-theme-blue-100 text-theme-cgs-blue rounded">
 								{notification.category}
 							</span>
 						</div>

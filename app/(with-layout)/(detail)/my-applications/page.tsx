@@ -97,7 +97,7 @@ export default function MyApplication() {
 	return (
 		<div className="flex-1 flex flex-col h-full">
 			{/* Header */}
-			<Title showBackButton title="My Applications" />
+			<Title showBackButton title="Applications History" />
 			{/* Content Box */}
 			<div className="bg-white pad rounded flex-1 flex flex-col overflow-hidden min-h-0">
 				{/* Tabs */}
@@ -105,7 +105,7 @@ export default function MyApplication() {
 					value={activeTab}
 					onValueChange={(v) => setActiveTab(v as ApplicationType)}
 				>
-					<TabsList className="mb-6 bg-transparent gap-2 border-b-0">
+					<TabsList className="mb-6 bg-transparent !gap-2 border-b-0">
 						<TabsTrigger
 							value="all"
 							className="px-4 py-1.5 border border-stroke-secondary rounded-full data-[state=active]:bg-background-selected data-[state=active]:text-cgs-blue data-[state=active]:border-cgs-blue hover:bg-transparent hover:border-cgs-blue"

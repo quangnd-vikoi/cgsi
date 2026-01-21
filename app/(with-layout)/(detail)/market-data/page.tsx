@@ -104,7 +104,7 @@ const MarketData = () => {
                             value="professional"
                             className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2 m-0"
                         >
-                            <Professional />
+                            <Professional selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
                         </TabsContent>
                     </Tabs>
                     <div className="px-6 py-4 border-t w-full flex justify-between relative gap-2">

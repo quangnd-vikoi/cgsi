@@ -25,8 +25,8 @@ interface InfoRowProps {
 
 const InfoRow = ({ label, value }: InfoRowProps) => (
     <div className="grid grid-cols-2 gap-2">
-        <p className="text-sm text-typo-secondary">{label}</p>
-        <p className="text-sm text-typo-primary font-medium text-right">
+        <p className="text-sm md:text-base text-typo-secondary">{label}</p>
+        <p className="text-sm md:text-base text-typo-primary font-medium text-right">
             {value}
         </p>
     </div>
@@ -133,13 +133,13 @@ const SharesTransfer = () => {
                                 </div>
 
                                 {/* Transfer Statement */}
-                                <p className="text-sm text-typo-primary mb-6">
+                                <p className="text-sm md:text-base text-typo-primary mb-6">
                                     I would like to transfer my SGX holdings in my CDP Account to the following account:
                                 </p>
 
                                 {/* Account Selection - Disabled/Read-only */}
                                 <div className="mb-6">
-                                    <Label className="text-sm text-typo-secondary mb-2 block">Account</Label>
+                                    <Label className="text-sm md:text-base text-typo-secondary mb-2 block">Account</Label>
                                     <Select value={transferAccount} onValueChange={setTransferAccount} disabled>
                                         <SelectTrigger className="w-full opacity-100 cursor-not-allowed disabled:bg-status-disable-secondary disabled:text-typo-tertiary">
                                             <SelectValue placeholder="Select account" />
@@ -148,7 +148,7 @@ const SharesTransfer = () => {
                                             {accounts.map((account) => (
                                                 <SelectItem key={account.accountNo} value={account.accountNo}>
                                                     <div className="flex flex-col items-start">
-                                                        <span className="text-sm font-medium text-typo-primary">
+                                                        <span className="text-sm md:text-base font-medium text-typo-primary">
                                                             (CTA) {account.accountNo}
                                                         </span>
                                                     </div>
@@ -156,7 +156,7 @@ const SharesTransfer = () => {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <p className="text-xs text-typo-secondary mt-2">
+                                    <p className="text-xs md:text-sm text-typo-secondary mt-2">
                                         Trading Representative: {accounts.find(a => a.accountNo === transferAccount)?.trName || ""}
                                     </p>
                                 </div>
@@ -177,12 +177,12 @@ const SharesTransfer = () => {
                                     />
                                     <label
                                         htmlFor="agreement"
-                                        className="text-xs text-typo-primary cursor-pointer select-text leading-relaxed"
+                                        className="text-base text-typo-primary cursor-pointer select-text leading-relaxed"
                                     >
                                         I agree with the{" "}
                                         <a
                                             href="#"
-                                            className="text-cgs-blue font-medium"
+                                            className="text-cgs-blue font-medium underline underline-offset-2"
                                             onClick={(e) => e.preventDefault()}
                                         >
                                             Term & Conditions

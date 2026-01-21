@@ -111,6 +111,8 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                     <p className="font-semibold text-typo-primary">{gst} SGD</p>
                 </div>
 
+                <Separator className="my-4 border-stroke-secondary" />
+
                 <div className="mt-4 flex justify-between items-center">
                     <div>
                         <p className="font-semibold text-typo-primary">Total price</p>
