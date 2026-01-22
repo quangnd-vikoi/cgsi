@@ -16,7 +16,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TriangleAlert, X } from "lucide-react";
-import useToggle from "@/hooks/useToggle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { SheetType } from "@/types";
@@ -66,8 +65,8 @@ interface AnnouncementItem {
 }
 
 const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType, payload?: unknown) => void }) => {
-	const { value, setFalse } = useToggle(true);
 	const [announcement, setAnnouncement] = useState<AnnouncementItem | null>(null);
+	const [isVisible, setIsVisible] = useState(true);
 
 	useEffect(() => {
 		const fetchAnnouncements = async () => {
@@ -77,6 +76,11 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 					const items = response.data.slice(0, 3);
 					const randomItem = items[Math.floor(Math.random() * items.length)];
 					setAnnouncement(randomItem);
+
+					// Check if this announcement was previously hidden
+					const storageKey = `announcement-hidden-${randomItem.Anchor_Link}`;
+					const wasHidden = localStorage.getItem(storageKey);
+					setIsVisible(!wasHidden);
 				}
 			} catch (error) {
 				console.error("Failed to fetch announcements:", error);
@@ -86,12 +90,18 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 		fetchAnnouncements();
 	}, []);
 
-	if (!announcement) return null;
+	const handleClose = () => {
+		if (announcement) {
+			const storageKey = `announcement-hidden-${announcement.Anchor_Link}`;
+			localStorage.setItem(storageKey, "true");
+			setIsVisible(false);
+		}
+	};
+
+	if (!announcement || !isVisible) return null;
 
 	return (
-		<div
-			className={cn("bg-status-warning w-full px-4  py-2 relative", value ? "block" : "hidden")}
-		>
+		<div className="bg-status-warning w-full px-4 py-2 relative">
 			<div className="flex justify-center items-center gap-4 max-w-[1320px] mx-auto">
 				<TriangleAlert size={16} className="shrink-0" />
 				<p className="text-xs text-typo-primary line-clamp-2 md:line-clamp-1 flex-1 min-w-0">
@@ -104,12 +114,10 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 					>
 						Learn More
 					</div>
-					<X size={16} className="block" onClick={() => setFalse()} />
+					<X size={16} className="block cursor-pointer" onClick={handleClose} />
 				</div>
 			</div>
-
-			{/* <X size={16} className="hidden md:block absolute right-4 top-2" onClick={() => setFalse()} /> */}
-		</div >
+		</div>
 	);
 };
 
@@ -132,7 +140,7 @@ const Header = () => {
 	};
 	return (
 		<>
-			<div className="p-4 xl:px-0 max-w-[1320px] xl:mx-auto z-[100]">
+			<div className="p-4 xl:px-0 max-w-[1320px] xl:mx-auto z-30">
 				<div className="flex justify-between h-full">
 					<div className="flex items-center my-auto gap-12">
 						<Link href={"/"}>

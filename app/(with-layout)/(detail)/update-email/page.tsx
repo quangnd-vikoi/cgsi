@@ -68,6 +68,9 @@ const OTPStep = ({
 	setStep,
 	onResend,
 	isSubmitting,
+	setError,
+	countdown,
+	resetCountdown,
 }: {
 	email: string;
 	otp: string;
@@ -76,18 +79,25 @@ const OTPStep = ({
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	onResend: () => void;
 	isSubmitting: boolean;
+	setError: (value: string) => void;
+	countdown: number;
+	resetCountdown: () => void;
 }) => {
-	const { formattedTime, isActive, reset } = useOTPCountdown({
-		initialSeconds: 120,
-	});
+	const formatTime = (seconds: number): string => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	};
 
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
+		// Clear error when user types
+		if (error) setError("");
 	};
 
 	const handleResendCode = () => {
-		reset();
+		resetCountdown();
 		onResend();
 	};
 
@@ -125,8 +135,8 @@ const OTPStep = ({
 			)}
 
 			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
-				{isActive ? (
-					<>Resend in : {formattedTime}</>
+				{countdown > 0 ? (
+					<>Resend in : {formatTime(countdown)}</>
 				) : (
 					<span className="text-cgs-blue cursor-pointer" onClick={handleResendCode}>
 						Resend Code
@@ -159,6 +169,11 @@ const UpdateEmail = () => {
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// OTP countdown tracker to determine if OTP is expired or just wrong
+	const { countdown, reset: resetCountdown } = useOTPCountdown({
+		initialSeconds: 120,
+	});
 
 	// Validate email format
 	const isValidEmail = (email: string) => {
@@ -195,6 +210,8 @@ const UpdateEmail = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is sent
+			resetCountdown();
 			setStep(2);
 		} else {
 			toast.error("Failed to send OTP", response.error || "Please try again later.");
@@ -207,6 +224,7 @@ const UpdateEmail = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is resent (will be called by OTPStep component)
 			toast.success("OTP Resent", "A new OTP code has been sent to your email.");
 		} else {
 			toast.error("Failed to resend OTP", response.error || "Please try again later.");
@@ -216,7 +234,7 @@ const UpdateEmail = () => {
 	// Handle continue for step 2
 	const handleStep2Continue = async () => {
 		if (otp.length !== 6) {
-			setError("Please enter the 6-digit OTP code");
+			setError("Please enter the 6 digit numbers that sent to your email");
 			return;
 		}
 
@@ -232,7 +250,21 @@ const UpdateEmail = () => {
 			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "OTP Code Authentication Failed");
+			// Handle OTP validation failure
+			// When API returns success=true but isSuccess=false, it means OTP validation failed
+			if (response.success && response.data?.isSuccess === false) {
+				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
+				if (countdown <= 0) {
+					// OTP has expired after 2 minutes
+					setError("OTP has expired after 2 minutes, please request for a new one");
+				} else {
+					// OTP is still valid but user entered wrong code
+					setError("OTP Code Authentication Failed");
+				}
+			} else {
+				// Other errors (network, API error, etc.)
+				setError(response.error || "Sorry, your entries do not match. Please try again.");
+			}
 		}
 	};
 
@@ -284,8 +316,11 @@ const UpdateEmail = () => {
 						setOtp={setOtp}
 						setStep={setStep}
 						error={error}
+						setError={setError}
 						onResend={handleResendOtp}
 						isSubmitting={isSubmitting}
+						countdown={countdown}
+						resetCountdown={resetCountdown}
 					/>
 				)}
 
@@ -300,7 +335,7 @@ const UpdateEmail = () => {
 						<Button
 							className="w-full text-base font-normal"
 							onClick={handleContinue}
-							disabled={isSubmitting}
+							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
 							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>

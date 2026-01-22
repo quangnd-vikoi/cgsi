@@ -2,17 +2,11 @@ import { LANG, type Language } from "../config";
 
 /**
  * Content-related API endpoints (relative paths only)
- * Includes announcements, notices, campaigns, events, and insights
- * These endpoints use the 3rd party content API (cgsi.com.sg)
+ * Includes notices, campaigns, events, and insights
+ * These endpoints use the 3rd party content API (cgsi.com.sg/cgsi/api/v1)
  * Base URL will be automatically prepended when exported
  */
 export const contentEndpoints = {
-	/**
-	 * Get Announcements
-	 * @param lang - Language ID (1 = EN, 2 = CN)
-	 * Reference: https://www.cgsi.com.sg/notices?lang=EN
-	 */
-	announcements: (lang: Language = LANG.EN) => `/GetAnnouncement?lang=${lang}`,
 
 	/**
 	 * Get Notices
@@ -53,4 +47,19 @@ export const contentEndpoints = {
 	 */
 	insights: (lang: Language = LANG.EN, sort: string = "Date", order: "asc" | "desc" = "desc") =>
 		`/GetResearchAndInsight?sort=${sort}&order=${order}&lang=${lang}`,
+} as const;
+
+/**
+ * Announcement endpoints use a different base URL structure
+ * Reference: https://www.cgsi.com.sg/our-offerings/platform/itrade?lang=EN
+ */
+export const announcementEndpoints = {
+	/**
+	 * Get Announcements
+	 * @param lang - Language ID (1 = EN, 2 = CN)
+	 */
+	announcements: (lang: Language = LANG.EN) => {
+		const langCode = lang === LANG.EN ? "EN" : "CN";
+		return `/our-offerings/platform/itrade?lang=${langCode}`;
+	},
 } as const;

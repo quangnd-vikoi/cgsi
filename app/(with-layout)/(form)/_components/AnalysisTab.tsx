@@ -29,7 +29,7 @@ const AnalysisAccordionItem: React.FC<AnalysisAccordionItemProps> = ({ value, ti
 };
 
 const AnalysisTab: React.FC = () => {
-	const { productDetails, loading, error } = useProductDetails();
+	const { productDetails, loading, error, openAccordionValue, setOpenAccordionValue } = useProductDetails();
 
 	// Loading state
 	if (loading) {
@@ -160,7 +160,13 @@ const AnalysisTab: React.FC = () => {
 
 	return (
 		<div className="py-6">
-			<Accordion type="single" collapsible defaultValue="item-0" className="w-full">
+			<Accordion
+				type="single"
+				collapsible
+				className="w-full"
+				value={openAccordionValue}
+				onValueChange={setOpenAccordionValue}
+			>
 				{sections.map((section, index) => (
 					<AnalysisAccordionItem
 						key={index}

@@ -20,9 +20,6 @@ export default function Sidebar() {
 
 	// Determine product type based on pathname
 	const productType = pathname.startsWith(INTERNAL_ROUTES.SECURITIES) ? "IOP" : "AI";
-	const title = pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
-		? "Initial Offering Price (IOP)"
-		: "Commercial Papers";
 
 	// Fetch product subscriptions
 	const fetchProductSubscriptions = useCallback(async () => {
@@ -59,6 +56,13 @@ export default function Sidebar() {
 		});
 	};
 
+	// Check if closing date has passed
+	const isClosingDatePassed = (endTime: string): boolean => {
+		const closingDate = new Date(endTime);
+		const now = new Date();
+		return now > closingDate;
+	};
+
 	// Map API data to UI structure
 	const etfData = productSubs.map((sub) => ({
 		id: sub.productCode,
@@ -70,7 +74,7 @@ export default function Sidebar() {
 		closingDate: formatDateTime(sub.endTime),
 		hasDetails: true,
 		applied: sub.isSubscribed,
-		isCompact: false,
+		isCompact: isClosingDatePassed(sub.endTime),
 	}));
 
 	// Loading state

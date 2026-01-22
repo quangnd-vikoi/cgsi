@@ -98,12 +98,20 @@ const Notification = () => {
 
 		if (response.success && response.data) {
 			const { notifications, total } = response.data;
+
+			// Sort notifications by createdOn date, newest first
+			const sortedNotifications = [...notifications].sort((a, b) => {
+				const dateA = new Date(a.createdOn).getTime();
+				const dateB = new Date(b.createdOn).getTime();
+				return dateB - dateA; // Descending order (newest first)
+			});
+
 			if (append) {
 				// Append to existing list (pagination)
-				setListNoti((prev) => [...prev, ...notifications]);
+				setListNoti((prev) => [...prev, ...sortedNotifications]);
 			} else {
 				// Replace list (initial load)
-				setListNoti(notifications);
+				setListNoti(sortedNotifications);
 			}
 			setTotal(total);
 			setError(null); // Clear error on success

@@ -1,13 +1,14 @@
 "use client";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "@/components/Image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import useToggle from "@/hooks/useToggle";
 import Alert from "@/components/Alert";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
+import { getProductSubscriptionsByType } from "@/lib/services/subscriptionService";
 
 type InvestmentCardProps = {
 	title: string;
@@ -103,6 +104,49 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 };
 
 const Investment = () => {
+	const [securitiesCount, setSecuritiesCount] = useState<number>(0);
+	const [alternativesCount, setAlternativesCount] = useState<number>(0);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		// Check if closing date has passed
+		const isClosingDatePassed = (endTime: string): boolean => {
+			const closingDate = new Date(endTime);
+			const now = new Date();
+			return now > closingDate;
+		};
+
+		const fetchProductCounts = async () => {
+			try {
+				setIsLoading(true);
+
+				// Fetch Securities (IOP) count - only count available products
+				const iopResponse = await getProductSubscriptionsByType("IOP");
+				if (iopResponse.success && iopResponse.data?.productSubs) {
+					const availableProducts = iopResponse.data.productSubs.filter(
+						(product) => !isClosingDatePassed(product.endTime)
+					);
+					setSecuritiesCount(availableProducts.length);
+				}
+
+				// Fetch Alternatives (AI) count - only count available products
+				const aiResponse = await getProductSubscriptionsByType("AI");
+				if (aiResponse.success && aiResponse.data?.productSubs) {
+					const availableProducts = aiResponse.data.productSubs.filter(
+						(product) => !isClosingDatePassed(product.endTime)
+					);
+					setAlternativesCount(availableProducts.length);
+				}
+			} catch (error) {
+				console.error("Error fetching product counts:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchProductCounts();
+	}, []);
+
 	return (
 		<div className="bg-white container-default">
 			<div className="flex items-center gap-2">
@@ -113,7 +157,7 @@ const Investment = () => {
 				<InvestmentCard
 					href={INTERNAL_ROUTES.SECURITIES}
 					title="Securities"
-					available={1}
+					available={isLoading ? "..." : securitiesCount}
 					imageSrc="/icons/Investment-left.svg"
 					subtext="Tap into exclusive investment opportunities, from shares at initial offering prices (IOPs) to IPOs"
 				/>
@@ -121,7 +165,7 @@ const Investment = () => {
 				<InvestmentCard
 					href={INTERNAL_ROUTES.ALTERNATIVE}
 					title="Alternatives"
-					available={0}
+					available={isLoading ? "..." : alternativesCount}
 					imageSrc="/icons/Investment-right.svg"
 					subtext="Looking for short-term, high-quality corporate debt instruments? Explore our commercial papers!"
 				/>

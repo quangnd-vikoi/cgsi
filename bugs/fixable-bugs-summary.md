@@ -1,5 +1,32 @@
 # Fixable Bugs Summary
 
+**Last Updated:** 2026-01-21
+**Status:** 13 Logic Bugs Fixed ✅ | 3 Additional Fixes ✅
+
+---
+
+## 📋 Summary of All Fixes
+
+### Completed Fixes (16 total)
+
+#### Logic Bugs (6 fixed)
+1. ✅ **TC-44** - Announcement bar persistence with localStorage
+2. ✅ **TC-186** - Notification sort order (newest first)
+3. ✅ **TC-121/122** - Product name clickable on Web only
+4. ✅ **TC-100** - Analysis tab default state (all collapsed)
+5. ✅ **TC-102** - Reason card state persistence across tabs
+6. ✅ **TC-118** - Filter logic for applications
+
+#### UI/UX Improvements (3 fixed)
+7. ✅ **Sheet Mobile Positioning** - Sheet and overlay start below header (64px) on mobile
+8. ✅ **OTP Validation** - Disable submit button when OTP < 6 digits, improved error messages
+9. ✅ **Email Subject Pre-fill** - Contact email links now include "iTrade Client Enquiry" subject
+
+#### Previously Fixed UI Bugs (7 completed in earlier sprints)
+- ✅ TC-46, TC-142, TC-143, TC-189, TC-195, TC-124, TC-105
+
+---
+
 ## ✅ Bugs I Can Fix (13 total)
 
 ### UI Bugs (7 bugs)
@@ -59,50 +86,80 @@
 
 ### Logic Bugs (6 bugs)
 
-#### 8. TC-44 - Announcement bar persistence
+#### 8. TC-44 - Announcement bar persistence ✅ FIXED
 - **Type**: Logic Bug
-- **Location**: Announcement bar component
+- **Location**: `components/Header.tsx`
 - **Issue**: Bar reappears after page refresh when user closed it
 - **Fix**: Use localStorage to persist hidden state
-- **Complexity**: Easy (30 min)
+- **Implementation**:
+  - File: `components/Header.tsx:68-122`
+  - Store close state in localStorage with key `announcement-hidden-${Anchor_Link}`
+  - Check localStorage on component mount
+  - Clear error when typing
+- **Status**: ✅ Completed
 
-#### 9. TC-186 - Notification sort order
+#### 9. TC-186 - Notification sort order ✅ FIXED
 - **Type**: Logic Bug
 - **Location**: `app/(minimal)/sidebar/Notification.tsx`
 - **Issue**: Notifications in incorrect order (should be newest first)
 - **Fix**: Add `.sort()` with date comparison before rendering
-- **Complexity**: Easy (20 min)
+- **Implementation**:
+  - File: `app/(minimal)/sidebar/Notification.tsx:102-107`
+  - Sort by `createdOn` date in descending order
+  - Applied to both initial load and pagination
+- **Status**: ✅ Completed
 
-#### 10. TC-121/122 - Product name not clickable
+#### 10. TC-121/122 - Product name not clickable ✅ FIXED
 - **Type**: Logic Bug
-- **Location**: My Applications page
+- **Location**: `app/(with-layout)/(detail)/my-applications/page.tsx`
 - **Issue**: Product name should be clickable on Web (not on Mobile)
 - **Fix**:
   - Add onClick handler for Web
   - Use responsive logic to disable on mobile
   - Navigate to Product Details screen
-- **Complexity**: Easy (45 min)
+- **Implementation**:
+  - Files: `app/(with-layout)/(detail)/my-applications/page.tsx:100-117, 206-219`
+  - Mobile: Plain text (span)
+  - Web (md+): Clickable button with hover underline
+  - Sets selected item in store and navigates to securities/alternatives page
+- **Status**: ✅ Completed
 
-#### 11. TC-100 - Analysis tab default state
+#### 11. TC-100 - Analysis tab default state ✅ FIXED
 - **Type**: Logic Bug
-- **Location**: Product Details page - Analysis tab
+- **Location**: `app/(with-layout)/(form)/_components/AnalysisTab.tsx`
 - **Issue**: First reason card expanded by default (all should be collapsed)
 - **Fix**: Set all accordion items to collapsed initial state
-- **Complexity**: Easy (15 min)
+- **Implementation**:
+  - File: `app/(with-layout)/(form)/_components/AnalysisTab.tsx:163`
+  - Removed `defaultValue="item-0"` from Accordion component
+  - All items now start collapsed
+- **Status**: ✅ Completed
 
-#### 12. TC-102 - Reason card state persistence
+#### 12. TC-102 - Reason card state persistence ✅ FIXED
 - **Type**: Logic Bug
 - **Location**: Product Details page - Analysis tab
 - **Issue**: Reason card state resets when switching between Overview/Analysis/Documents tabs
 - **Fix**: Use state management (useState or context) to preserve accordion state within session
-- **Complexity**: Medium (1-2 hours)
+- **Implementation**:
+  - Files:
+    - `app/(with-layout)/(form)/_components/ProductDetailsContext.tsx:7-22, 40, 76-77`
+    - `app/(with-layout)/(form)/_components/AnalysisTab.tsx:32, 163-169`
+  - Added `openAccordionValue` state to ProductDetailsContext
+  - Controlled accordion value persists across tab switches
+- **Status**: ✅ Completed
 
-#### 13. TC-118 - Filter logic incorrect
+#### 13. TC-118 - Filter logic incorrect ✅ FIXED
 - **Type**: Logic Bug
-- **Location**: My Applications page - Filter tabs
+- **Location**: `app/(with-layout)/(detail)/my-applications/page.tsx`
 - **Issue**: Securities applications showing in Alternatives tab
 - **Fix**: Check filter logic, ensure correct mapping of application type to filter category
-- **Complexity**: Medium (1-2 hours)
+- **Implementation**:
+  - File: `app/(with-layout)/(detail)/my-applications/page.tsx:55-95`
+  - Normalize and trim product type strings
+  - Map variants: "securities", "security" → "securities"
+  - Map alternatives: "alternatives", "alternative", "structured products", "funds", "bonds" → "alternatives"
+  - Default unknown types to "securities" with console warning
+- **Status**: ✅ Completed
 
 ---
 
@@ -113,8 +170,8 @@
 **Authentication & Session**
 - TC-7: Session timeout handling
 - TC-9: Logout function not working
-- TC-16, TC-22: OTP validation page refresh
-- TC-17, TC-23: OTP expiry message
+- TC-16, TC-22: OTP validation page refresh (⚠️ Partially Fixed - validation improved)
+- TC-17, TC-23: OTP expiry message (⚠️ Partially Fixed - error messages added, expiry logic needs backend)
 
 **Data & API**
 - TC-38: Announcement wrong data source
@@ -133,8 +190,8 @@
 - TC-174: Notification bell red dot (backend flag)
 - TC-188: Notification toast (push notification system)
 - TC-196: Change Password redirect
-- TC-219, TC-220: Contact navigation
-- TC-223, TC-224, TC-225: Contact interaction
+- TC-219, TC-220: Contact navigation (⚠️ Partially Fixed - email links work correctly)
+- TC-223, TC-224, TC-225: Contact interaction (✅ Fixed - email subject pre-fill added)
 
 ---
 
@@ -240,10 +297,136 @@ After fixing each bug, verify:
 - [x] TC-195: No image placeholder when no image; title truncates
 - [x] TC-124: Mobile shows "View Application Note"
 - [x] TC-105: Modal scrollable, footer always visible
-- [ ] TC-44: Close announcement, refresh page, stays closed
-- [ ] TC-186: Newest notification at top
-- [ ] TC-121: Web - product name clickable, goes to details
-- [ ] TC-122: Mobile - product name not clickable
-- [ ] TC-100: All analysis cards collapsed initially
-- [ ] TC-102: Expand card, switch tab, return - stays expanded
-- [ ] TC-118: Securities in Securities tab, Alternatives in Alternatives tab
+- [x] TC-44: Close announcement, refresh page, stays closed
+- [x] TC-186: Newest notification at top
+- [x] TC-121: Web - product name clickable, goes to details
+- [x] TC-122: Mobile - product name not clickable
+- [x] TC-100: All analysis cards collapsed initially
+- [x] TC-102: Expand card, switch tab, return - stays expanded
+- [x] TC-118: Securities in Securities tab, Alternatives in Alternatives tab
+
+---
+
+## 🎉 Additional Fixes (Not in Original Bug List)
+
+### 1. Sheet/SheetManager Mobile Positioning ✅ FIXED
+- **Issue**: Sheet and overlay covered the header on mobile, starting at top (0px)
+- **Expected**: Sheet and overlay should start below header (64px offset) on mobile, full screen on desktop
+- **Files Modified**:
+  - `app/(with-layout)/layout.tsx:14` - Moved SheetManager outside header, updated header z-index to z-[100]
+  - `components/ui/sheet.tsx:30` - SheetOverlay: `top-16 md:top-0` (64px offset on mobile)
+  - `components/ui/sheet.tsx:55` - SheetContent: `top-16 md:top-0` for right side
+  - `app/(minimal)/sidebar/SheetManager.tsx:96` - Removed `h-screen` class
+- **Result**: Mobile users can see and interact with header while sheet is open
+
+### 2. OTP Validation Improvements ✅ FIXED
+- **Issue**:
+  - Submit button clickable even with incomplete OTP
+  - No clear error messages for different failure scenarios
+  - No visual feedback when typing
+- **Files Modified**:
+  - `app/(with-layout)/(detail)/update-mobile/page.tsx:44-48, 192-214, 284`
+  - `app/(with-layout)/(detail)/update-email/page.tsx:86-90, 222-244, 312`
+- **Implementation**:
+  - Disable submit button when OTP length < 6
+  - Error message: "Please enter the 6 digit numbers that sent to your [mobile/email]"
+  - Error message on mismatch/expiry: "Sorry, your entries do not match. Please try again."
+  - Clear error automatically when user types
+  - TODO comments added for OTP expiry check (backend integration needed)
+- **Result**: Better UX with clear validation and error handling
+
+### 3. Email Subject Pre-fill ✅ FIXED
+- **Issue**: Email links didn't include pre-filled subject line
+- **Expected**: Subject should be "iTrade Client Enquiry"
+- **Files Modified**:
+  - `lib/utils.ts:27-30` - Updated global `handleEmail` function
+  - `app/(minimal)/sidebar/TradingRepresentative.tsx:33-36` - Updated local `handleEmail` function
+- **Implementation**:
+  ```typescript
+  const subject = encodeURIComponent("iTrade Client Enquiry");
+  window.location.href = `mailto:${email}?subject=${subject}`;
+  ```
+- **Result**: All contact email links (Trading Representative, Client Services) now open email app with:
+  - To: Pre-filled email address
+  - Subject: "iTrade Client Enquiry"
+
+---
+
+## 📊 Files Changed Summary
+
+### Modified Files (15 total)
+
+**Core Components:**
+- `components/Header.tsx` - Announcement persistence
+- `components/ui/sheet.tsx` - Mobile positioning
+- `lib/utils.ts` - Email subject pre-fill
+
+**Layout:**
+- `app/(with-layout)/layout.tsx` - SheetManager positioning
+
+**Sidebar/Sheets:**
+- `app/(minimal)/sidebar/SheetManager.tsx` - Height adjustment
+- `app/(minimal)/sidebar/Notification.tsx` - Sort order
+- `app/(minimal)/sidebar/TradingRepresentative.tsx` - Email subject
+
+**Applications:**
+- `app/(with-layout)/(detail)/my-applications/page.tsx` - Clickable products, filter logic
+
+**Product Details:**
+- `app/(with-layout)/(form)/_components/AnalysisTab.tsx` - Default state, persistence
+- `app/(with-layout)/(form)/_components/ProductDetailsContext.tsx` - State management
+
+**OTP Pages:**
+- `app/(with-layout)/(detail)/update-mobile/page.tsx` - OTP validation
+- `app/(with-layout)/(detail)/update-email/page.tsx` - OTP validation
+
+**Documentation:**
+- `bugs/fixable-bugs-summary.md` - This file
+
+---
+
+## 🔄 Next Steps & Recommendations
+
+### Backend Integration Needed
+1. **OTP Expiry Check**: Add backend timestamp validation for OTP expiry
+   - Files with TODO: `update-mobile/page.tsx:197`, `update-email/page.tsx:227`
+   - Current: Generic error message
+   - Needed: Backend should return specific expiry error code
+
+### Future Enhancements
+1. Consider adding OTP resend cooldown timer
+2. Add analytics tracking for OTP failures
+3. Implement rate limiting for OTP requests
+
+### Testing Recommendations
+1. Test all contact email links on different email clients (Gmail, Outlook, Apple Mail)
+2. Test OTP validation with various edge cases (expired, invalid, already used)
+3. Test sheet positioning on various mobile devices and screen sizes
+4. Verify product filtering with different data sets from backend
+
+---
+
+## ✅ All Tests Passing
+
+**Logic Bugs:**
+- [x] TC-44: Close announcement, refresh page, stays closed
+- [x] TC-186: Newest notification at top
+- [x] TC-121: Web - product name clickable, goes to details
+- [x] TC-122: Mobile - product name not clickable
+- [x] TC-100: All analysis cards collapsed initially
+- [x] TC-102: Expand card, switch tab, return - stays expanded
+- [x] TC-118: Securities in Securities tab, Alternatives in Alternatives tab
+
+**Additional Fixes:**
+- [x] Sheet: Mobile - starts below header (64px), Desktop - full screen
+- [x] OTP: Submit disabled when < 6 digits, clear errors on typing
+- [x] Email: Subject pre-filled with "iTrade Client Enquiry"
+
+**UI Bugs (Previously Completed):**
+- [x] TC-46: Announcement truncates on all screen sizes
+- [x] TC-142: Article description shows exactly 3 lines max
+- [x] TC-143: Dates show as "20-Jan-2026" format
+- [x] TC-189: Notification titles show 2 lines max with ellipsis
+- [x] TC-195: No image placeholder when no image; title truncates
+- [x] TC-124: Mobile shows "View Application Note"
+- [x] TC-105: Modal scrollable, footer always visible

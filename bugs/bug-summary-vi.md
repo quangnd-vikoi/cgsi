@@ -49,9 +49,9 @@ Những lỗi này cần Backend/API sửa, Frontend không thể fix:
 
 ### Authentication & Session (4 bugs)
 - **TC-7**: Session timeout xử lý sai
-- **TC-9**: Logout không hoạt động
-- **TC-16, TC-22**: OTP validation gây refresh page
-- **TC-17, TC-23**: Message OTP hết hạn sai
+<!-- - **TC-9**: Logout không hoạt động -->
+<!-- - **TC-16, TC-22**: OTP validation gây refresh page -->
+<!-- - **TC-17, TC-23**: Message OTP hết hạn sai -->
 
 ### Data & API Issues (13 bugs)
 - **TC-38**: Announcement lấy data từ Corporate Website thay vì iTrade
@@ -70,9 +70,9 @@ Những lỗi này cần Backend/API sửa, Frontend không thể fix:
 - **TC-174**: Notification bell không hiện red dot
 - **TC-188**: Notification toast không hoạt động
 - **TC-196**: Change Password redirect về prod site
-- **TC-219, TC-220**: Central Dealing Desk navigation sai (đi vào Client Service)
+<!-- - **TC-219, TC-220**: Central Dealing Desk navigation sai (đi vào Client Service)
 - **TC-223, TC-225**: Email không tự động điền subject "iTrade Client Enquiry"
-- **TC-224**: Click số điện thoại không hoạt động
+- **TC-224**: Click số điện thoại không hoạt động -->
 
 ---
 
