@@ -77,9 +77,9 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 					const randomItem = items[Math.floor(Math.random() * items.length)];
 					setAnnouncement(randomItem);
 
-					// Check if this announcement was previously hidden
+					// Check if this announcement was previously hidden (session only)
 					const storageKey = `announcement-hidden-${randomItem.Anchor_Link}`;
-					const wasHidden = localStorage.getItem(storageKey);
+					const wasHidden = sessionStorage.getItem(storageKey);
 					setIsVisible(!wasHidden);
 				}
 			} catch (error) {
@@ -93,7 +93,7 @@ const AnnouncementBar = ({ setOpenSheet }: { setOpenSheet: (sheetType: SheetType
 	const handleClose = () => {
 		if (announcement) {
 			const storageKey = `announcement-hidden-${announcement.Anchor_Link}`;
-			localStorage.setItem(storageKey, "true");
+			sessionStorage.setItem(storageKey, "true");
 			setIsVisible(false);
 		}
 	};
@@ -131,8 +131,8 @@ const Header = () => {
 		// await redirectToNTP();
 		window.open(CGSI.TRADE, "_blank");
 	};
-
-	const isIconFill = !["/", "/discover", "/portfolio"].includes(pathName);
+	console.log("pathname", pathName);
+	const isIconFill = !["", "/discover/", "/portfolio/" , "/securities/", "/alternatives/", "/my-applications/"].includes(pathName);
 
 	const handleSheetOpen = (type: "profile" | "notification") => {
 		if (type == "profile") setOpenSheet("profile");

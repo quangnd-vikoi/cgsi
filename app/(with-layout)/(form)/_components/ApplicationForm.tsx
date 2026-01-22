@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -18,6 +18,7 @@ import { cn, convertTo2DigitsNumber } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import Image from "@/components/Image";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { useProductDetails } from "./ProductDetailsContext";
@@ -28,34 +29,21 @@ type RouteProps = {
 	pathname: "alternatives" | "securities";
 };
 
-// Select field configurations
-const SELECT_FIELDS = [
-	{
-		id: "account",
-		label: "Account",
-		placeholder: "Select an account",
-		defaultValue: "cash-0123456",
-		options: [
-			{ value: "cash-0123456", label: "(Cash) 0123456" },
-			{ value: "cash-0123457", label: "(Cash) 0123457" },
-			{ value: "cash-0123458", label: "(Cash) 0123458" },
-		],
-	},
-	{
-		id: "payment",
-		label: "Preferred Payment Mode",
-		placeholder: "Select a payment option",
-		defaultValue: "",
-		options: [
-			{ value: "bank-transfer", label: "Bank Transfer" },
-			{ value: "giro", label: "Giro" },
-			{ value: "margin-account", label: "Margin Account" },
-			{ value: "paynow", label: "Paynow" },
-			{ value: "telegraphic-transfer", label: "Telegraphic Transfer" },
-			{ value: "trust-account", label: "Trust Account" },
-		],
-	},
-];
+// Payment field configuration (account field handled separately with dynamic data)
+const PAYMENT_FIELD = {
+	id: "payment",
+	label: "Preferred Payment Mode",
+	placeholder: "Select a payment option",
+	defaultValue: "",
+	options: [
+		{ value: "bank-transfer", label: "Bank Transfer" },
+		{ value: "giro", label: "Giro" },
+		{ value: "margin-account", label: "Margin Account" },
+		{ value: "paynow", label: "Paynow" },
+		{ value: "telegraphic-transfer", label: "Telegraphic Transfer" },
+		{ value: "trust-account", label: "Trust Account" },
+	],
+};
 
 const CURRENCY_OPTIONS = [
 	{
@@ -83,10 +71,20 @@ const CURRENCY_OPTIONS = [
 
 export default function ApplicationForm({ pathname }: RouteProps) {
 	const { productDetails, refetch } = useProductDetails();
+	const accounts = useTradingAccountStore((state) => state.accounts);
+
+	// Filter cash accounts (CTA = Cash Trading Account)
+	console.log("All Accounts:", accounts);
+	const cashAccounts = accounts.filter((acc) => acc.accountType === null);
+	console.log("Cash Accounts:", cashAccounts);
+	console.log("hasOnlySingleCashAccount:", cashAccounts.length === 1);
+	const hasOnlySingleCashAccount = cashAccounts.length === 1;
+	const defaultAccountNo = cashAccounts[0].accountNo
+
 	const [quantity, setQuantity] = useState<number | "">("");
 	const [agreed, setAgreed] = useState(false);
 	const [formValues, setFormValues] = useState({
-		account: "cash-0123456",
+		account: defaultAccountNo,
 		payment: "",
 		currency: "sgd",
 	});
@@ -95,6 +93,20 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const router = useRouter();
+
+	// Handle click on disabled account field
+	const handleDisabledAccountClick = () => {
+		if (hasOnlySingleCashAccount) {
+			toast.info("Account currently only has 1 Cash Account");
+		}
+	};
+
+	// Auto-fill account when there's only one cash account
+	useEffect(() => {
+		if (hasOnlySingleCashAccount && formValues.account !== cashAccounts[0].accountNo) {
+			setFormValues((prev) => ({ ...prev, account: cashAccounts[0].accountNo }));
+		}
+	}, [hasOnlySingleCashAccount, cashAccounts, formValues.account]);
 
 	// If no product details, don't render
 	if (!productDetails) {
@@ -166,7 +178,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				setQuantity("");
 				setAgreed(false);
 				setFormValues({
-					account: "cash-0123456",
+					account: defaultAccountNo,
 					payment: "",
 					currency: "sgd",
 				});
@@ -272,44 +284,86 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						</p>
 					</div>
 
-					{/* Dynamic Select Fields */}
-					{SELECT_FIELDS.map((field) => {
-						const hasError =
-							showValidationErrors && !formValues[field.id as keyof typeof formValues];
-						return (
-							<div key={field.id} className="mb-6">
-								<Label
-									htmlFor={field.id}
-									className="text-sm font-semibold text-typo-primary mb-1.5"
+					{/* Account Field */}
+					<div className="mb-6">
+						<Label
+							htmlFor="account"
+							className="text-sm font-semibold text-typo-primary mb-1.5"
+						>
+							Account
+						</Label>
+						{hasOnlySingleCashAccount ? (
+							// Single cash account - show disabled field with toast on click
+							<div
+								onClick={handleDisabledAccountClick}
+								className="w-full cursor-not-allowed"
+							>
+								<div
+									className={cn(
+										"flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-muted/50 px-3 py-2 text-sm shadow-xs",
+										"text-typo-secondary opacity-70",
+										showValidationErrors && !formValues.account && "border-status-error bg-background-error"
+									)}
 								>
-									{field.label}
-								</Label>
-								<Select
-									value={formValues[field.id as keyof typeof formValues]}
-									onValueChange={(value) => updateFormValue(field.id, value)}
-								>
-									<SelectTrigger
-										id={field.id}
-										className={cn(
-											"w-full",
-											hasError && "border-status-error bg-background-error"
-										)}
-									>
-										<SelectValue placeholder={field.placeholder} />
-									</SelectTrigger>
-									<SelectContent>
-										{field.options.map((option) => (
-											<SelectItem key={option.value} value={option.value}>
-												<p>
-													{option.label}
-												</p>
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+									<span>(Cash) {cashAccounts[0].accountNo}</span>
+								</div>
 							</div>
-						);
-					})}
+						) : (
+							// Multiple cash accounts - show select dropdown
+							<Select
+								value={formValues.account}
+								onValueChange={(value) => updateFormValue("account", value)}
+							>
+								<SelectTrigger
+									id="account"
+									className={cn(
+										"w-full",
+										showValidationErrors && !formValues.account && "border-status-error bg-background-error"
+									)}
+								>
+									<SelectValue placeholder="Select an account" />
+								</SelectTrigger>
+								<SelectContent className="z-[105]">
+									{cashAccounts.map((account) => (
+										<SelectItem key={account.accountNo} value={account.accountNo}>
+											<p>(Cash) {account.accountNo}</p>
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						)}
+					</div>
+
+					{/* Payment Field */}
+					<div className="mb-6">
+						<Label
+							htmlFor={PAYMENT_FIELD.id}
+							className="text-sm font-semibold text-typo-primary mb-1.5"
+						>
+							{PAYMENT_FIELD.label}
+						</Label>
+						<Select
+							value={formValues.payment}
+							onValueChange={(value) => updateFormValue(PAYMENT_FIELD.id, value)}
+						>
+							<SelectTrigger
+								id={PAYMENT_FIELD.id}
+								className={cn(
+									"w-full",
+									showValidationErrors && !formValues.payment && "border-status-error bg-background-error"
+								)}
+							>
+								<SelectValue placeholder={PAYMENT_FIELD.placeholder} />
+							</SelectTrigger>
+							<SelectContent className="z-[105]">
+								{PAYMENT_FIELD.options.map((option) => (
+									<SelectItem key={option.value} value={option.value}>
+										<p>{option.label}</p>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 
 					{/* Currency Select */}
 					<div className="mb-6">
@@ -331,7 +385,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							>
 								<SelectValue placeholder="Select a currency" />
 							</SelectTrigger>
-							<SelectContent>
+							<SelectContent className="z-[105]">
 								{CURRENCY_OPTIONS.map((currency) => (
 									<SelectItem
 										key={currency.value}

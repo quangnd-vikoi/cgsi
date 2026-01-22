@@ -1,13 +1,9 @@
 // Main API base URL for iTrade Portal backend
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://stgitrade.cgsi.com.sg/portal";
 
-// Content API base URL for 3rd party content (notices, campaigns, events, insights)
+// Content API base URL for 3rd party content (announcements, campaigns, events, insights)
 export const CONTENT_BASE_URL =
 	process.env.NEXT_PUBLIC_CONTENT_API_URL || "https://www.cgsi.com.sg/cgsi/api/v1";
-
-// Announcement API uses a different base URL structure
-export const ANNOUNCEMENT_BASE_URL =
-	process.env.NEXT_PUBLIC_ANNOUNCEMENT_API_URL || "https://www.cgsi.com.sg";
 
 export const LANG = {
 	EN: 1,
