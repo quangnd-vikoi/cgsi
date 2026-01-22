@@ -4,6 +4,7 @@
 import { useEffect } from "react";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { notificationService } from "@/lib/services/notificationService";
+import { toast } from "@/components/ui/toaster";
 
 export function NotificationPolling() {
 	const setUnreadCount = useNotificationStore((state) => state.setUnreadCount);
@@ -28,9 +29,14 @@ export function NotificationPolling() {
 			const response = await notificationService.getLatestNotifications(5);
 
 			if (response.success && response.data) {
-				const newUnreadCount = response.data.filter((n) => n.status === "U").length;
-				if (newUnreadCount > 0) {
-					setUnreadCount((prev) => prev + newUnreadCount);
+				const unreadNotifications = response.data.filter((n) => n.status === "U");
+				if (unreadNotifications.length > 0) {
+					setUnreadCount((prev) => prev + unreadNotifications.length);
+
+					// Show toast for each new notification
+					unreadNotifications.forEach((notification) => {
+						toast.info(notification.title, notification.description);
+					});
 				}
 			} else {
 				console.error("Failed to poll latest notifications:", response.error);

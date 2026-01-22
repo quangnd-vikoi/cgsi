@@ -65,7 +65,11 @@ const TradingAccounts = () => {
 
 			<div className="flex-1 overflow-y-auto pb-4 scrollbar-offset-laptop">
 				{accounts.map((acc) => (
-					<div key={acc.accountNo} className="p-4 border border-stroke-secondary rounded mt-6">
+					<div
+						key={acc.accountNo}
+						className="p-4 border border-stroke-secondary rounded mt-6 cursor-pointer hover:border-cgs-blue hover:bg-theme-blue-100/50 transition-colors group"
+						onClick={() => handleDetailsClick(acc.accountNo)}
+					>
 						<div className="flex justify-between items-start">
 							<div>
 								<p className="text-xs font-normal">{acc.accountType || "Trading Account"}</p>
@@ -74,10 +78,14 @@ const TradingAccounts = () => {
 									<Copy
 										className="text-cgs-blue cursor-pointer hover:text-cgs-blue"
 										size={16}
+										onClick={(e) => {
+											e.stopPropagation();
+											navigator.clipboard.writeText(acc.accountNo);
+										}}
 									/>
 								</div>
 							</div>
-							<ChevronRight className="text-cgs-blue group-hover:text-white" size={14} />
+							<ChevronRight className="text-cgs-blue group-hover:translate-x-0.5 transition-transform" size={14} />
 						</div>
 						<div className="flex justify-between mt-6 text-xs">
 							<p className="text-typo-secondary font-normal">TR Name:</p>
