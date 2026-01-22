@@ -40,7 +40,7 @@ export const CashBalance = () => {
     const canCollapse = displayCount > INITIAL_DISPLAY_COUNT;
 
     return (
-        <div className="bg-white rounded-lg border border-stroke-secondary">
+        <div className="bg-white rounded border border-stroke-secondary">
             <div className="p-4 md:p-6">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-base font-bold text-typo-primary">Cash Balance</h2>
@@ -48,7 +48,7 @@ export const CashBalance = () => {
                     {/* Desktop: Show buttons */}
                     <div className="hidden md:flex gap-4">
                         <Link href={INTERNAL_ROUTES.CASH_TRANSACTION}>
-                            <Button variant="outline" size="sm" className="border border-enhanced-blue text-sm text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75">
+                            <Button variant="outline" size="sm" className="border border-cgs-blue text-sm text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75">
                                 <FileText size={16} />
                                 Cash Transactions
                             </Button>
@@ -107,7 +107,7 @@ export const CashBalance = () => {
                         {hasMore ? (
                             <button
                                 onClick={handleShowMore}
-                                className="flex items-center gap-1 text-sm text-enhanced-blue hover:text-enhanced-blue/75"
+                                className="flex items-center gap-1 text-sm text-cgs-blue hover:text-cgs-blue/75"
                             >
                                 Show others
                                 <ChevronDown size={16} />
@@ -115,7 +115,7 @@ export const CashBalance = () => {
                         ) : (
                             <button
                                 onClick={handleShowLess}
-                                className="flex items-center gap-1 text-sm text-enhanced-blue hover:text-enhanced-blue/75"
+                                className="flex items-center gap-1 text-sm text-cgs-blue hover:text-cgs-blue/75"
                             >
                                 Show less
                                 <ChevronUp size={16} />

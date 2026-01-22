@@ -170,7 +170,8 @@ const UpdateSignature = () => {
 		// Step 1: Upload the file
 		const uploadResponse = await uploadSignature(
 			fileToUpload,
-			JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
+			// JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
+			"main"
 		);
 
 		if (!uploadResponse.success || !uploadResponse.data) {
@@ -224,8 +225,8 @@ const UpdateSignature = () => {
 							<div className="w-full mt-6">
 								<div
 									className={cn(
-										"border-2 border-dashed rounded-lg overflow-hidden bg-white",
-										error ? "border-status-error" : "border-enhanced-blue"
+										"border-2 border-dashed rounded overflow-hidden bg-white",
+										error ? "border-status-error" : "border-cgs-blue"
 									)}
 									style={{ width: "100%", height: "312px" }}
 								>
@@ -262,7 +263,7 @@ const UpdateSignature = () => {
 									<div className="mt-6">
 										For reference, please review this{" "}
 										<span
-											className="text-enhanced-blue font-semibold cursor-pointer"
+											className="text-cgs-blue underline underline-offset-2 cursor-pointer font-medium"
 											onClick={() => setTrue()}
 										>
 											Sample Signature
@@ -277,16 +278,16 @@ const UpdateSignature = () => {
 									>
 										<div
 											className={cn(
-												"border border-dashed bg-background-section rounded-lg w-full py-4 flex flex-col items-center justify-center gap-1.5  mt-6",
+												"border border-dashed bg-background-section rounded w-full px-4 py-3 flex items-center justify-between mt-6",
 												error
 													? "border-status-error bg-background-error text-status-error"
 													: selectedFile != null
 														? "border-stroke-secondary text-status-disable-primary bg-theme-neutral-095 cursor-not-allowed"
-														: "border-enhanced-blue text-enhanced-blue bg-background-section shadow-[0px_3px_16px_0px_rgba(0,108,235,0.20)] cursor-pointer "
+														: "border-cgs-blue text-cgs-blue bg-background-section shadow-light-blue cursor-pointer "
 											)}
 										>
-											<FileUp className="" size={24} strokeWidth={1.25} />
 											<p className="text-sm font-normal">Upload Signature</p>
+											<FileUp className="" size={24} strokeWidth={1.25} />
 										</div>
 										{error && (
 											<p className="text-status-error text-xs mt-1 flex items-center gap-1">
@@ -311,7 +312,7 @@ const UpdateSignature = () => {
 									</p>
 
 									{selectedFile && (
-										<div className="mt-4 border border-gray-200 rounded-lg overflow-hidden bg-background-section">
+										<div className="mt-4 border border-gray-200 rounded overflow-hidden bg-background-section">
 											<div className="p-3">
 												<div className="flex items-stretch gap-3">
 													{/* File Icon/Image Preview */}
@@ -344,7 +345,7 @@ const UpdateSignature = () => {
 																{uploadProgress != 100 ? (
 																	<span>Uploading {uploadProgress}%</span>
 																) : (
-																	<span className="text-enhanced-blue">
+																	<span className="text-cgs-blue">
 																		Completed
 																	</span>
 																)}
@@ -365,7 +366,7 @@ const UpdateSignature = () => {
 											{/* Progress Bar at Bottom */}
 											<div className="w-full bg-gray-200 h-0.5">
 												<div
-													className="bg-enhanced-blue h-1.5 transition-all duration-300"
+													className="bg-cgs-blue h-1.5 transition-all duration-300"
 													style={{ width: `${uploadProgress}%` }}
 												/>
 											</div>
@@ -413,7 +414,7 @@ const UpdateSignature = () => {
 						)}
 						<div className="pad-x py-4 border-t w-full relative flex gap-2">
 							<Button
-								className="w-1/2 text-base font-normal bg-transparent border-none text-enhanced-blue hover:border-enhanced-blue/75 hover:bg-transparent hover:text-enhanced-blue/75"
+								className="w-1/2 text-base font-medium bg-transparent border-none text-cgs-blue hover:border-cgs-blue/75 hover:bg-transparent hover:text-cgs-blue/75"
 								onClick={() => handleClear()}
 								disabled={isSubmitting}
 							>

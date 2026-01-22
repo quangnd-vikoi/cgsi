@@ -73,7 +73,7 @@ const NoteContent = () => {
 	if (loading) {
 		return (
 			<div className="bg-black/75 min-h-screen flex items-center justify-center">
-				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
+				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded">
 					<div className="space-y-4">
 						{[...Array(5)].map((_, i) => (
 							<Skeleton key={i} className="h-12 w-full" />
@@ -87,7 +87,7 @@ const NoteContent = () => {
 	if (error || !details) {
 		return (
 			<div className="bg-black/75 min-h-screen flex items-center justify-center">
-				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
+				<div className="max-w-[1240px] bg-white mx-auto p-6 rounded">
 					<div className="flex items-center justify-center">
 						<ErrorState
 							type="error"
@@ -125,18 +125,18 @@ const NoteContent = () => {
 		bold?: boolean;
 		sublabel?: string;
 	}> = [
-		{ label: "Gross Proceeds", value: formatCurrency(grossProceed, paymentCurrency) },
-		{ label: "Placement Fee", value: formatCurrency(commission, paymentCurrency) },
-		{ label: "Admin Fee", value: formatCurrency(adminFee, paymentCurrency) },
-		{
-			label: `GST (${gstPct}%)`,
-			sublabel: "based on Placement Fee and Admin Fee",
-			value: formatCurrency(gstAmount, paymentCurrency),
-		},
-		{ label: "Total", value: formatCurrency(total, paymentCurrency) },
-		{ label: `Conversion Rate to ${paymentCurrency}`, value: conversionRate.toFixed(1) },
-		{ label: "Amount Payable", value: formatCurrency(amountPayable, paymentCurrency), bold: true },
-	];
+			{ label: "Gross Proceeds", value: formatCurrency(grossProceed, paymentCurrency) },
+			{ label: "Placement Fee", value: formatCurrency(commission, paymentCurrency) },
+			{ label: "Admin Fee", value: formatCurrency(adminFee, paymentCurrency) },
+			{
+				label: `GST (${gstPct}%)`,
+				sublabel: "based on Placement Fee and Admin Fee",
+				value: formatCurrency(gstAmount, paymentCurrency),
+			},
+			{ label: "Total", value: formatCurrency(total, paymentCurrency) },
+			{ label: `Conversion Rate to ${paymentCurrency}`, value: conversionRate.toFixed(1) },
+			{ label: "Amount Payable", value: formatCurrency(amountPayable, paymentCurrency), bold: true },
+		];
 
 	return (
 		<div className="bg-black/75 min-h-screen">
@@ -146,10 +146,10 @@ const NoteContent = () => {
 					<div className="flex justify-between">
 						<h1 className="text-lg font-semibold">Application Success!</h1>
 						<div
-							className="text-enhanced-blue flex gap-2 cursor-pointer hover:underline"
+							className="text-cgs-blue flex gap-2 cursor-pointer hover:underline"
 							onClick={handlePrint}
 						>
-							<Printer className="text-enhanced-blue" />
+							<Printer className="text-cgs-blue" />
 							Print
 						</div>
 					</div>
@@ -189,7 +189,7 @@ const NoteContent = () => {
 									{formatCurrency(amountPayable, paymentCurrency)}
 								</p>
 							</div>
-							<div className="row-span-1 border border-status-warning rounded-lg p-4 text-sm text-typo-primary font-semibold">
+							<div className="row-span-1 border border-status-warning rounded p-4 text-sm text-typo-primary font-semibold">
 								<div className="flex justify-between *:items-center">
 									<div className="flex gap-2">
 										<Clock className="text-status-warning" size={24} />
@@ -264,7 +264,7 @@ const NoteContent = () => {
 
 						<div className="grid grid-cols-3 gap-4 mb-4">
 							{/* Internet Banking */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">Internet Banking (FAST/Bill Payment)</h4>
 								<div className="space-y-2 text-xs">
 									<p>
@@ -281,7 +281,7 @@ const NoteContent = () => {
 							</div>
 
 							{/* Pay Now */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">Pay Now</h4>
 								<div className="space-y-2 text-xs">
 									<p>
@@ -302,12 +302,12 @@ const NoteContent = () => {
 							</div>
 
 							{/* Telegraphic Transfer */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">Telegraphic Transfer</h4>
 								<div className="space-y-2 text-xs">
 									<p className="text-typo-secondary">
 										Please click{" "}
-										<span className="text-enhanced-blue cursor-pointer">here</span> for
+										<span className="text-cgs-blue cursor-pointer">here</span> for
 										details.
 									</p>
 								</div>
@@ -316,7 +316,7 @@ const NoteContent = () => {
 
 						<div className="grid grid-cols-3 gap-4">
 							{/* GIRO */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">GIRO</h4>
 								<div className="space-y-2 text-xs">
 									<p className="text-typo-secondary">
@@ -327,7 +327,7 @@ const NoteContent = () => {
 							</div>
 
 							{/* Trust Account */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">Trust Account</h4>
 								<div className="space-y-2 text-xs">
 									<p className="text-typo-secondary">
@@ -344,7 +344,7 @@ const NoteContent = () => {
 							</div>
 
 							{/* Margin Account */}
-							<div className="border border-stroke-secondary rounded-lg p-4">
+							<div className="border border-stroke-secondary rounded p-4">
 								<h4 className="text-sm font-semibold mb-3">Margin Account:</h4>
 								<div className="space-y-2 text-xs">
 									<p className="text-typo-secondary">
@@ -372,7 +372,7 @@ const NoteContent = () => {
 								For any queries, please email to{" "}
 								<a
 									href="mailto:sg.retailmgmtsupport@cgsi.com"
-									className="text-enhanced-blue hover:underline"
+									className="text-cgs-blue hover:underline"
 								>
 									sg.retailmgmtsupport@cgsi.com
 								</a>
@@ -390,7 +390,7 @@ const Note = () => {
 		<Suspense
 			fallback={
 				<div className="bg-black/75 min-h-screen flex items-center justify-center">
-					<div className="max-w-[1240px] bg-white mx-auto p-6 rounded-lg">
+					<div className="max-w-[1240px] bg-white mx-auto p-6 rounded">
 						<div className="space-y-4">
 							{[...Array(5)].map((_, i) => (
 								<Skeleton key={i} className="h-12 w-full" />

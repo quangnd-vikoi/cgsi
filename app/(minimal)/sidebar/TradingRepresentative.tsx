@@ -31,7 +31,8 @@ const TradingList = ({ representatives }: TradingListProps) => {
 	};
 
 	const handleEmail = (email: string) => {
-		window.location.href = `mailto:${email}`;
+		const subject = encodeURIComponent("iTrade Client Enquiry");
+		window.location.href = `mailto:${email}?subject=${subject}`;
 	};
 
 	return (
@@ -39,7 +40,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 			{representatives.map((rep) => (
 				<div
 					key={rep.id}
-					className="p-4 rounded-lg border border-stroke-secondary bg-background-primary"
+					className="p-4 rounded border border-stroke-secondary bg-background-primary"
 				>
 					{/* Header */}
 					<div className="flex justify-between items-start mb-4">
@@ -76,7 +77,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCopy(rep.phone, "phone")}
 								>
-									<Copy size={16} className="text-enhanced-blue" />
+									<Copy size={16} className="text-cgs-blue" />
 								</Button>
 								<Button
 									variant="ghost"
@@ -84,7 +85,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCall(rep.phone)}
 								>
-									<CircleArrowRight size={16} className="text-enhanced-blue" />
+									<CircleArrowRight size={16} className="text-cgs-blue" />
 								</Button>
 							</div>
 						</div>
@@ -102,7 +103,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleCopy(rep.email, "email")}
 								>
-									<Copy size={16} className="text-enhanced-blue" />
+									<Copy size={16} className="text-cgs-blue" />
 								</Button>
 								<Button
 									variant="ghost"
@@ -110,7 +111,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 									className="h-5 w-5 hover:bg-transparent"
 									onClick={() => handleEmail(rep.email)}
 								>
-									<CircleArrowRight size={16} className="text-enhanced-blue" />
+									<CircleArrowRight size={16} className="text-cgs-blue" />
 								</Button>
 							</div>
 						</div>
@@ -160,7 +161,7 @@ const TradingRepresentative = () => {
 			</div>
 
 			<div className="flex-1 overflow-y-auto sidebar-scroll scrollbar-offset-laptop scrollbar-offset-right">
-				<div className="mt-6 p-4 rounded-lg bg-background-section">
+				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center">
 						<CircleQuestionMark size={16} className="text-icon-light" />
 						<p className="text-sm font-semibold text-typo-primary">Information</p>

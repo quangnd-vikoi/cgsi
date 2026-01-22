@@ -27,17 +27,17 @@ interface MarketDataResponse {
 
 // Fetch market data from API
 const fetchMarketData = async (): Promise<MarketDataResponse> => {
-	// TODO: Market data subscription endpoints do NOT exist in the API
-	// Waiting for backend team to implement:
-	// - GET /subscription/api/v1/subscription (get available subscriptions)
-	// - GET /subscription/api/v1/userSubscription (get user's subscriptions)
-	//
-	// For now, return empty arrays which will trigger the "No Subscription Items Found" message
+    // TODO: Market data subscription endpoints do NOT exist in the API
+    // Waiting for backend team to implement:
+    // - GET /subscription/api/v1/subscription (get available subscriptions)
+    // - GET /subscription/api/v1/userSubscription (get user's subscriptions)
+    //
+    // For now, return empty arrays which will trigger the "No Subscription Items Found" message
 
-	return {
-		researchArticles: [],
-		marketData: [],
-	};
+    return {
+        researchArticles: [],
+        marketData: [],
+    };
 };
 
 interface NonProfessionalProps {
@@ -76,14 +76,14 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
     return (
         <div className="py-6 pad-x max-w-4xl mx-auto">
             <div>
-                <p className="text-sm text-typo-teritary">
-                    <span className="font-semibold mr-1">
+                <p className="text-sm text-typo-secondary">
+                    <span className="font-bold mr-1">
                         &quot;Non-Professional Subscriber&quot;
                     </span>
                     refers to individuals who access market data for personal and non-commercial use.
                     <Alert
                         trigger={
-                            <span className="text-blue-600 ml-1 cursor-pointer hover:underline">
+                            <span className="text-cgs-blue ml-1 cursor-pointer underline underline-offset-2">
                                 Learn More
                             </span>
                         }

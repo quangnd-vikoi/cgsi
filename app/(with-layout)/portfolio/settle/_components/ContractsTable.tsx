@@ -19,7 +19,7 @@ interface ContractsTableProps {
 
 export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: ContractsTableProps) {
 	return (
-		<div className="overflow-x-auto rounded-lg border border-stroke-secondary mb-4">
+		<div className="overflow-x-auto rounded border border-stroke-secondary mb-4">
 			<Table>
 				<TableHeader>
 					<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:px-4 [&>th]:py-4">
@@ -46,9 +46,8 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 							<TableCell>{contract.contractId}</TableCell>
 							<TableCell>
 								<span
-									className={`px-2 py-1 rounded text-xs ${
-										contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"
-									}`}
+									className={`px-2 py-1 rounded text-xs ${contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"
+										}`}
 								>
 									{contract.status}
 								</span>
@@ -57,9 +56,8 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 							<TableCell>{contract.dueDate}</TableCell>
 							<TableCell className="text-right">{contract.settlementCcy}</TableCell>
 							<TableCell
-								className={`text-right ${
-									contract.gainLoss > 0 ? "!text-status-success" : "!text-status-error"
-								}`}
+								className={`text-right ${contract.gainLoss > 0 ? "!text-status-success" : "!text-status-error"
+									}`}
 							>
 								{contract.gainLoss > 0 ? "+" : "-"}{" "}
 								{Math.abs(contract.gainLoss).toLocaleString("en-US", {
@@ -75,7 +73,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 										size="sm"
 										variant="outline"
 										onClick={() => onOpenContraDetails(contract)}
-										className="shadow-none border-none font-normal text-enhanced-blue hover:bg-enhanced-blue/10 rounded px-3"
+										className="shadow-none border-none font-medium text-cgs-blue hover:text-cgs-blue/80 hover:bg-white rounded px-3"
 									>
 										Detail
 									</Button>
@@ -84,7 +82,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 									<Button
 										size="sm"
 										disabled={contract.gainLoss >= 0}
-										className="bg-enhanced-blue font-normal hover:bg-enhanced-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
+										className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
 									>
 										Pay
 									</Button>

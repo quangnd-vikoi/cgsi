@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Title from "@/components/Title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OneTimeForm from "./_components/OnetimeForm";
@@ -12,8 +15,58 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getDonationPlans } from "@/lib/services/profileService";
+import type { DonationPlanResponse } from "@/types";
+import { Loader2 } from "lucide-react";
+import { ErrorState } from "@/components/ErrorState";
 
 const Donations = () => {
+	const [plans, setPlans] = useState<DonationPlanResponse[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchPlans = async () => {
+			setLoading(true);
+			const response = await getDonationPlans();
+
+			if (response.success && response.data) {
+				setPlans(response.data);
+				setError(null);
+			} else {
+				setError(response.error || "Failed to load donation plans");
+			}
+
+			setLoading(false);
+		};
+
+		fetchPlans();
+	}, []);
+
+	if (loading) {
+		return (
+			<div className="max-w-[480px] mx-auto flex-1 flex items-center justify-center">
+				<div className="flex flex-col items-center gap-3">
+					<Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+					<p className="text-sm text-typo-secondary">Loading donation plans...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="max-w-[480px] mx-auto flex-1 flex items-center justify-center">
+				<ErrorState
+					title="Unable to Load Donation Plans"
+					description={error}
+					type="error"
+					className="w-[322px]"
+				/>
+			</div>
+		);
+	}
+
 	return (
 		<div className="max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
@@ -22,7 +75,7 @@ const Donations = () => {
 					rightContent={
 						<Dialog>
 							<DialogTrigger asChild>
-								<p className="px-3 text-enhanced-blue text-xs font-medium cursor-pointer hover:opacity-50">
+								<p className="px-3 text-cgs-blue text-xs font-medium cursor-pointer hover:opacity-50">
 									Learn More
 								</p>
 							</DialogTrigger>
@@ -93,10 +146,10 @@ const Donations = () => {
 					{/* Nội dung co giãn */}
 					<div className="flex-1 min-h-0 flex flex-col overflow-hidden">
 						<TabsContent value="onetime" className="h-full flex flex-col m-0 flex-1">
-							<OneTimeForm />
+							<OneTimeForm plans={plans} />
 						</TabsContent>
 						<TabsContent value="recurring" className="h-full flex flex-col m-0 flex-1">
-							<RecurringForm />
+							<RecurringForm plans={plans} />
 						</TabsContent>
 					</div>
 				</Tabs>

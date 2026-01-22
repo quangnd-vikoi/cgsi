@@ -46,11 +46,11 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 			)}
 			onClick={handleNotiClick}
 		>
-			<div className="flex">
+			<div className="flex gap-1">
 				{isUnread && (
-					<Dot className="text-status-error relative right-1 -mr-1.5" strokeWidth="5" color="#D92B2B" />
+					<Dot className="text-status-error relative right-1 -mr-1.5 shrink-0" strokeWidth="5" color="#D92B2B" />
 				)}
-				<span className="text-sm font-semibold leading-5">{notification.title}</span>
+				<span className="text-sm font-semibold leading-5 line-clamp-2 flex-1 min-w-0">{notification.title}</span>
 			</div>
 
 			<p className="line-clamp-3 text-typo-secondary text-xs mt-1.5 leading-4">
@@ -98,12 +98,20 @@ const Notification = () => {
 
 		if (response.success && response.data) {
 			const { notifications, total } = response.data;
+
+			// Sort notifications by createdOn date, newest first
+			const sortedNotifications = [...notifications].sort((a, b) => {
+				const dateA = new Date(a.createdOn).getTime();
+				const dateB = new Date(b.createdOn).getTime();
+				return dateB - dateA; // Descending order (newest first)
+			});
+
 			if (append) {
 				// Append to existing list (pagination)
-				setListNoti((prev) => [...prev, ...notifications]);
+				setListNoti((prev) => [...prev, ...sortedNotifications]);
 			} else {
 				// Replace list (initial load)
-				setListNoti(notifications);
+				setListNoti(sortedNotifications);
 			}
 			setTotal(total);
 			setError(null); // Clear error on success
@@ -204,12 +212,12 @@ const Notification = () => {
 						<Button
 							disabled={!hasUnread}
 							className={cn(
-								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent",
-								hasUnread ? "text-enhanced-blue" : "text-status-disable-primary"
+								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent border ",
+								hasUnread ? "text-cgs-blue border-cgs-blue underline underline-offset-2 md:no-underline" : "text-status-disable-primary border-status-disable-primary bg-status-disable-secondary"
 							)}
 						>
 							<MailOpen className="w-4 p-0" />
-							<p className="text-xs">Mark All as Read</p>
+							<span className="text-xs">Mark All as Read</span>
 						</Button>
 					}
 					title="Mark All as Read"
@@ -236,7 +244,7 @@ const Notification = () => {
 				) : error ? (
 					<ErrorState
 						type="error"
-						title="Unable to Load Notifications"
+						title="Oops, Something Went Wrong"
 						description="We are unable to display notifications at this time. Please try again later."
 						className="!pt-[72px] justify-start"
 					/>

@@ -1,12 +1,14 @@
 "use client";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import Image from "@/components/Image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import useToggle from "@/hooks/useToggle";
 import Alert from "@/components/Alert";
 import { useSheetStore } from "@/stores/sheetStore";
+import { cn } from "@/lib/utils";
+import { getProductSubscriptionsByType } from "@/lib/services/subscriptionService";
 
 type InvestmentCardProps = {
 	title: string;
@@ -45,47 +47,42 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 	const handleAlert = () => {
 		toggle();
-		window.scrollTo({ top: 0, behavior: "smooth" });
 		setOpenSheet("contact");
 	};
+
+	const openDeclarationForm = () => {
+		window.open("https://itrade.cgsi.com.sg/app/download/AccreditedInvestor_Declare.pdf", "_blank");
+	}
 	return (
 		<div
 			onClick={() => handleClick()}
-			className="relative bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg w-full"
-			style={{
-				backgroundImage:
-					"linear-gradient(135deg, white 0%, white 25%, rgb(240, 248, 255) 50%, white 75%, white 100%)",
-			}}
+			className="cursor-pointer relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm"
 		>
-			<div className="relative border border-transparent rounded-lg w-full cursor-pointer hover:shadow-sm">
+			<div className="relative border border-transparent rounded w-full hover:shadow-sm">
 				<div
-					className="bg-gradient-to-br from-white via-blue-50 to-white shadow-sm rounded-lg overflow-hidden"
-					style={{
-						backgroundImage:
-							"linear-gradient(90deg, white 0%, #f6fbff 20%, #d9edff 50%, #f6fbff 80%, white 100%)",
-					}}
+					className="overflow-hidden"
 				>
-					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-2/3">
-						<div className="flex md:flex-row flex-col items-baseline gap-4 md:mb-2">
-							<h2 className="font-semibold text-enhanced-blue text-sm md:text-lg">{title}</h2>
+					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-3/4">
+						<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
+							<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
 							<span className="text-xs text-typo-tertiary md:text-sm">
 								{available != 0 ? `${available} Available` : "No Available"}
 							</span>
 						</div>
 						<p
 							hidden={isMobile}
-							className="max-w-[70%] lg:max-w-[90%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
+							className="max-w-[70%] lg:max-w-[82%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
 						>
 							{subtext}
 						</p>
 					</div>
 				</div>
 			</div>
-			<div className="right-6 md:right-8 bottom-0 absolute h-[110%]">
+			<div className={cn("right-6 md:right-5 bottom-0 absolute ", title === "Securities" ? "h-[105%]" : "h-full")}>
 				<Image
 					src={imageSrc}
 					alt={imageAlt ?? title}
-					className="w-auto h-full object-contain scale-x-90"
+					className="w-auto h-full object-contain"
 					width={imageWidth}
 					height={imageHeight}
 				/>
@@ -97,7 +94,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 				description={
 					<span className="text-sm md:text-base">
 						Alternative Investments are available only to Accredited Investors. Please download
-						and fill the <span className="text-enhanced-blue font-medium">Declaration Form</span>,
+						and fill the <span className="text-cgs-blue font-medium underline cursor-pointer underline-offset-2" onClick={() => openDeclarationForm()} >Declaration Form</span>,
 						then send it to us via &quot;Contact Us&quot; to proceed.
 					</span>
 				}
@@ -111,18 +108,60 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 };
 
 const Investment = () => {
+	const [securitiesCount, setSecuritiesCount] = useState<number>(0);
+	const [alternativesCount, setAlternativesCount] = useState<number>(0);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+
+	useEffect(() => {
+		// Check if closing date has passed
+		const isClosingDatePassed = (endTime: string): boolean => {
+			const closingDate = new Date(endTime);
+			const now = new Date();
+			return now > closingDate;
+		};
+
+		const fetchProductCounts = async () => {
+			try {
+				setIsLoading(true);
+
+				// Fetch Securities (IOP) count - only count available products
+				const iopResponse = await getProductSubscriptionsByType("IOP");
+				if (iopResponse.success && iopResponse.data?.productSubs) {
+					const availableProducts = iopResponse.data.productSubs.filter(
+						(product) => !isClosingDatePassed(product.endTime)
+					);
+					setSecuritiesCount(availableProducts.length);
+				}
+
+				// Fetch Alternatives (AI) count - only count available products
+				const aiResponse = await getProductSubscriptionsByType("AI");
+				if (aiResponse.success && aiResponse.data?.productSubs) {
+					const availableProducts = aiResponse.data.productSubs.filter(
+						(product) => !isClosingDatePassed(product.endTime)
+					);
+					setAlternativesCount(availableProducts.length);
+				}
+			} catch (error) {
+				console.error("Error fetching product counts:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchProductCounts();
+	}, []);
+
 	return (
 		<div className="bg-white container-default">
 			<div className="flex items-center gap-2">
-				<span className="font-semibold text-base">Investment Products</span>
-				<Image src={"/icons/Warning.svg"} alt="icon" width={16} height={16} />
+				<span className="font-semibold text-2xl">Investment Products</span>
 			</div>
 
 			<div className="flex flex-col md:flex-row justify-between gap-4 mt-6">
 				<InvestmentCard
 					href={INTERNAL_ROUTES.SECURITIES}
 					title="Securities"
-					available={1}
+					available={isLoading ? "..." : securitiesCount}
 					imageSrc="/icons/Investment-left.svg"
 					subtext="Tap into exclusive investment opportunities, from shares at initial offering prices (IOPs) to IPOs"
 				/>
@@ -130,9 +169,9 @@ const Investment = () => {
 				<InvestmentCard
 					href={INTERNAL_ROUTES.ALTERNATIVE}
 					title="Alternatives"
-					available={0}
+					available={isLoading ? "..." : alternativesCount}
 					imageSrc="/icons/Investment-right.svg"
-					subtext="Diversify with curated funds that match different risk profiles and investment horizons"
+					subtext="Looking for short-term, high-quality corporate debt instruments? Explore our commercial papers!"
 				/>
 			</div>
 		</div>

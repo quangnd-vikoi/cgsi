@@ -25,7 +25,8 @@ export const handleCall = (phone: string) => {
 };
 
 export const handleEmail = (email: string) => {
-	window.location.href = `mailto:${email}`;
+	const subject = encodeURIComponent("iTrade Client Enquiry");
+	window.location.href = `mailto:${email}?subject=${subject}`;
 };
 
 export const handleOpenMap = (address: string) => {
@@ -54,4 +55,35 @@ export const getAccountTypeCode = (type: string): PortfolioType => {
 		"iCash Account": "iCash"
 	}
 	return typeMap[type] || "CTA"
+}
+
+/**
+ * Scroll to top of the page
+ * @param behavior - 'smooth' for smooth scrolling, 'instant' for immediate jump, 'auto' for browser default
+ */
+export const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
+	if (typeof window !== "undefined") {
+		window.scrollTo({ top: 0, behavior });
+	}
+}
+
+/**
+ * Format date string to DD-MMM-YYYY format
+ * @param dateString - Date string in any valid format (e.g., YYYY-MM-DD)
+ * @returns Formatted date string (e.g., "20-Jan-2026")
+ */
+export const formatDate = (dateString: string): string => {
+	const date = new Date(dateString);
+
+	// Check if date is valid
+	if (isNaN(date.getTime())) {
+		return dateString; // Return original string if invalid
+	}
+
+	const day = date.getDate().toString().padStart(2, "0");
+	const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	const month = monthNames[date.getMonth()];
+	const year = date.getFullYear();
+
+	return `${day}-${month}-${year}`;
 }

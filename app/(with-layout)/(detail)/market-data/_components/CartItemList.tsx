@@ -44,7 +44,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
     return (
         <div>
             {/* ITEMS */}
-            <div className="space-y-4 mt-6 border border-stroke-secondary rounded-lg p-4">
+            <div className="space-y-4 mt-6 border border-stroke-secondary rounded p-4">
                 {selectedItems.map((item, index) => (
                     <div key={index}>
                         <div className="flex gap-4 py-3">
@@ -97,7 +97,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
             </div>
 
             {/* TOTAL SUMMARY */}
-            <div className="mt-6 rounded-lg p-4 bg-background-section text-sm text-typo-secondary">
+            <div className="mt-6 rounded p-4 bg-background-section text-sm text-typo-secondary">
                 <div className="flex justify-between">
                     <p>Sub-Total</p>
                     <p className="font-semibold text-typo-primary">{subTotal} SGD</p>
@@ -110,6 +110,8 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                     </div>
                     <p className="font-semibold text-typo-primary">{gst} SGD</p>
                 </div>
+
+                <Separator className="my-4 border-stroke-secondary" />
 
                 <div className="mt-4 flex justify-between items-center">
                     <div>

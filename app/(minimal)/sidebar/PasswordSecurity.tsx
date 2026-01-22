@@ -10,10 +10,10 @@ const PasswordSecurity = () => {
 			<CustomSheetTitle title="Password & Security" backTo={"profile"} />
 
 			<div className="mt-6">
-				<div className="p-4 border border-stroke-secondary flex justify-between rounded-lg">
+				<div className="p-4 border border-stroke-secondary flex justify-between rounded">
 					<p className="text-sm text-typo-secondary">Change Password</p>
 					<Link href={CGSI.CHANGE_PASSWORD} target="_blank">
-						<ChevronRight className="text-enhanced-blue" size={20} />
+						<ChevronRight className="text-cgs-blue" size={20} />
 					</Link>
 				</div>
 			</div>

@@ -22,10 +22,26 @@ interface RefreshTokenRequest {
 }
 
 const CLIENT_ID = "itrade";
-const LOGIN_URL = "https://stgitrade.cgsi.com.sg/app/user.login.z";
+const LOGIN_URL = "https://stgitrade.cgsi.com.sg/app/user.login.z?lang=EN";
 const LOGOUT_URL = "https://stgitrade.cgsi.com.sg/app/logout.z";
 
 const isBrowser = (): boolean => typeof window !== "undefined";
+
+export const clearTokens = (): void => {
+	useAuthStore.getState().clearTokens();
+};
+
+export const redirectToLogin = (): void => {
+	if (!isBrowser()) return;
+	window.location.href = LOGIN_URL;
+};
+
+export const logout = (): void => {
+	clearTokens();
+	if (isBrowser()) {
+		window.location.href = LOGOUT_URL;
+	}
+};
 
 export const exchangeCode = async (code: string, redirectUri: string): Promise<void> => {
 	const response = await postAPI<TokenResponse, TokenRequest>(authEndpoints.token(), {
@@ -48,14 +64,14 @@ export const exchangeCode = async (code: string, redirectUri: string): Promise<v
 };
 
 export const refreshAccessToken = async (): Promise<void> => {
-	const { getRefreshToken, setTokens, clearTokens } = useAuthStore.getState();
+	const { getRefreshToken, setTokens } = useAuthStore.getState();
 	const refreshToken = getRefreshToken();
 
 	if (!refreshToken) {
 		if (isBrowser()) {
 			sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
 		}
-		redirectToLogin();
+		logout();
 		throw new Error("No refresh token available");
 	}
 
@@ -65,11 +81,10 @@ export const refreshAccessToken = async (): Promise<void> => {
 	});
 
 	if (!response.success || !response.data) {
-		clearTokens();
 		if (isBrowser()) {
 			sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
 		}
-		redirectToLogin();
+		logout();
 		throw new Error(response.error || "Failed to refresh token - no response data");
 	}
 
@@ -101,22 +116,6 @@ export const isAuthenticated = (): boolean => {
 	const { getAccessToken, isTokenExpired } = useAuthStore.getState();
 	const token = getAccessToken();
 	return !!token && !isTokenExpired();
-};
-
-export const clearTokens = (): void => {
-	useAuthStore.getState().clearTokens();
-};
-
-export const redirectToLogin = (): void => {
-	if (!isBrowser()) return;
-	window.location.href = LOGIN_URL;
-};
-
-export const logout = (): void => {
-	clearTokens();
-	if (isBrowser()) {
-		window.location.href = LOGOUT_URL;
-	}
 };
 
 export const authService = {

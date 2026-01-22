@@ -1,5 +1,4 @@
 "use client";
-
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authService } from "@/lib/services/authService";
@@ -26,26 +25,18 @@ function HomeContent() {
 				}
 
 				// Get code from URL
-				let code = searchParams.get("code");
+				const code = searchParams.get("code");
 
-				// If no code in URL, prompt for manual input (dev mode)
+				// If no code, redirect to login
 				if (!code) {
-					code = window.prompt(
-						"Enter authorization code:\n\n(In production, this will come from the redirect URL automatically)"
-					);
-
-					if (!code) {
-						setError("Authorization code is required");
-						setIsAuthenticating(false);
-						return;
-					}
+					authService.redirectToLogin();
+					return;
 				}
-
 				// Exchange code for tokens
-				// Note: redirectUri must match the URI registered with SSO server
 				await authService.exchangeCode(code, "http://localhost:8080/authorize");
+				// Clean up URL by removing query parameters
+				router.replace("/");
 
-		
 				setIsAuthenticating(false);
 			} catch (err) {
 				console.error("Auth error:", err);
@@ -61,7 +52,7 @@ function HomeContent() {
 		return (
 			<div className="flex items-center justify-center min-h-[400px]">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-enhanced-blue mx-auto mb-4"></div>
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cgs-blue mx-auto mb-4"></div>
 					<p className="text-typo-secondary">Authenticating...</p>
 				</div>
 			</div>

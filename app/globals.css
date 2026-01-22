@@ -45,7 +45,7 @@
 	--color-typo-secondary: var(--typo-secondary);
 	--color-typo-tertiary: var(--typo-tertiary);
 	--breakpoint-xs: 375px;
-	--color-enhanced-blue: var(--enhanced-blue);
+	--color-cgs-blue: var(--cgs-blue);
 	--color-stroke-primary: var(--stroke-primary);
 	--color-stroke-secondary: var(--stroke-secondary);
 	--color-status-selected: var(--status-selected);
@@ -89,7 +89,7 @@
 	--card-foreground: oklch(0.145 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.145 0 0);
-	--primary: #006ceb;
+	--primary: #003a8c;
 	/* --primary: oklch(0.205 0 0); */
 	--primary-foreground: oklch(0.985 0 0);
 	--secondary: oklch(0.97 0 0);
@@ -118,7 +118,7 @@
 	--typo-primary: #242629;
 	--typo-secondary: #4b5563;
 	--typo-tertiary: #8492a2;
-	--enhanced-blue: #006ceb;
+	--cgs-blue: #003a8c;
 	--stroke-primary: #bac3d1;
 	--stroke-secondary: #dde4ec;
 	--status-selected: #eaf1ff;
@@ -192,12 +192,6 @@
 		@apply border-border outline-ring/50;
 	}
 
-	* {
-		user-select: none;
-		-webkit-user-select: none;
-		/* cursor: default; */
-	}
-
 	/* Giữ cursor pointer cho các element có thể click */
 	button,
 	a,
@@ -223,14 +217,15 @@
 
 @layer components {
 	.container-default {
-		@apply mx-4 md:mx-6 xl:mx-auto xl:max-w-[1200px];
+		@apply mx-4 md:mx-6 xl:mx-auto xl:max-w-[1320px];
 	}
 
 	.investment-card {
-		@apply border border-transparent rounded-lg;
+		@apply border border-transparent rounded;
 		/* áp dụng utility cơ bản */
 
-		border-image-source: linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
+		border-image-source:
+			linear-gradient(90deg, #dff0ff 0%, #ffffff 50.48%, #dff1ff 100%),
 			linear-gradient(
 				90deg,
 				color(display-p3 0.886 0.941 1) 0%,
@@ -268,7 +263,9 @@
 			#dff0ff 50.48%,
 			rgba(255, 255, 255, 0.8) 100%
 		);
-		-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
 		mask-composite: exclude;
 		-webkit-mask-composite: xor;
 		pointer-events: none;
@@ -390,10 +387,22 @@
 				#dff0ff 50.48%,
 				rgba(255, 255, 255, 0.8) 100%
 			);
-			-webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+			-webkit-mask:
+				linear-gradient(#fff 0 0) content-box,
+				linear-gradient(#fff 0 0);
 			mask-composite: exclude;
 			-webkit-mask-composite: xor;
 			pointer-events: none;
 		}
+	}
+
+	/* === Custom Shadows === */
+	.shadow-light-blue {
+		box-shadow: 0px 3px 16px 0px rgba(0, 108, 235, 0.2);
+	}
+
+	.shadow-light-dark {
+		/* shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] */
+		box-shadow: 0px 2px 16px -1px rgba(33, 64, 154, 0.1);
 	}
 }

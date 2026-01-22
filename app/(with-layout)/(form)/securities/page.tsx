@@ -14,7 +14,7 @@ const Securities = () => {
 	if (!selectedId) {
 		return (
 			<div className="relative h-[calc(100%-58px)] flex flex-col justify-center items-center">
-				<p className="text-xs text-typo-secondary text-center">No product selected yet</p>
+				<p className="text-xs text-typo-secondary text-center">Select an item from Product Listing</p>
 			</div>
 		);
 	}
@@ -48,8 +48,8 @@ const Securities = () => {
 					</TabsContent>
 				</Tabs>
 
-				{/* Footer - Fixed at bottom - Chỉ hiện khi chưa applied */}
-				{selectedItem?.applied === false && (
+				{/* Footer - Fixed at bottom - Chỉ hiện khi chưa applied và chưa hết hạn */}
+				{selectedItem?.applied === false && !selectedItem?.isCompact && (
 					<div className="flex-shrink-0">
 						<Separator className="mb-4" />
 						<div className="flex justify-end">

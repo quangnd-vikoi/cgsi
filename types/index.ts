@@ -5,6 +5,7 @@ export interface INotification {
 	category: string; // Notification category for filtering/grouping
 	status: "R" | "U"; // "R" = Read, "U" = Unread
 	createdOn: string; // ISO 8601 date-time format
+	imageUrl?: string; // Optional image URL for notification
 }
 
 // API Response Types for Notifications
@@ -120,7 +121,7 @@ export type UserAccountResponse = TradingAccount;
 
 // BCAN Request Types
 export interface CreateBcanRequest {
-	accountNo: string; // minLength: 1
+	accountNo: string;
 }
 
 export interface CreateBcanResponse {

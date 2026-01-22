@@ -45,21 +45,23 @@ const DetailNotification = () => {
 			<div className="relative h-full flex flex-col">
 				<CustomSheetTitle title="Detail" backTo={"notification"} />
 				<div className="mt-6">
-					{/* TODO: Replace with dynamic image based on category or remove if not needed */}
-					<Image
-						src={"/images/bg-event.png"}
-						alt="Notification"
-						width={400}
-						height={128}
-						className="w-full mb-4"
-					/>
-					<p className="text-base font-semibold text-typo-primary">{notification.title}</p>
+					{/* Only show image if imageUrl exists */}
+					{notification.imageUrl && (
+						<Image
+							src={notification.imageUrl}
+							alt="Notification"
+							width={400}
+							height={128}
+							className="w-full mb-4"
+						/>
+					)}
+					<p className="text-base font-semibold text-typo-primary line-clamp-2">{notification.title}</p>
 					<p className="text-xs text-typo-tertiary leading-4 mt-4">{formatDate(notification.createdOn)}</p>
 
 					{/* Category badge (optional) */}
 					{notification.category && (
 						<div className="mt-2">
-							<span className="inline-block px-2 py-1 text-xs bg-theme-blue-100 text-theme-blue-600 rounded">
+							<span className="inline-block px-2 py-1 text-xs bg-theme-blue-100 text-theme-cgs-blue rounded">
 								{notification.category}
 							</span>
 						</div>

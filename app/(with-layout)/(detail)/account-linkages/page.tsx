@@ -21,17 +21,17 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ step, title, description, i
 		<div className="flex gap-4">
 			{/* Timeline Line */}
 			<div className="flex flex-col items-center">
-				<div className="w-5 h-5 rounded-full border border-enhanced-blue bg-white flex items-center justify-center text-enborder-enhanced-blue font-semibold text-[10px] text-enhanced-blue shrink-0">
+				<div className="w-5 h-5 rounded-full border border-cgs-blue bg-white flex items-center justify-center text-enborder-cgs-blue font-semibold text-[10px] text-cgs-blue shrink-0">
 					{step}
 				</div>
 				{!isLast && <div className="w-[1px] h-full relative bg-status-disable-primary"></div>}
 			</div>
 
 			{/* Content */}
-			<div className="bg-background-section p-3 rounded-lg mb-6 flex-1 min-w-0">
+			<div className="bg-background-section p-3 rounded mb-6 flex-1 min-w-0">
 				<div className={cn("text-typo-primary font-normal text-sm break-words")}>{title}</div>
 				{description && (
-					<div className="mt-2 bg-white rounded-lg p-3 border border-stroke-secondary break-words">
+					<div className="mt-2 bg-white rounded p-3 border border-stroke-secondary break-words">
 						{description}
 					</div>
 				)}

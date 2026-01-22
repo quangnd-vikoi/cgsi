@@ -2,8 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, useMemo, useRef, useCallback, memo } from "react";
-import { getCountries, getCountryCallingCode, Country as CountryCode } from "react-phone-number-input";
-import en from "react-phone-number-input/locale/en.json";
 import { CircleFlag } from "react-circle-flags";
 import { ChevronDown, CircleCheck, Search, X } from "lucide-react";
 import {
@@ -14,12 +12,9 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-
-interface Country {
-	code: CountryCode;
-	name: string;
-	dialCode: string;
-}
+import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import en from "react-phone-number-input/locale/en.json";
+import type { Country } from "@/lib/utils/phoneHelper";
 
 // Memo hóa CountryItem để tránh re-render không cần thiết
 const CountryItem = memo(
@@ -28,8 +23,8 @@ const CountryItem = memo(
 			<div
 				onClick={onClick}
 				className={`w-full rounded-md border flex justify-between py-2 px-4 cursor-pointer ${isSelected
-						? "border-enhanced-blue bg-background-section"
-						: "border-stroke-secondary hover:bg-gray-50"
+					? "border-cgs-blue bg-background-section"
+					: "border-stroke-secondary hover:bg-gray-50"
 					}`}
 			>
 				<div className="flex items-center">
@@ -38,7 +33,7 @@ const CountryItem = memo(
 						{country.name} ({country.dialCode})
 					</p>
 				</div>
-				{isSelected && <CircleCheck size={20} className="text-enhanced-blue" />}
+				{isSelected && <CircleCheck size={20} className="text-cgs-blue" />}
 			</div>
 		);
 	}
@@ -55,21 +50,14 @@ interface MobileInputStepProps {
 	setSelectedCountry: (value: Country) => void;
 }
 
-export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }: MobileInputStepProps) => {
+export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, selectedCountry, setSelectedCountry }: MobileInputStepProps) => {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [selectedCountry, setSelectedCountry] = useState<Country>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
 	const [open, setOpen] = useState(false);
-	const [tempSelected, setTempSelected] = useState<Country | null>({
-		code: "SG",
-		name: en["SG"],
-		dialCode: `+${getCountryCallingCode("SG")}`,
-	});
+	const [tempSelected, setTempSelected] = useState<Country | null>(selectedCountry);
 
 	const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+	console.log(selectedCountry)
 
 	const countries = useMemo(() => {
 		return getCountries().map((code) => ({
@@ -128,7 +116,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 	const handleApply = useCallback(() => {
 		if (tempSelected) setSelectedCountry(tempSelected);
 		setOpen(false);
-	}, [tempSelected]);
+	}, [tempSelected, setSelectedCountry]);
 
 	const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
@@ -165,7 +153,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 							<div className="relative">
 								<Input
 									placeholder="Search country name or code"
-									className="rounded-lg px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary text-sm"
+									className="rounded px-4 border leading-4 placeholder:font-normal !placeholder:text-theme-neutral-06 !border-stroke-primary text-sm"
 									value={searchTerm}
 									onChange={handleSearchChange}
 								/>
@@ -182,7 +170,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 							{selectedCountry && (
 								<div>
 									<p className="text-xs text-typo-secondary">Selected</p>
-									<div className="mt-3 rounded-lg bg-background-section p-4">
+									<div className="mt-3 rounded bg-background-section p-4">
 										<div className="border border-stroke-secondary rounded-md px-4 py-2 flex justify-between items-center">
 											<div className="flex justify-center">
 												<CircleFlag
@@ -247,7 +235,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 										<button
 											key={letter}
 											onClick={() => scrollToLetter(letter)}
-											className="text-[10px] text-enhanced-blue hover:text-xs hover:font-bold transition-all"
+											className="text-[10px] text-cgs-blue hover:text-xs hover:font-bold transition-all"
 										>
 											{letter}
 										</button>
@@ -265,7 +253,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError }
 					</DialogContent>
 				</Dialog>
 				<Input
-					className="flex-1 pl-24 text-sm"
+					className="flex-1 pl-24 text-sm focus:bg-background-section focus:!border-b-cgs-blue"
 					placeholder="Enter here"
 					value={phoneNumber}
 					onChange={handlePhoneChange}

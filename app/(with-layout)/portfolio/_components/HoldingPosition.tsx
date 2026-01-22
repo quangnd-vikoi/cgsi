@@ -39,7 +39,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
     };
 
     return (
-        <div className="bg-white rounded-lg border border-stroke-secondary">
+        <div className="bg-white rounded border border-stroke-secondary">
             <div className="pad-x py-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-4 md:mb-6">
@@ -52,7 +52,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                         <Button
                             variant="outline"
                             size="sm"
-                            className="border border-enhanced-blue text-sm text-enhanced-blue rounded gap-2 hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
+                            className="border border-cgs-blue text-sm text-cgs-blue rounded gap-2 hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
                         >
                             <FileOutput className="size-4" />
                             Export to Excel
@@ -61,7 +61,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                             <Link href={INTERNAL_ROUTES.SHARE_TRANSFER}>
                                 <Button
                                     size="sm"
-                                    className="text-sm rounded gap-2 bg-enhanced-blue hover:bg-enhanced-blue/90"
+                                    className="text-sm rounded gap-2 bg-cgs-blue hover:bg-cgs-blue/90"
                                 >
                                     <ArrowRightLeft className="size-4" />
                                     SGX Shares Transfer
@@ -98,7 +98,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                 </div>
 
                 {/* Table */}
-                <div className="overflow-x-auto  rounded-lg">
+                <div className="overflow-x-auto  rounded">
                     <Table>
                         <TableHeader>
                             <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">

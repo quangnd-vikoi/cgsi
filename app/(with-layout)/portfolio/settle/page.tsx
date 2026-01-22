@@ -66,7 +66,7 @@ export default function SettlePage() {
 					<Title showBackButton title="Outstanding Payments" />
 
 					{/* Content Box */}
-					<div className="bg-white pad rounded-lg flex-1 flex flex-col">
+					<div className="bg-white pad rounded flex-1 flex flex-col">
 						{/* Account Selector & Export Button */}
 						<div className="mb-6 flex justify-between items-center">
 							<Select
@@ -99,7 +99,7 @@ export default function SettlePage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="hidden md:flex border border-enhanced-blue text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
+								className="hidden md:flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
 							>
 								<FileDown className="size-4" />
 								Export to Excel
@@ -111,13 +111,13 @@ export default function SettlePage() {
 							<TabsList className="mb-6 bg-transparent gap-4 border-b border-stroke-secondary pb-0">
 								<TabsTrigger
 									value="contracts"
-									className="border-b-2 border-transparent rounded-none data-[state=active]:border-enhanced-blue data-[state=active]:text-enhanced-blue pb-2.5"
+									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
 									Contracts ({contracts.length})
 								</TabsTrigger>
 								<TabsTrigger
 									value="contra"
-									className="border-b-2 border-transparent rounded-none data-[state=active]:border-enhanced-blue data-[state=active]:text-enhanced-blue pb-2.5"
+									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
 									Contra (7)
 								</TabsTrigger>
@@ -128,7 +128,7 @@ export default function SettlePage() {
 						<Button
 							variant="outline"
 							size="sm"
-							className="flex md:hidden border border-enhanced-blue text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 mb-6"
+							className="flex md:hidden border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 mb-6"
 						>
 							<FileDown className="size-4" />
 							Export to Excel

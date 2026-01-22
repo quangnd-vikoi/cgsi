@@ -30,19 +30,19 @@ export default function Layout({ children }: LayoutProps) {
 
 					{/* Right content - chỉ hiện trên mobile khi đã chọn item, luôn hiện từ md trở lên */}
 					<section
-						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad`}
+						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad rounded`}
 					>
 						<div className="flex-shrink-0">
 							<div className="flex justify-between items-center mb-1.5">
 								<div className="flex items-center gap-2">
 									<ChevronLeft
-										className="inline-block cursor-pointer md:hidden hover:text-enhanced-blue transition-colors"
+										className="inline-block cursor-pointer md:hidden hover:text-cgs-blue transition-colors"
 										onClick={handleBackToSidebar}
 									/>
 									<p className="text-base font-semibold">Details</p>
 								</div>
 								<X
-									className="cursor-pointer hover:text-enhanced-blue transition-colors"
+									className="cursor-pointer hover:text-cgs-blue transition-colors"
 									onClick={handleBackToSidebar}
 								/>
 							</div>

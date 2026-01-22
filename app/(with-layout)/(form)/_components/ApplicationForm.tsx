@@ -22,6 +22,7 @@ import Image from "@/components/Image";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
+import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
@@ -47,8 +48,11 @@ const SELECT_FIELDS = [
 		defaultValue: "",
 		options: [
 			{ value: "bank-transfer", label: "Bank Transfer" },
-			{ value: "credit-card", label: "Credit Card" },
-			{ value: "debit-card", label: "Debit Card" },
+			{ value: "giro", label: "Giro" },
+			{ value: "margin-account", label: "Margin Account" },
+			{ value: "paynow", label: "Paynow" },
+			{ value: "telegraphic-transfer", label: "Telegraphic Transfer" },
+			{ value: "trust-account", label: "Trust Account" },
 		],
 	},
 ];
@@ -242,14 +246,14 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	return (
 		<Dialog open={dialogOpen} onOpenChange={(open) => !isSubmitting && setDialogOpen(open)}>
 			<DialogTrigger asChild>
-				<Button className="bg-primary hover:bg-enhanced-blue/80 text-white px-6 py-2">Apply</Button>
+				<Button className="bg-cgs-blue hover:bg-cgs-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
 			<DialogContent
-				className="p-0 gap-0 w-[346px] md:w-[530px] rounded"
+				className="p-0 gap-0 w-[346px] md:w-[530px] rounded max-h-[90vh] flex flex-col"
 				onInteractOutside={(e) => isSubmitting && e.preventDefault()}
 				onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
 			>
-				<DialogHeader className="pad pt-4">
+				<DialogHeader className="pad pt-4 flex-shrink-0">
 					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
@@ -257,9 +261,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</DialogTitle>
 				</DialogHeader>
 
-				<div className="pad-x">
+				<div className="pad-x overflow-y-auto flex-1 min-h-0">
 					{/* Product Info */}
-					<div className="bg-background-section rounded-lg p-4 mb-6">
+					<div className="bg-background-section rounded p-4 mb-6">
 						<h3 className="font-semibold text-base text-typo-primary mb-2 leading-6">
 							{FORM_CONFIG.productName}
 						</h3>
@@ -354,7 +358,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</div>
 
 					{/* Quantity Requested */}
-					<div className="border rounded-lg py-4 pad-x mb-6 border-stroke-secondary">
+					<div className="border rounded py-4 pad-x mb-6 border-stroke-secondary">
 						<Label className="text-sm font-semibold text-typo-primary mb-1.5">
 							Quantity Requested
 						</Label>
@@ -372,7 +376,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								disabled={quantity === "" || currentQuantity <= FORM_CONFIG.minQuantity}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Minus className="w-4 h-4" />
 							</Button>
@@ -383,7 +387,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									onChange={handleInputChange}
 									placeholder={`Min. ${FORM_CONFIG.minQuantity} Unit(s)`}
 									min={FORM_CONFIG.minQuantity}
-									className="text-center border-0 text-sm font-normal text-theme-neutral-07"
+									className="text-center border-0 text-sm font-normal text-typo-primary w-full focus:ring-0"
 								/>
 							</div>
 							<Button
@@ -391,7 +395,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-enhanced-blue text-enhanced-blue hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
 								<Plus className="w-4 h-4" />
 							</Button>
@@ -429,48 +433,24 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</div>
 
 					{/* Terms & Conditions */}
-					<div className="mb-4">
-						<div className="flex items-start gap-2">
-							<Checkbox
-								id="terms"
-								checked={agreed}
-								onCheckedChange={(checked) => {
-									setAgreed(checked as boolean);
-									if (checked) setShowError(false);
-								}}
-								className={cn("mt-0.5 shrink-0", showError && "border-status-error")}
-							/>
-							<Label
-								htmlFor="terms"
-								className="text-sm text-typo-secondary cursor-pointer leading-5"
-							>
-								<span>
-									By checking this box, you acknowledge that you have read and agree to
-									abide by the underlying{" "}
-									<a
-										href="#"
-										className="inline text-enhanced-blue hover:underline font-medium"
-									>
-										Terms & Conditions
-									</a>
-								</span>
-							</Label>
-						</div>
-
-						{showError && (
-							<p className="text-status-error text-xs mt-1 flex items-center gap-1">
-								<CustomCircleAlert />
-								Please acknowledge the Terms & Conditions to proceed
-							</p>
-						)}
-					</div>
+					<TermsAndConditionsCheckbox
+						id="terms"
+						checked={agreed}
+						onCheckedChange={(checked) => {
+							setAgreed(checked);
+							if (checked) setShowError(false);
+						}}
+						showError={showError}
+						labelText="By checking this box, you acknowledge that you have read and agree to abide by the underlying"
+						className="mb-4"
+					/>
 				</div>
 
-				<DialogFooter className="">
+				<DialogFooter className="flex-shrink-0 border-t border-stroke-secondary">
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}
-						className="bg-enhanced-blue hover:bg-enhanced-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isSubmitting ? (
 							<>

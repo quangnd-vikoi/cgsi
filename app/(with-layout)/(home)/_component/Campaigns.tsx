@@ -1,14 +1,20 @@
 "use client";
-import { Carousel, CarouselContent, CarouselItem, CarouselApi } from "@/components/ui/carousel";
+import {
+	Carousel,
+	CarouselContent,
+	CarouselItem,
+	CarouselApi,
+} from "@/components/ui/carousel";
 import Image from "@/components/Image";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
-import { getBgImageClass } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import ViewAll from "@/components/ViewAll";
 
 interface Campaign {
 	SEO_Page_Name: string;
@@ -19,10 +25,86 @@ interface Campaign {
 	Tagging_Timing?: string;
 }
 
+// Unified campaign card - same DOM structure, different styles based on position
+// Using memo to prevent unnecessary re-renders
+const CampaignCard = memo(
+	({ campaign, isFeatured }: { campaign: Campaign; isFeatured: boolean }) => {
+		// Featured card: only image with gradient, no text
+		if (isFeatured) {
+			return (
+				<Link
+					href={
+						campaign.SEO_Page_Name
+							? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
+							: CGSI.CAMPAIGNS
+					}
+					target="_blank"
+					className="relative flex h-full rounded-xl overflow-hidden group transition-all duration-300"
+				>
+					<Image
+						src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+						alt={campaign.MastheadBasic_Article_Title || "campaign"}
+						fill
+						className="object-cover transition-transform duration-300 group-hover:scale-105"
+						sizes="(max-width: 768px) 100vw, 60vw"
+						priority
+					/>
+					{/* Gradient Overlay */}
+					<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-100 transition-opacity duration-300" />
+				</Link>
+			);
+		}
+
+		// Regular card: image + text content
+		return (
+			<Link
+				href={
+					campaign.SEO_Page_Name
+						? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
+						: CGSI.CAMPAIGNS
+				}
+				target="_blank"
+				className="relative flex flex-col h-full rounded overflow-hidden group transition-all duration-300 bg-white hover:shadow-lg"
+			>
+				{/* Image Container */}
+				<div className="relative overflow-hidden aspect-[16/9] flex-shrink-0">
+					<Image
+						src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+						alt={campaign.MastheadBasic_Article_Title || "campaign"}
+						fill
+						className="object-cover transition-transform duration-300 group-hover:scale-105"
+						sizes="(max-width: 768px) 100vw, 33vw"
+						priority
+					/>
+				</div>
+
+				{/* Content */}
+				<div className="flex flex-col flex-1 p-3 md:p-4">
+					{/* Category Tag */}
+					<span className="text-[10px] md:text-xs text-typo-secondary mb-1">
+						{campaign.Tagging_Timing || "Campaign"}
+					</span>
+
+					{/* Title - always 2 lines */}
+					<h3 className="font-semibold leading-tight line-clamp-2 min-h-[2lh] text-xs md:text-sm text-typo-primary mb-1.5">
+						{campaign.MastheadBasic_Article_Title}
+					</h3>
+
+					{/* Description - always 3 lines */}
+					<p className="leading-relaxed text-[10px] md:text-xs text-typo-secondary line-clamp-3 min-h-[3lh]">
+						{campaign.MastheadBasic_Article_Short}
+					</p>
+				</div>
+			</Link>
+		);
+	}
+);
+
+CampaignCard.displayName = "CampaignCard";
+
 const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
-	const [count, setCount] = useState(0);
 	const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
 	useEffect(() => {
@@ -30,7 +112,8 @@ const Campaigns = () => {
 			const url = ENDPOINTS.campaigns();
 			const response = await fetchAPI<Campaign[]>(url);
 			if (response.success && response.data) {
-				setCampaigns(response.data);
+				// x2 data để test scroll
+				setCampaigns([...response.data, ...response.data]);
 			}
 		};
 
@@ -40,13 +123,19 @@ const Campaigns = () => {
 	useEffect(() => {
 		if (!api) return;
 
-		setCount(api.scrollSnapList().length);
-		setCurrent(api.selectedScrollSnap());
-
-		api.on("select", () => {
+		const onSelect = () => {
 			setCurrent(api.selectedScrollSnap());
-		});
-	}, [api, campaigns]); // Add campaigns to dependency to update count when data loads
+		};
+
+		onSelect();
+		api.on("select", onSelect);
+		api.on("reInit", onSelect);
+
+		return () => {
+			api.off("select", onSelect);
+			api.off("reInit", onSelect);
+		};
+	}, [api]);
 
 	const scrollPrev = () => {
 		api?.scrollPrev();
@@ -60,104 +149,134 @@ const Campaigns = () => {
 		api?.scrollTo(index);
 	};
 
-	// Fallback if no campaigns loaded yet or error
 	if (campaigns.length === 0) {
-		return null; // Or render a skeleton/loading state
+		return null;
 	}
 
 	return (
-		<div
-			className="bg-cover bg-center w-full"
-			style={{ backgroundImage: getBgImageClass('/images/bg-campaigns.png') }}
-		>
-			<div className="flex md:flex-row flex-col md:justify-between items-center gap-6 md:gap-4 lg:gap-6 lg:p-12 py-6 h-fit md:aspect-[8/3] text-white container-default">
-				<div className="flex flex-col gap-[6px] md:gap-2.5 lg:gap-4 md:pl-2 md:w-2/5 text-center md:text-start">
-					<div className="justify-start self-stretch font-semibold text-[20px] lg:text-[34px] leading-6 lg:leading-10">
-						Trade Globally with CGS iTrade
-					</div>
-					<div className="justify-start self-stretch font-normal md:text-xs text-sm lg:text-xl leading-5 lg:leading-7">
-						Your gateway to seamless trading in Asia and beyond.
-					</div>
+		<section className="bg-background-section">
+			<div className="py-6 md:py-8 lg:py-10 container-default ">
+				{/* Header */}
+				<div className="flex items-center justify-between mb-4 md:mb-6">
+					<h2 className="font-semibold text-lg md:text-xl lg:text-2xl text-typo-primary">
+						Promotions & Campaigns
+					</h2>
+					<ViewAll href={CGSI.CAMPAIGNS} />
 				</div>
-				<div className="w-full md:w-3/5">
-					<Carousel setApi={setApi}>
-						<CarouselContent>
-							{campaigns.map((campaign, index) => (
-								<CarouselItem key={campaign.SEO_Page_Name || index} className="aspect-[2/1]">
-									<Link
-										href={
-											campaign.SEO_Page_Name
-												? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
-												: CGSI.CAMPAIGNS
-										}
-										target="_blank"
-										className="relative block rounded-lg w-full h-full overflow-hidden cursor-pointer"
+
+				{/* Carousel Container */}
+				<div className="relative">
+					<Carousel
+						setApi={setApi}
+						opts={{
+							align: "start",
+							loop: false,
+							duration: 30,
+							skipSnaps: false,
+							inViewThreshold: 0.7,
+						}}
+						className="w-full"
+					>
+						<CarouselContent className="-ml-4">
+							{campaigns.map((campaign, index) => {
+								// First item: always large (57%), always featured style, with hidden snap point
+								if (index === 0) {
+									return (
+										<React.Fragment key="featured">
+											{/* Part 1: Main featured item - 66% on mobile, 57% on desktop */}
+											<CarouselItem
+												key="featured-1"
+												className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[57%]"
+											>
+												<CampaignCard
+													campaign={campaign}
+													isFeatured={false}
+												/>
+											</CarouselItem>
+											{/* Part 2: Invisible snap point - only on desktop for peek effect */}
+											<CarouselItem
+												key="featured-2"
+												className="pl-0 h-[280px] md:h-[320px] lg:h-[380px] hidden md:block basis-[25%] md:-ml-[24%]"
+											>
+												<div className="w-full h-full pointer-events-none" />
+											</CarouselItem>
+										</React.Fragment>
+									);
+								}
+
+								return (
+									<CarouselItem
+										key={index}
+										className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[25%]"
 									>
-										<Image
-											src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
-											alt={campaign.MastheadBasic_Article_Title || "campaign"}
-											fill
-											className="object-cover"
-											sizes="(max-width: 768px) 100vw, 60vw"
-											priority={index === 0}
+										<CampaignCard
+											campaign={campaign}
+											isFeatured={false}
 										/>
-									</Link>
-								</CarouselItem>
-							))}
+									</CarouselItem>
+								);
+							})}
 						</CarouselContent>
+
+						{/* Navigation Arrows */}
+						<Button
+							size="icon"
+							onClick={scrollPrev}
+							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-background-section border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all"
+							aria-label="Previous"
+						>
+							<ArrowLeft className="w-5 h-5 text-cgs-blue" />
+						</Button>
+
+						<Button
+							size="icon"
+							onClick={scrollNext}
+							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center  bg-background-section border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all"
+							aria-label="Next"
+						>
+							<ArrowRight className="w-5 h-5 text-cgs-blue" />
+						</Button>
 					</Carousel>
 
-					{/* Navigation Bar */}
-					<div className="flex items-center gap-6 mt-4 w-full">
-						{/* Previous Button */}
-						<div className="flex gap-4">
-							<Button
-								size={"icon"}
-								onClick={scrollPrev}
-								disabled={current === 0}
-								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-transparent hover:opacity-75 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
-								aria-label="Previous"
-							>
-								<ArrowLeft />
-							</Button>
+					{/* Blur overlay - Left (when scrolled, showing partial of first item) - hidden on mobile */}
+					<div
+						className={cn(
+							"absolute left-0 top-0 h-[280px] md:h-[320px] lg:h-[380px] w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+							"bg-gradient-to-r from-white via-white/60 to-transparent",
+							current == 1 ? "opacity-100" : "opacity-0"
+						)}
+					/>
 
-							{/* Next Button */}
-							<Button
-								size={"icon"}
-								onClick={scrollNext}
-								disabled={current === count - 1}
-								className="flex flex-shrink-0 justify-center items-center bg-transparent hover:bg-transparent hover:opacity-75 disabled:opacity-50 border-[1.25px] border-white rounded-full w-6 h-6 transition-colors disabled:cursor-not-allowed"
-								aria-label="Next"
-							>
-								<ArrowRight />
-							</Button>
-						</div>
+					{/* Blur overlay - Right (at start, when peeked items visible) - hidden on mobile */}
+					<div
+						className={cn(
+							"absolute right-0 top-0 h-[280px] md:h-[320px] lg:h-[380px] w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+							"bg-gradient-to-l from-white via-white/60 to-transparent",
+							current === 0 ? "opacity-100" : "opacity-0"
+						)}
+					/>
 
-						{/* Progress Bar */}
-						<div className="flex flex-grow justify-center items-center gap-1">
-							{Array.from({ length: count }).map((_, index) => (
+					{/* Dot Indicators - number based on scroll snaps */}
+					{api && api.scrollSnapList().length > 1 && (
+						<div className="flex justify-center gap-2 mt-4 md:mt-6">
+							{api.scrollSnapList().map((_, index) => (
 								<button
 									key={index}
 									onClick={() => scrollTo(index)}
-									className={`rounded-full flex-1 transition-all ${index === current
-										? "h-[3px] bg-white"
-										: "h-[1px] bg-white/40 hover:bg-white/60"
-										}`}
+									className={cn(
+										"w-2 h-2 rounded-full transition-colors duration-200",
+										index === current
+											? "bg-cgs-blue"
+											: "bg-gray-300 hover:bg-gray-400"
+									)}
 									aria-label={`Go to slide ${index + 1}`}
 								/>
 							))}
 						</div>
-
-						{/* View All Button */}
-						<Button className="flex-shrink-0 bg-transparent hover:bg-transparent hover:opacity-75 px-3 border border-white rounded-full h-6 font-normal text-[12px] whitespace-nowrap cursor-pointer">
-							<Link href={CGSI.CAMPAIGNS} target="_blank">
-								View All
-							</Link>
-						</Button>
-					</div>
+					)}
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 };
 

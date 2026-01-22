@@ -13,7 +13,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { toast } from "@/components/ui/toaster";
 import { ErrorState } from "@/components/ErrorState";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
-import { sendEmailOtp, submitEmailUpdate } from "@/lib/services/profileService";
+import { sendEmailOtp, submitEmailUpdate, refreshUserProfile } from "@/lib/services/profileService";
 
 const InputStep = ({
 	newEmail,
@@ -51,7 +51,7 @@ const InputStep = ({
 				value={newEmail}
 				onChange={handleEmailChange}
 				onKeyPress={handleKeyPress}
-				className="focus-visible:!border-b-enhanced-blue focus-visible:!border-b focus:bg-background-selected"
+				className="focus-visible:!border-b-cgs-blue focus-visible:!border-b focus:bg-background-selected"
 				type="email"
 				error={error}
 				disabled={isSubmitting}
@@ -68,6 +68,9 @@ const OTPStep = ({
 	setStep,
 	onResend,
 	isSubmitting,
+	setError,
+	countdown,
+	resetCountdown,
 }: {
 	email: string;
 	otp: string;
@@ -76,31 +79,38 @@ const OTPStep = ({
 	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	onResend: () => void;
 	isSubmitting: boolean;
+	setError: (value: string) => void;
+	countdown: number;
+	resetCountdown: () => void;
 }) => {
-	const { formattedTime, isActive, reset } = useOTPCountdown({
-		initialSeconds: 120,
-	});
+	const formatTime = (seconds: number): string => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	};
 
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
 		setOtp(numeric);
+		// Clear error when user types
+		if (error) setError("");
 	};
 
 	const handleResendCode = () => {
-		reset();
+		resetCountdown();
 		onResend();
 	};
 
 	return (
 		<div className="pad-x">
 			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
-			<p className="text-sm text-typo-secondary mt-6">
+			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
 				<span className="ml-1">{email}</span>
 			</p>
 
 			<p
-				className="mb-6 text-enhanced-blue cursor-pointer text-sm font-normal mt-1"
+				className="mb-6 text-cgs-blue cursor-pointer text-base font-normal mt-1 underline underline-offset-2"
 				onClick={() => setStep(1)}
 			>
 				Change Email?
@@ -125,10 +135,10 @@ const OTPStep = ({
 			)}
 
 			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
-				{isActive ? (
-					<>Resend in : {formattedTime}</>
+				{countdown > 0 ? (
+					<>Resend in : {formatTime(countdown)}</>
 				) : (
-					<span className="text-enhanced-blue cursor-pointer" onClick={handleResendCode}>
+					<span className="text-cgs-blue cursor-pointer" onClick={handleResendCode}>
 						Resend Code
 					</span>
 				)}
@@ -150,13 +160,20 @@ const ConfirmStep = () => {
 
 const UpdateEmail = () => {
 	const router = useRouter();
-	const { email: currentEmail } = useUserStore();
+	const profile = useUserStore((state) => state.profile);
+	// Fallback to empty string if no email in profile
+	const currentEmail = profile?.email || "";
 	const [step, setStep] = useState<1 | 2 | 3>(1);
 	const [newEmail, setNewEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	// OTP countdown tracker to determine if OTP is expired or just wrong
+	const { countdown, reset: resetCountdown } = useOTPCountdown({
+		initialSeconds: 120,
+	});
 
 	// Validate email format
 	const isValidEmail = (email: string) => {
@@ -168,19 +185,19 @@ const UpdateEmail = () => {
 	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!newEmail.trim()) {
-			setError("Email cannot be empty");
-			return;
-		}
-
-		// Check if same as old email
-		if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
-			setError("Please enter a different email");
+			setError("Field cannot be empty");
 			return;
 		}
 
 		// Check if valid email format
 		if (!isValidEmail(newEmail)) {
-			setError("Please enter a valid email address");
+			setError("Email Address do not meet the minimum criteria");
+			return;
+		}
+
+		// Check if same as old email
+		if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
+			setError("Kindly provide a new email address to continue");
 			return;
 		}
 
@@ -193,6 +210,8 @@ const UpdateEmail = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is sent
+			resetCountdown();
 			setStep(2);
 		} else {
 			toast.error("Failed to send OTP", response.error || "Please try again later.");
@@ -205,6 +224,7 @@ const UpdateEmail = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is resent (will be called by OTPStep component)
 			toast.success("OTP Resent", "A new OTP code has been sent to your email.");
 		} else {
 			toast.error("Failed to resend OTP", response.error || "Please try again later.");
@@ -214,7 +234,7 @@ const UpdateEmail = () => {
 	// Handle continue for step 2
 	const handleStep2Continue = async () => {
 		if (otp.length !== 6) {
-			setError("Please enter the 6-digit OTP code");
+			setError("Please enter the 6 digit numbers that sent to your email");
 			return;
 		}
 
@@ -226,9 +246,25 @@ const UpdateEmail = () => {
 		setIsSubmitting(false);
 
 		if (response.success && response.data?.isSuccess) {
+			// Refresh user profile to update store with new email
+			await refreshUserProfile();
 			setStep(3);
 		} else {
-			setError(response.error || "Invalid OTP. Please try again.");
+			// Handle OTP validation failure
+			// When API returns success=true but isSuccess=false, it means OTP validation failed
+			if (response.success && response.data?.isSuccess === false) {
+				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
+				if (countdown <= 0) {
+					// OTP has expired after 2 minutes
+					setError("OTP has expired after 2 minutes, please request for a new one");
+				} else {
+					// OTP is still valid but user entered wrong code
+					setError("OTP Code Authentication Failed");
+				}
+			} else {
+				// Other errors (network, API error, etc.)
+				setError(response.error || "Sorry, your entries do not match. Please try again.");
+			}
 		}
 	};
 
@@ -261,7 +297,7 @@ const UpdateEmail = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-lg flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
+			<div className="bg-white rounded flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
 				{step === 1 && (
 					<InputStep
 						newEmail={newEmail}
@@ -280,8 +316,11 @@ const UpdateEmail = () => {
 						setOtp={setOtp}
 						setStep={setStep}
 						error={error}
+						setError={setError}
 						onResend={handleResendOtp}
 						isSubmitting={isSubmitting}
+						countdown={countdown}
+						resetCountdown={resetCountdown}
 					/>
 				)}
 
@@ -296,7 +335,7 @@ const UpdateEmail = () => {
 						<Button
 							className="w-full text-base font-normal"
 							onClick={handleContinue}
-							disabled={isSubmitting}
+							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
 							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
 						</Button>

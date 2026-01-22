@@ -580,7 +580,7 @@ export default function AuthorizePage() {
           <p className="text-typo-secondary mb-4">{error}</p>
           <button
             onClick={() => authService.redirectToLogin()}
-            className="px-4 py-2 bg-enhanced-blue text-white rounded"
+            className="px-4 py-2 bg-cgs-blue text-white rounded"
           >
             Try Again
           </button>
@@ -592,7 +592,7 @@ export default function AuthorizePage() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-enhanced-blue mx-auto mb-4"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cgs-blue mx-auto mb-4"></div>
         <p className="text-typo-secondary">Authenticating...</p>
       </div>
     </div>

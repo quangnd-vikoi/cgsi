@@ -51,7 +51,7 @@ export default function CashTransactionPage() {
                     <Title showBackButton title="Cash Transactions" />
 
                     {/* Content Box */}
-                    <div className="bg-white pad rounded-lg flex-1 flex flex-col">
+                    <div className="bg-white pad rounded flex-1 flex flex-col">
                         {/* Account Selector & Time Period & Export Button */}
                         <div className="mb-6 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
                             <div className="flex flex-col gap-4 md:flex-row md:items-center">
@@ -101,7 +101,7 @@ export default function CashTransactionPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border border-enhanced-blue text-sm font-normal text-enhanced-blue rounded hover:bg-transparent hover:border-enhanced-blue/75 hover:text-enhanced-blue/75"
+                                className="border border-cgs-blue text-sm font-normal text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
                             >
                                 <FileDown className="size-4" />
                                 Export to Excel

@@ -96,14 +96,14 @@ export const profileEndpoints = {
 	 *
 	 * POST /profile/api/v1/tradingInfo/bcan/request
 	 *
-	 * @param body - CreateBcanRequest with accountNo
 	 * @returns CreateBcanResponse - Success status of BCAN request creation
 	 * @requires Authentication - Bearer token (useAuth: true)
+	 * @note No request body required per swagger spec
 	 *
 	 * @example
-	 * const response = await postAPI<CreateBcanResponse, CreateBcanRequest>(
+	 * const response = await postAPI<CreateBcanResponse>(
 	 *   ENDPOINTS.createBcanRequest(),
-	 *   { accountNo: "1234567890" },
+	 *   {},
 	 *   { useAuth: true }
 	 * );
 	 */

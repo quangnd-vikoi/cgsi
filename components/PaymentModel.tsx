@@ -59,7 +59,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
                             key={method.id}
                             onClick={handleSelectMethod}
                             disabled={!method.available}
-                            className="w-full flex items-center gap-4 py-2 px-4 rounded-lg border border-theme-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+                            className="w-full flex items-center gap-4 py-2 px-4 rounded border border-theme-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
                         >
                             <div className="flex-shrink-0">{method.icon}</div>
 
@@ -72,7 +72,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 
                             <ChevronRight
                                 size={16}
-                                className="text-typo-tertiary group-hover:text-enhanced-blue transition-colors"
+                                className="text-typo-tertiary group-hover:text-cgs-blue transition-colors"
                             />
                         </button>
                     ))}

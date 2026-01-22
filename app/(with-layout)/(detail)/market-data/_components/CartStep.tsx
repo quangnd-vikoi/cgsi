@@ -25,7 +25,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
         toast.success("Item Removed", "The selected item has been removed from your cart")
     };
     return (
-        <div className="bg-white rounded-lg flex-1 flex flex-col overflow-hidden min-h-0">
+        <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2 pad-x py-6">
                 <p className="text-typo-primary text-base font-semibold">Subscription Items</p>
@@ -43,7 +43,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
             <div className="border-t pad-x py-4 justify-end flex gap-2">
                 <Alert
                     trigger={
-                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none text-enhanced-blue hover:text-enhanced-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary">
+                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none text-cgs-blue hover:text-cgs-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary">
                             Remove All
                         </Button>
                     }

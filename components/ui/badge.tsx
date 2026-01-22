@@ -9,7 +9,7 @@ const badgeVariants = cva(
 	{
 		variants: {
 			variant: {
-				default: "border-tone-blue-02 bg-background-selected text-enhanced-blue [a&]:hover:bg-tone-blue-02/90",
+				default: "border-tone-blue-02 bg-background-selected text-cgs-blue [a&]:hover:bg-tone-blue-02/90",
 				success:
 					"border-tone-green-02 bg-tone-green-00 text-tone-green-04 [a&]:hover:bg-tone-green-00/90",
 				inactive:

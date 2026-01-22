@@ -120,7 +120,7 @@ const TradingAccountDetail = () => {
 					<div className="flex items-center gap-2">
 						<p className="font-semibold text-typo-primary text-lg">{selectedAccount.accountNo}</p>
 						<Copy
-							className="text-enhanced-blue cursor-pointer"
+							className="text-cgs-blue cursor-pointer"
 							size={20}
 							onClick={() => handleCopy(selectedAccount.accountNo)}
 						/>
@@ -134,7 +134,7 @@ const TradingAccountDetail = () => {
 							tooltipContent="Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
 							value={selectedAccount.cdp || undefined}
 							actionContent={
-								<div className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0">
+								<div className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0">
 									Update to SUB-CDP
 									<ChevronRight size={16} />
 								</div>
@@ -152,7 +152,7 @@ const TradingAccountDetail = () => {
 									onUnlink={() => handleUnlink("cpf")}
 									actionContent={
 										<div
-											className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0"
+											className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0"
 											onClick={() => handleLink("cpf")}
 										>
 											Link Now
@@ -169,7 +169,7 @@ const TradingAccountDetail = () => {
 									onUnlink={() => handleUnlink("srs")}
 									actionContent={
 										<div
-											className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0"
+											className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0"
 											onClick={() => handleLink("srs")}
 										>
 											Link Now
@@ -187,7 +187,7 @@ const TradingAccountDetail = () => {
 									actionContent={
 										<DropdownMenu onOpenChange={setIsPaymentMethodOpen}>
 											<DropdownMenuTrigger asChild>
-												<p className="flex items-center gap-1 text-enhanced-blue text-xs cursor-pointer shrink-0 whitespace-nowrap">
+												<p className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0 whitespace-nowrap">
 													{isPaymentMethodOpen ? "Set Up Now" : "Payment Method"}
 													<ChevronDown size={16} />
 												</p>
@@ -247,12 +247,12 @@ const TradingAccountDetail = () => {
 									{item.hasCopy && (
 										<Copy
 											onClick={() => handleCopy(item.value)}
-											className="text-enhanced-blue cursor-pointer shrink-0"
+											className="text-cgs-blue cursor-pointer shrink-0"
 											size={16}
 										/>
 									)}
 									{item.hasArrow && (
-										<ArrowRightCircle className="text-enhanced-blue shrink-0" size={16} />
+										<ArrowRightCircle className="text-cgs-blue shrink-0" size={16} />
 									)}
 								</div>
 							</div>

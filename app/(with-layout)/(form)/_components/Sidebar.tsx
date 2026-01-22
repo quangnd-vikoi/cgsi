@@ -20,9 +20,6 @@ export default function Sidebar() {
 
 	// Determine product type based on pathname
 	const productType = pathname.startsWith(INTERNAL_ROUTES.SECURITIES) ? "IOP" : "AI";
-	const title = pathname.startsWith(INTERNAL_ROUTES.SECURITIES)
-		? "Initial Offering Price (IOP)"
-		: "Commercial Papers";
 
 	// Fetch product subscriptions
 	const fetchProductSubscriptions = useCallback(async () => {
@@ -59,6 +56,13 @@ export default function Sidebar() {
 		});
 	};
 
+	// Check if closing date has passed
+	const isClosingDatePassed = (endTime: string): boolean => {
+		const closingDate = new Date(endTime);
+		const now = new Date();
+		return now > closingDate;
+	};
+
 	// Map API data to UI structure
 	const etfData = productSubs.map((sub) => ({
 		id: sub.productCode,
@@ -70,18 +74,15 @@ export default function Sidebar() {
 		closingDate: formatDateTime(sub.endTime),
 		hasDetails: true,
 		applied: sub.isSubscribed,
-		isCompact: false,
+		isCompact: isClosingDatePassed(sub.endTime),
 	}));
 
 	// Loading state
 	if (loading) {
 		return (
-			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-				<div className="flex-shrink-0 pad !pb-4">
-					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-				</div>
-				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
-					<div className="space-y-4">
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
+				<div className="flex-1 flex items-center justify-center pad">
+					<div className="space-y-4 w-full">
 						{[...Array(3)].map((_, i) => (
 							<div key={i} className="rounded border border-stroke-secondary p-4 space-y-2">
 								<Skeleton className="h-4 w-3/4" />
@@ -97,10 +98,7 @@ export default function Sidebar() {
 	// Error state
 	if (error) {
 		return (
-			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-				<div className="flex-shrink-0 pad !pb-4">
-					<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-				</div>
+			<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
 				<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
 					<ErrorState
 						type="error"
@@ -113,14 +111,12 @@ export default function Sidebar() {
 	}
 
 	return (
-		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm md:min-w-sm md:max-w-sm" id="sidebar_form">
-			{/* Header - Fixed */}
-			<div className="flex-shrink-0 pad !pb-4">
-				<h1 className="text-base font-semibold text-typo-primary">{title}</h1>
-			</div>
-
+		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
 			{/* Content - Scrollable */}
-			<div className="flex-1 overflow-y-auto sidebar-scroll pad !pt-0">
+			<div className="flex-1 overflow-y-auto sidebar-scroll pad">
+				<div className="flex-shrink-0 pb-6">
+					<h1 className="text-base font-semibold text-typo-primary">Products</h1>
+				</div>
 				{etfData.length === 0 ? (
 					<ErrorState
 						type="empty"
@@ -135,7 +131,7 @@ export default function Sidebar() {
 								className={cn(
 									"rounded border p-4 shadow-sm relative",
 									selectedId === etf.id
-										? "border-enhanced-blue"
+										? "border-cgs-blue"
 										: "border-stroke-secondary",
 									etf.isCompact ? "bg-theme-neutral-095" : "bg-white"
 								)}
@@ -163,17 +159,17 @@ export default function Sidebar() {
 									</div>
 									<Button
 										className={cn(
-											"gap-1 px-3 h-6 border border-enhanced-blue text-xs rounded-4xl flex items-center leading-2",
+											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue  text-xs rounded flex items-center leading-2",
 											selectedId === etf.id
-												? "bg-enhanced-blue text-white"
-												: "bg-transparent text-enhanced-blue hover:bg-transparent hover:opacity-75 transition-colors "
+												? "bg-background-selected hover:bg-background-selected cursor-default"
+												: "bg-white hover:bg-transparent hover:opacity-80 transition-colors"
 										)}
 										onClick={() => setSelectedItem(etf)}
 									>
 										{selectedId === etf.id && <Check className="text-sm" />}
 										Details
 										{selectedId !== etf.id && (
-											<ArrowRight className="text-sm text-enhanced-blue" />
+											<ArrowRight className="text-sm text-cgs-blue" />
 										)}
 									</Button>
 								</div>
@@ -184,7 +180,7 @@ export default function Sidebar() {
 
 								{/* Details */}
 								{!etf.isCompact && (
-									<div className="flex flex-col gap-3 mt-4 *:text-xs">
+									<div className="flex flex-col gap-3 mt-6 *:text-xs">
 										<div className="flex justify-between items-center">
 											<span className=" text-typo-secondary">Issue Price</span>
 											<span className=" font-medium text-typo-primary">

@@ -15,13 +15,13 @@ interface AnalysisAccordionItemProps {
 // Custom AccordionItem Component
 const AnalysisAccordionItem: React.FC<AnalysisAccordionItemProps> = ({ value, title, children }) => {
 	return (
-		<AccordionItem value={value} className="border border-b-0 rounded-lg mb-4">
+		<AccordionItem value={value} className="border border-b-0 rounded mb-4">
 			<AccordionTrigger
-				className={`p-4 text-sm border-b rounded-lg data-[state=open]:rounded-b-none data-[state=open]:border-b-0 font-medium hover:no-underline data-[state=open]:bg-theme-blue-09 data-[state=open]:text-enhanced-blue`}
+				className={`p-4 text-sm border-b rounded data-[state=open]:rounded-b-none data-[state=open]:border-b-0 font-medium hover:no-underline data-[state=open]:bg-theme-blue-09 data-[state=open]:text-cgs-blue`}
 			>
 				{title}
 			</AccordionTrigger>
-			<AccordionContent className="p-4 text-sm text-typo-primary border-b rounded-lg">
+			<AccordionContent className="p-4 text-sm text-typo-primary border-b rounded">
 				{children}
 			</AccordionContent>
 		</AccordionItem>
@@ -29,7 +29,7 @@ const AnalysisAccordionItem: React.FC<AnalysisAccordionItemProps> = ({ value, ti
 };
 
 const AnalysisTab: React.FC = () => {
-	const { productDetails, loading, error } = useProductDetails();
+	const { productDetails, loading, error, openAccordionValue, setOpenAccordionValue } = useProductDetails();
 
 	// Loading state
 	if (loading) {
@@ -160,7 +160,13 @@ const AnalysisTab: React.FC = () => {
 
 	return (
 		<div className="py-6">
-			<Accordion type="single" collapsible defaultValue="item-0" className="w-full">
+			<Accordion
+				type="single"
+				collapsible
+				className="w-full"
+				value={openAccordionValue}
+				onValueChange={setOpenAccordionValue}
+			>
 				{sections.map((section, index) => (
 					<AnalysisAccordionItem
 						key={index}

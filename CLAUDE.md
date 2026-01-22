@@ -9,11 +9,11 @@ CGSI iTrade Portal - A Next.js 15 web application for stock trading and investme
 
 **Key Technologies:**
 
--   Next.js 15.5 with App Router and Turbopack
--   React 19 + TypeScript 5
--   TailwindCSS 4 (inline theme configuration)
--   Radix UI + Shadcn/ui components
--   Zustand for state management
+- Next.js 15.5 with App Router and Turbopack
+- React 19 + TypeScript 5
+- TailwindCSS 4 (inline theme configuration)
+- Radix UI + Shadcn/ui components
+- Zustand for state management
 
 ## Development Commands
 
@@ -39,9 +39,9 @@ The app runs on `http://localhost:3000` but is deployed at the `/portal` base pa
 
 The application is configured to run at `/portal` base path:
 
--   **next.config.ts**: `basePath: "/portal"` and `assetPrefix: "/portal/"`
--   All internal routes must account for this base path
--   Environment variable: `NEXT_PUBLIC_BASE_PATH="/portal"`
+- **next.config.ts**: `basePath: "/portal"` and `assetPrefix: "/portal/"`
+- All internal routes must account for this base path
+- Environment variable: `NEXT_PUBLIC_BASE_PATH="/portal"`
 
 ### SVG Handling
 
@@ -66,12 +66,12 @@ The app uses Next.js route groups to manage different layout contexts:
 
 **`app/(with-layout)/`** - Full layout with Header, Footer, and SheetManager:
 
--   Most user-facing pages (home, portfolio, discover, market-data, donations, etc.)
--   Layout: `app/(with-layout)/layout.tsx`
+- Most user-facing pages (home, portfolio, discover, market-data, donations, etc.)
+- Layout: `app/(with-layout)/layout.tsx`
 
 **`app/(minimal)/`** - Minimal layout (if exists) for sidebar-based pages
 
--   Sidebar sheets for user profile, notifications, settings
+- Sidebar sheets for user profile, notifications, settings
 
 **Page-specific components** are stored in `_components/` folders next to their pages (e.g., `app/(with-layout)/portfolio/_components/`).
 
@@ -81,15 +81,20 @@ Centralized stores in `stores/`:
 
 **`tradingAccountStore.ts`**:
 
--   Manages multiple trading account types (Cash, Margin, Shares Borrowing, CUT, iCash)
--   Pre-populated with mock data
--   Methods: `setAccounts`, `setSelectedAccount`, `updateSelectedAccount`, `getAccountById`
+- Manages multiple trading account types (Cash, Margin, Shares Borrowing, CUT, iCash)
+- Pre-populated with mock data
+- Methods: `setAccounts`, `setSelectedAccount`, `updateSelectedAccount`, `getAccountById`, `getDefaultAccountNo`
+- **`getDefaultAccountNo()`**: Returns default account number with priority logic
+  - Priority: CTA > CUT > iCash > MTA > SBL
+  - If only 1 account exists, select it regardless of type
+  - Returns `null` if no accounts available
+  - Usage: `const accountNo = useTradingAccountStore.getState().getDefaultAccountNo()`
 
 **`sheetStore.ts`**:
 
--   Controls sheet/modal visibility across the app
--   Methods: `setOpenSheet(type, payload?)`, `closeSheet()`
--   Used in conjunction with `SheetManager` component
+- Controls sheet/modal visibility across the app
+- Methods: `setOpenSheet(type, payload?)`, `closeSheet()`
+- Used in conjunction with `SheetManager` component
 
 **`userStore.ts`**: User email and mobile information
 **`selectionStore.ts`**: Selection state management
@@ -98,9 +103,9 @@ Centralized stores in `stores/`:
 
 **Configuration** (`lib/apiConfig.ts`):
 
--   Base URL: `https://www.cgsi.com.sg/cgsi/api/v1` (configurable via `NEXT_PUBLIC_API_URL`)
--   Language constants: `LANG.EN = 1`, `LANG.CN = 2`
--   Endpoint builders for announcements, notices, campaigns, events, insights
+- Base URL: `https://www.cgsi.com.sg/cgsi/api/v1` (configurable via `NEXT_PUBLIC_API_URL`)
+- Language constants: `LANG.EN = 1`, `LANG.CN = 2`
+- Endpoint builders for announcements, notices, campaigns, events, insights
 
 **Fetch Wrapper** (`lib/fetchWrapper.ts`):
 Provides normalized API responses with consistent error handling:
@@ -148,21 +153,23 @@ import { externalSSOService } from "@/lib/services/externalSSOService";
 import { redirectToNTP, redirectToEW8 } from "@/lib/services/ssoService";
 
 // Available SSO methods (one-liner redirects):
-await externalSSOService.redirectToNTP();              // Next Trading Platform
-await externalSSOService.redirectToResearch();         // Research Portal
-await externalSSOService.redirectToStockFilter();      // Stock Filter
-await externalSSOService.redirectToCorporateAction();  // Corporate Action (SAML)
-await externalSSOService.redirectToEStatement();       // eStatement
-await externalSSOService.redirectToIScreener();        // iScreener (⚠️ never implemented)
-await externalSSOService.redirectToEW8();              // W8 Form
-await externalSSOService.redirectToECRS();             // CRS Declaration
+await externalSSOService.redirectToNTP(); // Next Trading Platform
+await externalSSOService.redirectToResearch(); // Research Portal
+await externalSSOService.redirectToStockFilter(); // Stock Filter
+await externalSSOService.redirectToCorporateAction(); // Corporate Action (SAML)
+await externalSSOService.redirectToEStatement(); // eStatement
+await externalSSOService.redirectToIScreener(); // iScreener (⚠️ never implemented)
+await externalSSOService.redirectToEW8(); // W8 Form
+await externalSSOService.redirectToECRS(); // CRS Declaration
 ```
 
 **SSO Types:**
+
 - **Simple Redirect**: Most services (Research, Stock Filter, eStatement, EW8, ECRS)
 - **Form Submission**: NTP (multiple fields), Corporate Action (SAML)
 
 **UI Integration:**
+
 - Header "Trade Now" button → NTP SSO
 - Profile sidebar "Corporate Actions" → Corporate Action SSO
 - Profile sidebar "eStatements" → eStatement SSO
@@ -176,14 +183,14 @@ await externalSSOService.redirectToECRS();             // CRS Declaration
 
 **Internal routes** (`constants/routes.ts`):
 
--   `INTERNAL_ROUTES` object for all app routes
--   Example: `INTERNAL_ROUTES.PORTFOLIO = "/portfolio"`
--   Account linkages with query params: `ACCOUNT_LINKAGES(type, unlink?)`
+- `INTERNAL_ROUTES` object for all app routes
+- Example: `INTERNAL_ROUTES.PORTFOLIO = "/portfolio"`
+- Account linkages with query params: `ACCOUNT_LINKAGES(type, unlink?)`
 
 **External CGSI URLs**:
 
--   `CGSI` object contains links to external CGSI services (campaigns, events, trade platform, invoice, etc.)
--   Invoice URL builder: `CGSI.INVOICE(token)`
+- `CGSI` object contains links to external CGSI services (campaigns, events, trade platform, invoice, etc.)
+- Invoice URL builder: `CGSI.INVOICE(token)`
 
 ### Component Architecture
 
@@ -192,8 +199,8 @@ Pre-built accessible components from Radix UI (button, dialog, sheet, tabs, acco
 
 **Business Components** (`components/`):
 
--   `Header.tsx`, `Footer.tsx` - Main layout components
--   Custom components for specific features
+- `Header.tsx`, `Footer.tsx` - Main layout components
+- Custom components for specific features
 
 **Class Variance Authority (CVA)**:
 Use CVA for component variants with type-safe props:
@@ -213,36 +220,36 @@ const buttonVariants = cva("base-classes", {
 
 **TailwindCSS 4** with inline theme configuration in `app/globals.css`:
 
--   Custom breakpoint: `xs: 375px`
--   Theme uses CSS variables defined in `:root` and `.dark`
--   Custom color system:
-    -   Typography: `typo-primary`, `typo-secondary`, `typo-tertiary`
-    -   Enhanced blue: `enhanced-blue` (#006ceb)
-    -   Status colors: `status-error`, `status-success`, `status-warning`, `status-selected`
-    -   Theme colors: `theme-blue-*`, `theme-neutral-*`
-    -   Tone colors: `tone-green-*`, `tone-orange-*`, `tone-blue-*`, `tone-red-*`
+- Custom breakpoint: `xs: 375px`
+- Theme uses CSS variables defined in `:root` and `.dark`
+- Custom color system:
+    - Typography: `typo-primary`, `typo-secondary`, `typo-tertiary`
+    - CGS blue: `cgs-blue` (#003A8C)
+    - Status colors: `status-error`, `status-success`, `status-warning`, `status-selected`
+    - Theme colors: `theme-blue-*`, `theme-neutral-*`
+    - Tone colors: `tone-green-*`, `tone-orange-*`, `tone-blue-*`, `tone-red-*`
 
 **Custom Utilities**:
 
--   `.container-default`: Responsive container (mx-4 md:mx-6 xl:max-w-1200px)
--   `.pad`: Responsive padding (p-4 md:p-6)
--   `.pad-x`: Responsive horizontal padding
--   `.investment-card`: Gradient card with border
--   `.sidebar-scroll`: Custom scrollbar styling
--   `.scrollbar-offset-right`, `.scrollbar-offset-laptop`: Mobile/desktop scrollbar offsets
+- `.container-default`: Responsive container (mx-4 md:mx-6 xl:max-w-1320px)
+- `.pad`: Responsive padding (p-4 md:p-6)
+- `.pad-x`: Responsive horizontal padding
+- `.investment-card`: Gradient card with border
+- `.sidebar-scroll`: Custom scrollbar styling
+- `.scrollbar-offset-right`, `.scrollbar-offset-laptop`: Mobile/desktop scrollbar offsets
 
 **Global Styles**:
 
--   User selection disabled by default (`user-select: none`)
--   Text selection enabled for inputs, textareas, contenteditable
--   Base font size: 16px
+- User selection disabled by default (`user-select: none`)
+- Text selection enabled for inputs, textareas, contenteditable
+- Base font size: 16px
 
 ### TypeScript Configuration
 
--   Target: ES2017
--   Path alias: `@/*` maps to root directory
--   Strict mode enabled
--   Module resolution: bundler
+- Target: ES2017
+- Path alias: `@/*` maps to root directory
+- Strict mode enabled
+- Module resolution: bundler
 
 ## Common Patterns
 
@@ -262,10 +269,10 @@ Each step manages its own state, with navigation handled by a central stepper co
 
 Instead of full page navigation, the app uses Radix Dialog sheets for:
 
--   User profile
--   Notifications
--   Settings
--   Other sidebar content
+- User profile
+- Notifications
+- Settings
+- Other sidebar content
 
 Pattern:
 
@@ -282,9 +289,9 @@ setOpenSheet("profile", { userId: "123" });
 
 Mobile-first approach with breakpoints:
 
--   xs: 375px (custom)
--   md: 768px (Tailwind default)
--   lg, xl: Standard Tailwind
+- xs: 375px (custom)
+- md: 768px (Tailwind default)
+- lg, xl: Standard Tailwind
 
 Use `useMediaQuery` hook for client-side responsive logic.
 
@@ -292,8 +299,8 @@ Use `useMediaQuery` hook for client-side responsive logic.
 
 Using Sonner (`sonner` package):
 
--   Position: bottom-right
--   Configured in layout via `<Toaster position="bottom-right" />`
+- Position: bottom-right
+- Configured in layout via `<Toaster position="bottom-right" />`
 
 ## Important Considerations
 
@@ -301,9 +308,9 @@ Using Sonner (`sonner` package):
 
 All trading accounts follow the `TradingAccount` interface with:
 
--   Multiple account types: Cash, Margin, Shares Borrowing, CUT, iCash
--   Detailed account information (CDP, Sub-CDP, CPF, SRS, payment details)
--   Representative information (name, department, rep number, contact)
+- Multiple account types: Cash, Margin, Shares Borrowing, CUT, iCash
+- Detailed account information (CDP, Sub-CDP, CPF, SRS, payment details)
+- Representative information (name, department, rep number, contact)
 
 Currently populated with mock data in `tradingAccountStore.ts`.
 
@@ -311,8 +318,8 @@ Currently populated with mock data in `tradingAccountStore.ts`.
 
 All API endpoints accept a language parameter:
 
--   English: `LANG.EN = 1`
--   Chinese: `LANG.CN = 2`
+- English: `LANG.EN = 1`
+- Chinese: `LANG.CN = 2`
 
 Default to English unless explicitly specified.
 
@@ -331,9 +338,9 @@ import { Button } from "../../components/ui/button";
 
 ### Security Notes
 
--   No environment variables currently defined beyond `NEXT_PUBLIC_BASE_PATH`
--   API base URL defaults to production: `https://www.cgsi.com.sg/cgsi/api/v1`
--   Use `NEXT_PUBLIC_API_URL` environment variable to override for development
+- No environment variables currently defined beyond `NEXT_PUBLIC_BASE_PATH`
+- API base URL defaults to production: `https://www.cgsi.com.sg/cgsi/api/v1`
+- Use `NEXT_PUBLIC_API_URL` environment variable to override for development
 
 ## File Structure Reference
 
