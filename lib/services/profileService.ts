@@ -6,6 +6,7 @@ import type {
 	UserAccountResponse,
 	TrInfoResponse,
 	TradingInfoResponse,
+	CreateBcanRequest,
 	CreateBcanResponse,
 	DonationPlanResponse,
 	DonationSubmissionRequest,

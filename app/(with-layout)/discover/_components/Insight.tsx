@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import ViewAll from "@/components/ViewAll";
+import { formatDate } from "@/lib/utils";
 
 // API Response Interface
 interface InsightAPIItem {
@@ -44,7 +45,7 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 					<div className="flex flex-col gap-3 mt-auto">
 						<div className="flex self-stretch gap-2 font-medium text-xs text-typo-tertiary leading-4">
 							<Calendar className="w-4 h-4" />
-							{article.date}
+							{formatDate(article.date)}
 						</div>
 					</div>
 				</div>

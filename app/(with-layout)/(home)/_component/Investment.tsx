@@ -49,6 +49,10 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 		toggle();
 		setOpenSheet("contact");
 	};
+
+	const openDeclarationForm = () => {
+		window.open("https://itrade.cgsi.com.sg/app/download/AccreditedInvestor_Declare.pdf", "_blank");
+	}
 	return (
 		<div
 			onClick={() => handleClick()}
@@ -90,7 +94,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 				description={
 					<span className="text-sm md:text-base">
 						Alternative Investments are available only to Accredited Investors. Please download
-						and fill the <span className="text-cgs-blue font-medium">Declaration Form</span>,
+						and fill the <span className="text-cgs-blue font-medium underline cursor-pointer underline-offset-2" onClick={() => openDeclarationForm()} >Declaration Form</span>,
 						then send it to us via &quot;Contact Us&quot; to proceed.
 					</span>
 				}
