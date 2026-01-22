@@ -99,7 +99,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
             <div className="relative flex-shrink-0 w-full md:w-1/2 flex flex-col items-center">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-56 md:max-h-[290px]"
+                    className="mx-auto aspect-square w-full max-w-[290px] h-[290px]"
                 >
                     <PieChart>
                         <Pie
