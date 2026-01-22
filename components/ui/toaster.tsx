@@ -79,8 +79,8 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 
 				{/* Content */}
 				<div className="flex-1 min-w-0">
-					<div className="font-semibold text-base text-typo-primary">{title}</div>
-					{description && <div className="text-sm text-typo-secondary mt-1">{description}</div>}
+					<div className="font-semibold text-base text-typo-primary line-clamp-1">{title}</div>
+					{description && <div className="text-sm text-typo-secondary mt-1 line-clamp-3">{description}</div>}
 				</div>
 
 				{/* Cancel Button */}

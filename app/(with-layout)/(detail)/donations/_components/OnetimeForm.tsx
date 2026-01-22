@@ -40,16 +40,25 @@ const OneTimeForm = ({ plans }: OneTimeFormProps) => {
 		donationType: "onetime",
 		submitToAPI: true,
 		onSuccess: (values) => {
-			toast.success(
-				"Thank you!",
-				"Your donation will go a long way in uplifting lives. We truly appreciate it."
-			);
+			if (values.paymentMethod === "now") {
+				// PayNow success
+				toast.success(
+					"Payment Successful",
+					"Your PayNow donation has been processed successfully."
+				);
+			} else {
+				// Trust Account success
+				toast.success(
+					"Thank you!",
+					"Your donation will go a long way in uplifting lives. We truly appreciate it."
+				);
+			}
 			// Reset form
 			setInputValue("");
 			reset();
 		},
-		onError: (error) => {
-			toast.error("Error Encountered", error.message || "Something went wrong. Please try again later.");
+		onError: () => {
+			toast.error("Donation Payment Failed");
 		},
 		minAmount: 1.0,
 	});

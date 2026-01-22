@@ -146,10 +146,10 @@ const RecurringForm = ({ plans }: RecurringFormProps) => {
 				setShowValidationErrors(false);
 				clearAllErrors();
 			} else {
-				toast.error("Error Encountered", response.error || "Something went wrong. Please try again later.");
+				toast.error("Donation Payment Failed");
 			}
 		} catch (error) {
-			toast.error("Error Encountered", "Something went wrong. Please try again later.");
+			toast.error("Donation Payment Failed");
 		} finally {
 			setIsSubmitting(false);
 		}
