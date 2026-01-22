@@ -1,7 +1,6 @@
 "use client";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,16 +10,19 @@ import { cn } from "@/lib/utils";
 import { useDonationForm } from "../_hooks/useDonationForm";
 import PaynowIcon from "@/public/icons/discover/Paynow.svg";
 import { Loader2, Wallet } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
-import { submitDonation } from "@/lib/services/profileService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import type { DonationPlanResponse } from "@/types";
 
-const OneTimeForm = () => {
+interface OneTimeFormProps {
+	plans: DonationPlanResponse[];
+}
+
+const OneTimeForm = ({ plans }: OneTimeFormProps) => {
 	const [inputValue, setInputValue] = useState<string>("");
-	const [isApiSubmitting, setIsApiSubmitting] = useState(false);
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
+	const accountNo = getDefaultAccountNo();
 
 	const {
 		setAmount,
@@ -32,52 +34,41 @@ const OneTimeForm = () => {
 		errors,
 		handleSubmit,
 		isSubmitting,
+		reset,
 	} = useDonationForm({
-		onSuccess: async (values) => {
-			// Validate and call actual API
-			const accountNo = getDefaultAccountNo();
-
-			if (!accountNo) {
-				toast.error("No trading account found", "Please contact support to set up your account");
-				return;
-			}
-
-			if (!values.amount) {
-				toast.error("Invalid amount", "Please enter a valid donation amount");
-				return;
-			}
-
-			setIsApiSubmitting(true);
-
-			try {
-				const response = await submitDonation({
-					accountNo,
-					amount: values.amount,
-					currency: "SGD",
-					paymentMethod: values.paymentMethod === "now" ? "PLAN" : "LS_ACCSET",
-					paymentMode: "DONATE",
-				});
-
-				if (response.success && response.data?.isSuccess) {
-					toast.success(
-						"Thank you!",
-						"Your donation will go a long way in uplifting lives. We truly appreciate it."
-					);
-				} else {
-					toast.error("Error Encountered", response.error || "Something went wrong. Please try again later.");
-				}
-			} catch (error) {
-				toast.error("Error Encountered", "Something went wrong. Please try again later.");
-			} finally {
-				setIsApiSubmitting(false);
-			}
+		accountNo: accountNo || undefined,
+		donationType: "onetime",
+		submitToAPI: true,
+		onSuccess: (values) => {
+			toast.success(
+				"Thank you!",
+				"Your donation will go a long way in uplifting lives. We truly appreciate it."
+			);
+			// Reset form
+			setInputValue("");
+			reset();
+		},
+		onError: (error) => {
+			toast.error("Error Encountered", error.message || "Something went wrong. Please try again later.");
 		},
 		minAmount: 1.0,
 	});
 
-	const handleDonate = () => {
-		handleSubmit();
+	const handleDonate = async () => {
+		if (!accountNo) {
+			toast.error("No trading account found", "Please contact support to set up your account");
+			return;
+		}
+		await handleSubmit();
 	};
+
+	// Filter active plans
+	const activePlans = plans.filter((plan) => {
+		const now = new Date();
+		const start = new Date(plan.start);
+		const end = new Date(plan.end);
+		return start <= now && now <= end;
+	});
 
 	return (
 		<div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -93,6 +84,29 @@ const OneTimeForm = () => {
 						account holders will be rejected.
 					</p>
 				</div>
+
+				{/* Display suggested amounts from active plans */}
+				{activePlans.length > 0 && (
+					<div className="space-y-2">
+						<Label className="text-sm font-semibold text-typo-primary">Suggested Amounts</Label>
+						<div className="flex flex-wrap gap-2">
+							{activePlans.map((plan) => (
+								<Button
+									key={plan.id}
+									variant="outline"
+									size="sm"
+									onClick={() => {
+										setAmount(plan.amount);
+										setInputValue(plan.amount.toFixed(2));
+									}}
+									className="text-sm"
+								>
+									{plan.currency} ${plan.amount.toFixed(2)}
+								</Button>
+							))}
+						</div>
+					</div>
+				)}
 
 				<div className="space-y-1.5">
 					<Label htmlFor="donationAmount" className="text-sm font-semibold text-typo-primary">
@@ -207,10 +221,10 @@ const OneTimeForm = () => {
 					<Button
 						className="w-full h-10 text-base font-normal"
 						onClick={handleDonate}
-						disabled={isSubmitting || isApiSubmitting}
-						aria-busy={isSubmitting || isApiSubmitting}
+						disabled={isSubmitting}
+						aria-busy={isSubmitting}
 					>
-						{(isSubmitting || isApiSubmitting) ? (
+						{isSubmitting ? (
 							<>
 								<Loader2 className="animate-spin" />
 							</>

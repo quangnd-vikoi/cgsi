@@ -26,6 +26,8 @@ const OTPStep = ({
 	onResend,
 	isSubmitting,
 	setError,
+	countdown,
+	resetCountdown,
 }: {
 	phoneNumber: string;
 	otp: string;
@@ -36,10 +38,14 @@ const OTPStep = ({
 	onResend: () => void;
 	isSubmitting: boolean;
 	setError: (value: string) => void;
+	countdown: number;
+	resetCountdown: () => void;
 }) => {
-	const { formattedTime, isActive, reset } = useOTPCountdown({
-		initialSeconds: 120,
-	});
+	const formatTime = (seconds: number): string => {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	};
 
 	const handleChange = (value: string) => {
 		const numeric = value.replace(/\D/g, "");
@@ -49,7 +55,7 @@ const OTPStep = ({
 	};
 
 	const handleResendCode = async () => {
-		reset();
+		resetCountdown();
 		onResend();
 	};
 
@@ -87,8 +93,8 @@ const OTPStep = ({
 			)}
 
 			<div className="text-center w-full text-sm text-status-disable-primary font-medium mt-6">
-				{isActive ? (
-					<>Resend in : {formattedTime}</>
+				{countdown > 0 ? (
+					<>Resend in : {formatTime(countdown)}</>
 				) : (
 					<span className="text-cgs-blue cursor-pointer" onClick={handleResendCode}>
 						Resend Code
@@ -127,6 +133,11 @@ const UpdateMobile = () => {
 	const [selectedCountry, setSelectedCountry] = useState<Country>(
 		createCountry(parsedCurrentMobile.countryCode)
 	);
+
+	// OTP countdown tracker to determine if OTP is expired or just wrong
+	const { countdown, reset: resetCountdown } = useOTPCountdown({
+		initialSeconds: 120,
+	});
 
 	// Validate phone number
 	const isValidPhone = (phone: string) => {
@@ -169,6 +180,8 @@ const UpdateMobile = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is sent
+			resetCountdown();
 			setStep(2);
 		} else {
 			toast.error("Failed to send OTP", response.error || "Please try again later.");
@@ -181,6 +194,7 @@ const UpdateMobile = () => {
 
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
+			// Reset countdown when OTP is resent (will be called by OTPStep component)
 			toast.success("OTP Resent", "A new OTP code has been sent to your mobile number.");
 		} else {
 			toast.error("Failed to resend OTP", response.error || "Please try again later.");
@@ -194,9 +208,6 @@ const UpdateMobile = () => {
 			return;
 		}
 
-		// TODO: Add OTP expiry check here
-		// Example: if (isOtpExpired) { setError("Sorry, your entries do not match. Please try again."); return; }
-
 		setIsSubmitting(true);
 		setError("");
 
@@ -209,8 +220,21 @@ const UpdateMobile = () => {
 			await refreshUserProfile();
 			setStep(3);
 		} else {
-			// Check if error is due to OTP expiry or mismatch
-			setError(response.error || "Sorry, your entries do not match. Please try again.");
+			// Handle OTP validation failure
+			// When API returns success=true but isSuccess=false, it means OTP validation failed
+			if (response.success && response.data?.isSuccess === false) {
+				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
+				if (countdown <= 0) {
+					// OTP has expired after 2 minutes
+					setError("OTP has expired after 2 minutes, please request for a new one");
+				} else {
+					// OTP is still valid but user entered wrong code
+					setError("OTP Code Authentication Failed");
+				}
+			} else {
+				// Other errors (network, API error, etc.)
+				setError(response.error || "Sorry, your entries do not match. Please try again.");
+			}
 		}
 	};
 
@@ -266,6 +290,8 @@ const UpdateMobile = () => {
 						setError={setError}
 						onResend={handleResendOtp}
 						isSubmitting={isSubmitting}
+						countdown={countdown}
+						resetCountdown={resetCountdown}
 					/>
 				)}
 

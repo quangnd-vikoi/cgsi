@@ -140,7 +140,7 @@ const Header = () => {
 	};
 	return (
 		<>
-			<div className="p-4 xl:px-0 max-w-[1320px] xl:mx-auto z-[100]">
+			<div className="p-4 xl:px-0 max-w-[1320px] xl:mx-auto z-30">
 				<div className="flex justify-between h-full">
 					<div className="flex items-center my-auto gap-12">
 						<Link href={"/"}>

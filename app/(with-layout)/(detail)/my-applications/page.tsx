@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { FileText } from "lucide-react";
+import { ArrowRight, ChevronRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -20,13 +20,15 @@ import Title from "@/components/Title";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 type ApplicationType = "all" | "securities" | "alternatives";
 
 interface Application {
 	subscriptionId: string;
 	productName: string;
-	code: string;
+	productCode: string;
+	stockCode: string;
 	issuePrice: string;
 	applied: number;
 	allocated: number;
@@ -57,14 +59,19 @@ export default function MyApplication() {
 					const normalizedType = sub.productType?.toLowerCase().trim();
 					let type: "securities" | "alternatives";
 
-					if (normalizedType === "securities" || normalizedType === "security") {
+					if (
+						normalizedType === "securities" ||
+						normalizedType === "security" ||
+						normalizedType === "iop"
+					) {
 						type = "securities";
 					} else if (
 						normalizedType === "alternatives" ||
 						normalizedType === "alternative" ||
 						normalizedType === "structured products" ||
 						normalizedType === "funds" ||
-						normalizedType === "bonds"
+						normalizedType === "bonds" ||
+						normalizedType === "ai"
 					) {
 						type = "alternatives";
 					} else {
@@ -76,7 +83,8 @@ export default function MyApplication() {
 					return {
 						subscriptionId: sub.subscriptionId,
 						productName: sub.productName,
-						code: sub.stockCode,
+						productCode: sub.productCode,
+						stockCode: sub.stockCode,
 						issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
 						applied: sub.appliedQty || 0,
 						allocated: sub.allocatedQty || 0,
@@ -119,9 +127,9 @@ export default function MyApplication() {
 	const handleProductNameClick = (application: Application) => {
 		// Set the selected item in the store
 		setSelectedItem({
-			id: application.subscriptionId,
+			id: application.productCode, // Use productCode as param
 			name: application.productName,
-			code: application.code,
+			code: application.stockCode,
 			issuePrice: application.issuePrice,
 			closingDate: application.closingDate,
 			hasDetails: true,
@@ -197,8 +205,68 @@ export default function MyApplication() {
 					</div>
 				) : (
 					<>
-						{/* Bọc bảng trong container có overflow-x-auto để cuộn ngang khi màn hình nhỏ */}
-						<div className="overflow-x-auto">
+						{/* Mobile Card View */}
+						<div className="md:hidden space-y-4">
+							{filteredApplications.map((app) => (
+								<div
+									key={app.subscriptionId}
+									className="border border-stroke-secondary rounded-lg p-4"
+								>
+									{/* Header: Product Name + Details Button */}
+									<div className="flex items-start justify-between gap-2 mb-3">
+										<div className="flex-1 min-w-0">
+											<h3 className="font-medium text-typo-primary line-clamp-2">
+												{app.productName}
+											</h3>
+											<Badge variant="outline" className="mt-1 text-xs font-normal rounded-full">
+												{app.stockCode}
+											</Badge>
+										</div>
+										<Button
+											variant="outline"
+											size="sm"
+											className="shrink-0 rounded-full text-cgs-blue border-cgs-blue hover:bg-cgs-blue/5"
+											onClick={() => handleProductNameClick(app)}
+										>
+											Details
+											<ArrowRight className="w-4 h-4" />
+										</Button>
+									</div>
+
+									{/* Info Grid */}
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between">
+											<span className="text-typo-secondary">Issue Price</span>
+											<span className="font-medium text-typo-primary">{app.issuePrice}</span>
+										</div>
+										<div className="flex justify-between">
+											<span className="text-typo-secondary">Applied</span>
+											<span className="text-typo-primary">{app.applied.toLocaleString()}</span>
+										</div>
+										<div className="flex justify-between">
+											<span className="text-typo-secondary">Allocated</span>
+											<span className="text-typo-primary">{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}</span>
+										</div>
+										<div className="flex justify-between">
+											<span className="text-typo-secondary">Closing Date</span>
+											<span className="text-typo-primary">{app.closingDate}</span>
+										</div>
+									</div>
+
+									{/* View Application Note Button */}
+									<Button
+										className="w-full mt-4 bg-cgs-blue hover:bg-cgs-blue/90 text-white"
+										onClick={() => handleViewClick(app)}
+									>
+										<FileText className="w-4 h-4 mr-2" />
+										View Application Note
+									</Button>
+								</div>
+							))}
+						</div>
+
+						{/* Desktop Table View */}
+						<div className="hidden md:block overflow-x-auto">
 							<Table className="rounded-t-4xl table-fixed min-w-max">
 								<TableHeader className="bg-theme-neutral-095">
 									<TableRow className="*:font-semibold py-3">
@@ -223,23 +291,20 @@ export default function MyApplication() {
 									{filteredApplications.map((app) => (
 										<TableRow key={app.subscriptionId} className="*:whitespace-normal">
 											<TableCell className="py-4 px-3">
-												<span className="font-medium text-cgs-blue md:hidden">
-													{app.productName}
-												</span>
 												<button
 													onClick={() => handleProductNameClick(app)}
 													className={cn(
-														"font-medium text-cgs-blue hidden md:inline cursor-pointer",
+														"font-medium text-cgs-blue cursor-pointer",
 														"hover:underline text-left"
 													)}
 												>
 													{app.productName}
 												</button>
 											</TableCell>
-											<TableCell className="px-3">{app.code}</TableCell>
+											<TableCell className="px-3">{app.stockCode}</TableCell>
 											<TableCell className="px-3">{app.issuePrice}</TableCell>
-											<TableCell className="px-3">{app.applied}</TableCell>
-											<TableCell className="px-3">{app.allocated}</TableCell>
+											<TableCell className="px-3">{app.applied.toLocaleString()}</TableCell>
+											<TableCell className="px-3">{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}</TableCell>
 											<TableCell className="px-3">{app.closingDate}</TableCell>
 											<TableCell className="px-3 text-center">
 												<Button
@@ -248,8 +313,7 @@ export default function MyApplication() {
 													onClick={() => handleViewClick(app)}
 												>
 													<FileText />
-													<span className="md:hidden">View Application Note</span>
-													<span className="hidden md:inline">View</span>
+													View
 												</Button>
 											</TableCell>
 										</TableRow>

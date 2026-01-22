@@ -2,6 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useFormErrors } from "@/hooks/form/useFormErrors";
+import { submitDonation } from "@/lib/services/profileService";
+import type { DonationSubmissionRequest } from "@/types";
 
 /**
  * Payment method types for donations
@@ -35,6 +37,26 @@ export interface UseDonationFormOptions {
 	 * Minimum donation amount (default: 1.0)
 	 */
 	minAmount?: number;
+
+	/**
+	 * Selected account number for donation
+	 */
+	accountNo?: string;
+
+	/**
+	 * Type of donation (onetime or recurring)
+	 */
+	donationType?: "onetime" | "recurring";
+
+	/**
+	 * Number of months for recurring donations (default: 12)
+	 */
+	months?: number;
+
+	/**
+	 * Whether to submit to API (default: false for testing)
+	 */
+	submitToAPI?: boolean;
 }
 
 /**
@@ -81,9 +103,9 @@ export interface UseDonationFormReturn {
 	};
 
 	/**
-	 * Validate and submit the form
+	 * Validate and submit the form (async when API integration is enabled)
 	 */
-	handleSubmit: () => boolean;
+	handleSubmit: () => Promise<boolean>;
 
 	/**
 	 * Whether form is currently submitting
@@ -130,7 +152,15 @@ export interface UseDonationFormReturn {
 export function useDonationForm(
 	options: UseDonationFormOptions = {}
 ): UseDonationFormReturn {
-	const { onSuccess, onError, minAmount = 1.0 } = options;
+	const {
+		onSuccess,
+		onError,
+		minAmount = 1.0,
+		accountNo,
+		donationType = "onetime",
+		months = 12,
+		submitToAPI = false,
+	} = options;
 
 	// Form state
 	const [amount, setAmount] = useState<number | undefined>();
@@ -180,7 +210,7 @@ export function useDonationForm(
 	}, [amount, paymentMethod, agreed, minAmount, setError, clearError]);
 
 	// Handle form submission
-	const handleSubmit = useCallback((): boolean => {
+	const handleSubmit = useCallback(async (): Promise<boolean> => {
 		setShowValidationErrors(true);
 		if (!validateForm()) {
 			return false;
@@ -194,6 +224,32 @@ export function useDonationForm(
 				paymentMethod,
 				agreed,
 			};
+
+			// If submitToAPI is true, call the actual API
+			if (submitToAPI) {
+				if (!accountNo) {
+					throw new Error("Account number is required for API submission");
+				}
+
+				if (!amount) {
+					throw new Error("Donation amount is required");
+				}
+
+				const donationData: DonationSubmissionRequest = {
+					accountNo,
+					amount,
+					currency: "SGD",
+					paymentMethod: paymentMethod === "now" ? "LS_ACCSET" : paymentMethod === "trust" ? "LS_ACCSET" : "PLAN",
+					paymentMode: "DONATE",
+					...(donationType === "recurring" && { months }),
+				};
+
+				const response = await submitDonation(donationData);
+
+				if (!response.success || !response.data?.isSuccess) {
+					throw new Error(response.error || "Donation submission failed");
+				}
+			}
 
 			// Call success callback
 			if (onSuccess) {
@@ -210,7 +266,19 @@ export function useDonationForm(
 		} finally {
 			setIsSubmitting(false);
 		}
-	}, [validateForm, amount, paymentMethod, agreed, onSuccess, onError, setShowValidationErrors]);
+	}, [
+		validateForm,
+		amount,
+		paymentMethod,
+		agreed,
+		accountNo,
+		donationType,
+		months,
+		submitToAPI,
+		onSuccess,
+		onError,
+		setShowValidationErrors,
+	]);
 
 	// Reset form
 	const reset = useCallback(() => {

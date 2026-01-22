@@ -48,8 +48,8 @@ const Securities = () => {
 					</TabsContent>
 				</Tabs>
 
-				{/* Footer - Fixed at bottom - Chỉ hiện khi chưa applied */}
-				{selectedItem?.applied === false && (
+				{/* Footer - Fixed at bottom - Chỉ hiện khi chưa applied và chưa hết hạn */}
+				{selectedItem?.applied === false && !selectedItem?.isCompact && (
 					<div className="flex-shrink-0">
 						<Separator className="mb-4" />
 						<div className="flex justify-end">

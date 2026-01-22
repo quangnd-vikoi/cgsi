@@ -38,7 +38,8 @@
       "mcp__context7__resolve-library-id",
       "mcp__context7__query-docs",
       "WebFetch(domain:ui.shadcn.com)",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "WebFetch(domain:www.cgsi.com.sg)"
     ],
     "deny": [],
     "ask": []
