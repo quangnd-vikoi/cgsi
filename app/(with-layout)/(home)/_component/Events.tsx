@@ -30,13 +30,14 @@ const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassNa
 	return (
 		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block">
 			<div className="bg-white shadow mb-[1px] rounded flex flex-col">
-				<Image
-					className={cn("rounded-t w-full h-auto", imageClassName)}
-					src={event.imageUrl}
-					alt={event.title}
-					width={283}
-					height={283}
-				/>
+				<div className="relative w-full aspect-[283/150] overflow-hidden">
+					<Image
+						className={cn("rounded-t object-cover", imageClassName)}
+						src={event.imageUrl}
+						alt={event.title}
+						fill
+					/>
+				</div>
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 ">
 					<div className="h-12 text-base md:text-lg font-semibold line-clamp-2 leading-6">{event.title}</div>
 
@@ -74,11 +75,8 @@ interface EventsProps {
 const Events = ({ imageClassName }: EventsProps) => {
 	const [events, setEvents] = useState<EventAPIItem[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		setMounted(true);
-
 		const fetchEvents = async () => {
 			try {
 				const url = ENDPOINTS.events();
@@ -97,16 +95,16 @@ const Events = ({ imageClassName }: EventsProps) => {
 		fetchEvents();
 	}, []);
 
-	if (!mounted || loading) {
+	if (loading) {
 		return null; // Or a loading skeleton
 	}
 
 	return (
 		<div
-			className="bg-background-section md:bg-cover py-6 md:py-12"
+			className="bg-background-section bg-cover py-6 md:py-12"
 		>
-			<div className="md:mx-6 xl:mx-auto mr-0 ml-4 xl:max-w-[1320px]">
-				<div className="flex justify-between items-center pr-4 md:pr-0">
+			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
+				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-2xl">Event & Seminars</span>
 					</div>
@@ -116,13 +114,12 @@ const Events = ({ imageClassName }: EventsProps) => {
 				</div>
 
 				{/* Event Carousel */}
-				<div className="mt-7">
+				<div className="mt-4 md:mt-6">
 					{events.length === 0 ? (
 						<ErrorState
 							type="empty"
 							title="Currently No Scheduled Events"
 							description="Check back soon—new events are on the way!"
-							className="md:py-[86px]"
 						/>
 					) : (
 						<CustomizeCarousel<EventAPIItem>
@@ -144,15 +141,15 @@ const Events = ({ imageClassName }: EventsProps) => {
 							getItemKey={(item) => item.SEO_Page_Name}
 							loop={true}
 							itemsPerView={{
-								"mobile": "basis-[75.2%]",
-								"tablet": "md:basis-[50.8%]",
-								"laptop": "lg:basis-[33.4%]",
-								"desktop": "xl:basis-[33.3%]",
+								mobile: "basis-[75.2%]",
+								tablet: "md:basis-[50.8%]",
+								laptop: "lg:basis-[33.4%]",
+								desktop: "xl:basis-[33.3%]",
 							}}
 							centerThreshold={{
-								"tablet": 2,
-								"laptop": 3,
-								"desktop": 3,
+								tablet: 2,
+								laptop: 3,
+								desktop: 3,
 							}}
 						/>
 					)}

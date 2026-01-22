@@ -75,14 +75,16 @@ const CustomizeCarousel = <T,>({
 }: CustomizeCarousel<T>) => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
-	const [windowWidth, setWindowWidth] = useState(
-		typeof window !== "undefined" ? window.innerWidth : 1280
-	);
+	const [windowWidth, setWindowWidth] = useState(1280);
+	const [mounted, setMounted] = useState(false);
 
 	const itemsCount = items.length;
 
 	// Handle window resize and initial mount
 	useEffect(() => {
+		setMounted(true);
+		setWindowWidth(window.innerWidth);
+
 		const handleResize = () => {
 			setWindowWidth(window.innerWidth);
 		};
@@ -103,6 +105,7 @@ const CustomizeCarousel = <T,>({
 	};
 
 	const shouldCenter =
+		mounted &&
 		centerWhenFew &&
 		(itemsCount === 1 ||
 			(isTablet && itemsCount < threshold.tablet) ||

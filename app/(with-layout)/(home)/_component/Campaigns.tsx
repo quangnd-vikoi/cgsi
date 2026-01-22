@@ -222,19 +222,23 @@ const Campaigns = () => {
 						<Button
 							size="icon"
 							onClick={scrollPrev}
-							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-background-section border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all"
+							disabled={current === 0}
+							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all hover:border-cgs-blue/75 
+							hover:bg-white
+							disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-cgs-blue"
 							aria-label="Previous"
 						>
-							<ArrowLeft className="w-5 h-5 text-cgs-blue" />
+							<ArrowLeft className="w-5 h-5 text-cgs-blue transition-colors hover:text-cgs-blue/75" />
 						</Button>
 
 						<Button
 							size="icon"
 							onClick={scrollNext}
-							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center  bg-background-section border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all"
+							disabled={api ? current === api.scrollSnapList().length - 1 : false}
+							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all hover:border-cgs-blue/75 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-cgs-blue"
 							aria-label="Next"
 						>
-							<ArrowRight className="w-5 h-5 text-cgs-blue" />
+							<ArrowRight className="w-5 h-5 text-cgs-blue transition-colors hover:text-cgs-blue/75" />
 						</Button>
 					</Carousel>
 
