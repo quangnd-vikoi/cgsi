@@ -10,6 +10,8 @@ import Image from "@/components/Image";
 import Dashboard from "./_components/Dashboard";
 import { CashBalance } from "./_components/CashBalance";
 import { HoldingPosition } from "./_components/HoldingPosition";
+import { BorrowedShares } from "./_components/BorrowedShares";
+import { LoanedShares } from "./_components/LoanedShares";
 import { ExchangeRateTable } from "./_components/ExchangeRateTable";
 import { PortfolioType } from "@/types";
 const DevelopmentBanner = () => {
@@ -99,6 +101,13 @@ const Portfolio = () => {
 					<CashBalance />
 
 					<HoldingPosition type={type} />
+
+					{type === "CTA" && (
+						<>
+							<BorrowedShares />
+							<LoanedShares />
+						</>
+					)}
 				</div>
 			</div>
 		</div>

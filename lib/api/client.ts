@@ -23,10 +23,11 @@ let refreshPromise: Promise<void> | null = null;
  * - Checks if token should be refreshed (within 5 minutes of expiry)
  * - If already refreshing, waits for existing refresh to complete
  * - Prevents multiple simultaneous refresh requests
+ * @param force - If true, forces a refresh regardless of time-based check (used for 401 responses)
  */
-async function ensureValidToken(): Promise<void> {
-	// Check if token needs refresh
-	if (!shouldRefreshToken()) {
+async function ensureValidToken(force: boolean = false): Promise<void> {
+	// Check if token needs refresh (skip check if force is true)
+	if (!force && !shouldRefreshToken()) {
 		return;
 	}
 
@@ -95,9 +96,9 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
 		// IMPORTANT: Check this BEFORE parsing JSON to avoid consuming the response body
 		if (res.status === 401 && useAuth && !_isRetry) {
-			// Always attempt refresh on 401 (token might be invalidated server-side)
+			// Force refresh on 401 (token might be invalidated server-side before time-based expiry)
 			try {
-				await ensureValidToken();
+				await ensureValidToken(true);
 				// Retry the request once with the new token
 				return fetchAPI<T>(url, { ...options, _isRetry: true });
 			} catch {
@@ -291,8 +292,9 @@ export async function postFormData<T>(
 
 		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
 		if (res.status === 401 && useAuth && !_isRetry) {
+			// Force refresh on 401 (token might be invalidated server-side before time-based expiry)
 			try {
-				await ensureValidToken();
+				await ensureValidToken(true);
 				return postFormData<T>(url, formData, { ...options, _isRetry: true });
 			} catch {
 				return {
