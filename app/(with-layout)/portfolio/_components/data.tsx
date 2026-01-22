@@ -369,3 +369,108 @@ const generateCashTransactions = (): CashTransaction[] => {
 };
 
 export const mockCashTransactions = generateCashTransactions();
+
+// Borrowed Shares interface
+export interface BorrowedShareData {
+    assetClass: string;
+    market: string;
+    code: string;
+    name: string;
+    borrowedQty: number;
+    pendIn: number;
+    pendOut: number;
+    netQty: number;
+    currency: string;
+    closingPrice: number;
+    borrowValue: number;
+}
+
+// Loaned Shares interface
+export interface LoanedShareData {
+    assetClass: string;
+    market: string;
+    code: string;
+    name: string;
+    loanedQty: number;
+    currency: string;
+    closingPrice: number;
+    lendingValue: number;
+}
+
+// Generate Borrowed Shares mock data
+const generateBorrowedSharesData = (): BorrowedShareData[] => {
+    const companies = [
+        { code: "AAPL", name: "Apple Inc.", market: "HK", currency: "HKD", price: 2250.00 },
+        { code: "MSFT", name: "Microsoft Corporation", market: "HK", currency: "HKD", price: 1150.00 },
+        { code: "GOOGL", name: "Alphabet Inc.", market: "HK", currency: "HKD", price: 3000.00 },
+        { code: "AMZN", name: "Amazon.com, Inc.", market: "SG", currency: "SGD", price: 4500.00 },
+        { code: "TSLA", name: "Tesla, Inc.", market: "SG", currency: "SGD", price: 2800.00 },
+        { code: "NFLX", name: "Netflix, Inc.", market: "SG", currency: "SGD", price: 2100.00 },
+        { code: "META", name: "Meta Platforms, Inc.", market: "SG", currency: "SGD", price: 3200.00 },
+        { code: "NVDA", name: "NVIDIA Corporation", market: "US", currency: "USD", price: 6500.00 },
+        { code: "DIS", name: "The Walt Disney Company", market: "US", currency: "USD", price: 5000.00 },
+        { code: "ADBE", name: "Adobe Inc.", market: "US", currency: "USD", price: 1800.00 },
+    ];
+
+    const data: BorrowedShareData[] = [];
+    for (let i = 0; i < 100; i++) {
+        const company = companies[i % companies.length];
+        const borrowedQty = [20, 40, 25, 50, 60, 30, 37, 70, 80, 45][i % 10];
+        const pendIn = 0;
+        const pendOut = i % 5 === 0 ? 32 : 0;
+        const netQty = borrowedQty + pendIn - pendOut;
+
+        data.push({
+            assetClass: "Equities",
+            market: company.market,
+            code: company.code,
+            name: company.name,
+            borrowedQty,
+            pendIn,
+            pendOut,
+            netQty,
+            currency: company.currency,
+            closingPrice: company.price,
+            borrowValue: netQty * company.price,
+        });
+    }
+    return data;
+};
+
+export const mockBorrowedSharesData = generateBorrowedSharesData();
+
+// Generate Loaned Shares mock data
+const generateLoanedSharesData = (): LoanedShareData[] => {
+    const companies = [
+        { code: "AAPL", name: "Apple Inc.", market: "HK", currency: "HKD", price: 2250.00 },
+        { code: "MSFT", name: "Microsoft Corporation", market: "HK", currency: "HKD", price: 1150.00 },
+        { code: "GOOGL", name: "Alphabet Inc.", market: "HK", currency: "HKD", price: 3000.00 },
+        { code: "AMZN", name: "Amazon.com, Inc.", market: "SG", currency: "SGD", price: 4500.00 },
+        { code: "TSLA", name: "Tesla, Inc.", market: "SG", currency: "SGD", price: 2800.00 },
+        { code: "NFLX", name: "Netflix, Inc.", market: "SG", currency: "SGD", price: 2100.00 },
+        { code: "META", name: "Meta Platforms, Inc.", market: "SG", currency: "SGD", price: 3200.00 },
+        { code: "NVDA", name: "NVIDIA Corporation", market: "US", currency: "USD", price: 6500.00 },
+        { code: "DIS", name: "The Walt Disney Company", market: "US", currency: "USD", price: 5000.00 },
+        { code: "ADBE", name: "Adobe Inc.", market: "US", currency: "USD", price: 1800.00 },
+    ];
+
+    const data: LoanedShareData[] = [];
+    for (let i = 0; i < 100; i++) {
+        const company = companies[i % companies.length];
+        const loanedQty = [20, 40, 25, 50, 60, 30, 37, 70, 80, 45][i % 10];
+
+        data.push({
+            assetClass: "Equities",
+            market: company.market,
+            code: company.code,
+            name: company.name,
+            loanedQty,
+            currency: company.currency,
+            closingPrice: company.price,
+            lendingValue: loanedQty * company.price,
+        });
+    }
+    return data;
+};
+
+export const mockLoanedSharesData = generateLoanedSharesData();
