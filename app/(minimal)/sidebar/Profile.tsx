@@ -92,7 +92,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	// Render Link for href items (without onClick)
 	if (item.href && !item.onClick) {
 		return (
-			<Link href={item.href} target={item.target || "_self"} className="flex justify-between hover:bg-status-selected rounded px-2 py-1 -mx-2 -my-1 transition-colors">
+			<Link href={item.href} target={item.target || "_self"} onClick={() => setOpenSheet(null)} className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">
 				{content}
 			</Link>
 		);
@@ -102,7 +102,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	if (item.onClick || item.sheet !== undefined) {
 		return (
 			<div
-				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded px-2 py-1 -mx-2 -my-1 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
 				onClick={handleClick}
 			>
 				{content}
@@ -111,7 +111,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	}
 
 	// Fallback for items without actions
-	return <div className="flex justify-between hover:bg-status-selected rounded px-2 py-1 -mx-2 -my-1 transition-colors">{content}</div>;
+	return <div className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">{content}</div>;
 };
 
 const Profile = () => {
