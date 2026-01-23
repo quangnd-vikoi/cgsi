@@ -25,7 +25,7 @@ interface InsightAPIItem {
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
 		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="mb-[1px] block h-[calc(100%-1px)]">
-			<div className="bg-white shadow mb-[1px] rounded overflow-hidden h-full flex flex-col">
+			<div className="bg-white shadow mb-[1px] rounded overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow">
 				<div className="relative w-full aspect-[16/9]">
 					<Image
 						src={article.imageUrl}
@@ -36,15 +36,15 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 						quality={90}
 					/>
 				</div>
-				<div className="flex flex-col gap-3 px-3 py-[14px] flex-grow">
-					<div className="font-medium text-xs text-typo-tertiary">{article.tag}</div>
-					<div className="h-12 font-semibold text-base line-clamp-2 leading-6">{article.title}</div>
-					<div className="h-[60px] text-sm text-typo-secondary line-clamp-3 leading-5 flex-grow">
+				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 flex-grow">
+					<div className="font-normal text-xs md:text-sm text-typo-tertiary">{article.tag}</div>
+					<div className="h-[2lh] font-semibold text-base md:text-lg line-clamp-2 leading-6">{article.title}</div>
+					<div className="h-[3lh] text-sm text-typo-secondary line-clamp-3 leading-5 md:leading-6 flex-grow">
 						{article.description}
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">
-						<div className="flex self-stretch gap-2 font-medium text-xs text-typo-tertiary leading-4">
-							<Calendar className="w-4 h-4" />
+						<div className="flex gap-4 font-normal text-sm md:text-base text-typo-tertiary">
+							<Calendar className="w-4 h-4 md:w-5 md:h-5 text-cgs-blue" />
 							{formatDate(article.date)}
 						</div>
 					</div>
@@ -86,13 +86,13 @@ const Insight = () => {
 			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
 				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
-						<span className="font-semibold text-base">CGSI Insights</span>
+						<span className="font-semibold text-base md:text-2xl">CGSI Insights</span>
 					</div>
 					<ViewAll href={CGSI.INSIGHTS} />
 				</div>
 
 				{/* Event Carousel */}
-				<div className="mt-4 md:mt-6">
+				<div className="mt-4 md:mt-8">
 					{insights.length > 0 && (
 						<CustomizeCarousel<InsightAPIItem>
 							items={insights}
@@ -121,7 +121,6 @@ const Insight = () => {
 								laptop: "lg:basis-[33.8%]",
 								desktop: "xl:basis-[33.3%]",
 							}}
-							arrowClassName="bg-background-section shadow-light-blue"
 						/>
 					)}
 				</div>

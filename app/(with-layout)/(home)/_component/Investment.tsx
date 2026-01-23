@@ -65,13 +65,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 					<div className="py-3 md:pt-5 md:pb-4 pl-3 md:pl-6 w-3/4">
 						<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
 							<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
-							<span className="text-xs text-typo-tertiary md:text-sm">
-								{available != 0 ? `${available} Available` : "No Available"}
+							<span className="text-xs text-typo-secondary md:text-sm">
+								{available != 0 ? `${available} Available` : "0 available"}
 							</span>
 						</div>
 						<p
 							hidden={isMobile}
-							className="max-w-[70%] lg:max-w-[82%] text-typo-tertiary text-sm line-clamp-2 leading-relaxed"
+							className="max-w-[70%] lg:max-w-[82%] text-typo-secondary text-base line-clamp-2 leading-relaxed"
 						>
 							{subtext}
 						</p>

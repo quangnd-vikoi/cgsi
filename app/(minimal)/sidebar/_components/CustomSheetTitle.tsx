@@ -19,7 +19,7 @@ const CustomSheetTitle = ({ title, backTo }: CustomSheetTitleProps) => {
 	};
 
 	return (
-		<SheetHeader className="p-0 text-[16px] lg:text-lg flex-shrink-0">
+		<SheetHeader className="p-0 text-base md:text-xl font-semibold flex-shrink-0">
 			<div className="flex justify-between">
 				<SheetTitle className="text-typo-primary flex gap-2 items-center">
 					{backTo !== undefined && (

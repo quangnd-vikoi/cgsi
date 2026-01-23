@@ -49,13 +49,13 @@ const TradingList = ({ representatives }: TradingListProps) => {
 
 					{/* Account Info */}
 					<div className="space-y-2 mb-4">
-						<div className="flex justify-between text-xs">
+						<div className="flex justify-between text-xs md:text-sm">
 							<span className="text-typo-secondary">Managed Account(s)</span>
 							<span className="text-typo-primary font-medium">
 								({rep.accountType}) {rep.managedAccounts}
 							</span>
 						</div>
-						<div className="flex justify-between text-xs">
+						<div className="flex justify-between text-xs md:text-sm">
 							<span className="text-typo-secondary">Rep. No.</span>
 							<span className="text-typo-primary font-medium">{rep.repNo}</span>
 						</div>
@@ -68,7 +68,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 						<div className="flex items-center justify-between px-1.5 py-2.5">
 							<div className="flex items-center gap-2 min-w-0 flex-1">
 								<Phone size={16} className="text-icon-light flex-shrink-0" />
-								<span className="text-sm text-typo-primary truncate">{rep.phone}</span>
+								<span className="text-sm md:text-base text-typo-primary truncate">{rep.phone}</span>
 							</div>
 							<div className="flex gap-5 flex-shrink-0 ml-2">
 								<Button
@@ -94,7 +94,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 						<div className="flex items-center justify-between px-1.5 py-2.5">
 							<div className="flex items-center gap-2 min-w-0 flex-1">
 								<Mail size={16} className="text-icon-light flex-shrink-0" />
-								<span className="text-sm text-typo-primary truncate">{rep.email}</span>
+								<span className="text-sm md:text-base text-typo-primary truncate">{rep.email}</span>
 							</div>
 							<div className="flex gap-5 flex-shrink-0 ml-2">
 								<Button
@@ -164,11 +164,11 @@ const TradingRepresentative = () => {
 				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center">
 						<CircleQuestionMark size={16} className="text-icon-light" />
-						<p className="text-sm font-semibold text-typo-primary">Information</p>
+						<p className="text-sm md:text-base font-semibold text-typo-primary">Information</p>
 					</div>
 					<Separator className="my-3" />
 
-					<div className="text-typo-secondary text-xs">
+					<div className="text-typo-secondary text-xs md:text-sm">
 						Please reach out to your TR for support requests. They will respond to your enquiry as
 						soon as they can.
 					</div>

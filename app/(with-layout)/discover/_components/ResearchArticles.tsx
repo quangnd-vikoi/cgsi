@@ -87,13 +87,13 @@ const ResearchArticles = () => {
 			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
 				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
-						<span className="font-semibold text-base">Research Articles</span>
+						<span className="font-semibold text-2xl">Research Articles</span>
 					</div>
 					<ViewAll href={CGSI.RESEARCH} />
 				</div>
 
 				{/* Research Articles Carousel */}
-				<div className="mt-4 md:mt-6">
+				<div className="mt-4 md:mt-8">
 					{articles.length === 0 ? (
 						<ErrorState
 							type="empty"
@@ -116,7 +116,6 @@ const ResearchArticles = () => {
 								laptop: 3,
 								tablet: 2,
 							}}
-							arrowClassName="bg-background-section shadow-light-blue"
 						/>
 					)}
 				</div>
