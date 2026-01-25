@@ -150,7 +150,7 @@ export default function Sidebar() {
 									<div className="flex-1">
 										<h3
 											className={cn(
-												"text-base font-medium text-typo-primary line-clamp-2",
+												"text-base font-semibold text-typo-primary line-clamp-2",
 												etf.isCompact && "text-typo-tertiary"
 											)}
 										>
@@ -159,7 +159,7 @@ export default function Sidebar() {
 									</div>
 									<Button
 										className={cn(
-											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue  text-xs rounded flex items-center leading-2",
+											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue text-xs font-medium rounded flex items-center leading-2",
 											selectedId === etf.id
 												? "bg-background-selected hover:bg-background-selected cursor-default"
 												: "bg-white hover:bg-transparent hover:opacity-80 transition-colors"

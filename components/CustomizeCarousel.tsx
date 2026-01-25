@@ -132,7 +132,7 @@ const CustomizeCarousel = <T,>({
 	const shouldShowArrows = showArrows && !shouldCenter;
 
 	return (
-		<div className={cn("relative", containerClassName)}>
+		<div className={cn("relative overflow-visible", containerClassName)}>
 			<Carousel
 				setApi={setApi}
 				opts={{
@@ -143,7 +143,7 @@ const CustomizeCarousel = <T,>({
 			>
 				<CarouselContent
 					className={cn(
-						"justify-start w-full",
+						"justify-start w-full overflow-visible",
 						shouldCenter && "justify-center",
 						"gap-0",
 						"lg:gap-1 xl:gap-2",
@@ -158,7 +158,7 @@ const CustomizeCarousel = <T,>({
 								itemsPerView.tablet,
 								itemsPerView.laptop,
 								itemsPerView.desktop,
-
+								"overflow-visible",
 								itemClassName
 							)}
 						>
@@ -172,15 +172,15 @@ const CustomizeCarousel = <T,>({
 					<>
 						<CarouselPrevious
 							className={cn(
-								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
-								"md:flex md:-left-4",
+								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section hover:shadow-light-blue h-10 w-10",
+								"md:flex md:-left-5",
 								arrowClassName
 							)}
 						/>
 						<CarouselNext
 							className={cn(
-								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section",
-								"md:flex md:-right-4",
+								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section hover:shadow-light-blue h-10 w-10",
+								"md:flex md:-right-3",
 								arrowClassName
 							)}
 						/>

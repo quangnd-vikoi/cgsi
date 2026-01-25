@@ -79,7 +79,7 @@ const Announcements = () => {
 			<div className="mt-6 overflow-y-auto sidebar-scroll flex-1 pr-2 scrollbar-offset-laptop">
 				<p className="text-base font-semibold text-typo-primary">{notice.Title}</p>
 				{/* Date removed as it is not in the provided API response shape */}
-				<p className="text-xs text-typo-tertiary leading-4 mt-4">24-Aug-2025, 06:30 SGT (TBC)</p>
+				<p className="text-xs text-typo-secondary leading-4 mt-4">24-Aug-2025, 06:30 SGT (TBC)</p>
 
 				<div className="w-full h-[1px] border-t my-6"></div>
 				<div

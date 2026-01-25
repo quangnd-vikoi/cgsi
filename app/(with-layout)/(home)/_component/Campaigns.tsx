@@ -29,29 +29,73 @@ interface Campaign {
 // Using memo to prevent unnecessary re-renders
 const CampaignCard = memo(
 	({ campaign, isFeatured }: { campaign: Campaign; isFeatured: boolean }) => {
-		// Featured card: only image with gradient, no text
+		// Featured card: mobile shows normal card, desktop shows hover effect
 		if (isFeatured) {
+			const linkHref = campaign.SEO_Page_Name
+				? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
+				: CGSI.CAMPAIGNS;
+
 			return (
-				<Link
-					href={
-						campaign.SEO_Page_Name
-							? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
-							: CGSI.CAMPAIGNS
-					}
-					target="_blank"
-					className="relative flex h-full rounded-xl overflow-hidden group transition-all duration-300"
-				>
-					<Image
-						src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
-						alt={campaign.MastheadBasic_Article_Title || "campaign"}
-						fill
-						className="object-cover transition-transform duration-300 group-hover:scale-105"
-						sizes="(max-width: 768px) 100vw, 60vw"
-						priority
-					/>
-					{/* Gradient Overlay */}
-					<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-100 transition-opacity duration-300" />
-				</Link>
+				<>
+					{/* Mobile: Normal card layout */}
+					<Link
+						href={linkHref}
+						target="_blank"
+						className="relative flex flex-col h-full rounded overflow-hidden group transition-all duration-300 bg-white hover:shadow-lg md:hidden"
+					>
+						<div className="relative overflow-hidden aspect-[16/9] flex-shrink-0">
+							<Image
+								src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+								alt={campaign.MastheadBasic_Article_Title || "campaign"}
+								fill
+								className="object-cover transition-transform duration-300 group-hover:scale-105"
+								sizes="100vw"
+								priority
+							/>
+						</div>
+						<div className="flex flex-col flex-1 p-3 gap-4">
+							<span className="text-[10px] text-typo-secondary mb-1">
+								{campaign.Tagging_Timing || "Campaign"}
+							</span>
+							<h3 className="font-semibold leading-tight line-clamp-2 min-h-[2lh] text-sm text-typo-primary">
+								{campaign.MastheadBasic_Article_Title}
+							</h3>
+							<p className="text-sm text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 font-normal">
+								{campaign.MastheadBasic_Article_Short}
+							</p>
+						</div>
+					</Link>
+
+					{/* Desktop: Featured layout with hover effect */}
+					<Link
+						href={linkHref}
+						target="_blank"
+						className="relative hidden md:flex h-full rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg"
+					>
+						<Image
+							src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+							alt={campaign.MastheadBasic_Article_Title || "campaign"}
+							fill
+							className="object-cover transition-transform duration-300 group-hover:scale-105"
+							sizes="60vw"
+							priority
+						/>
+						{/* Gradient Overlay - stronger on hover to show content */}
+						<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent group-hover:from-black/80 group-hover:via-black/40 transition-all duration-300" />
+						{/* Content - appears on hover */}
+						<div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+							<span className="text-sm text-white/80 mb-4 block">
+								{campaign.Tagging_Timing || "Campaign"}
+							</span>
+							<h3 className="font-semibold leading-tight line-clamp-1 text-[20px] text-white mb-4">
+								{campaign.MastheadBasic_Article_Title}
+							</h3>
+							<p className="h-[2lh] text-base text-white/90 line-clamp-2 leading-6 font-normal">
+								{campaign.MastheadBasic_Article_Short}
+							</p>
+						</div>
+					</Link>
+				</>
 			);
 		}
 
@@ -79,19 +123,19 @@ const CampaignCard = memo(
 				</div>
 
 				{/* Content */}
-				<div className="flex flex-col flex-1 p-3 md:p-4">
+				<div className="flex flex-col flex-1 p-3 md:p-4 gap-4 md:gap-[18px]">
 					{/* Category Tag */}
 					<span className="text-[10px] md:text-xs text-typo-secondary mb-1">
 						{campaign.Tagging_Timing || "Campaign"}
 					</span>
 
 					{/* Title - always 2 lines */}
-					<h3 className="font-semibold leading-tight line-clamp-2 min-h-[2lh] text-xs md:text-sm text-typo-primary mb-1.5">
+					<h3 className="font-semibold leading-tight line-clamp-2 min-h-[2lh] text-sm md:text-lg text-typo-primary">
 						{campaign.MastheadBasic_Article_Title}
 					</h3>
 
 					{/* Description - always 3 lines */}
-					<p className="leading-relaxed text-[10px] md:text-xs text-typo-secondary line-clamp-3 min-h-[3lh]">
+					<p className=" text-sm md:text-base text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 md:leading-6 font-normal">
 						{campaign.MastheadBasic_Article_Short}
 					</p>
 				</div>
@@ -112,8 +156,12 @@ const Campaigns = () => {
 			const url = ENDPOINTS.campaigns();
 			const response = await fetchAPI<Campaign[]>(url);
 			if (response.success && response.data) {
-				// x2 data để test scroll
-				setCampaigns([...response.data, ...response.data]);
+				// Deduplicate campaigns based on SEO_Page_Name
+				const uniqueCampaigns = response.data.filter(
+					(campaign, index, self) =>
+						index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
+				);
+				setCampaigns(uniqueCampaigns);
 			}
 		};
 
@@ -138,11 +186,27 @@ const Campaigns = () => {
 	}, [api]);
 
 	const scrollPrev = () => {
-		api?.scrollPrev();
+		if (api) {
+			// If on first slide, go to last slide
+			if (current === 0) {
+				api.scrollTo(api.scrollSnapList().length - 1);
+			} else {
+				api.scrollPrev();
+			}
+		}
 	};
 
 	const scrollNext = () => {
-		api?.scrollNext();
+		if (!api) return;
+
+		const lastIndex = api.scrollSnapList().length - 1;
+
+		// If on last slide, go to first slide
+		if (current === lastIndex) {
+			api.scrollTo(0);
+		} else {
+			api.scrollNext();
+		}
 	};
 
 	const scrollTo = (index: number) => {
@@ -177,7 +241,7 @@ const Campaigns = () => {
 						}}
 						className="w-full"
 					>
-						<CarouselContent className="-ml-4">
+						<CarouselContent className="-ml-4 overflow-visible">
 							{campaigns.map((campaign, index) => {
 								// First item: always large (57%), always featured style, with hidden snap point
 								if (index === 0) {
@@ -186,11 +250,11 @@ const Campaigns = () => {
 											{/* Part 1: Main featured item - 66% on mobile, 57% on desktop */}
 											<CarouselItem
 												key="featured-1"
-												className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[57%]"
+												className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[57%] overflow-visible"
 											>
 												<CampaignCard
 													campaign={campaign}
-													isFeatured={false}
+													isFeatured={true}
 												/>
 											</CarouselItem>
 											{/* Part 2: Invisible snap point - only on desktop for peek effect */}
@@ -207,7 +271,7 @@ const Campaigns = () => {
 								return (
 									<CarouselItem
 										key={index}
-										className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[25%]"
+										className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[25%] overflow-visible"
 									>
 										<CampaignCard
 											campaign={campaign}
@@ -222,23 +286,19 @@ const Campaigns = () => {
 						<Button
 							size="icon"
 							onClick={scrollPrev}
-							disabled={current === 0}
-							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all hover:border-cgs-blue/75 
-							hover:bg-white
-							disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-cgs-blue"
+							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
 							aria-label="Previous"
 						>
-							<ArrowLeft className="w-5 h-5 text-cgs-blue transition-colors hover:text-cgs-blue/75" />
+							<ArrowLeft className="w-5 h-5 text-cgs-blue" />
 						</Button>
 
 						<Button
 							size="icon"
 							onClick={scrollNext}
-							disabled={api ? current === api.scrollSnapList().length - 1 : false}
-							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white border-1 border-cgs-blue rounded-full w-10 h-10 shadow-md transition-all hover:border-cgs-blue/75 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-cgs-blue"
+							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
 							aria-label="Next"
 						>
-							<ArrowRight className="w-5 h-5 text-cgs-blue transition-colors hover:text-cgs-blue/75" />
+							<ArrowRight className="w-5 h-5 text-cgs-blue" />
 						</Button>
 					</Carousel>
 

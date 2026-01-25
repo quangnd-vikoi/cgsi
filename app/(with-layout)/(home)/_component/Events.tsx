@@ -29,7 +29,7 @@ interface EventAPIItem {
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
 		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block">
-			<div className="bg-white shadow mb-[1px] rounded flex flex-col">
+			<div className="bg-white shadow mb-[1px] rounded flex flex-col hover:shadow-lg transition-shadow">
 				<div className="relative w-full aspect-[283/150] overflow-hidden">
 					<Image
 						className={cn("rounded-t object-cover", imageClassName)}
@@ -83,7 +83,12 @@ const Events = ({ imageClassName }: EventsProps) => {
 				const response = await fetchAPI<EventAPIItem[]>(url);
 
 				if (response.success && response.data) {
-					setEvents(response.data);
+					// Deduplicate events based on SEO_Page_Name
+					const uniqueEvents = response.data.filter(
+						(event, index, self) =>
+							index === self.findIndex((e) => e.SEO_Page_Name === event.SEO_Page_Name)
+					);
+					setEvents(uniqueEvents);
 				}
 			} catch (error) {
 				console.error("Failed to fetch events:", error);
@@ -106,7 +111,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 			<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
 				<div className="flex justify-between items-center">
 					<div className="flex items-center gap-2">
-						<span className="font-semibold text-2xl">Event & Seminars</span>
+						<span className="font-semibold text-lg md:text-2xl">Events & Seminar</span>
 					</div>
 					<div className="flex items-center gap-3">
 						<ViewAll href={CGSI.EVENTS} />

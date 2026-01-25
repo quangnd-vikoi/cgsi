@@ -30,8 +30,8 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 			href={link}
 			aria-current={isActive ? "page" : undefined}
 			className={cn(
-				"cursor-pointer font-medium text-typo-primary text-[18px] relative inline-block after:content-[''] after:absolute after:w-full after:h-[2px] after:-bottom-1 after:left-0 after:bg-cgs-blue after-origin-left after:transition-transform after:duration-300 after:ease-out",
-				isActive ? "text-cgs-blue after:scale-x-100" : "hover:after:scale-x-100 after:scale-x-0"
+				"cursor-pointer text-typo-primary text-[18px] relative inline-block after:content-[''] after:absolute after:w-full after:h-[2px] after:-bottom-1 after:left-0 after:bg-cgs-blue after-origin-left after:transition-transform after:duration-300 after:ease-out",
+				isActive ? "text-cgs-blue font-semibold after:scale-x-100" : "font-normal hover:after:scale-x-100 after:scale-x-0"
 			)}
 		>
 			{title}
@@ -132,7 +132,8 @@ const Header = () => {
 		window.open(CGSI.TRADE, "_blank");
 	};
 	console.log("pathname", pathName);
-	const isIconFill = !["", "/discover/", "/portfolio/" , "/securities/", "/alternatives/", "/my-applications/"].includes(pathName);
+	// Check if current page should show filled icon (not on main pages)
+	const isIconFill = !openSheet || !["notification", "detail_notification"].includes(openSheet);
 
 	const handleSheetOpen = (type: "profile" | "notification") => {
 		if (type == "profile") setOpenSheet("profile");
@@ -179,11 +180,9 @@ const Header = () => {
 								<HeaderPerson
 									className={cn(
 										"cursor-pointer w-6 md:w-8",
-										(openSheet && openSheet != "notification")
-											? "text-cgs-blue"
-											: isIconFill
-												? "text-cgs-blue [&_path]:fill-cgs-blue"
-												: "text-icon-light"
+										isIconFill
+											? "text-cgs-blue [&_path]:fill-cgs-blue"
+											: "text-icon-light"
 									)}
 								/>
 							</div>

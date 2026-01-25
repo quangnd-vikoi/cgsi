@@ -39,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
 										className="inline-block cursor-pointer md:hidden hover:text-cgs-blue transition-colors"
 										onClick={handleBackToSidebar}
 									/>
-									<p className="text-base font-semibold">Details</p>
+									<p className="text-base md:text-lg font-semibold">Details</p>
 								</div>
 								<X
 									className="cursor-pointer hover:text-cgs-blue transition-colors"

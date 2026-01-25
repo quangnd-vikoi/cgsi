@@ -55,7 +55,7 @@ const StockResearch = () => {
 			<div className="container-default py-4 md:py-8">
 				<div className="flex  justify-between items-center">
 					<div className="flex gap-2 items-center">
-						<span className="font-semibold text-base">Tools</span>
+						<span className="font-semibold text-2xl">Tools</span>
 					</div>
 				</div>
 

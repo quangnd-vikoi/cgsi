@@ -31,7 +31,7 @@ const ProductInformation = () => {
 	return (
 		<div className="container-default py-6 md:py-12">
 			<div className="flex items-center gap-2">
-				<span className="hidden md:inline font-semibold text-base">Explore Products</span>
+				<span className="hidden md:inline font-semibold text-base md:text-2xl">Explore Products</span>
 			</div>
 
 			{/* Table menu */}
@@ -46,7 +46,7 @@ const ProductInformation = () => {
 								<div className="flex-none">{item.icons}</div>
 
 								<p
-									className="text-sm font-medium text-typo-secondary group-hover:text-cgs-blue  truncate"
+									className="text-sm md:text-base font-medium text-typo-secondary group-hover:text-cgs-blue  truncate"
 								>
 									{item.label}
 								</p>

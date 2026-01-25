@@ -5,7 +5,7 @@ export default function Footer() {
 	return (
 		<footer className="w-full">
 			{/* Main footer content */}
-			<div className="bg-[#29313B] px-4 md:px-8 py-8 md:py-12 text-white">
+			<div className="bg-[#061527] px-4 md:px-8 py-8 md:py-12 text-white">
 				<div className="">
 					<div className="flex justify-between">
 						{/* CGS Logo */}

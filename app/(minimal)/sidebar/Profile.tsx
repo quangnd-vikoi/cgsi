@@ -41,9 +41,9 @@ const ProfileInfo = () => {
 
 	return (
 		<div className="flex flex-col gap-1.5 text-white">
-			<p className="text-base font-semibold">{displayName}</p>
-			<p className="text-xs font-normal">{displayEmail}</p>
-			<p className="text-xs font-normal">{displayMobile}</p>
+			<p className="text-base md:text-lg font-semibold">{displayName}</p>
+			<p className="text-xs md:text-sm font-normal">{displayEmail}</p>
+			<p className="text-xs md:text-sm font-normal">{displayMobile}</p>
 		</div>
 	);
 };
@@ -83,7 +83,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 				<div className="w-5 h-5 flex items-center justify-center">
 					{isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : item.icon}
 				</div>
-				<div className="text-sm font-normal">{item.name}</div>
+				<div className="text-sm md:text-base font-normal">{item.name}</div>
 			</div>
 			<ChevronRight className="w-5 text-cgs-blue" strokeWidth={2} />
 		</>
@@ -92,7 +92,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	// Render Link for href items (without onClick)
 	if (item.href && !item.onClick) {
 		return (
-			<Link href={item.href} target={item.target || "_self"} className="flex justify-between">
+			<Link href={item.href} target={item.target || "_self"} onClick={() => setOpenSheet(null)} className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">
 				{content}
 			</Link>
 		);
@@ -102,7 +102,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	if (item.onClick || item.sheet !== undefined) {
 		return (
 			<div
-				className={`flex justify-between cursor-pointer ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
 				onClick={handleClick}
 			>
 				{content}
@@ -111,7 +111,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	}
 
 	// Fallback for items without actions
-	return <div className="flex justify-between">{content}</div>;
+	return <div className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">{content}</div>;
 };
 
 const Profile = () => {
@@ -199,11 +199,11 @@ const Profile = () => {
 	return (
 		<div className="h-full flex flex-col">
 			<SheetHeader
-				className="text-base lg:text-lg p-6 bg-cover rounded-tl-md flex-shrink-0"
+				className="text-base md:text-xl font-semibold p-6 bg-cover rounded-tl-md flex-shrink-0"
 				style={{ backgroundImage: getBgImageClass('/images/bg-sidebar-profile.png') }}
 			>
 				<div className="flex justify-between text-white">
-					<SheetTitle className="text-white">Profile Centre</SheetTitle>
+					<SheetTitle className="text-white">Profile</SheetTitle>
 					<SheetClose className="">
 						<X />
 					</SheetClose>
@@ -230,10 +230,10 @@ const Profile = () => {
 					</Group>
 				))}
 
-				<div className="-mt-3 flex justify-center gap-2 cursor-pointer" onClick={handleLogout}>
-					{/* <LogOut className="text-status-error" size={18} /> */}
-					<Image src={"/icons/logout.svg"} alt="" height={18} width={18} />
-					<p className="text-sm font-medium text-status-error">Log Out</p>
+				<div className="flex justify-center gap-2 cursor-pointer" onClick={handleLogout}>
+					{/* <LogOut className="text-status-error" size={18} md:size={20} /> */}
+					<Image src={"/icons/logout.svg"} alt="" height={20} width={20} className="md:h-5 md:w-5" />
+					<p className="text-sm md:text-base font-medium text-status-error">Log Out</p>
 				</div>
 			</div>
 		</div>
