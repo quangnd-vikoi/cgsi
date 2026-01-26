@@ -39,7 +39,8 @@
       "mcp__context7__query-docs",
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(xargs sed:*)",
-      "WebFetch(domain:www.cgsi.com.sg)"
+      "WebFetch(domain:www.cgsi.com.sg)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []

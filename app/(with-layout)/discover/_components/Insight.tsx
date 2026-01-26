@@ -21,17 +21,17 @@ interface InsightAPIItem {
 	MastheadBasic_Article_Card_Thumbnail_Image: string;
 }
 
-// Event Card Component
+// Insight Card Component
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
-		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="py-1">
+		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="py-1 group">
 			<div className="bg-white rounded overflow-hidden h-full flex flex-col hover:shadow transition-shadow border border-stroke-secondary">
-				<div className="relative w-full aspect-[16/9]">
+				<div className="relative w-full aspect-[16/9] overflow-hidden">
 					<Image
 						src={article.imageUrl}
 						alt={article.title}
 						fill
-						className="object-cover"
+						className="object-cover transition-transform duration-300 group-hover:scale-105"
 						sizes="(max-width: 768px) 74vw, (max-width: 1024px) 25.5vw, (max-width: 1280px) 20.1vw, 19.7vw"
 						quality={90}
 					/>
@@ -39,7 +39,7 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 flex-grow">
 					<div className="font-normal text-xs md:text-sm text-typo-tertiary">{article.tag}</div>
 					<div className="h-[2lh] font-semibold text-base md:text-lg line-clamp-2 leading-6">{article.title}</div>
-					<div className="h-[3lh] text-sm text-typo-secondary line-clamp-3 leading-5 md:leading-6 flex-grow">
+					<div className="h-[3lh] text-sm md:text-base text-typo-secondary line-clamp-3 leading-5 md:leading-6 flex-grow">
 						{article.description}
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">

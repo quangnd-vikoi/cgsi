@@ -133,7 +133,15 @@ const Header = () => {
 	};
 	console.log("pathname", pathName);
 	// Check if current page should show filled icon (not on main pages)
-	const isIconFill = !openSheet || !["notification", "detail_notification"].includes(openSheet);
+	// const isIconFill = !pathName.startsWith("/discover") && !pathName.startsWith("/portfolio") && (!openSheet || !["notification", "detail_notification"].includes(openSheet));
+
+	const isIconFill = openSheet
+		? !["notification", "detail_notification"].includes(openSheet)
+		: !(
+			pathName === "/" ||
+			pathName.startsWith("/discover") ||
+			pathName.startsWith("/portfolio")
+		);
 
 	const handleSheetOpen = (type: "profile" | "notification") => {
 		if (type == "profile") setOpenSheet("profile");

@@ -45,17 +45,17 @@ const AgreementItem = ({
 	return (
 		<button
 			onClick={onClick}
-			className="w-full text-left hover:opacity-80 transition-opacity cursor-pointer"
+			className="w-full text-left hover:opacity-80 transition-opacity cursor-pointer p-4"
 		>
 			<div className="flex justify-between items-start mb-3">
-				<div className="text-sm font-normal text-typo-primary">{displayTitle}</div>
+				<div className="text-sm md:text-base font-normal text-typo-primary">{displayTitle}</div>
 				<ChevronRight
 					className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5"
 					strokeWidth={2}
 				/>
 			</div>
 
-			<div className="flex justify-between text-xs text-typo-tertiary font-normal">
+			<div className="flex justify-between text-xs md:text-sm text-typo-tertiary font-normal">
 				<span>Version No. {record.versionNo}</span>
 				<span>Accepted: {formatDate(record.acceptedOn)}</span>
 			</div>
@@ -193,6 +193,9 @@ const Acknowledgements = () => {
 			<div className="flex-shrink-0 mb-6">
 				<CustomSheetTitle backTo={"profile"} title="Acknowledgements" />
 			</div>
+
+			<div className="text-base md:text-lg text-typo-primary font-semibold">Agreements List</div>
+			<div className="mt-2 text-sm md:text-base text-typo-secondary">Details of agreements and declarations you have acknowledged are displayed here for your reference.</div>
 			<div className="pb-6 pt-3 flex flex-col gap-10 overflow-y-auto flex-1">
 				{categories.map((categoryData, index) => (
 					<Group key={index} title={categoryData.category}>
@@ -205,7 +208,7 @@ const Acknowledgements = () => {
 								/>
 							))
 						) : (
-							<div className="text-xs text-typo-tertiary text-center font-normal">
+							<div className="text-xs text-typo-tertiary text-center font-normal p-4">
 								No Records Retrieved
 							</div>
 						)}

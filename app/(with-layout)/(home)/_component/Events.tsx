@@ -28,11 +28,11 @@ interface EventAPIItem {
 // Event Card Component
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
-		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block">
+		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block group">
 			<div className="bg-white rounded flex flex-col hover:shadow transition-shadow">
 				<div className="relative w-full aspect-[283/150] overflow-hidden">
 					<Image
-						className={cn("rounded-t object-cover", imageClassName)}
+						className={cn("rounded-t object-cover transition-transform duration-300 group-hover:scale-105", imageClassName)}
 						src={event.imageUrl}
 						alt={event.title}
 						fill
@@ -144,7 +144,6 @@ const Events = ({ imageClassName }: EventsProps) => {
 								/>
 							)}
 							getItemKey={(item) => item.SEO_Page_Name}
-							loop={true}
 							itemsPerView={{
 								mobile: "basis-[75.2%]",
 								tablet: "md:basis-[50.8%]",

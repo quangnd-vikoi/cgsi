@@ -3,9 +3,9 @@ import * as Icons from "@/public/icons/footer";
 
 export default function Footer() {
 	return (
-		<footer className="w-full">
+		<footer className="w-full bg-[#061527]">
 			{/* Main footer content */}
-			<div className="bg-[#061527] px-4 md:px-8 py-8 md:py-12 text-white">
+			<div className="max-w-[1320px] px-4 xl:px-0 mx-auto py-8 md:py-12 text-white">
 				<div className="">
 					<div className="flex justify-between">
 						{/* CGS Logo */}

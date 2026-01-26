@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
@@ -79,45 +78,17 @@ const SHEET_CONFIGS: Record<ValidSheetType, SheetConfig> = {
 	}
 };
 
-const ANIMATION_DURATION = 200;
-
 export const SheetManager = () => {
 	const openSheet = useSheetStore((state) => state.openSheet);
 	const closeSheet = useSheetStore((state) => state.closeSheet);
 
-	const [isOpen, setIsOpen] = useState(false);
-	const [shouldRender, setShouldRender] = useState(false);
-	const lastSheetRef = useRef<ValidSheetType | null>(null);
+	if (!openSheet) return null;
 
-	useEffect(() => {
-		if (openSheet) {
-			lastSheetRef.current = openSheet;
-			setShouldRender(true);
-			requestAnimationFrame(() => {
-				setIsOpen(true);
-			});
-		} else {
-			setIsOpen(false);
-			const timer = setTimeout(() => {
-				setShouldRender(false);
-			}, ANIMATION_DURATION);
-			return () => clearTimeout(timer);
-		}
-	}, [openSheet]);
-
-	const handleOpenChange = (open: boolean) => {
-		if (!open) {
-			closeSheet();
-		}
-	};
-
-	if (!shouldRender || !lastSheetRef.current) return null;
-
-	const config = SHEET_CONFIGS[lastSheetRef.current];
+	const config = SHEET_CONFIGS[openSheet];
 	const SheetComponent = config.component;
 
 	return (
-		<Sheet open={isOpen} onOpenChange={handleOpenChange}>
+		<Sheet open onOpenChange={closeSheet}>
 			<SheetContent
 				side="right"
 				className={cn(

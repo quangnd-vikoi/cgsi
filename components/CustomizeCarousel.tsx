@@ -4,11 +4,11 @@ import {
 	Carousel,
 	CarouselContent,
 	CarouselItem,
-	CarouselNext,
-	CarouselPrevious,
 	type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface CustomizeCarousel<T> {
 	items: T[];
@@ -70,11 +70,12 @@ const CustomizeCarousel = <T,>({
 		laptop: 1024,
 		desktop: 1280,
 	},
-	loop = true,
+	loop = false,
 	align = "start",
 }: CustomizeCarousel<T>) => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
+	const [scrollSnapCount, setScrollSnapCount] = useState(0);
 	const [windowWidth, setWindowWidth] = useState(1280);
 	const [mounted, setMounted] = useState(false);
 
@@ -118,15 +119,87 @@ const CustomizeCarousel = <T,>({
 			return;
 		}
 
-		setCurrent(api.selectedScrollSnap());
-
-		api.on("select", () => {
+		const onSelect = () => {
 			setCurrent(api.selectedScrollSnap());
-		});
-	}, [api]);
+		};
 
-	// Show dots only on mobile when there are 2+ items
-	const shouldShowDots = showDots && itemsCount >= 2;
+		const updateSnapCount = () => {
+			// Get the actual scroll snap count from Embla
+			const snapList = api.scrollSnapList();
+			const totalSlides = items.length;
+
+			// Calculate visible slides based on container and slide widths
+			const containerNode = api.containerNode();
+			const slideNodes = api.slideNodes();
+
+			if (!containerNode || slideNodes.length === 0) {
+				setScrollSnapCount(snapList.length);
+				return;
+			}
+
+			const containerWidth = containerNode.offsetWidth;
+			const slideWidth = slideNodes[0].offsetWidth;
+
+			// Calculate how many full slides fit in the container
+			const visibleSlides = Math.floor(containerWidth / slideWidth);
+
+			if (visibleSlides >= totalSlides) {
+				// All slides visible, no pagination needed
+				setScrollSnapCount(1);
+			} else {
+				// Number of pages = total - visible + 1
+				// e.g., 4 items with 3 visible = 4 - 3 + 1 = 2 pages
+				const pages = Math.max(1, totalSlides - visibleSlides + 1);
+				setScrollSnapCount(pages);
+			}
+		};
+
+		onSelect();
+		// Delay snap count calculation to ensure slides are rendered
+		setTimeout(updateSnapCount, 100);
+
+		api.on("select", onSelect);
+		api.on("reInit", () => {
+			onSelect();
+			updateSnapCount();
+		});
+		api.on("resize", updateSnapCount);
+
+		return () => {
+			api.off("select", onSelect);
+			api.off("reInit", updateSnapCount);
+			api.off("resize", updateSnapCount);
+		};
+	}, [api, items.length]);
+
+	// Navigation handlers - manual wrap around like Campaigns
+	const scrollPrev = () => {
+		if (!api) return;
+		// If on first slide, go to last slide
+		if (current === 0) {
+			api.scrollTo(scrollSnapCount - 1);
+		} else {
+			api.scrollPrev();
+		}
+	};
+
+	const scrollNext = () => {
+		if (!api) return;
+		const lastIndex = scrollSnapCount - 1;
+		// If on last slide, go to first slide
+		if (current === lastIndex) {
+			api.scrollTo(0);
+		} else {
+			api.scrollNext();
+		}
+	};
+
+	const scrollTo = (index: number) => {
+		api?.scrollTo(index);
+	};
+
+	// Show dots only when there are 2+ scroll snaps
+	const shouldShowDots = showDots && scrollSnapCount > 1;
 
 	// Show arrows only when not centering
 	const shouldShowArrows = showArrows && !shouldCenter;
@@ -137,8 +210,9 @@ const CustomizeCarousel = <T,>({
 				setApi={setApi}
 				opts={{
 					align: align,
-					slidesToScroll: 1,
 					loop: loop,
+					skipSnaps: false,
+					inViewThreshold: 0.7,
 				}}
 			>
 				<CarouselContent
@@ -170,31 +244,41 @@ const CustomizeCarousel = <T,>({
 				{/* Arrow Controls */}
 				{shouldShowArrows && (
 					<>
-						<CarouselPrevious
+						<Button
+							size="icon"
+							onClick={scrollPrev}
 							className={cn(
-								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section hover:shadow-light-blue h-10 w-10",
-								"md:flex md:-left-5",
+								"absolute top-1/2 -translate-y-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue",
+								"md:-left-5",
 								arrowClassName
 							)}
-						/>
-						<CarouselNext
+							aria-label="Previous"
+						>
+							<ArrowLeft className="w-5 h-5 text-cgs-blue" />
+						</Button>
+						<Button
+							size="icon"
+							onClick={scrollNext}
 							className={cn(
-								"hidden border-cgs-blue text-cgs-blue hover:text-cgs-blue hover:bg-background-section hover:shadow-light-blue h-10 w-10",
-								"md:flex md:-right-3",
+								"absolute top-1/2 -translate-y-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue",
+								"md:-right-3",
 								arrowClassName
 							)}
-						/>
+							aria-label="Next"
+						>
+							<ArrowRight className="w-5 h-5 text-cgs-blue" />
+						</Button>
 					</>
 				)}
 			</Carousel>
 
-			{/* Dot Navigation - only show on mobile when there are 2+ items */}
+			{/* Dot Navigation - based on scroll snaps count */}
 			{shouldShowDots && (
 				<div className="flex justify-center gap-3 mt-4 md:mt-6">
-					{Array.from({ length: itemsCount }).map((_, index) => (
+					{Array.from({ length: scrollSnapCount }).map((_, index) => (
 						<button
 							key={index}
-							onClick={() => api?.scrollTo(index)}
+							onClick={() => scrollTo(index)}
 							className={cn(
 								"rounded-full w-2 h-2 transition-all",
 								current === index
