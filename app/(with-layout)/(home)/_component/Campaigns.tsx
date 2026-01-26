@@ -15,6 +15,7 @@ import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import { cn } from "@/lib/utils";
 import ViewAll from "@/components/ViewAll";
+import { useMediaQuery } from "@/hooks/useMediaQuerry";
 
 interface Campaign {
 	SEO_Page_Name: string;
@@ -29,89 +30,53 @@ interface Campaign {
 // Using memo to prevent unnecessary re-renders
 const CampaignCard = memo(
 	({ campaign, isFeatured }: { campaign: Campaign; isFeatured: boolean }) => {
-		// Featured card: mobile shows normal card, desktop shows hover effect
+		const linkHref = campaign.SEO_Page_Name
+			? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
+			: CGSI.CAMPAIGNS;
+
+		// Featured card: only shows on desktop (md+), mobile renders regular card separately
 		if (isFeatured) {
-			const linkHref = campaign.SEO_Page_Name
-				? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
-				: CGSI.CAMPAIGNS;
-
 			return (
-				<>
-					{/* Mobile: Normal card layout */}
-					<Link
-						href={linkHref}
-						target="_blank"
-						className="relative flex flex-col h-full rounded overflow-hidden group transition-all duration-300 bg-white hover:shadow-lg md:hidden"
-					>
-						<div className="relative overflow-hidden aspect-[16/9] flex-shrink-0">
-							<Image
-								src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
-								alt={campaign.MastheadBasic_Article_Title || "campaign"}
-								fill
-								className="object-cover transition-transform duration-300 group-hover:scale-105"
-								sizes="100vw"
-								priority
-							/>
-						</div>
-						<div className="flex flex-col flex-1 p-3 gap-4">
-							<span className="text-[10px] text-typo-secondary mb-1">
-								{campaign.Tagging_Timing || "Campaign"}
-							</span>
-							<h3 className="font-semibold leading-tight line-clamp-2 min-h-[2lh] text-sm text-typo-primary">
-								{campaign.MastheadBasic_Article_Title}
-							</h3>
-							<p className="text-sm text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 font-normal">
-								{campaign.MastheadBasic_Article_Short}
-							</p>
-						</div>
-					</Link>
-
-					{/* Desktop: Featured layout with hover effect */}
-					<Link
-						href={linkHref}
-						target="_blank"
-						className="relative hidden md:flex h-full rounded-xl overflow-hidden group transition-all duration-300 hover:shadow-lg"
-					>
-						<Image
-							src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
-							alt={campaign.MastheadBasic_Article_Title || "campaign"}
-							fill
-							className="object-cover transition-transform duration-300 group-hover:scale-105"
-							sizes="60vw"
-							priority
-						/>
-						{/* Gradient Overlay - stronger on hover to show content */}
-						<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent group-hover:from-black/80 group-hover:via-black/40 transition-all duration-300" />
-						{/* Content - appears on hover */}
-						<div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-							<span className="text-sm text-white/80 mb-4 block">
-								{campaign.Tagging_Timing || "Campaign"}
-							</span>
-							<h3 className="font-semibold leading-tight line-clamp-1 text-[20px] text-white mb-4">
-								{campaign.MastheadBasic_Article_Title}
-							</h3>
-							<p className="h-[2lh] text-base text-white/90 line-clamp-2 leading-6 font-normal">
-								{campaign.MastheadBasic_Article_Short}
-							</p>
-						</div>
-					</Link>
-				</>
+				<Link
+					href={linkHref}
+					target="_blank"
+					className="relative flex h-full rounded overflow-hidden group transition-all duration-300 hover:shadow"
+				>
+					<Image
+						src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
+						alt={campaign.MastheadBasic_Article_Title || "campaign"}
+						fill
+						className="object-cover transition-transform duration-300 group-hover:scale-105"
+						sizes="60vw"
+						priority
+					/>
+					{/* Gradient Overlay - stronger on hover to show content */}
+					<div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent group-hover:from-black/80 group-hover:via-black/40 transition-all duration-300" />
+					{/* Content - appears on hover */}
+					<div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+						<span className="text-sm text-white/80 mb-4 block">
+							{campaign.Tagging_Timing || "Campaign"}
+						</span>
+						<h3 className="font-semibold leading-tight line-clamp-1 text-[20px] text-white mb-4">
+							{campaign.MastheadBasic_Article_Title}
+						</h3>
+						<p className="h-[2lh] text-base text-white/90 line-clamp-2 leading-6 font-normal">
+							{campaign.MastheadBasic_Article_Short}
+						</p>
+					</div>
+				</Link>
 			);
 		}
 
 		// Regular card: image + text content
 		return (
 			<Link
-				href={
-					campaign.SEO_Page_Name
-						? `${CGSI.CAMPAIGNS}${campaign.SEO_Page_Name}`
-						: CGSI.CAMPAIGNS
-				}
+				href={linkHref}
 				target="_blank"
-				className="relative flex flex-col h-full rounded overflow-hidden group transition-all duration-300 bg-white hover:shadow-lg"
+				className="relative flex flex-col h-full rounded overflow-hidden group transition-all duration-300 bg-white hover:shadow"
 			>
 				{/* Image Container */}
-				<div className="relative overflow-hidden aspect-[16/9] flex-shrink-0">
+				<div className="relative overflow-hidden h-[127px] md:h-[157px] flex-shrink-0">
 					<Image
 						src={campaign.MastheadBasic_Article_Card_Thumbnail_Image}
 						alt={campaign.MastheadBasic_Article_Title || "campaign"}
@@ -123,7 +88,7 @@ const CampaignCard = memo(
 				</div>
 
 				{/* Content */}
-				<div className="flex flex-col flex-1 p-3 md:p-4 gap-4 md:gap-[18px]">
+				<div className="flex flex-col flex-1 p-4 gap-4 md:gap-[18px]">
 					{/* Category Tag */}
 					<span className="text-[10px] md:text-xs text-typo-secondary mb-1">
 						{campaign.Tagging_Timing || "Campaign"}
@@ -150,6 +115,7 @@ const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
 	const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+	const isMobile = useMediaQuery("mobile");
 
 	useEffect(() => {
 		const fetchCampaigns = async () => {
@@ -243,24 +209,38 @@ const Campaigns = () => {
 					>
 						<CarouselContent className="-ml-4 overflow-visible">
 							{campaigns.map((campaign, index) => {
-								// First item: always large (57%), always featured style, with hidden snap point
+								// First item: regular card on mobile, featured banner on desktop
 								if (index === 0) {
+									// Mobile: render as regular card
+									if (isMobile) {
+										return (
+											<CarouselItem
+												key="featured-mobile"
+												className="pl-4 basis-[75%] overflow-visible py-1"
+											>
+												<CampaignCard
+													campaign={campaign}
+													isFeatured={false}
+												/>
+											</CarouselItem>
+										);
+									}
+									// Desktop: render featured banner with snap point
 									return (
 										<React.Fragment key="featured">
-											{/* Part 1: Main featured item - 66% on mobile, 57% on desktop */}
 											<CarouselItem
-												key="featured-1"
-												className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[57%] overflow-visible"
+												key="featured-desktop"
+												className="pl-4 basis-[55%] lg:basis-[57%] overflow-visible py-1"
 											>
 												<CampaignCard
 													campaign={campaign}
 													isFeatured={true}
 												/>
 											</CarouselItem>
-											{/* Part 2: Invisible snap point - only on desktop for peek effect */}
+											{/* Invisible snap point for peek effect */}
 											<CarouselItem
-												key="featured-2"
-												className="pl-0 h-[280px] md:h-[320px] lg:h-[380px] hidden md:block basis-[25%] md:-ml-[24%]"
+												key="featured-snap"
+												className="pl-0 basis-[40%] lg:basis-[25%] -ml-[39%] lg:-ml-[24%] py-1"
 											>
 												<div className="w-full h-full pointer-events-none" />
 											</CarouselItem>
@@ -271,7 +251,10 @@ const Campaigns = () => {
 								return (
 									<CarouselItem
 										key={index}
-										className="pl-4 h-[280px] md:h-[320px] lg:h-[380px] basis-[66%] md:basis-[25%] overflow-visible"
+										className={cn(
+											"pl-4 overflow-visible py-1",
+											isMobile ? "basis-[75%]" : "basis-[40%] lg:basis-[25%]"
+										)}
 									>
 										<CampaignCard
 											campaign={campaign}
@@ -300,25 +283,25 @@ const Campaigns = () => {
 						>
 							<ArrowRight className="w-5 h-5 text-cgs-blue" />
 						</Button>
+						{/* Blur overlay - Left (when scrolled, showing partial of first item) - hidden on mobile */}
+						<div
+							className={cn(
+								"absolute left-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+								"bg-gradient-to-r from-white via-white/60 to-transparent",
+								current == 1 ? "opacity-100" : "opacity-0"
+							)}
+						/>
+
+						{/* Blur overlay - Right (at start, when peeked items visible) - hidden on mobile */}
+						<div
+							className={cn(
+								"absolute right-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+								"bg-gradient-to-l from-white via-white/60 to-transparent",
+								current === 0 ? "opacity-100" : "opacity-0"
+							)}
+						/>
 					</Carousel>
 
-					{/* Blur overlay - Left (when scrolled, showing partial of first item) - hidden on mobile */}
-					<div
-						className={cn(
-							"absolute left-0 top-0 h-[280px] md:h-[320px] lg:h-[380px] w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
-							"bg-gradient-to-r from-white via-white/60 to-transparent",
-							current == 1 ? "opacity-100" : "opacity-0"
-						)}
-					/>
-
-					{/* Blur overlay - Right (at start, when peeked items visible) - hidden on mobile */}
-					<div
-						className={cn(
-							"absolute right-0 top-0 h-[280px] md:h-[320px] lg:h-[380px] w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
-							"bg-gradient-to-l from-white via-white/60 to-transparent",
-							current === 0 ? "opacity-100" : "opacity-0"
-						)}
-					/>
 
 					{/* Dot Indicators - number based on scroll snaps */}
 					{api && api.scrollSnapList().length > 1 && (
