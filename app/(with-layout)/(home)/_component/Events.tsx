@@ -29,7 +29,7 @@ interface EventAPIItem {
 const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
 	return (
 		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block">
-			<div className="bg-white shadow mb-[1px] rounded flex flex-col hover:shadow-lg transition-shadow">
+			<div className="bg-white rounded flex flex-col hover:shadow transition-shadow">
 				<div className="relative w-full aspect-[283/150] overflow-hidden">
 					<Image
 						className={cn("rounded-t object-cover", imageClassName)}

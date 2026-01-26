@@ -24,8 +24,8 @@ interface InsightAPIItem {
 // Event Card Component
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
-		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="mb-[1px] block h-[calc(100%-1px)]">
-			<div className="bg-white shadow mb-[1px] rounded overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow">
+		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="py-1">
+			<div className="bg-white rounded overflow-hidden h-full flex flex-col hover:shadow transition-shadow border border-stroke-secondary">
 				<div className="relative w-full aspect-[16/9]">
 					<Image
 						src={article.imageUrl}
@@ -44,7 +44,7 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">
 						<div className="flex gap-4 font-normal text-sm md:text-base text-typo-tertiary">
-							<Calendar className="w-4 h-4 md:w-5 md:h-5 text-cgs-blue" />
+							<Calendar className="w-4 h-4 md:w-5 md:h-5 text-cgs-blue" strokeWidth={1.5} />
 							{formatDate(article.date)}
 						</div>
 					</div>

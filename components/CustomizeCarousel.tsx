@@ -158,7 +158,7 @@ const CustomizeCarousel = <T,>({
 								itemsPerView.tablet,
 								itemsPerView.laptop,
 								itemsPerView.desktop,
-								"overflow-visible",
+								"overflow-visible py-1",
 								itemClassName
 							)}
 						>
