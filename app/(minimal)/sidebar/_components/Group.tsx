@@ -6,10 +6,12 @@ type GroupProps = {
 	title: string;
 	children: ReactNode;
 	childrenClassName?: string;
+	showSeparator?: boolean;
 };
 
-const Group = ({ title, children, childrenClassName }: GroupProps) => {
+const Group = ({ title, children, childrenClassName, showSeparator = true }: GroupProps) => {
 	const childArray = Children.toArray(children);
+	const shouldShowSeparator = showSeparator && childArray.length > 1;
 
 	return (
 		<div className="w-full">
@@ -20,9 +22,11 @@ const Group = ({ title, children, childrenClassName }: GroupProps) => {
 				{childArray.map((child, index) => (
 					<React.Fragment key={index}>
 						<div className="">{child}</div>
-						<div className="px-4">
-							{index < childArray.length - 1 && <Separator className="" />}
-						</div>
+						{shouldShowSeparator && index < childArray.length - 1 && (
+							<div className="px-4">
+								<Separator className="" />
+							</div>
+						)}
 					</React.Fragment>
 				))}
 			</div>

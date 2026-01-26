@@ -35,8 +35,8 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 }) => {
 	return (
 		<>
-			<div>
-				<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs">
+			<div className="p-4">
+				<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs md:text-sm">
 					{label}
 					<Tooltip>
 						<TooltipTrigger asChild>
@@ -51,7 +51,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 				<div className="flex justify-between items-center gap-2">
 					{value ? (
 						<>
-							<p className="font-medium text-typo-primary text-sm truncate flex-1">{value}</p>
+							<p className="font-medium text-typo-primary text-sm md:text-base truncate flex-1">{value}</p>
 							{isLinked ? (
 								<Badge variant="success" className="relative overflow-visible shrink-0">
 									<CircleCheck
@@ -84,7 +84,6 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 					)}
 				</div>
 			</div>
-			{showSeparator && <Separator />}
 		</>
 	);
 };
@@ -128,7 +127,7 @@ const TradingAccountDetail = () => {
 				</div>
 
 				{!isSharesBorrowing && (
-					<Group title="Account Linkages" childrenClassName="gap-4">
+					<Group showSeparator={false} title="Account Linkages" childrenClassName="gap-4">
 						<LinkageItem
 							label="CDP"
 							tooltipContent="Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
@@ -219,44 +218,47 @@ const TradingAccountDetail = () => {
 				)}
 
 				<div className="mt-9">
-					<Group title="Trading Representative">
-						{[
-							{ label: "TR Name", value: selectedAccount.trName },
-							{
-								label: "Department",
-								value: "Wealth Solutions",
-							},
-							{ label: "Rep. No.", value: selectedAccount.trCode },
-							{
-								label: "Phone Number",
-								value: "",
-								hasCopy: true,
-								hasArrow: true,
-							},
-							{
-								label: "Email Add.",
-								value: "",
-								hasCopy: true,
-								hasArrow: true,
-							},
-						].map((item, index) => (
-							<div key={index} className="flex justify-between items-center text-sm gap-2">
-								<p className="text-typo-secondary">{item.label}</p>
-								<div className="flex items-center gap-2 min-w-0">
-									<p className="font-medium text-typo-primary truncate">{item.value}</p>
-									{item.hasCopy && (
-										<Copy
-											onClick={() => handleCopy(item.value)}
-											className="text-cgs-blue cursor-pointer shrink-0"
-											size={16}
-										/>
-									)}
-									{item.hasArrow && (
-										<ArrowRightCircle className="text-cgs-blue shrink-0" size={16} />
-									)}
+					<Group title="Trading Representative" showSeparator={false}>
+						<div className="flex flex-col gap-4 p-4">
+
+							{[
+								{ label: "TR Name", value: selectedAccount.trName },
+								{
+									label: "Department",
+									value: "Wealth Solutions",
+								},
+								{ label: "Rep. No.", value: selectedAccount.trCode },
+								{
+									label: "Phone Number",
+									value: "",
+									hasCopy: true,
+									hasArrow: true,
+								},
+								{
+									label: "Email Add.",
+									value: "",
+									hasCopy: true,
+									hasArrow: true,
+								},
+							].map((item, index) => (
+								<div key={index} className="flex justify-between items-center text-sm md:text-base">
+									<p className="text-typo-secondary">{item.label}</p>
+									<div className="flex items-center gap-2 min-w-0">
+										<p className="font-medium text-typo-primary truncate">{item.value}</p>
+										{item.hasCopy && (
+											<Copy
+												onClick={() => handleCopy(item.value)}
+												className="text-cgs-blue cursor-pointer shrink-0"
+												size={16}
+											/>
+										)}
+										{item.hasArrow && (
+											<ArrowRightCircle className="text-cgs-blue shrink-0" size={16} />
+										)}
+									</div>
 								</div>
-							</div>
-						))}
+							))}
+						</div>
 					</Group>
 				</div>
 			</div>
