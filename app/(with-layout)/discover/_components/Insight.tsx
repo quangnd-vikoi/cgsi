@@ -24,8 +24,8 @@ interface InsightAPIItem {
 // Event Card Component
 const InsightCard = ({ article }: { article: IInsightProps }) => {
 	return (
-		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank">
-			<div className="bg-white rounded overflow-hidden h-full flex flex-col hover:shadow transition-shadow py-1 border border-stroke-secondary">
+		<Link href={CGSI.INSIGHT_BY_ID(article.id)} target="_blank" className="py-1">
+			<div className="bg-white rounded overflow-hidden h-full flex flex-col hover:shadow transition-shadow border border-stroke-secondary">
 				<div className="relative w-full aspect-[16/9]">
 					<Image
 						src={article.imageUrl}
