@@ -24,11 +24,11 @@ const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) =>
 						<br />
 					</div>
 					<div className="flex flex-col gap-3">
-						<div className="flex items-center gap-2 md:gap-4 font-medium text-sm md:text-base text-typo-tertiary leading-4">
-							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.5}/>
+						<div className="flex items-center gap-2 md:gap-4 text-sm md:text-base text-typo-secondary leading-4">
+							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.5} />
 							{article.date}
 						</div>
-						<div className="flex items-center gap-2 md:gap-4 font-medium text-sm md:text-base text-typo-tertiary leading-4">
+						<div className="flex items-center gap-2 md:gap-4 text-sm md:text-base text-typo-secondary leading-4">
 							<UserRoundPen className="w-5 h-5 text-cgs-blue" strokeWidth={1.5} />
 							{article.author}
 						</div>

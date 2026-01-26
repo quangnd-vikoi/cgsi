@@ -43,7 +43,7 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 						{article.description}
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">
-						<div className="flex gap-4 font-normal text-sm md:text-base text-typo-tertiary">
+						<div className="flex gap-4 font-normal text-sm md:text-base text-typo-secondary">
 							<Calendar className="w-4 h-4 md:w-5 md:h-5 text-cgs-blue" strokeWidth={1.5} />
 							{formatDate(article.date)}
 						</div>

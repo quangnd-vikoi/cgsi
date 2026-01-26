@@ -44,7 +44,7 @@ const Contact = () => {
 								<div className="flex-1">
 									<div className="flex justify-between">
 										<div>
-											<h3 className="text-sm md:text-lg font-semibold text-typo-primary mb-1">
+											<h3 className="text-sm md:text-base font-semibold text-typo-primary mb-1">
 												{option.title}
 											</h3>
 											<p className="text-xs md:text-sm font-normal text-typo-secondary">
