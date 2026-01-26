@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, UserRoundPen } from "lucide-react";
 import { IResearchArticleProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
@@ -12,24 +12,24 @@ import { CGSI } from "@/constants/routes";
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
 	return (
 		<Link href={article.url} target="_blank">
-			<div className="bg-white shadow rounded mb-[1px]">
-				<div className="flex flex-col gap-4 px-3 py-[14px]">
-					<div className="text-[10px] font-medium text-typo-tertiary">{article.tag}</div>
-					<div className="font-semibold text-xs leading-4 line-clamp-2 min-h-[32px]">
+			<div className="bg-white rounded hover:shadow transition-shadow border border-stroke-secondary">
+				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6">
+					<div className="text-xs md:text-sm font-medium text-typo-tertiary">{article.tag}</div>
+					<div className="font-semibold text-base md:text-lg leading-7 line-clamp-2 min-h-[2lh]">
 						{article.title}
 					</div>
 
-					<div className="justify-start text-[10px] text-typo-secondary line-clamp-4 leading-4 font-normal min-h-16">
+					<div className="justify-start text-sm md:text-base text-typo-secondary line-clamp-3 leading-6 font-normal min-h-[3lh]">
 						{article.description}
 						<br />
 					</div>
 					<div className="flex flex-col gap-3">
-						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-							<Calendar className="w-4 h-4" />
+						<div className="flex items-center gap-2 md:gap-4 font-medium text-sm md:text-base text-typo-tertiary leading-4">
+							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.5}/>
 							{article.date}
 						</div>
-						<div className="flex self-stretch gap-2 font-medium text-[10px] text-typo-tertiary leading-4">
-							<User className="w-4 h-4" />
+						<div className="flex items-center gap-2 md:gap-4 font-medium text-sm md:text-base text-typo-tertiary leading-4">
+							<UserRoundPen className="w-5 h-5 text-cgs-blue" strokeWidth={1.5} />
 							{article.author}
 						</div>
 					</div>
