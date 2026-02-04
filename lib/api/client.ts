@@ -1,6 +1,7 @@
 import { API_BASE_URL } from "./config";
 import type { APIResponse, StandardAPIResponse, DirectAPIResponse } from "./types";
 import { getAccessToken, shouldRefreshToken, refreshAccessToken } from "@/lib/services/authService";
+import { useAuthStore } from "@/stores/authStore";
 
 // Extended fetch options with auth support
 interface FetchOptions extends RequestInit {
@@ -19,13 +20,64 @@ interface FetchOptions extends RequestInit {
 let refreshPromise: Promise<void> | null = null;
 
 /**
+ * Wait for valid tokens to be set (used when OAuth code is in URL)
+ * Subscribes to auth store and resolves when tokens are available.
+ * This prevents race conditions where API calls try to refresh tokens
+ * while the OAuth code exchange is still in progress.
+ *
+ * IMPORTANT: Always waits for NEW tokens from code exchange.
+ * Even if current tokens are valid, we need fresh tokens because
+ * the user explicitly initiated a new login flow.
+ *
+ * Includes a timeout to prevent hanging forever if code exchange fails.
+ */
+function waitForValidTokens(): Promise<void> {
+	const TIMEOUT_MS = 30000; // 30 seconds timeout
+
+	return new Promise((resolve, reject) => {
+		// Capture current tokenExpiry to detect when NEW tokens are set
+		const initialTokenExpiry = useAuthStore.getState().tokenExpiry;
+
+		// Set up timeout to prevent hanging forever if code exchange fails
+		const timeoutId = setTimeout(() => {
+			unsubscribe();
+			reject(new Error("Timeout waiting for OAuth code exchange to complete"));
+		}, TIMEOUT_MS);
+
+		// Subscribe to auth store - resolve when NEW tokens are set by exchangeCode()
+		// We check that tokenExpiry changed (not just valid) to ensure we get fresh tokens
+		const unsubscribe = useAuthStore.subscribe((state) => {
+			const hasValidToken = state.accessToken && state.tokenExpiry && Date.now() < state.tokenExpiry;
+			const isNewToken = state.tokenExpiry !== initialTokenExpiry;
+
+			if (hasValidToken && isNewToken) {
+				clearTimeout(timeoutId);
+				unsubscribe();
+				resolve();
+			}
+		});
+	});
+}
+
+/**
  * Ensures the access token is valid before making an API request
+ * - If OAuth code is in URL, waits for code exchange to complete (don't refresh)
  * - Checks if token should be refreshed (within 5 minutes of expiry)
  * - If already refreshing, waits for existing refresh to complete
  * - Prevents multiple simultaneous refresh requests
  * @param force - If true, forces a refresh regardless of time-based check (used for 401 responses)
  */
 async function ensureValidToken(force: boolean = false): Promise<void> {
+	// If OAuth code in URL, wait for code exchange to set tokens (don't refresh)
+	// This prevents race conditions where refresh overwrites tokens from code exchange
+	if (typeof window !== "undefined") {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get("code")) {
+			await waitForValidTokens();
+			return;
+		}
+	}
+
 	// Check if token needs refresh (skip check if force is true)
 	if (!force && !shouldRefreshToken()) {
 		return;

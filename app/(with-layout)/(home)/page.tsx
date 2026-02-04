@@ -18,26 +18,26 @@ function HomeContent() {
 	useEffect(() => {
 		const handleAuth = async () => {
 			try {
-				// Check if already authenticated
+				// Always check for code from URL first (handles SSO callback)
+				const code = searchParams.get("code");
+
+				if (code) {
+					// Exchange code for tokens
+					await authService.exchangeCode(code, "http://localhost:8080/authorize");
+					// Clean up URL by removing query parameters
+					router.replace("/");
+					setIsAuthenticating(false);
+					return;
+				}
+
+				// No code in URL - check if already authenticated
 				if (authService.isAuthenticated()) {
 					setIsAuthenticating(false);
 					return;
 				}
 
-				// Get code from URL
-				const code = searchParams.get("code");
-
-				// If no code, redirect to login
-				if (!code) {
-					authService.redirectToLogin();
-					return;
-				}
-				// Exchange code for tokens
-				await authService.exchangeCode(code, "http://localhost:8080/authorize");
-				// Clean up URL by removing query parameters
-				router.replace("/");
-
-				setIsAuthenticating(false);
+				// Not authenticated and no code - redirect to login
+				authService.redirectToLogin();
 			} catch (err) {
 				console.error("Auth error:", err);
 				setError(err instanceof Error ? err.message : "Authentication failed");
