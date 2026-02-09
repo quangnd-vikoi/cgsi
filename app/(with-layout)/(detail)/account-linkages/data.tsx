@@ -1,4 +1,4 @@
-import { handleCopy } from "@/lib/utils";
+import { handleCopy, handleEmail } from "@/lib/utils";
 import { ArrowRightCircle, ChevronRight, Copy, Globe, Mail } from "lucide-react";
 
 export const subcdp = {
@@ -43,7 +43,7 @@ export const subcdp = {
 							size={20}
 							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
+						<ArrowRightCircle onClick={() => handleEmail('sg.clientservices@cgsi.com')} size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -105,7 +105,7 @@ export const cpf = {
 							size={20}
 							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
+						<ArrowRightCircle onClick={() => handleEmail('sg.clientservices@cgsi.com')} size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -167,7 +167,7 @@ export const srs = {
 							size={20}
 							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
+						<ArrowRightCircle onClick={() => handleEmail('sg.clientservices@cgsi.com')} size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -234,7 +234,7 @@ export const eps = {
 							size={20}
 							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
+						<ArrowRightCircle onClick={() => handleEmail('sg.clientservices@cgsi.com')} size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),
@@ -300,7 +300,7 @@ export const giro = {
 							size={20}
 							className="text-cgs-blue cursor-pointer"
 						/>
-						<ArrowRightCircle size={20} className="text-cgs-blue cursor-pointer" />
+						<ArrowRightCircle onClick={() => handleEmail('sg.clientservices@cgsi.com')} size={20} className="text-cgs-blue cursor-pointer" />
 					</div>
 				</div>
 			),

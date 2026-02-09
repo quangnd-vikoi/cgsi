@@ -6,7 +6,7 @@ import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import { getBgImageClass } from "@/lib/utils";
 import ViewAll from "@/components/ViewAll";
-import { CGSI } from "@/constants/routes";
+import { redirectToResearch } from "@/lib/services/externalSSOService";
 
 // Research Article Card Component
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
@@ -89,7 +89,7 @@ const ResearchArticles = () => {
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-2xl">Research Articles</span>
 					</div>
-					<ViewAll href={CGSI.RESEARCH} />
+					<ViewAll onClick={redirectToResearch} />
 				</div>
 
 				{/* Research Articles Carousel */}
