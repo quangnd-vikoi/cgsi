@@ -5,14 +5,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import useToggle from "@/hooks/useToggle";
-import Alert from "@/components/Alert";
+import { AlternativesAccessAlert } from "@/components/AlternativesAccessAlert";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
 import { getProductSubscriptionsByType } from "@/lib/services/subscriptionService";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 
 type InvestmentCardProps = {
 	title: string;
-	available?: number | string;
+	available?: number | null;
 	imageSrc: string;
 	subtext: string;
 	imageAlt?: string;
@@ -23,7 +24,7 @@ type InvestmentCardProps = {
 
 const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	title,
-	available = 0,
+	available = null,
 	imageSrc,
 	subtext,
 	imageAlt,
@@ -36,10 +37,16 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 
 	const { value, toggle } = useToggle();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+	const selectedAccount = useTradingAccountStore((s) => s.selectedAccount);
+	const isAI = selectedAccount?.accreditedInvestor === "Yes";
 
 	const handleClick = () => {
 		if (title === "Alternatives") {
-			toggle();
+			if (isAI) {
+				router.push(href);
+			} else {
+				toggle();
+			}
 		} else {
 			router.push(href);
 		}
@@ -50,9 +57,6 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 		setOpenSheet("contact");
 	};
 
-	const openDeclarationForm = () => {
-		window.open("https://itrade.cgsi.com.sg/app/download/AccreditedInvestor_Declare.pdf", "_blank");
-	}
 	return (
 		<div
 			onClick={() => handleClick()}
@@ -65,9 +69,11 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 					<div className="p-6 w-3/4">
 						<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
 							<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
-							<span className="text-xs text-typo-tertiary md:text-sm">
-								{available != 0 ? `${available} Available` : "0 available"}
-							</span>
+							{available != null && (
+								<span className="text-xs text-typo-tertiary md:text-sm">
+									{available} Available
+								</span>
+							)}
 						</div>
 						<p
 							hidden={isMobile}
@@ -87,30 +93,19 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 					height={imageHeight}
 				/>
 			</div>
-			<Alert
+			<AlternativesAccessAlert
 				open={value}
 				onOpenChange={toggle}
-				title="Access to Alternative Investments"
-				description={
-					<span className="text-sm md:text-base">
-						Alternative Investments are available only to Accredited Investors. Please download
-						and fill the <span className="text-cgs-blue font-medium underline cursor-pointer underline-offset-2" onClick={() => openDeclarationForm()} >Declaration Form</span>,
-						then send it to us via &quot;Contact Us&quot; to proceed.
-					</span>
-				}
-				cancelText="Cancel"
-				actionText="Contact Us"
-				onAction={handleAlert}
 				onCancel={toggle}
+				onAction={handleAlert}
 			/>
 		</div>
 	);
 };
 
 const Investment = () => {
-	const [securitiesCount, setSecuritiesCount] = useState<number>(0);
-	const [alternativesCount, setAlternativesCount] = useState<number>(0);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [securitiesCount, setSecuritiesCount] = useState<number | null>(null);
+	const [alternativesCount, setAlternativesCount] = useState<number | null>(null);
 
 	useEffect(() => {
 		// Check if closing date has passed
@@ -121,30 +116,23 @@ const Investment = () => {
 		};
 
 		const fetchProductCounts = async () => {
-			try {
-				setIsLoading(true);
+			const [iopResponse, aiResponse] = await Promise.allSettled([
+				getProductSubscriptionsByType("IOP"),
+				getProductSubscriptionsByType("AI"),
+			]);
 
-				// Fetch Securities (IOP) count - only count available products
-				const iopResponse = await getProductSubscriptionsByType("IOP");
-				if (iopResponse.success && iopResponse.data?.productSubs) {
-					const availableProducts = iopResponse.data.productSubs.filter(
-						(product) => !isClosingDatePassed(product.endTime)
-					);
-					setSecuritiesCount(availableProducts.length);
-				}
+			if (iopResponse.status === "fulfilled" && iopResponse.value.success && iopResponse.value.data?.productSubs) {
+				const count = iopResponse.value.data.productSubs.filter(
+					(product) => !isClosingDatePassed(product.endTime)
+				).length;
+				setSecuritiesCount(count);
+			}
 
-				// Fetch Alternatives (AI) count - only count available products
-				const aiResponse = await getProductSubscriptionsByType("AI");
-				if (aiResponse.success && aiResponse.data?.productSubs) {
-					const availableProducts = aiResponse.data.productSubs.filter(
-						(product) => !isClosingDatePassed(product.endTime)
-					);
-					setAlternativesCount(availableProducts.length);
-				}
-			} catch (error) {
-				console.error("Error fetching product counts:", error);
-			} finally {
-				setIsLoading(false);
+			if (aiResponse.status === "fulfilled" && aiResponse.value.success && aiResponse.value.data?.productSubs) {
+				const count = aiResponse.value.data.productSubs.filter(
+					(product) => !isClosingDatePassed(product.endTime)
+				).length;
+				setAlternativesCount(count);
 			}
 		};
 
@@ -161,7 +149,7 @@ const Investment = () => {
 				<InvestmentCard
 					href={INTERNAL_ROUTES.SECURITIES}
 					title="Securities"
-					available={isLoading ? "..." : securitiesCount}
+					available={securitiesCount}
 					imageSrc="/icons/Investment-left.svg"
 					subtext="Tap into exclusive investment opportunities, from shares at initial offering prices (IOPs) to IPOs"
 				/>
@@ -169,7 +157,7 @@ const Investment = () => {
 				<InvestmentCard
 					href={INTERNAL_ROUTES.ALTERNATIVE}
 					title="Alternatives"
-					available={isLoading ? "..." : alternativesCount}
+					available={alternativesCount}
 					imageSrc="/icons/Investment-right.svg"
 					subtext="Looking for short-term, high-quality corporate debt instruments? Explore our commercial papers!"
 				/>

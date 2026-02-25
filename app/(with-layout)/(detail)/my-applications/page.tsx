@@ -146,7 +146,7 @@ export default function MyApplication() {
 	return (
 		<div className="flex-1 flex flex-col h-full">
 			{/* Header */}
-			<Title showBackButton title="Applications History" />
+			<Title showBackButton title="My Applications" />
 			{/* Content Box */}
 			<div className="bg-white pad rounded flex-1 flex flex-col overflow-hidden min-h-0">
 				{/* Tabs */}

@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import Navigation from "./_components/Navigation";
 import Sidebar from "./_components/Sidebar";
 import { useSelectionStore } from "@/stores/selectionStore";
@@ -10,6 +11,10 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
 	const { selectedId, clearSelection } = useSelectionStore();
+
+	useEffect(() => {
+		return () => clearSelection();
+	}, [clearSelection]);
 
 	const handleBackToSidebar = () => {
 		clearSelection();

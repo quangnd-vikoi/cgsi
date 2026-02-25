@@ -73,11 +73,11 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 	// Filter cash accounts (CTA = Cash Trading Account)
 	console.log("All Accounts:", accounts);
-	const cashAccounts = accounts.filter((acc) => acc.accountType === null);
+	const cashAccounts = accounts.filter((acc) => acc.accountType === "CTA");
 	console.log("Cash Accounts:", cashAccounts);
 	console.log("hasOnlySingleCashAccount:", cashAccounts.length === 1);
 	const hasOnlySingleCashAccount = cashAccounts.length === 1;
-	const defaultAccountNo = cashAccounts[0].accountNo
+	const defaultAccountNo = cashAccounts[0]?.accountNo ?? ""
 
 	const [quantity, setQuantity] = useState<number | "">("");
 	const [agreed, setAgreed] = useState(false);

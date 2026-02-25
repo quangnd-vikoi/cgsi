@@ -136,8 +136,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 										imageUrl: item.MastheadBasic_Article_Card_Thumbnail_Image,
 										description: item.MastheadBasic_Article_Short,
 										date: formatDate(item.Event_StartDate),
-										time: item.Tagging_Timing || "7.30pm SGT (TBC)",
-										location: item.Tagging_EventType || "Webinar",
+										time: item.Tagging_Timing || "7.30pm SGT",										location: item.Tagging_EventType || "Webinar",
 									}}
 									imageClassName={imageClassName}
 								/>

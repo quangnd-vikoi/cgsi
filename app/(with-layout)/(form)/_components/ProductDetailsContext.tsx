@@ -40,6 +40,8 @@ export const ProductDetailsProvider: React.FC<{ children: React.ReactNode }> = (
 	const [openAccordionValue, setOpenAccordionValue] = useState<string | undefined>(undefined);
 
 	const fetchProductDetails = useCallback(async () => {
+		setOpenAccordionValue(undefined);
+
 		if (!selectedId) {
 			setProductDetails(null);
 			setLoading(false);
