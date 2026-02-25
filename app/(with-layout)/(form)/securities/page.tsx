@@ -14,7 +14,7 @@ function ApplyFooter() {
 	const { selectedItem } = useSelectionStore();
 	if (productDetails?.allocationStatus === false && !selectedItem?.isCompact) {
 		return (
-			<div className="flex-shrink-0">
+			<div className="flex-shrink-0 pt-6">
 				<Separator className="mb-4" />
 				<div className="flex justify-end">
 					<ApplicationForm pathname="securities" />
@@ -30,7 +30,7 @@ const Securities = () => {
 
 	if (!selectedId) {
 		return (
-			<div className="relative h-[calc(100%-58px)] flex flex-col justify-center items-center">
+			<div className="flex-1 min-h-0 flex flex-col justify-center items-center">
 				<p className="text-xs md:text-base font-normal text-typo-secondary text-center">No product selected yet</p>
 			</div>
 		);
@@ -38,7 +38,7 @@ const Securities = () => {
 
 	return (
 		<ProductDetailsProvider>
-			<div className="relative h-[calc(100%-58px)] flex flex-col">
+			<div className="flex-1 min-h-0 flex flex-col">
 				<Tabs key={selectedId} defaultValue="overview" className="flex-1 flex flex-col min-h-0">
 					{/* Tabs + X button inline */}
 					<div className="flex items-center justify-between flex-shrink-0">

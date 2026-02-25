@@ -39,6 +39,7 @@ export const redirectToLogin = (): void => {
 export const logout = (): void => {
 	clearTokens();
 	if (isBrowser()) {
+		localStorage.removeItem("announcement-dismissed");
 		window.location.href = LOGOUT_URL;
 	}
 };
@@ -53,6 +54,8 @@ export const exchangeCode = async (code: string, redirectUri: string): Promise<v
 	if (!response.data) {
 		throw new Error("Failed to exchange code - no response data");
 	}
+
+	localStorage.removeItem("announcement-dismissed");
 
 	const { setTokens } = useAuthStore.getState();
 	setTokens(

@@ -35,7 +35,7 @@ export default function Layout({ children }: LayoutProps) {
 
 					{/* Right content - chỉ hiện trên mobile khi đã chọn item, luôn hiện từ md trở lên */}
 					<section
-						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad rounded`}
+						className={`${selectedId ? "flex" : "hidden md:flex"} flex-col flex-1 h-full bg-white pad rounded`}
 					>
 						<div className="flex-shrink-0">
 							<ChevronLeft

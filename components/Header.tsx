@@ -57,6 +57,8 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 	);
 };
 
+const DISMISSED_KEY = "announcement-dismissed";
+
 interface AnnouncementItem {
 	Announcement_Desc: string;
 	Anchor_Link: string;
@@ -66,7 +68,6 @@ export const AnnouncementBar = () => {
 	const [announcement, setAnnouncement] = useState<AnnouncementItem | null>(null);
 	const [isVisible, setIsVisible] = useState(true);
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
-
 	useEffect(() => {
 		const fetchAnnouncements = async () => {
 			try {
@@ -76,9 +77,8 @@ export const AnnouncementBar = () => {
 					const randomItem = items[Math.floor(Math.random() * items.length)];
 					setAnnouncement(randomItem);
 
-					// Check if this announcement was previously hidden (session only)
-					const storageKey = `announcement-hidden-${randomItem.Anchor_Link}`;
-					const wasHidden = sessionStorage.getItem(storageKey);
+					// Use a single key so dismissal persists across random picks and tabs
+					const wasHidden = localStorage.getItem(DISMISSED_KEY);
 					setIsVisible(!wasHidden);
 				}
 			} catch (error) {
@@ -90,11 +90,8 @@ export const AnnouncementBar = () => {
 	}, []);
 
 	const handleClose = () => {
-		if (announcement) {
-			const storageKey = `announcement-hidden-${announcement.Anchor_Link}`;
-			sessionStorage.setItem(storageKey, "true");
-			setIsVisible(false);
-		}
+		localStorage.setItem(DISMISSED_KEY, "true");
+		setIsVisible(false);
 	};
 
 	if (!announcement || !isVisible) return null;
@@ -194,7 +191,7 @@ const Header = () => {
 					<Button
 						onClick={handleTradeNowClick}
 						variant={"default"}
-						className="h-8 rounded bg-cgs-blue px-2 md:px-3 font-medium hover:bg-cgs-blue/70 text-base"
+						className="h-8 rounded bg-cgs-blue px-2 md:px-3 font-medium hover:bg-cgs-blue/70 text-sm"
 					>
 						<Image
 							src="/icons/Charts.svg"

@@ -51,7 +51,7 @@ const Navigation = () => {
 				<DropdownMenuTrigger asChild>
 					<button
 						className={cn(
-							"flex items-center gap-1 px-2 py-1 focus:outline-none transition-colors border-b-2 border-transparent min-w-0 max-w-[220px]",
+							"flex items-center gap-1 px-2 py-1 focus:outline-none transition-colors border-b-2 border-transparent min-w-0 max-w-[220px] md:max-w-none",
 							dropdownOpen && "bg-status-selected border-cgs-blue"
 						)}
 					>

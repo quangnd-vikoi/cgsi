@@ -123,10 +123,12 @@ const Campaigns = () => {
 			const response = await fetchAPI<Campaign[]>(url);
 			if (response.success && response.data) {
 				// Deduplicate campaigns based on SEO_Page_Name
-				const uniqueCampaigns = response.data.filter(
-					(campaign, index, self) =>
-						index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
-				);
+				const uniqueCampaigns = response.data
+					.filter(
+						(campaign, index, self) =>
+							index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
+					)
+					.slice(0, 6);
 				setCampaigns(uniqueCampaigns);
 			}
 		};

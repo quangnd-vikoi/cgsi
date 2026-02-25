@@ -83,10 +83,12 @@ const Events = ({ imageClassName }: EventsProps) => {
 
 				if (response.success && response.data) {
 					// Deduplicate events based on SEO_Page_Name
-					const uniqueEvents = response.data.filter(
-						(event, index, self) =>
-							index === self.findIndex((e) => e.SEO_Page_Name === event.SEO_Page_Name)
-					);
+					const uniqueEvents = response.data
+						.filter(
+							(event, index, self) =>
+								index === self.findIndex((e) => e.SEO_Page_Name === event.SEO_Page_Name)
+						)
+						.slice(0, 6);
 					setEvents(uniqueEvents);
 				}
 			} catch (error) {
