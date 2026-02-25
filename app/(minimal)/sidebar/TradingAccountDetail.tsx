@@ -4,7 +4,6 @@ import Group from "./_components/Group";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { ArrowRightCircle, ChevronDown, ChevronRight, CircleCheck, Copy } from "lucide-react";
 import WaringIcon from "@/public/icons/Warning.svg";
-import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { handleCopy } from "@/lib/utils";
@@ -31,7 +30,6 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 	isLinked = false,
 	onUnlink,
 	actionContent,
-	showSeparator = true,
 }) => {
 	return (
 		<>

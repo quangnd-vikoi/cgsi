@@ -58,7 +58,7 @@ interface RecurringDonationItem {
 	amount: string;
 }
 
-const RecurringForm = ({ plans }: RecurringFormProps) => {
+const RecurringForm = ({}: RecurringFormProps) => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
 	// Align state naming and structure with ApplicationForm
@@ -148,7 +148,7 @@ const RecurringForm = ({ plans }: RecurringFormProps) => {
 			} else {
 				toast.error("Donation Payment Failed");
 			}
-		} catch (error) {
+		} catch {
 			toast.error("Donation Payment Failed");
 		} finally {
 			setIsSubmitting(false);
@@ -165,7 +165,7 @@ const RecurringForm = ({ plans }: RecurringFormProps) => {
 			} else {
 				toast.error("Cancellation Failed", response.error || "Please try again later.");
 			}
-		} catch (error) {
+		} catch {
 			toast.error("Error Encountered", "Something went wrong. Please try again later.");
 		}
 	};

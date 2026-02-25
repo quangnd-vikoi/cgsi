@@ -1,4 +1,4 @@
-import Header from "@/components/Header";
+import Header, { AnnouncementBar } from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/toaster";
 import { SheetManager } from "@/app/(minimal)/sidebar/SheetManager";
@@ -11,9 +11,11 @@ export default function MainLayout({ children }: Readonly<{ children: React.Reac
 			<NotificationPolling />
 			<DataInitializer />
 
-			<header className="bg-white z-[100] relative">
+			<header className="bg-white z-[100] sticky top-0 shadow-sm">
 				<Header />
 			</header>
+
+			<AnnouncementBar />
 
 			<main className="flex-1 flex flex-col min-h-0">{children}</main>
 

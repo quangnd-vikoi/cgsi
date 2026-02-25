@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authService } from "@/lib/services/authService";
 import Campaigns from "./_component/Campaigns";
@@ -14,8 +14,12 @@ function HomeContent() {
 	const router = useRouter();
 	const [isAuthenticating, setIsAuthenticating] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const authInProgress = useRef(false);
 
 	useEffect(() => {
+		if (authInProgress.current) return;
+		authInProgress.current = true;
+
 		const handleAuth = async () => {
 			try {
 				// Always check for code from URL first (handles SSO callback)
@@ -46,7 +50,8 @@ function HomeContent() {
 		};
 
 		handleAuth();
-	}, [searchParams, router]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [searchParams]);
 
 	if (isAuthenticating) {
 		return (

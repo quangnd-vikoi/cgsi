@@ -2,29 +2,29 @@ import HomeStock from "@/public/icons/home-stock.svg";
 import HomeChart from "@/public/icons/home-chart.svg";
 import HomeCareer from "@/public/icons/home-career.svg";
 import HomeCountry from "@/public/icons/home-country.svg";
-import Image from "@/components/Image";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { CGSI } from "@/constants/routes";
 const PRODUCT_ITEMS = [
 	{
 		icons: <HomeStock className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Stock",
-		href: "#",
+		href: CGSI.PRODUCT_STOCKS,
 	},
 	{
 		icons: <HomeChart className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Margin Financing",
-		href: "#",
+		href: CGSI.PRODUCT_MARGIN_FINANCING,
 	},
 	{
 		icons: <HomeCareer className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Shares Borrowing & Lending",
-		href: "#",
+		href: CGSI.PRODUCT_SHARES_BORROWING,
 	},
 	{
 		icons: <HomeCountry className="text-icon-light group-hover:text-cgs-blue transition-colors" />,
 		label: "Shariah-Compliant Investment Products",
-		href: "#",
+		href: CGSI.PRODUCT_SHARIAH,
 	},
 ];
 const ProductInformation = () => {
@@ -38,8 +38,10 @@ const ProductInformation = () => {
 			<div className="hidden md:flex justify-between mt-6 gap-6 items-stretch">
 				{PRODUCT_ITEMS.map((item, index) => {
 					return (
-						<div
+						<Link
 							key={index}
+							href={item.href}
+							target="_blank"
 							className="group w-1/4 flex gap-4 p-6 items-center border border-stroke-secondary rounded hover:shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] cursor-pointer hover:border-cgs-blue justify-between min-w-0"
 						>
 							<div className="flex gap-5 items-center min-w-0 overflow-hidden">
@@ -52,7 +54,7 @@ const ProductInformation = () => {
 								</p>
 							</div>
 							<ChevronRight className="flex-none text-cgs-blue" size={20} />
-						</div>
+						</Link>
 					);
 				})}
 			</div>
@@ -62,7 +64,7 @@ const ProductInformation = () => {
 			<div className="border border-stroke-secondary rounded mt-6 md:hidden">
 				{PRODUCT_ITEMS.map((item, index) => {
 					return (
-						<Link href={item.href} key={index} className="flex p-4 items-center justify-between">
+						<Link href={item.href} target="_blank" key={index} className="flex p-4 items-center justify-between">
 							<div className="flex gap-4 min-w-0">
 								<div className="flex-none">{item.icons}</div>
 								<p className="truncate text-sm font-normal text-typo-secondary">

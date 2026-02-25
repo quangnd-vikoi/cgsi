@@ -1,9 +1,6 @@
 "use client";
 import { Dispatch, useState } from "react";
-import { Label } from "@/components/ui/label";
-import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { IMarketDataItem } from "../page";

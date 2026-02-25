@@ -6,7 +6,6 @@ import Insight from "./_components/Insight";
 import { Button } from "@/components/ui/button";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
-import { getBgImageClass } from "@/lib/utils";
 const Discover = () => {
 	return (
 		<div>

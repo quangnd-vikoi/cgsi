@@ -11,6 +11,10 @@ export const CGSI = {
 	ONETIME_DONATION: "https://itrade.cgsi.com.sg/app/donation.z?a=ack",
 	ESTATEMENT: "https://itrade.cgsi.com.sg/app/iTradeEstatement?systemId=8a839ebd87a6ff260187e4326dfb4d7e",
 	HELP_CENTRE: "https://www.cgsi.com.sg/draft/help/faq-itrade#General",
+	PRODUCT_STOCKS: "https://www.cgsi.com.sg/our-offerings/products/stocks?lang=EN",
+	PRODUCT_MARGIN_FINANCING: "https://www.cgsi.com.sg/our-offerings/products/margin-financing?lang=EN",
+	PRODUCT_SHARES_BORROWING: "https://www.cgsi.com.sg/our-offerings/products/stock-borrowing-and-lending?lang=EN",
+	PRODUCT_SHARIAH: "https://www.cgsi.com.sg/our-offerings/products/shariah-compliant-investments?lang=EN",
 
 	EVENT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/events/${id}&lang=EN`,
 	INSIGHT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/insights/${id}&lang=EN`,

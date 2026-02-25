@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
-import { Calendar, User, UserRoundPen } from "lucide-react";
+import { Calendar, UserRoundPen } from "lucide-react";
 import { IResearchArticleProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
-import { getBgImageClass } from "@/lib/utils";
 import ViewAll from "@/components/ViewAll";
 import { redirectToResearch } from "@/lib/services/externalSSOService";
 

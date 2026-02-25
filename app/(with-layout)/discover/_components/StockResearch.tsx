@@ -2,7 +2,6 @@
 import Image from "@/components/Image";
 import React from "react";
 import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
-import { StockResearchLMobile, StockResearchRMobile } from "@/public/icons/discover";
 
 type StockResearchCardProps = {
 	title: string;

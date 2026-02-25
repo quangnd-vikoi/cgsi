@@ -10,7 +10,6 @@ import { cn, formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
-import { getBgImageClass } from "@/lib/utils";
 import ViewAll from "@/components/ViewAll";
 
 // API Response Interface

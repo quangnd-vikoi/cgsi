@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Minus, Plus, Loader2 } from "lucide-react";
 import { cn, convertTo2DigitsNumber } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -20,7 +19,6 @@ import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import Image from "@/components/Image";
-import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";

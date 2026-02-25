@@ -1,7 +1,6 @@
 import React from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronRight, Copy } from "lucide-react";
+import { ChevronRight, Copy } from "lucide-react";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";

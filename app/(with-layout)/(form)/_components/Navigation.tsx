@@ -18,7 +18,7 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 		<Link href={link} className="w-full">
 			<DropdownMenuItem
 				className={cn(
-					"cursor-pointer px-3 py-[10px]",
+					"cursor-pointer px-4 py-3",
 					isActive ? "text-cgs-blue bg-status-selected" : "hover:bg-background-section"
 				)}
 			>
@@ -57,7 +57,7 @@ const Navigation = () => {
 					>
 						<span
 							className={cn(
-								"font-semibold text-lg truncate",
+								"font-semibold text-xl truncate",
 								dropdownOpen && "text-cgs-blue"
 							)}
 						>

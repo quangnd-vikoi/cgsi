@@ -114,9 +114,6 @@ export default function Sidebar() {
 		<div className="relative h-full w-full flex flex-col bg-white rounded md:w-sm" id="sidebar_form">
 			{/* Content - Scrollable */}
 			<div className="flex-1 overflow-y-auto sidebar-scroll pad">
-				<div className="flex-shrink-0 pb-6">
-					<h1 className="text-base font-semibold text-typo-primary">Products</h1>
-				</div>
 				{etfData.length === 0 ? (
 					<ErrorState
 						type="empty"
@@ -159,7 +156,7 @@ export default function Sidebar() {
 									</div>
 									<Button
 										className={cn(
-											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue text-xs font-medium rounded flex items-center leading-2",
+											"gap-1 px-3 h-6 border border-cgs-blue text-cgs-blue text-sm font-medium rounded flex items-center leading-2",
 											selectedId === etf.id
 												? "bg-background-selected hover:bg-background-selected cursor-default"
 												: "bg-white hover:bg-transparent hover:opacity-80 transition-colors"
@@ -174,13 +171,9 @@ export default function Sidebar() {
 									</Button>
 								</div>
 
-								<span className="px-3 py-1 text-typo-secondary text-xs rounded-full border border-stroke-secondary">
-									{etf.code}
-								</span>
-
 								{/* Details */}
 								{!etf.isCompact && (
-									<div className="flex flex-col gap-3 mt-6 *:text-xs">
+									<div className="flex flex-col gap-3 mt-6 *:text-sm">
 										<div className="flex justify-between items-center">
 											<span className=" text-typo-secondary">Issue Price</span>
 											<span className=" font-medium text-typo-primary">
@@ -210,7 +203,7 @@ export default function Sidebar() {
 
 								{etf.isCompact && (
 									<div className="mt-4">
-										<div className="flex justify-between items-center *:text-xs">
+										<div className="flex justify-between items-center *:text-sm">
 											<span className=" text-typo-tertiary">Closing Date</span>
 											<span className=" font-medium text-typo-tertiary">
 												{etf.closingDate}

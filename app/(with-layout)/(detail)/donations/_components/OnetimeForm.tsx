@@ -26,7 +26,6 @@ const OneTimeForm = ({ plans }: OneTimeFormProps) => {
 
 	const {
 		setAmount,
-		amount,
 		paymentMethod,
 		setPaymentMethod,
 		agreed,

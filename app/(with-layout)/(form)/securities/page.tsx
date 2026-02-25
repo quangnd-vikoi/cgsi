@@ -7,9 +7,10 @@ import ApplicationForm from "../_components/ApplicationForm";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProductDetailsProvider } from "../_components/ProductDetailsContext";
+import { X } from "lucide-react";
 
 const Securities = () => {
-	const { selectedItem, selectedId } = useSelectionStore();
+	const { selectedItem, selectedId, clearSelection } = useSelectionStore();
 
 	if (!selectedId) {
 		return (
@@ -23,18 +24,24 @@ const Securities = () => {
 		<ProductDetailsProvider>
 			<div className="relative h-[calc(100%-58px)] flex flex-col">
 				<Tabs defaultValue="overview" className="flex-1 flex flex-col min-h-0">
-					{/* Tabs */}
-					<TabsList className="flex-shrink-0">
-						<TabsTrigger className="py-2.5" value="overview">
-							Overview
-						</TabsTrigger>
-						<TabsTrigger className="py-2.5" value="analysis">
-							Analysis
-						</TabsTrigger>
-						<TabsTrigger className="py-2.5" value="documents">
-							Documents
-						</TabsTrigger>
-					</TabsList>
+					{/* Tabs + X button inline */}
+					<div className="flex items-center justify-between flex-shrink-0">
+						<TabsList className="flex-1">
+							<TabsTrigger className="py-2.5" value="overview">
+								Overview
+							</TabsTrigger>
+							<TabsTrigger className="py-2.5" value="analysis">
+								Analysis
+							</TabsTrigger>
+							<TabsTrigger className="py-2.5" value="documents">
+								Documents
+							</TabsTrigger>
+						</TabsList>
+						<X
+							className="cursor-pointer hover:text-cgs-blue transition-colors"
+							onClick={clearSelection}
+						/>
+					</div>
 
 					{/* Content - Takes remaining space */}
 					<TabsContent value="overview" className="flex-1 overflow-y-auto sidebar-scroll mt-0">

@@ -2,7 +2,7 @@
 import Navigation from "./_components/Navigation";
 import Sidebar from "./_components/Sidebar";
 import { useSelectionStore } from "@/stores/selectionStore";
-import { ChevronLeft, X } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -33,21 +33,10 @@ export default function Layout({ children }: LayoutProps) {
 						className={`${selectedId ? "block" : "hidden md:block"} flex-1 h-full bg-white pad rounded`}
 					>
 						<div className="flex-shrink-0">
-							<div className="flex justify-between items-center mb-1.5">
-								<div className="flex items-center gap-2">
-									<ChevronLeft
-										className="inline-block cursor-pointer md:hidden hover:text-cgs-blue transition-colors"
-										onClick={handleBackToSidebar}
-									/>
-									<p className="text-base md:text-lg font-semibold">Details</p>
-								</div>
-								<X
-									className="cursor-pointer hover:text-cgs-blue transition-colors"
-									onClick={handleBackToSidebar}
-								/>
-							</div>
-
-							{/* <Separator className="mt-4 mb-1.5" /> */}
+							<ChevronLeft
+								className="inline-block cursor-pointer md:hidden hover:text-cgs-blue transition-colors mb-1.5"
+								onClick={handleBackToSidebar}
+							/>
 						</div>
 						{children}
 					</section>

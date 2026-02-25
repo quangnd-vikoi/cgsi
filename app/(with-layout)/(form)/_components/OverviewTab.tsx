@@ -258,7 +258,7 @@ const OverviewTab = () => {
 					{productDetails.productName}
 				</h4>
 				{productDetails.content1 && (
-					<p className="text-xs md:text-sm text-typo-secondary leading-relaxed whitespace-pre-line">
+					<p className="text-base text-typo-secondary leading-relaxed whitespace-pre-line">
 						{productDetails.content1}
 					</p>
 				)}
@@ -307,15 +307,15 @@ const OverviewTab = () => {
 													<Check className="w-3 h-3 text-status-disable-primary" strokeWidth={4} />
 												)}
 											</div>
-											<span className="text-typo-primary text-xs font-medium">
+											<span className="text-typo-primary text-sm font-medium">
 												{item.label}
 											</span>
 										</div>
 										<div className="text-right">
-											<div className="text-typo-secondary text-xs font-medium">
+											<div className="text-typo-secondary text-sm font-medium">
 												{item.date}
 											</div>
-											<div className="text-[10px] text-typo-tertiary">{item.time}</div>
+											<div className="text-xs text-typo-tertiary">{item.time}</div>
 										</div>
 									</div>
 								</div>
@@ -329,15 +329,15 @@ const OverviewTab = () => {
 			{/* Fundamental */}
 
 			<div className="rounded pb-4">
-				<h5 className="text-base font-semibold text-typo-primary">Fundamentals</h5>
+				<h5 className="text-lg font-semibold text-typo-primary">Fundamentals</h5>
 				<table className="w-full mt-4 text-xs">
 					<tbody className="">
 						{fundamentals.map((item, index) => (
 							<tr key={index} className="">
-								<td className={cn("py-2 w-1/2 text-typo-secondary font-normal text-sm")}>
+								<td className={cn("py-2 w-1/2 text-typo-secondary font-normal text-base")}>
 									{item.key}
 								</td>
-								<td className="text-typo-primary font-medium text-sm text-right">
+								<td className="text-typo-primary font-medium text-base text-right">
 									{item.value}
 								</td>
 							</tr>
