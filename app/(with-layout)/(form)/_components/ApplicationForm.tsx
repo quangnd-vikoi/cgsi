@@ -106,6 +106,16 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 		}
 	}, [hasOnlySingleCashAccount, cashAccounts, formValues.account]);
 
+	// Default settlement currency to product's base currency
+	useEffect(() => {
+		if (productDetails?.baseCurrency) {
+			const val = productDetails.baseCurrency.toLowerCase();
+			if (CURRENCY_OPTIONS.some((c) => c.value === val)) {
+				setFormValues((prev) => ({ ...prev, currency: val }));
+			}
+		}
+	}, [productDetails?.baseCurrency]);
+
 	// If no product details, don't render
 	if (!productDetails) {
 		return null;
@@ -162,8 +172,8 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 			if (result.success && result.data) {
 				// Success
 				toast.success(
-					"Application Submitted Successfully!",
-					`Your application for ${FORM_CONFIG.productName} has been submitted.`
+					"Success!",
+					`Your ${productDetails.productType} Application for ${FORM_CONFIG.productName} has been submitted successfully.`
 				);
 
 				// Refetch product details to update subscription status
@@ -204,7 +214,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 			console.error("Submission error:", error);
 			toast.error(
 				"Error Encountered",
-				"An unexpected error occurred. Please try again later."
+				"Something went wrong. Please try again later."
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -303,7 +313,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 										showValidationErrors && !formValues.account && "border-status-error bg-background-error"
 									)}
 								>
-									<span>(Cash) {cashAccounts[0].accountNo}</span>
+									<span>Cash – {cashAccounts[0].accountNo}</span>
 								</div>
 							</div>
 						) : (
@@ -324,7 +334,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								<SelectContent className="z-[105]">
 									{cashAccounts.map((account) => (
 										<SelectItem key={account.accountNo} value={account.accountNo}>
-											<p>(Cash) {account.accountNo}</p>
+											<p>Cash – {account.accountNo}</p>
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -425,7 +435,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							<Button
 								type="button"
 								onClick={() => handleQuantityChange(-FORM_CONFIG.unitIncremental)}
-								disabled={quantity === "" || currentQuantity <= FORM_CONFIG.minQuantity}
+								disabled={quantity === "" || currentQuantity <= 0}
 								variant="outline"
 								size="icon"
 								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
@@ -493,6 +503,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							if (checked) setShowError(false);
 						}}
 						showError={showError}
+						errorMessage="Please confirm the declaration to submit application"
 						labelText="By checking this box, you acknowledge that you have read and agree to abide by the underlying"
 						className="mb-4"
 					/>
