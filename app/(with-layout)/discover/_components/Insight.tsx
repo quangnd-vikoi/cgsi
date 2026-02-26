@@ -65,7 +65,10 @@ const Insight = () => {
 				const response = await fetchAPI<InsightAPIItem[]>(url);
 
 				if (response.success && response.data) {
-					setInsights(response.data);
+					// TODO: remove duplicate when API returns enough data (>6)
+					const duplicated = [...response.data, ...response.data];
+					setInsights(duplicated.slice(0, 6));
+					// Original: setInsights(response.data.slice(0, 6));
 				}
 			} catch (error) {
 				console.error("Failed to fetch insights:", error);
