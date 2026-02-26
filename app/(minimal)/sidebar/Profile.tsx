@@ -102,7 +102,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	if (item.onClick || item.sheet !== undefined) {
 		return (
 			<div
-				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
 				onClick={handleClick}
 			>
 				{content}

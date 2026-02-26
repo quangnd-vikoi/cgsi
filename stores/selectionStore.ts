@@ -11,7 +11,7 @@ interface SelectedItem {
 	closingDate: string;
 	hasDetails: boolean;
 	isCompact?: boolean;
-	applied: boolean;
+	subscribed: boolean;
 }
 
 interface SelectionStore {

@@ -133,7 +133,7 @@ export default function MyApplication() {
 			issuePrice: application.issuePrice,
 			closingDate: application.closingDate,
 			hasDetails: true,
-			applied: true,
+			subscribed: true,
 		});
 
 		// Navigate to securities or alternatives page based on type

@@ -6,13 +6,12 @@ import DocumentsTab from "../_components/DocumentsTab";
 import ApplicationForm from "../_components/ApplicationForm";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ProductDetailsProvider, useProductDetails } from "../_components/ProductDetailsContext";
+import { ProductDetailsProvider } from "../_components/ProductDetailsContext";
 import { X } from "lucide-react";
 
 function ApplyFooter() {
-	const { productDetails } = useProductDetails();
 	const { selectedItem } = useSelectionStore();
-	if (productDetails?.allocationStatus === false && !selectedItem?.isCompact) {
+	if (!selectedItem?.isCompact && !selectedItem?.subscribed) {
 		return (
 			<div className="flex-shrink-0 pt-6">
 				<Separator className="mb-4" />

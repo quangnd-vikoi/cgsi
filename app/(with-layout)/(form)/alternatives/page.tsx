@@ -6,7 +6,7 @@ import DocumentsTab from "../_components/DocumentsTab";
 import ApplicationForm from "../_components/ApplicationForm";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ProductDetailsProvider, useProductDetails } from "../_components/ProductDetailsContext";
+import { ProductDetailsProvider } from "../_components/ProductDetailsContext";
 import { X } from "lucide-react";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useRouter } from "next/navigation";
@@ -15,9 +15,8 @@ import { AlternativesAccessAlert } from "@/components/AlternativesAccessAlert";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 
 function ApplyFooter() {
-	const { productDetails } = useProductDetails();
 	const { selectedItem } = useSelectionStore();
-	if (productDetails?.allocationStatus === false && !selectedItem?.isCompact) {
+	if (!selectedItem?.isCompact && !selectedItem?.subscribed) {
 		return (
 			<div className="flex-shrink-0 pt-6">
 				<Separator className="mb-4" />
@@ -39,12 +38,12 @@ const Alternatives = () => {
 	const isAI = selectedAccount?.accreditedInvestor === "Yes";
 
 	const handleRedirectHome = () => {
-		router.replace(INTERNAL_ROUTES.HOME);
+		router.replace(INTERNAL_ROUTES.SECURITIES);
 	};
 
 	const handleContactUs = () => {
 		setOpenSheet("contact");
-		router.replace(INTERNAL_ROUTES.HOME);
+		router.replace(INTERNAL_ROUTES.SECURITIES);
 	};
 
 	if (isInitialized && !isAI) {

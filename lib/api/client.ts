@@ -108,6 +108,7 @@ async function ensureValidToken(force: boolean = false): Promise<void> {
  * @returns Normalized response
  */
 export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Promise<APIResponse<T>> {
+	let resStatus: number | undefined;
 	try {
 		const { useAuth = false, _isRetry = false, ...restOptions } = options;
 
@@ -134,6 +135,7 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			...restOptions,
 			headers,
 		});
+		resStatus = res.status;
 
 		// Handle empty responses (204 No Content, etc.)
 		if (res.status === 204 || res.headers.get("content-length") === "0") {
@@ -230,11 +232,11 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 			};
 		}
 	} catch (error) {
-		// Network or parsing errors
+		// Network or parsing errors — use actual HTTP status if fetch succeeded but body parsing failed
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Network error",
-			statusCode: 500,
+			statusCode: resStatus ?? 500,
 			data: null,
 		};
 	}

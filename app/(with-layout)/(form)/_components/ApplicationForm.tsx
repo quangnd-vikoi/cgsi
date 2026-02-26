@@ -72,10 +72,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const accounts = useTradingAccountStore((state) => state.accounts);
 
 	// Filter cash accounts (CTA = Cash Trading Account)
-	console.log("All Accounts:", accounts);
 	const cashAccounts = accounts.filter((acc) => acc.accountType === "CTA");
-	console.log("Cash Accounts:", cashAccounts);
-	console.log("hasOnlySingleCashAccount:", cashAccounts.length === 1);
 	const hasOnlySingleCashAccount = cashAccounts.length === 1;
 	const defaultAccountNo = cashAccounts[0]?.accountNo ?? ""
 
@@ -94,9 +91,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 	// Handle click on disabled account field
 	const handleDisabledAccountClick = () => {
-		if (hasOnlySingleCashAccount) {
-			toast.info("Account currently only has 1 Cash Account");
-		}
+		toast.info("Account currently only has 1 Cash Account");
 	};
 
 	// Auto-fill account when there's only one cash account
@@ -188,7 +183,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				setFormValues({
 					account: defaultAccountNo,
 					payment: "",
-					currency: "sgd",
+					currency: productDetails.baseCurrency?.toLowerCase() ?? "sgd",
 				});
 
 				// Open note tab or redirect based on pathname
@@ -222,9 +217,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	};
 
 	const handleQuantityChange = (delta: number) => {
-		const currentQty = quantity === "" ? FORM_CONFIG.minQuantity : quantity;
+		// When empty and clicking +, land on minQuantity (not minQuantity + increment)
+		const currentQty = quantity === "" ? FORM_CONFIG.minQuantity - FORM_CONFIG.unitIncremental : quantity;
 		const newQty = currentQty + delta;
-		if (newQty >= FORM_CONFIG.minQuantity) {
+		if (newQty >= 0) {
 			setQuantity(newQty);
 		}
 	};
@@ -243,6 +239,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 	const updateFormValue = (field: string, value: string) => {
 		setFormValues((prev) => ({ ...prev, [field]: value }));
+		setShowValidationErrors(false);
 	};
 
 	const quantityDetails = [
@@ -300,46 +297,30 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						>
 							Account
 						</Label>
-						{hasOnlySingleCashAccount ? (
-							// Single cash account - show disabled field with toast on click
-							<div
-								onClick={handleDisabledAccountClick}
-								className="w-full cursor-not-allowed"
-							>
-								<div
-									className={cn(
-										"flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-muted/50 px-3 py-2 text-sm shadow-xs",
-										"text-typo-secondary opacity-70",
-										showValidationErrors && !formValues.account && "border-status-error bg-background-error"
-									)}
-								>
-									<span>Cash – {cashAccounts[0].accountNo}</span>
-								</div>
-							</div>
-						) : (
-							// Multiple cash accounts - show select dropdown
-							<Select
-								value={formValues.account}
-								onValueChange={(value) => updateFormValue("account", value)}
-							>
-								<SelectTrigger
-									id="account"
-									className={cn(
-										"w-full",
-										showValidationErrors && !formValues.account && "border-status-error bg-background-error"
-									)}
-								>
-									<SelectValue placeholder="Select an account" />
-								</SelectTrigger>
-								<SelectContent className="z-[105]">
-									{cashAccounts.map((account) => (
-										<SelectItem key={account.accountNo} value={account.accountNo}>
-											<p>Cash – {account.accountNo}</p>
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						)}
+						<div onClick={hasOnlySingleCashAccount ? handleDisabledAccountClick : undefined}>
+						<Select
+						value={formValues.account}
+						onValueChange={(value) => updateFormValue("account", value)}
+						disabled={hasOnlySingleCashAccount}
+					>
+						<SelectTrigger
+							id="account"
+							className={cn(
+								"w-full disabled:bg-status-disable-secondary disabled:border-stroke-secondary disabled:pointer-events-none",
+								showValidationErrors && !formValues.account && "border-status-error bg-background-error"
+							)}
+						>
+							<SelectValue placeholder="Select an account" />
+						</SelectTrigger>
+						<SelectContent className="z-[105]">
+							{cashAccounts.map((account) => (
+								<SelectItem key={account.accountNo} value={account.accountNo}>
+									<p>(Cash) {account.accountNo}</p>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+						</div>
 					</div>
 
 					{/* Payment Field */}

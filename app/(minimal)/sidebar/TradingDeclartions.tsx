@@ -63,8 +63,10 @@ const isExpiringSoon = (dateString: string | null): boolean => {
 
 const TradingDeclartions = () => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
+	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const [loadingId, setLoadingId] = useState<string | null>(null);
 	const [tradingInfo, setTradingInfo] = useState<TradingInfoResponse | null>(null);
 	const [alertContent, setAlertContent] = useState({
 		title: "",
@@ -190,42 +192,22 @@ const TradingDeclartions = () => {
 
 	const getSipStatus = (): DeclarationStatus => {
 		if (!tradingInfo?.sip.toDisplay) return "inactive";
-		if (tradingInfo.sip.isPassed) return "success";
+		if (tradingInfo.sip.passed) return "success";
 		if (tradingInfo.sip.dueForSubmission) return "expiring";
 		return "inactive";
 	};
 
 	const items: DeclarationItem[] = [
 		{
-			id: "cka",
-			title: "CKA",
+			id: "sip",
+			title: "SIP",
 			status: getSipStatus(),
 			exp: "-",
 			toDisplay: tradingInfo?.sip.toDisplay ?? true,
 			tooltipContent: (
 				<p>
-					Customer Knowledge Assessment (CKA) is required to trade Listed Specified Investment
-					Products (SIPs). Clients must complete a declaration to assess their investment knowledge.
-				</p>
-			),
-			onDeclare: () => {
-				window.open(
-					"/images/declaration/CKA.png",
-					"TradeNow",
-					`width=${975},height=${700},screenX=${500},screenY=${400},resizable=yes,scrollbars=yes`
-				);
-			},
-		},
-		{
-			id: "car",
-			title: "CAR",
-			status: getSipStatus(),
-			exp: "-",
-			toDisplay: tradingInfo?.sip.toDisplay ?? true,
-			tooltipContent: (
-				<p>
-					Customer Account Review (CAR) is required to trade Unlisted Specified Investment Products
-					(SIPs). Clients must complete a declaration to assess their investment experience.
+					Specified Investment Products (SIP) declaration is required to trade SIPs. Clients must
+					complete a declaration to assess their investment knowledge and experience.
 				</p>
 			),
 			onDeclare: () => {
@@ -249,10 +231,12 @@ const TradingDeclartions = () => {
 				</p>
 			),
 			onDeclare: async () => {
-				await redirectToEW8();
+				setLoadingId("w8ben");
+				try { await redirectToEW8(); } finally { setLoadingId(null); }
 			},
 			onRenew: async () => {
-				await redirectToEW8();
+				setLoadingId("w8ben");
+				try { await redirectToEW8(); } finally { setLoadingId(null); }
 			},
 		},
 		{
@@ -274,16 +258,18 @@ const TradingDeclartions = () => {
 			tooltipContent:
 				"Financial institutions are required to collect and report account information to support international tax transparency and prevent tax evasion by foreign tax residents.",
 			onDeclare: async () => {
-				await redirectToECRS();
+				setLoadingId("crs");
+				try { await redirectToECRS(); } finally { setLoadingId(null); }
 			},
 			onRenew: async () => {
-				await redirectToECRS();
+				setLoadingId("crs");
+				try { await redirectToECRS(); } finally { setLoadingId(null); }
 			},
 		},
 		{
 			id: "accredited",
 			title: "Accredited Investor",
-			status: "inactive",
+			status: selectedAccount?.accreditedInvestor === "Yes" ? "success" : "inactive",
 			exp: "-",
 			toDisplay: true,
 			tooltipContent: (
@@ -349,8 +335,9 @@ const TradingDeclartions = () => {
 							</div>
 							<Button
 								onClick={item.status === "inactive" ? item.onDeclare : item.onRenew}
+								disabled={loadingId === item.id}
 								variant={"outline"}
-								className="text-cgs-blue border-cgs-blue text-sm h-8 px-3 hover:bg-white hover:text-cgs-blue/75 hover:border-cgs-blue/75"
+								className="text-cgs-blue border-cgs-blue text-sm h-8 px-3 hover:bg-white hover:text-cgs-blue/75 hover:border-cgs-blue/75 disabled:cursor-wait disabled:opacity-50"
 							>
 								{item.status === "inactive" ? "Declare Now" : "Renew"}
 								<ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />

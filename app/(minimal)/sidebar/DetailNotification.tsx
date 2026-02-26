@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Image from "@/components/Image";
 import { useSheetStore } from "@/stores/sheetStore";
 import { INotification } from "@/types";
+import { notificationService } from "@/lib/services/notificationService";
 
 /**
  * Format ISO 8601 date to display format
@@ -12,21 +13,30 @@ import { INotification } from "@/types";
 function formatDate(isoDate: string): string {
 	try {
 		const date = new Date(isoDate);
-		return date.toLocaleString("en-SG", {
+		const parts = new Intl.DateTimeFormat("en-SG", {
+			timeZone: "Asia/Singapore",
 			day: "2-digit",
 			month: "short",
 			year: "numeric",
 			hour: "2-digit",
 			minute: "2-digit",
-			timeZoneName: "short",
-		});
+			hour12: false,
+		}).formatToParts(date);
+		const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+		return `${get("day")}-${get("month")}-${get("year")}, ${get("hour")}:${get("minute")} SGT`;
 	} catch {
-		return isoDate; // Fallback to raw string if parsing fails
+		return isoDate;
 	}
 }
 
 const DetailNotification = () => {
 	const { notification } = useSheetStore((state) => state.payload) as { notification: INotification };
+
+	useEffect(() => {
+		if (notification?.status === "U") {
+			notificationService.markNotificationAsRead(notification.id).catch(console.error);
+		}
+	}, [notification?.id]);
 
 	// Check if payload doesn't exist or is empty
 	if (!notification) {

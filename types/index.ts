@@ -385,7 +385,7 @@ export interface ECRSSSOResponse {
 // SIP (Sophisticated Investor Program) Info
 export interface ITradingInfoSIP {
 	toDisplay: boolean;
-	isPassed: boolean;
+	passed: boolean;
 	dueForSubmission: boolean;
 	lastSubmissionID: string | null;
 }

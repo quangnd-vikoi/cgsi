@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,26 +21,31 @@ export default function Sidebar() {
 	// Determine product type based on pathname
 	const productType = pathname.startsWith(INTERNAL_ROUTES.SECURITIES) ? "IOP" : "AI";
 
-	// Fetch product subscriptions
-	const fetchProductSubscriptions = useCallback(async () => {
-		setLoading(true);
-		setError(null);
-
-		const result = await subscriptionService.getProductSubscriptionsByType(productType);
-
-		if (result.success && result.data) {
-			setProductSubs(result.data.productSubs);
-		} else {
-			setError(result.error || "Failed to load products. Please try again later.");
-		}
-
-		setLoading(false);
-	}, [productType]);
-
-	// Fetch data on mount and when product type changes
 	useEffect(() => {
-		fetchProductSubscriptions();
-	}, [fetchProductSubscriptions]);
+		let cancelled = false;
+
+		const fetch = async () => {
+			setLoading(true);
+			setError(null);
+			setProductSubs([]);
+
+			const result = await subscriptionService.getProductSubscriptionsByType(productType);
+
+			if (cancelled) return;
+
+			if (result.success && result.data) {
+				setProductSubs(result.data.productSubs);
+			} else {
+				setError(result.error || "Failed to load products. Please try again later.");
+			}
+
+			setLoading(false);
+		};
+
+		fetch();
+
+		return () => { cancelled = true; };
+	}, [productType]);
 
 	// Format date string to display format
 	const formatDateTime = (isoString: string): string => {
@@ -73,7 +78,7 @@ export default function Sidebar() {
 		openingDate: formatDateTime(sub.startTime),
 		closingDate: formatDateTime(sub.endTime),
 		hasDetails: true,
-		applied: sub.isSubscribed,
+		subscribed: sub.isSubscribed,
 		isCompact: isClosingDatePassed(sub.endTime),
 	}));
 
@@ -134,7 +139,7 @@ export default function Sidebar() {
 								)}
 							>
 								{/* Applied Badge - góc trái trên */}
-								{etf.applied && (
+								{etf.subscribed && (
 									<div className="absolute top-0 left-0">
 										<div className="bg-status-success text-white text-[10px] font-medium px-2 py-0.5 rounded-tl rounded-br">
 											Applied
@@ -143,7 +148,7 @@ export default function Sidebar() {
 								)}
 
 								{/* Header */}
-								<div className={cn("flex items-start gap-2 mb-2", etf.applied && "mt-3")}>
+								<div className={cn("flex items-start gap-2 mb-2", etf.subscribed && "mt-3")}>
 									<div className="flex-1">
 										<h3
 											className={cn(

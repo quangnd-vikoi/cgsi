@@ -16,16 +16,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 function formatDate(isoDate: string): string {
 	try {
 		const date = new Date(isoDate);
-		return date.toLocaleString("en-SG", {
+		const parts = new Intl.DateTimeFormat("en-SG", {
+			timeZone: "Asia/Singapore",
 			day: "2-digit",
 			month: "short",
 			year: "numeric",
 			hour: "2-digit",
 			minute: "2-digit",
-			timeZoneName: "short",
-		});
+			hour12: false,
+		}).formatToParts(date);
+		const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+		return `${get("day")}-${get("month")}-${get("year")}, ${get("hour")}:${get("minute")} SGT`;
 	} catch {
-		return isoDate; // Fallback to raw string if parsing fails
+		return isoDate;
 	}
 }
 

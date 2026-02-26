@@ -42,7 +42,8 @@
       "WebFetch(domain:www.cgsi.com.sg)",
       "Bash(npm run build:*)",
       "Bash(cp -r \"C:/Users/Quang Nguyen/OneDrive/.claude-original/skills/.\" \"C:/Users/Quang Nguyen/.claude/skills/\" && echo \"Done\" 2>&1)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

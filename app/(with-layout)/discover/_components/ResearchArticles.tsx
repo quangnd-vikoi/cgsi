@@ -1,11 +1,15 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Calendar, UserRoundPen } from "lucide-react";
+import { useState } from "react";
 import { IResearchArticleProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import ViewAll from "@/components/ViewAll";
-import { redirectToResearch } from "@/lib/services/externalSSOService";
+import Alert from "@/components/Alert";
+import { getResearchSSO, redirectToSSO } from "@/lib/services/externalSSOService";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 
 // Research Article Card Component
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
@@ -79,7 +83,26 @@ const articles: Array<IResearchArticleProps> = [
 ];
 
 const ResearchArticles = () => {
+	const router = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
+	const [showSubscribeAlert, setShowSubscribeAlert] = useState(false);
+
+	const handleViewAll = async () => {
+		setIsLoading(true);
+		try {
+			const response = await getResearchSSO();
+if (response.success && response.data) {
+				redirectToSSO(response.data.redirectUrl);
+			} else if (!response.success && response.statusCode !== 401) {
+				setShowSubscribeAlert(true);
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	return (
+		<>
 		<div
 			className="bg-white md:bg-cover py-6 md:py-12"
 		>
@@ -88,7 +111,7 @@ const ResearchArticles = () => {
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-2xl">Research Articles</span>
 					</div>
-					<ViewAll onClick={redirectToResearch} />
+					<ViewAll onClick={handleViewAll} isLoading={isLoading} />
 				</div>
 
 				{/* Research Articles Carousel */}
@@ -120,6 +143,26 @@ const ResearchArticles = () => {
 				</div>
 			</div>
 		</div>
+
+		<Alert
+			open={showSubscribeAlert}
+			onOpenChange={setShowSubscribeAlert}
+			title="Subscribe to Research Access"
+			description={
+				<p>
+					Subscribe now to unlock unlimited access to our complete suite of research articles,
+					premium insights, and expert analysis, everything you need to stay informed and ahead.
+				</p>
+			}
+			cancelText="Cancel"
+			actionText="Subscribe"
+			onCancel={() => setShowSubscribeAlert(false)}
+			onAction={() => {
+				setShowSubscribeAlert(false);
+				router.push(INTERNAL_ROUTES.MARKET_DATA);
+			}}
+		/>
+		</>
 	);
 };
 

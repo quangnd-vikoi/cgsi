@@ -1,6 +1,6 @@
 "use client";
 import Image from "@/components/Image";
-import React from "react";
+import React, { useState } from "react";
 import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
 
 type StockResearchCardProps = {
@@ -14,7 +14,7 @@ type StockResearchCardProps = {
 	onClick?: () => void | Promise<void>;
 };
 
-const StockResearchCard: React.FC<StockResearchCardProps> = ({
+const StockResearchCard: React.FC<StockResearchCardProps & { isLoading?: boolean }> = ({
 	title,
 	imageSrc,
 	subtext,
@@ -22,11 +22,12 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 	imageWidth = 110,
 	imageHeight = 125,
 	onClick,
+	isLoading,
 }) => {
 	return (
 		<div
-			onClick={onClick}
-			className="relative bg-white rounded border border-stroke-secondary hover:border-background-selected hover:shadow w-full cursor-pointer overflow-visible"
+			onClick={!isLoading ? onClick : undefined}
+			className={`relative bg-white rounded border border-stroke-secondary hover:border-background-selected hover:shadow w-full overflow-visible ${isLoading ? "cursor-wait opacity-75" : "cursor-pointer"}`}
 		>
 			<div className="p-4 md:pl-6 md:pt-5 md:pb-4 w-2/3">
 				<div className="flex items-center gap-4 md:mb-2">
@@ -49,6 +50,13 @@ const StockResearchCard: React.FC<StockResearchCardProps> = ({
 };
 
 const StockResearch = () => {
+	const [loadingCard, setLoadingCard] = useState<string | null>(null);
+
+	const handleClick = async (id: string, fn: () => Promise<void>) => {
+		setLoadingCard(id);
+		try { await fn(); } finally { setLoadingCard(null); }
+	};
+
 	return (
 		<div className="bg-background-section">
 			<div className="container-default py-4 md:py-8">
@@ -60,7 +68,8 @@ const StockResearch = () => {
 
 				<div className="mt-6 flex flex-col md:flex-row gap-4 justify-between">
 					<StockResearchCard
-						onClick={redirectToIScreener}
+						onClick={() => handleClick("iscreener", redirectToIScreener)}
+						isLoading={loadingCard === "iscreener"}
 						title="iScreener"
 						available={1}
 						imageSrc="/icons/discover/Stock-Research-L.svg"
@@ -68,7 +77,8 @@ const StockResearch = () => {
 					/>
 
 					<StockResearchCard
-						onClick={redirectToStockFilter}
+						onClick={() => handleClick("stockfilter", redirectToStockFilter)}
+						isLoading={loadingCard === "stockfilter"}
 						title="Stock Filter"
 						available={0}
 						imageSrc="/icons/discover/Stock-Research-R.svg"
