@@ -399,6 +399,7 @@ export interface ITradingInfoW8BEN {
 
 // CRS Info
 export interface ITradingInfoCRS {
+	toDisplay: boolean;
 	certified: boolean;
 	isJointAcct: boolean;
 	validationDate: string | null;
