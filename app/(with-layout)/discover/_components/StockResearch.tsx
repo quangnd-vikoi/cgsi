@@ -1,7 +1,7 @@
 "use client";
 import Image from "@/components/Image";
-import React, { useState } from "react";
-import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
+import React, { useEffect, useState } from "react";
+import { getIScreenerSSO, getStockFilterSSO, redirectToIScreener, redirectToStockFilter, redirectToSSO } from "@/lib/services/ssoService";
 
 type StockResearchCardProps = {
 	title: string;
@@ -51,8 +51,27 @@ const StockResearchCard: React.FC<StockResearchCardProps & { isLoading?: boolean
 
 const StockResearch = () => {
 	const [loadingCard, setLoadingCard] = useState<string | null>(null);
+	const [prefetchedUrls, setPrefetchedUrls] = useState<Record<string, string>>({});
+
+	useEffect(() => {
+		getIScreenerSSO().then((r) => {
+			if (r.success && r.data) {
+				setPrefetchedUrls((prev) => ({ ...prev, iscreener: r.data!.redirectUrl }));
+			}
+		});
+		getStockFilterSSO().then((r) => {
+			if (r.success && r.data) {
+				setPrefetchedUrls((prev) => ({ ...prev, stockfilter: r.data!.redirectUrl }));
+			}
+		});
+	}, []);
 
 	const handleClick = async (id: string, fn: () => Promise<void>) => {
+		const prefetchedUrl = prefetchedUrls[id];
+		if (prefetchedUrl) {
+			redirectToSSO(prefetchedUrl);
+			return;
+		}
 		setLoadingCard(id);
 		try { await fn(); } finally { setLoadingCard(null); }
 	};

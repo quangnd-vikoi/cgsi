@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Calendar, UserRoundPen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IResearchArticleProps } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
@@ -86,12 +86,32 @@ const ResearchArticles = () => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [showSubscribeAlert, setShowSubscribeAlert] = useState(false);
+	const [prefetchedUrl, setPrefetchedUrl] = useState<string | null>(null);
+	const [prefetchFailed, setPrefetchFailed] = useState(false);
+
+	useEffect(() => {
+		getResearchSSO().then((r) => {
+			if (r.success && r.data) {
+				setPrefetchedUrl(r.data.redirectUrl);
+			} else if (!r.success && r.statusCode !== 401) {
+				setPrefetchFailed(true);
+			}
+		});
+	}, []);
 
 	const handleViewAll = async () => {
+		if (prefetchedUrl) {
+			redirectToSSO(prefetchedUrl);
+			return;
+		}
+		if (prefetchFailed) {
+			setShowSubscribeAlert(true);
+			return;
+		}
 		setIsLoading(true);
 		try {
 			const response = await getResearchSSO();
-if (response.success && response.data) {
+			if (response.success && response.data) {
 				redirectToSSO(response.data.redirectUrl);
 			} else if (!response.success && response.statusCode !== 401) {
 				setShowSubscribeAlert(true);
