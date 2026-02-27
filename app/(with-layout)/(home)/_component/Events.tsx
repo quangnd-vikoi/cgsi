@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import ViewAll from "@/components/ViewAll";
+import EventsSkeleton from "./skeletons/EventsSkeleton";
 
 // API Response Interface
 interface EventAPIItem {
@@ -25,7 +26,7 @@ interface EventAPIItem {
 }
 
 // Event Card Component
-const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassName?: string }) => {
+const EventCard = ({ event, imageClassName, isPriority }: { event: IEventProps; imageClassName?: string; isPriority?: boolean }) => {
 	return (
 		<Link href={CGSI.EVENT_BY_ID(event.id)} target="_blank" className="mb-[1px] block group">
 			<div className="bg-white rounded flex flex-col hover:shadow transition-shadow">
@@ -35,6 +36,8 @@ const EventCard = ({ event, imageClassName }: { event: IEventProps; imageClassNa
 						src={event.imageUrl}
 						alt={event.title}
 						fill
+						priority={isPriority}
+						sizes="(max-width: 768px) 80vw, (max-width: 1280px) 30vw, 22vw"
 					/>
 				</div>
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 ">
@@ -103,7 +106,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 	}, []);
 
 	if (loading) {
-		return null; // Or a loading skeleton
+		return <EventsSkeleton />;
 	}
 
 	return (
@@ -131,7 +134,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 					) : (
 						<CustomizeCarousel<EventAPIItem>
 							items={events}
-							renderItem={(item) => (
+							renderItem={(item, index) => (
 								<EventCard
 									event={{
 										id: item.SEO_Page_Name,
@@ -142,6 +145,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 										time: item.Tagging_Timing || "7.30pm SGT",										location: item.Tagging_EventType || "Webinar",
 									}}
 									imageClassName={imageClassName}
+									isPriority={index === 0}
 								/>
 							)}
 							getItemKey={(item) => item.SEO_Page_Name}

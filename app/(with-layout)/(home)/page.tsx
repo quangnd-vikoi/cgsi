@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authService } from "@/lib/services/authService";
 import Campaigns from "./_component/Campaigns";
@@ -7,7 +7,8 @@ import Events from "./_component/Events";
 import Investment from "./_component/Investment";
 import ProductInformation from "./_component/ProductInformation";
 import { ErrorState } from "@/components/ErrorState";
-import { Skeleton } from "@/components/ui/skeleton";
+import HomePageSkeleton from "./_component/skeletons/HomePageSkeleton";
+import { prefetchCampaigns } from "./_component/campaignsPrefetch";
 
 function HomeContent() {
 	const searchParams = useSearchParams();
@@ -16,7 +17,17 @@ function HomeContent() {
 	const [error, setError] = useState<string | null>(null);
 	const authInProgress = useRef(false);
 
+	// Runs synchronously before the first browser paint — no hydration mismatch,
+	// no visible skeleton flash for authenticated users.
+	useLayoutEffect(() => {
+		const hasCode = new URLSearchParams(window.location.search).get("code");
+		if (!hasCode && authService.isAuthenticated()) {
+			setIsAuthenticating(false);
+		}
+	}, []);
+
 	useEffect(() => {
+		prefetchCampaigns(); // public API — start fetch immediately
 		if (authInProgress.current) return;
 		authInProgress.current = true;
 
@@ -54,14 +65,7 @@ function HomeContent() {
 	}, [searchParams]);
 
 	if (isAuthenticating) {
-		return (
-			<div className="flex items-center justify-center min-h-[400px]">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cgs-blue mx-auto mb-4"></div>
-					<p className="text-typo-secondary">Authenticating...</p>
-				</div>
-			</div>
-		);
+		return <HomePageSkeleton />;
 	}
 
 	if (error) {
@@ -91,15 +95,7 @@ function HomeContent() {
 
 export default function Home() {
 	return (
-		<Suspense
-			fallback={
-				<div className="container-default space-y-6 py-6">
-					<Skeleton className="h-48 w-full" />
-					<Skeleton className="h-64 w-full" />
-					<Skeleton className="h-48 w-full" />
-				</div>
-			}
-		>
+		<Suspense fallback={<HomePageSkeleton />}>
 			<HomeContent />
 		</Suspense>
 	);

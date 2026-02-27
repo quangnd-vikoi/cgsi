@@ -11,20 +11,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CGSI } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
-import { fetchAPI } from "@/lib/api/client";
-import { ENDPOINTS } from "@/lib/api/endpoints";
 import { cn } from "@/lib/utils";
+import { prefetchCampaigns, type Campaign } from "./campaignsPrefetch";
 import ViewAll from "@/components/ViewAll";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
-
-interface Campaign {
-	SEO_Page_Name: string;
-	MastheadBasic_Article_Title: string;
-	MastheadBasic_Article_Short: string;
-	Campaign_StartDate: string;
-	MastheadBasic_Article_Card_Thumbnail_Image: string;
-	Tagging_Timing?: string;
-}
+import CampaignsSkeleton from "./skeletons/CampaignsSkeleton";
 
 // Unified campaign card - same DOM structure, different styles based on position
 // Using memo to prevent unnecessary re-renders
@@ -115,22 +106,26 @@ const Campaigns = () => {
 	const [api, setApi] = useState<CarouselApi>();
 	const [current, setCurrent] = useState(0);
 	const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+	const [loading, setLoading] = useState(true);
 	const isMobile = useMediaQuery("mobile");
 
 	useEffect(() => {
 		const fetchCampaigns = async () => {
-			const url = ENDPOINTS.campaigns();
-			const response = await fetchAPI<Campaign[]>(url);
-			if (response.success && response.data) {
-				// Deduplicate campaigns based on SEO_Page_Name
-				const uniqueCampaigns = response.data.filter(
-					(campaign, index, self) =>
-						index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
-				);
-				// TODO: remove duplicate when API returns enough data (>6)
-				const duplicated = [...uniqueCampaigns, ...uniqueCampaigns];
-				setCampaigns(duplicated.slice(0, 6));
-				// Original: setCampaigns(uniqueCampaigns.slice(0, 6));
+			try {
+				const response = await prefetchCampaigns();
+				if (response.success && response.data) {
+					// Deduplicate campaigns based on SEO_Page_Name
+					const uniqueCampaigns = response.data.filter(
+						(campaign, index, self) =>
+							index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
+					);
+					// TODO: remove duplicate when API returns enough data (>6)
+					const duplicated = [...uniqueCampaigns, ...uniqueCampaigns];
+					setCampaigns(duplicated.slice(0, 6));
+					// Original: setCampaigns(uniqueCampaigns.slice(0, 6));
+				}
+			} finally {
+				setLoading(false);
 			}
 		};
 
@@ -181,6 +176,10 @@ const Campaigns = () => {
 	const scrollTo = (index: number) => {
 		api?.scrollTo(index);
 	};
+
+	if (loading) {
+		return <CampaignsSkeleton />;
+	}
 
 	if (campaigns.length === 0) {
 		return null;

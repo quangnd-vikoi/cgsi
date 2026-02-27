@@ -19,16 +19,16 @@ export default function Footer() {
 						<div className="flex flex-col items-end gap-2">
 							<p className="font-normal md:font-medium text-md">Follow us on</p>
 							<div className="flex gap-4">
-								<a href="#" className=" ">
+								<a href="#" aria-label="Instagram">
 									<Icons.Instagram />
 								</a>
-								<a href="#" className=" ">
+								<a href="#" aria-label="LinkedIn">
 									<Icons.Linkedin />
 								</a>
-								<a href="#" className=" ">
+								<a href="#" aria-label="Facebook">
 									<Icons.Facebook />
 								</a>
-								<a href="#" className=" ">
+								<a href="#" aria-label="YouTube">
 									<Icons.Youtube />
 								</a>
 							</div>

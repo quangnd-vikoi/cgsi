@@ -43,3 +43,6 @@ next-env.d.ts
 .claude
 /docs
 CLAUDE.md
+/out
+/portal
+next.config.ts
