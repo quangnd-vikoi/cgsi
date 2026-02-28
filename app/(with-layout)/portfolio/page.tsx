@@ -102,7 +102,7 @@ const Portfolio = () => {
 
 					<HoldingPosition type={type} />
 
-					{type === "CTA" && (
+					{(type === "CTA" || type === "SBL") && (
 						<>
 							<BorrowedShares />
 							<LoanedShares />

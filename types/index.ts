@@ -493,3 +493,181 @@ export interface SignatureSubmitRequest {
 export interface SignatureSubmitResponse {
 	isSuccess: boolean;
 }
+
+// ============================================================================
+// Portfolio API Types
+// ============================================================================
+
+export interface IExchangeRate {
+	fromCurrency: string;
+	toCurrency: string;
+	bid: number;
+	offer: number;
+}
+
+export interface IAssetSummary {
+	currency: string;
+	value: number;
+}
+
+export interface IAccountSummary {
+	totalAsset: number;
+	contractsSell?: number;
+	contractsBuy?: number;
+	contraSell?: number;
+	contraBuy?: number;
+	tradeLimit?: number;
+	collateralValue?: number;
+	marginRatio?: number;
+	cashCall?: number;
+	assetList: IAssetSummary[];
+}
+
+export interface ITrustBalance {
+	currency: string;
+	balance: number;
+	lastUpdatedOn: string;
+}
+
+export interface ITrustBalanceDetail {
+	accountNo: string;
+	transactionNo: string;
+	transactionDate: string;
+	description: string;
+	currency: string;
+	tradedPrice: number;
+	quantity: number;
+	amount: number;
+}
+
+export interface IPortfolioHolding {
+	assetClass: string;
+	marketCode: string;
+	securityCode: string;
+	securityName: string;
+	totalQty: number;
+	availQty?: number;
+	earmarkQty?: number;
+	currency: string;
+	closingPrice: number;
+	marketValue: number;
+	capPrice?: number;
+	capQty?: number;
+	marginableQty?: number;
+	valuationPct?: number;
+	collateralValue?: number;
+	pendingBuy?: number;
+	pendingSell?: number;
+	lastUpdatedOn: string;
+}
+
+export interface ICollateralFinancing {
+	accountNo: string;
+	traderCode: string;
+	creditLimit: number;
+	ledgerBalance: number;
+	ytdInterest: number;
+	totalFinanced: number;
+	totalCollateral: number;
+	availableFinancing: number;
+	margin: number;
+	lastUpdatedOn: string;
+}
+
+export interface IContract {
+	accountNo: string;
+	traderCode: string;
+	tradeDate: string;
+	contractNo: string;
+	type: string;
+	securityName: string;
+	tradedCurrency: string;
+	price: number;
+	quantity: number;
+	settlementCurrency: string;
+	netAmount: number;
+	settlementDueDate: string;
+	channel: string;
+	remark: string;
+	marketCode: string;
+	baseNetAmt: number;
+	lastUpdatedOn: string;
+	paid: boolean;
+}
+
+export interface IContra {
+	accountNo: string;
+	traderCode: string;
+	statementDate: string;
+	statementNo: string;
+	securityName: string;
+	type: string;
+	settlementCurrency: string;
+	settlementNetAmount: number;
+	marketCode: string;
+	baseNetAmt: number;
+	lastUpdatedOn: string;
+	paid: boolean;
+}
+
+export interface IBorrowedShare {
+	assetClass: string;
+	marketCode: string;
+	securityCode: string;
+	securityName: string;
+	borrowedQty: number;
+	pendingIn: number;
+	pendingOut: number;
+	currency: string;
+	closingPrice: number;
+	marketValue: number;
+	lastUpdatedOn: string;
+}
+
+export interface ILoanedShare {
+	assetClass: string;
+	marketCode: string;
+	securityCode: string;
+	securityName: string;
+	loanedQty: number;
+	currency: string;
+	closingPrice: number;
+	lendingValue: number;
+	lastUpdatedOn: string;
+}
+
+export interface IPaynowTopUp {
+	accountNo: string;
+	mode: string;
+	amount: number;
+	currency: string;
+	refNo: string;
+}
+
+export interface IPaynowTopUpResponse {
+	s2bPayUrl: string;
+	corpId: string;
+	encStr: string;
+}
+
+export interface ICDPTransferAccount {
+	acctType: string;
+	acctNo: string;
+	trCode: string;
+	trName: string;
+}
+
+export interface ICDPTransfer {
+	name: string;
+	nricPassport: string;
+	cdpNo: string;
+	accountList: ICDPTransferAccount[];
+}
+
+export interface ICDPTransferStatus {
+	requestedOn: string;
+	cdpNo: string;
+	acctNo: string;
+	status: string;
+	statusDesc: string;
+}

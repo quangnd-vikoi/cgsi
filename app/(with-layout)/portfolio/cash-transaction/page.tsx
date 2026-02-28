@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,8 +13,9 @@ import {
 import Title from "@/components/Title";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { mockCashTransactions } from "../_components/data";
 import { CashTransactionsTable } from "./_components/CashTransactionsTable";
+import { getTrustBalanceDetails } from "@/lib/services/portfolioService";
+import type { ITrustBalanceDetail } from "@/types";
 
 // Time period options
 const timePeriods = [
@@ -28,15 +29,32 @@ const timePeriods = [
 export default function CashTransactionPage() {
     const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
     const [selectedPeriod, setSelectedPeriod] = useState("last30days");
+    const [selectedCurrency, setSelectedCurrency] = useState("SGD");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [transactions, setTransactions] = useState<ITrustBalanceDetail[]>([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(true);
 
-    const transactions = mockCashTransactions;
-
-    // Pagination
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentData = transactions.slice(startIndex, endIndex);
+    useEffect(() => {
+        const fetchTransactions = async () => {
+            if (!selectedAccount?.accountNo) return;
+            setLoading(true);
+            const pageIndex = currentPage - 1;
+            const response = await getTrustBalanceDetails(
+                selectedAccount.accountNo,
+                selectedCurrency,
+                itemsPerPage,
+                pageIndex
+            );
+            if (response.success && response.data) {
+                setTransactions(response.data.trustBalances);
+                setTotalItems(response.data.total);
+            }
+            setLoading(false);
+        };
+        fetchTransactions();
+    }, [selectedAccount?.accountNo, selectedCurrency, currentPage, itemsPerPage]);
 
     const handleItemsPerPageChange = (value: number) => {
         setItemsPerPage(value);
@@ -109,12 +127,12 @@ export default function CashTransactionPage() {
                         </div>
 
                         {/* Table */}
-                        <CashTransactionsTable transactions={currentData} />
+                        <CashTransactionsTable transactions={transactions} loading={loading} />
 
                         {/* Pagination Footer */}
                         <PaginationFooter
                             currentPage={currentPage}
-                            totalItems={transactions.length}
+                            totalItems={totalItems}
                             itemsPerPage={itemsPerPage}
                             onPageChange={setCurrentPage}
                             onItemsPerPageChange={handleItemsPerPageChange}

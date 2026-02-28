@@ -9,12 +9,26 @@ import {
 } from "@/components/ui/table";
 import { CGSI } from "@/constants/routes";
 import Link from "next/link";
-import type { Contract } from "../../_components/data";
+
+// Display type for the contracts/contra table (mapped from API IContract/IContra)
+export interface ContractDisplay {
+	id: string;
+	contractId: string;
+	status: "Overdue" | "Outstanding" | "Contra";
+	tradeDate: string;
+	dueDate: string;
+	settlementCcy: string;
+	gainLoss: number;
+	side: string;
+	market: string;
+	code: string;
+	statementNo?: string;
+}
 
 interface ContractsTableProps {
-	contracts: Contract[];
+	contracts: ContractDisplay[];
 	activeTab: "contracts" | "contra";
-	onOpenContraDetails: (contract: Contract) => void;
+	onOpenContraDetails: (contract: ContractDisplay) => void;
 }
 
 export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: ContractsTableProps) {

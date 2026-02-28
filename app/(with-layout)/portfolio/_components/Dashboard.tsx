@@ -1,6 +1,5 @@
 "use client"
 
-// import { getBgImageClass } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import {
     Select,
@@ -15,11 +14,24 @@ import React from 'react'
 import { ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { PortfolioType } from '@/types'
+import type { IAccountSummary } from '@/types'
 import { ChartPie } from './ChartPie'
 import { PaymentModel } from '@/components/PaymentModel'
 import { useRouter } from 'next/navigation'
 import { INTERNAL_ROUTES } from '@/constants/routes'
 import Link from 'next/link'
+import { getAccountSummary } from '@/lib/services/portfolioService'
+
+const formatAmount = (value: number | undefined, currency = "SGD") => {
+    if (value === undefined || value === null) return `0.00 ${currency}`
+    const prefix = value >= 0 ? "+ " : "- "
+    return `${prefix}${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`
+}
+
+const formatAmountNoSign = (value: number | undefined, currency = "SGD") => {
+    if (value === undefined || value === null) return `0.00 ${currency}`
+    return `${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`
+}
 
 type DashboardBlockProps = {
     title: string
@@ -60,7 +72,7 @@ const DashboardBlock = ({ title, amount, type = 'normal', showPayButton = false,
     )
 }
 
-const TypeSelect = () => {
+const TypeSelect = ({ totalAsset }: { totalAsset: number }) => {
     const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore()
 
     return (
@@ -91,7 +103,9 @@ const TypeSelect = () => {
             <div className="mt-6 flex flex-col md:flex-row justify-between gap-4 md:gap-6 items-start">
                 <div className="w-full md:w-1/2">
                     <p className='text-xs md:text-sm text-typo-secondary'>Total Asset Value</p>
-                    <p className='mt-2 text-lg  md:text-2xl font-semibold'>180,000.16 SGD</p>
+                    <p className='mt-2 text-lg  md:text-2xl font-semibold'>
+                        {totalAsset.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SGD
+                    </p>
                 </div>
 
                 <Separator orientation="vertical" className="hidden md:block! h-14 bg-tone-blue-02 !w-[1px]" />
@@ -108,67 +122,6 @@ const TypeSelect = () => {
     )
 }
 
-const SellContracts = () => {
-    return <DashboardBlock title="Sell Contracts (10)" amount="+ 60,000.00 SGD" type="success" />
-}
-
-const BuyContracts = () => {
-    const router = useRouter()
-    return <DashboardBlock
-        title="Buy Contracts (5)"
-        amount="- 1,000.00 SGD"
-        type="error"
-        showPayButton
-        onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
-    />
-}
-
-const ContraGain = () => {
-    return <DashboardBlock title="Contra Gain (5)" amount="+ 60,000.00 SGD" type="success" />
-}
-
-const ContraLoss = () => {
-    const router = useRouter()
-    return <DashboardBlock
-        title="Contra Loss (2)"
-        amount="- 1,000.00 SGD"
-        type="error"
-        showPayButton
-        onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
-    />
-}
-
-const AvailTradeLimit = () => {
-    return <DashboardBlock title="Avail Trade Limit" amount="0.00 SGD" type="normal" />
-}
-
-const CollateralValue = () => {
-    return <DashboardBlock title="Collateral Value" amount="34,000.00 SGD" type="normal" />
-}
-
-const MarginRatio = () => {
-    return <DashboardBlock title="Margin Ratio" amount="111.2%" type="error" />
-}
-
-const CashCall = () => {
-    const [showPaymentModel, setShowPaymentModel] = React.useState(false)
-    return (
-        <>
-            <DashboardBlock
-                title="Cash Call"
-                amount="- 1,000.00 SGD"
-                type="error"
-                showPayButton
-                onPay={() => setShowPaymentModel(true)}
-            />
-            <PaymentModel
-                open={showPaymentModel}
-                onOpenChange={setShowPaymentModel}
-            />
-        </>
-    )
-}
-
 type DashboardProps = {
     type?: PortfolioType
     onTypeChange?: (type: PortfolioType) => void
@@ -177,8 +130,12 @@ type DashboardProps = {
 const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
     const { selectedAccount } = useTradingAccountStore()
     const accountType = (selectedAccount?.accountType ? selectedAccount.accountType : "CTA") as PortfolioType
+    const router = useRouter()
 
     const type = propType || accountType
+
+    const [summary, setSummary] = React.useState<IAccountSummary | null>(null)
+    const [showPaymentModel, setShowPaymentModel] = React.useState(false)
 
     React.useEffect(() => {
         if (onTypeChange && accountType !== propType) {
@@ -186,23 +143,98 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
         }
     }, [accountType, onTypeChange, propType])
 
-    // Layout configurations với components tương ứng
+    React.useEffect(() => {
+        const fetchSummary = async () => {
+            if (!selectedAccount?.accountNo) return
+            const response = await getAccountSummary(selectedAccount.accountNo)
+            if (response.success && response.data) {
+                setSummary(response.data)
+            }
+        }
+        fetchSummary()
+    }, [selectedAccount?.accountNo])
+
+    // Layout configurations with API-driven data
     const layoutConfig = {
         CTA: [
-            { id: 1, gridArea: "1 / 1 / 2 / 2", component: <SellContracts /> },
-            { id: 2, gridArea: "1 / 2 / 2 / 3", component: <BuyContracts /> },
-            { id: 3, gridArea: "2 / 1 / 3 / 2", component: <ContraGain /> },
-            { id: 4, gridArea: "2 / 2 / 3 / 3", component: <ContraLoss /> },
+            {
+                id: 1, gridArea: "1 / 1 / 2 / 2",
+                component: <DashboardBlock title="Sell Contracts" amount={formatAmount(summary?.contractsSell)} type="success" />
+            },
+            {
+                id: 2, gridArea: "1 / 2 / 2 / 3",
+                component: <DashboardBlock
+                    title="Buy Contracts"
+                    amount={formatAmount(summary?.contractsBuy !== undefined ? -Math.abs(summary.contractsBuy) : undefined)}
+                    type="error"
+                    showPayButton
+                    onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
+                />
+            },
+            {
+                id: 3, gridArea: "2 / 1 / 3 / 2",
+                component: <DashboardBlock title="Contra Gain" amount={formatAmount(summary?.contraSell)} type="success" />
+            },
+            {
+                id: 4, gridArea: "2 / 2 / 3 / 3",
+                component: <DashboardBlock
+                    title="Contra Loss"
+                    amount={formatAmount(summary?.contraBuy !== undefined ? -Math.abs(summary.contraBuy) : undefined)}
+                    type="error"
+                    showPayButton
+                    onPay={() => router.push(INTERNAL_ROUTES.SETTLE)}
+                />
+            },
         ],
         MTA: [
-            { id: 1, gridArea: "1 / 1 / 2 / 2", component: <AvailTradeLimit /> },
-            { id: 2, gridArea: "2 / 1 / 3 / 2", component: <MarginRatio /> },
-            { id: 3, gridArea: "1 / 2 / 2 / 3", component: <CollateralValue /> },
-            { id: 4, gridArea: "2 / 2 / 3 / 3", component: <CashCall /> },
+            {
+                id: 1, gridArea: "1 / 1 / 2 / 2",
+                component: <DashboardBlock title="Avail Trade Limit" amount={formatAmountNoSign(summary?.tradeLimit)} type="normal" />
+            },
+            {
+                id: 2, gridArea: "2 / 1 / 3 / 2",
+                component: <DashboardBlock title="Margin Ratio" amount={summary?.marginRatio !== undefined ? `${summary.marginRatio}%` : "0%"} type={summary?.marginRatio !== undefined && summary.marginRatio < 140 ? "error" : "normal"} />
+            },
+            {
+                id: 3, gridArea: "1 / 2 / 2 / 3",
+                component: <DashboardBlock title="Collateral Value" amount={formatAmountNoSign(summary?.collateralValue)} type="normal" />
+            },
+            {
+                id: 4, gridArea: "2 / 2 / 3 / 3",
+                component: (
+                    <>
+                        <DashboardBlock
+                            title="Cash Call"
+                            amount={formatAmount(summary?.cashCall !== undefined ? -Math.abs(summary.cashCall) : undefined)}
+                            type="error"
+                            showPayButton
+                            onPay={() => setShowPaymentModel(true)}
+                        />
+                        <PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
+                    </>
+                )
+            },
         ],
         SBL: [
-            { id: 2, gridArea: "1 / 1 / 2 / 3", component: <MarginRatio /> },
-            { id: 3, gridArea: "2 / 1 / 3 / 3", component: <CashCall /> },
+            {
+                id: 2, gridArea: "1 / 1 / 2 / 3",
+                component: <DashboardBlock title="Margin Ratio" amount={summary?.marginRatio !== undefined ? `${summary.marginRatio}%` : "0%"} type={summary?.marginRatio !== undefined && summary.marginRatio < 140 ? "error" : "normal"} />
+            },
+            {
+                id: 3, gridArea: "2 / 1 / 3 / 3",
+                component: (
+                    <>
+                        <DashboardBlock
+                            title="Cash Call"
+                            amount={formatAmount(summary?.cashCall !== undefined ? -Math.abs(summary.cashCall) : undefined)}
+                            type="error"
+                            showPayButton
+                            onPay={() => setShowPaymentModel(true)}
+                        />
+                        <PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
+                    </>
+                )
+            },
         ],
         CUT: [],
         iCash: [],
@@ -214,7 +246,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
         <div className='bg-white pad-x py-6 rounded border border-stroke-secondary'>
             <div className="flex flex-col md:flex-row gap-4">
                 <div className={cn('w-full', type == "iCash" || type == "CUT" ? '' : 'md:w-1/2')}>
-                    <TypeSelect />
+                    <TypeSelect totalAsset={summary?.totalAsset ?? 0} />
                 </div>
 
                 {type != "iCash" && type != "CUT" && (

@@ -1,34 +1,35 @@
-import React from "react";
+"use client";
 
-interface ExchangeRate {
-	ccyCodeFrom: string;
-	ccyCodeTo: string;
-	buyFXRate: number;
-	sellFXRate: number;
-}
+import React, { useEffect, useState } from "react";
+import { getFxRates } from "@/lib/services/portfolioService";
+import type { IExchangeRate } from "@/types";
 
 interface ExchangeRateTableProps {
 	lastUpdated?: string;
-	rates?: ExchangeRate[];
 }
 
-const defaultRates: ExchangeRate[] = [
-	{ ccyCodeFrom: "AUD", ccyCodeTo: "SGD", buyFXRate: 0.8383, sellFXRate: 0.8462 },
-	{ ccyCodeFrom: "EUR", ccyCodeTo: "SGD", buyFXRate: 1.503, sellFXRate: 1.5163 },
-	{ ccyCodeFrom: "GBP", ccyCodeTo: "SGD", buyFXRate: 1.704, sellFXRate: 1.7187 },
-	{ ccyCodeFrom: "HKD", ccyCodeTo: "SGD", buyFXRate: 0.1671, sellFXRate: 0.1685 },
-	{ ccyCodeFrom: "IDR", ccyCodeTo: "SGD", buyFXRate: 0.000076, sellFXRate: 0.000079 },
-	{ ccyCodeFrom: "JPY", ccyCodeTo: "SGD", buyFXRate: 0.008288, sellFXRate: 0.008401 },
-	{ ccyCodeFrom: "MYR", ccyCodeTo: "SGD", buyFXRate: 0.3132, sellFXRate: 0.3174 },
-	{ ccyCodeFrom: "RMB", ccyCodeTo: "SGD", buyFXRate: 0.183, sellFXRate: 0.1846 },
-	{ ccyCodeFrom: "THB", ccyCodeTo: "SGD", buyFXRate: 0.039951, sellFXRate: 0.040535 },
-	{ ccyCodeFrom: "USD", ccyCodeTo: "SGD", buyFXRate: 1.3028, sellFXRate: 1.3109 },
-];
-
 export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
-	lastUpdated = "12-Jun-2025, 08:15:15 SGT",
-	rates = defaultRates,
+	lastUpdated: lastUpdatedProp,
 }) => {
+	const [rates, setRates] = useState<IExchangeRate[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [lastUpdated, setLastUpdated] = useState(lastUpdatedProp || "");
+
+	useEffect(() => {
+		const fetchRates = async () => {
+			setLoading(true);
+			const response = await getFxRates();
+			if (response.success && response.data) {
+				setRates(response.data);
+				if (!lastUpdatedProp) {
+					setLastUpdated(new Date().toLocaleString("en-SG", { timeZone: "Asia/Singapore" }) + " SGT");
+				}
+			}
+			setLoading(false);
+		};
+		fetchRates();
+	}, [lastUpdatedProp]);
+
 	return (
 		<div className="space-y-4">
 			{/* Info text */}
@@ -51,17 +52,23 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
 
 					{/* Table Body */}
 					<div className="divide-y divide-stroke-secondary bg-white">
-						{rates.map((rate, index) => (
-							<div
-								key={index}
-								className="grid grid-cols-[1.2fr_1fr_1.2fr_1.2fr] gap-4 px-4 py-3 text-sm text-typo-primary"
-							>
-								<div>{rate.ccyCodeFrom}</div>
-								<div>{rate.ccyCodeTo}</div>
-								<div className="text-right">{rate.buyFXRate}</div>
-								<div className="text-right">{rate.sellFXRate}</div>
-							</div>
-						))}
+						{loading ? (
+							<div className="px-4 py-8 text-center text-sm text-typo-secondary">Loading exchange rates...</div>
+						) : rates.length === 0 ? (
+							<div className="px-4 py-8 text-center text-sm text-typo-secondary">No exchange rates available</div>
+						) : (
+							rates.map((rate, index) => (
+								<div
+									key={index}
+									className="grid grid-cols-[1.2fr_1fr_1.2fr_1.2fr] gap-4 px-4 py-3 text-sm text-typo-primary"
+								>
+									<div>{rate.fromCurrency}</div>
+									<div>{rate.toCurrency}</div>
+									<div className="text-right">{rate.bid}</div>
+									<div className="text-right">{rate.offer}</div>
+								</div>
+							))
+						)}
 					</div>
 				</div>
 			</div>

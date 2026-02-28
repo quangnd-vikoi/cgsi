@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,12 +14,43 @@ import {
 import Title from "@/components/Title";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { mockContracts } from "../_components/data";
 import { ContraDetailsDialog } from "./_components/ContraDetailsDialog";
 import { SummarySection } from "./_components/SummarySection";
 import { ContractsTable } from "./_components/ContractsTable";
+import type { ContractDisplay } from "./_components/ContractsTable";
+import { getContracts, getContractsPastDue, getContra } from "@/lib/services/portfolioService";
+import type { IContract, IContra } from "@/types";
 
 type TabType = "contracts" | "contra";
+
+// Map API IContract to display format
+const mapContract = (c: IContract, status: "Outstanding" | "Overdue"): ContractDisplay => ({
+	id: c.contractNo,
+	contractId: c.contractNo,
+	status,
+	tradeDate: c.tradeDate,
+	dueDate: c.settlementDueDate,
+	settlementCcy: c.settlementCurrency,
+	gainLoss: c.netAmount,
+	side: c.type,
+	market: c.marketCode,
+	code: c.securityName,
+});
+
+// Map API IContra to display format
+const mapContra = (c: IContra): ContractDisplay => ({
+	id: c.statementNo,
+	contractId: c.statementNo,
+	status: "Contra",
+	tradeDate: c.statementDate,
+	dueDate: c.lastUpdatedOn,
+	settlementCcy: c.settlementCurrency,
+	gainLoss: c.settlementNetAmount,
+	side: c.type,
+	market: c.marketCode,
+	code: c.securityName,
+	statementNo: c.statementNo,
+});
 
 export default function SettlePage() {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
@@ -33,27 +64,112 @@ export default function SettlePage() {
 		dueDate: string;
 		netGainLoss: number;
 		currency: string;
+		statementNo: string;
 	} | null>(null);
 
-	const contracts = mockContracts;
+	// Contracts tab data
+	const [contractsData, setContractsData] = useState<ContractDisplay[]>([]);
+	const [contractsTotal, setContractsTotal] = useState(0);
+	const [contractsLoading, setContractsLoading] = useState(true);
 
-	// Pagination
-	const startIndex = (currentPage - 1) * itemsPerPage;
-	const endIndex = startIndex + itemsPerPage;
-	const currentData = contracts.slice(startIndex, endIndex);
+	// Contra tab data
+	const [contraData, setContraData] = useState<ContractDisplay[]>([]);
+	const [contraTotal, setContraTotal] = useState(0);
+	const [contraLoading, setContraLoading] = useState(true);
+
+	const accountNo = selectedAccount?.accountNo;
+
+	// Fetch contracts (outstanding + past due)
+	const fetchContracts = useCallback(async () => {
+		if (!accountNo) return;
+		setContractsLoading(true);
+		const pageIndex = currentPage - 1;
+
+		const [outstandingRes, pastDueRes] = await Promise.all([
+			getContracts(accountNo, undefined, itemsPerPage, pageIndex),
+			getContractsPastDue(accountNo, undefined, itemsPerPage, pageIndex),
+		]);
+
+		const outstanding = outstandingRes.success && outstandingRes.data
+			? outstandingRes.data.contracts.map(c => mapContract(c, "Outstanding"))
+			: [];
+		const pastDue = pastDueRes.success && pastDueRes.data
+			? pastDueRes.data.pastDue.map(c => mapContract(c, "Overdue"))
+			: [];
+
+		// Combine: past due first, then outstanding
+		const combined = [...pastDue, ...outstanding];
+		const totalCount = (outstandingRes.data?.total ?? 0) + (pastDueRes.data?.total ?? 0);
+
+		setContractsData(combined);
+		setContractsTotal(totalCount);
+		setContractsLoading(false);
+	}, [accountNo, currentPage, itemsPerPage]);
+
+	// Fetch contra
+	const fetchContra = useCallback(async () => {
+		if (!accountNo) return;
+		setContraLoading(true);
+		const pageIndex = currentPage - 1;
+
+		const response = await getContra(accountNo, undefined, itemsPerPage, pageIndex);
+		if (response.success && response.data) {
+			setContraData(response.data.contra.map(mapContra));
+			setContraTotal(response.data.total);
+		}
+		setContraLoading(false);
+	}, [accountNo, currentPage, itemsPerPage]);
+
+	// Fetch data based on active tab
+	useEffect(() => {
+		if (activeTab === "contracts") {
+			fetchContracts();
+		} else {
+			fetchContra();
+		}
+	}, [activeTab, fetchContracts, fetchContra]);
+
+	// Also fetch the inactive tab counts on mount / account change
+	useEffect(() => {
+		if (!accountNo) return;
+		// Fetch both tabs' totals for tab count display
+		getContracts(accountNo, undefined, 1, 0).then(res => {
+			if (res.success && res.data) {
+				getContractsPastDue(accountNo, undefined, 1, 0).then(pdRes => {
+					const total = (res.data?.total ?? 0) + (pdRes.data?.total ?? 0);
+					setContractsTotal(total);
+				});
+			}
+		});
+		getContra(accountNo, undefined, 1, 0).then(res => {
+			if (res.success && res.data) {
+				setContraTotal(res.data.total);
+			}
+		});
+	}, [accountNo]);
+
+	const currentData = activeTab === "contracts" ? contractsData : contraData;
+	const totalItems = activeTab === "contracts" ? contractsTotal : contraTotal;
+	const loading = activeTab === "contracts" ? contractsLoading : contraLoading;
 
 	const handleItemsPerPageChange = (value: number) => {
 		setItemsPerPage(value);
 		setCurrentPage(1);
 	};
 
-	const handleOpenContraDetails = (contract: typeof contracts[0]) => {
+	const handleTabChange = (tab: string) => {
+		setActiveTab(tab as TabType);
+		setCurrentPage(1);
+	};
+
+	const handleOpenContraDetails = (contract: ContractDisplay) => {
 		setSelectedContra({
 			contraId: contract.contractId,
 			contraDate: contract.tradeDate,
 			dueDate: contract.dueDate,
 			netGainLoss: contract.gainLoss,
 			currency: contract.settlementCcy,
+			statementNo: contract.statementNo || contract.contractId,
 		});
 		setContraDialogOpen(true);
 	};
@@ -107,19 +223,19 @@ export default function SettlePage() {
 						</div>
 
 						{/* Tabs */}
-						<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)}>
+						<Tabs value={activeTab} onValueChange={handleTabChange}>
 							<TabsList className="mb-6 bg-transparent gap-4 border-b border-stroke-secondary pb-0">
 								<TabsTrigger
 									value="contracts"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contracts ({contracts.length})
+									Contracts ({contractsTotal})
 								</TabsTrigger>
 								<TabsTrigger
 									value="contra"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contra (7)
+									Contra ({contraTotal})
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
@@ -135,19 +251,25 @@ export default function SettlePage() {
 						</Button>
 
 						{/* Summary Cards */}
-						<SummarySection contracts={contracts} />
+						<SummarySection contracts={currentData} />
 
 						{/* Table */}
-						<ContractsTable
-							contracts={currentData}
-							activeTab={activeTab}
-							onOpenContraDetails={handleOpenContraDetails}
-						/>
+						{loading ? (
+							<div className="flex-1 flex items-center justify-center py-8 text-sm text-typo-secondary">
+								Loading...
+							</div>
+						) : (
+							<ContractsTable
+								contracts={currentData}
+								activeTab={activeTab}
+								onOpenContraDetails={handleOpenContraDetails}
+							/>
+						)}
 
 						{/* Pagination Footer */}
 						<PaginationFooter
 							currentPage={currentPage}
-							totalItems={contracts.length}
+							totalItems={totalItems}
 							itemsPerPage={itemsPerPage}
 							onPageChange={setCurrentPage}
 							onItemsPerPageChange={handleItemsPerPageChange}
@@ -166,6 +288,7 @@ export default function SettlePage() {
 							dueDate={selectedContra.dueDate}
 							netGainLoss={selectedContra.netGainLoss}
 							currency={selectedContra.currency}
+							statementNo={selectedContra.statementNo}
 						/>
 					)}
 				</div>
