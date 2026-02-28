@@ -4,30 +4,40 @@ import { Separator } from "@/components/ui/separator";
 import { ErrorState } from "@/components/ErrorState";
 import Alert from "@/components/Alert";
 import { toast } from "@/components/ui/toaster";
-import { IMarketDataItem } from "../page";
+import type { ISelectedMarketSubscription } from "@/types";
 
 interface CartItemsListProps {
-    selectedItems: Array<IMarketDataItem>;
-    onRemoveItem?: (item: IMarketDataItem) => void;
-    showRemove?: boolean; // ⬅️ page khác có thể tắt
+    selectedItems: Array<ISelectedMarketSubscription>;
+    onRemoveItem?: (item: ISelectedMarketSubscription) => void;
+    showRemove?: boolean;
 }
+
+const formatDuration = (duration: number) =>
+    `${duration} Month${duration > 1 ? 's' : ''}`;
+
+const calculateGst = (item: ISelectedMarketSubscription): number => {
+    switch (item.gstIndicator) {
+        case 1: // GST inclusive — already included in amount
+            return 0;
+        case 2: // No GST
+            return 0;
+        case 3: // GST applies
+            return item.amount * 0.09;
+        default:
+            return 0;
+    }
+};
 
 const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartItemsListProps) => {
 
-    const handleRemoveOneItem = (item: IMarketDataItem) => {
+    const handleRemoveOneItem = (item: ISelectedMarketSubscription) => {
         onRemoveItem?.(item);
         toast.success("Item Removed", "The selected item has been removed from your cart");
     };
 
-    const subTotal = selectedItems.reduce((total, item) => {
-        const value = parseFloat(item.selectedOption.value.replace("SGD ", ""));
-        return total + value;
-    }, 0).toFixed(2);
+    const subTotal = selectedItems.reduce((total, item) => total + item.amount, 0).toFixed(2);
 
-    const gst = selectedItems.reduce((total, item) => {
-        const value = parseFloat(item.selectedOption.value.replace("SGD ", ""));
-        return total + value * 0.09;
-    }, 0).toFixed(2);
+    const gst = selectedItems.reduce((total, item) => total + calculateGst(item), 0).toFixed(2);
 
     if (selectedItems.length === 0) {
         return (
@@ -50,8 +60,8 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                         <div className="flex gap-4 py-3">
                             <div className="w-[44px] h-[44px] shrink-0">
                                 <Image
-                                    src={item.image}
-                                    alt={item.title}
+                                    src="/images/market-data/item-2.png"
+                                    alt={item.groupTitle}
                                     width={44}
                                     height={44}
                                     className="w-full h-full object-cover rounded-md"
@@ -61,7 +71,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                             <div className="flex-1 space-y-1">
                                 <div className="flex justify-between items-start">
                                     <p className="text-typo-primary text-sm font-medium flex-1">
-                                        {item.title}
+                                        {item.groupTitle}
                                     </p>
 
                                     {showRemove && (
@@ -75,7 +85,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                                             title="Remove Item"
                                             description={
                                                 <p className="text-base text-typo-secondary">
-                                                    Remove &quot;{item.title} ({item.selectedOption.label})&quot;?
+                                                    Remove &quot;{item.groupTitle} ({formatDuration(item.duration)})&quot;?
                                                 </p>
                                             }
                                             actionText="Confirm"
@@ -85,8 +95,8 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                                 </div>
 
                                 <div className="flex justify-between text-sm">
-                                    <p className="text-typo-secondary">{item.selectedOption.label}</p>
-                                    <p className="text-typo-primary font-semibold">{item.selectedOption.value}</p>
+                                    <p className="text-typo-secondary">{formatDuration(item.duration)}</p>
+                                    <p className="text-typo-primary font-semibold">{item.amount.toFixed(2)} SGD</p>
                                 </div>
                             </div>
                         </div>

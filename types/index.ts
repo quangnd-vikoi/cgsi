@@ -182,29 +182,89 @@ export type ContactUsCentralDealingDeskResponse = IContactUsCentralDealingDesk;
 // Subscription API Types
 // ============================================================================
 
-// Market Data Subscription Types (from YAML)
-export interface ISubscription {
+// Market Data Subscription Types (from API)
+export interface IMarketSubscriptionItem {
 	id: string;
-	category: string;
-	description: string;
+	subscriptionModel: string;
+	duration: number;
+	paymentType: number; // 1=free, 2=paid
 	amount: number;
-	needDeclaration: boolean;
+	gstIndicator: number; // 1=inclusive, 2=no GST, 3=GST applies
+	professionalFlag: string | null; // "Y" or null/"N"
+	hasAgreement: string | null; // "Y"/"N"
 }
 
-export type SubscriptionResponse = ISubscription;
+export interface IMarketSubscriptionGroup {
+	groupId: string;
+	groupTitle: string;
+	subscriptions: IMarketSubscriptionItem[];
+}
 
-// User Market Data Subscription Types (from YAML)
-export interface IUserSubscription {
+export interface IMarketSubscriptionCatalog {
+	research: IMarketSubscriptionGroup[];
+	marketData: IMarketSubscriptionGroup[];
+}
+
+export interface IUserMarketSubscription {
+	groupId: string;
 	subscriptionId: string;
-	category: string;
-	description: string;
 	start: string; // ISO date
 	end: string; // ISO date
 	paymentStatus: string;
 	allowRenew: boolean;
 }
 
-export type UserSubscriptionResponse = IUserSubscription;
+export interface ISubscriptionAgreement {
+	agreementId: string;
+	title: string;
+}
+
+export interface ISubscriptionAgreementContent {
+	agreementId: string;
+	title: string;
+	htmlContent: string;
+}
+
+export interface IMarketSubscriptionExtendedData {
+	name: string;
+	address: string;
+	occupation: string;
+	employer: string;
+	employerAddress: string;
+	employmentTitle: string;
+	employmentFunction: string;
+	value_01: boolean;
+	value_02: boolean;
+	value_03: boolean;
+	value_04: boolean;
+	value_05: boolean;
+	value_06: boolean;
+	value_07: boolean;
+	value_08: boolean;
+	value_09: boolean;
+	value_10: boolean;
+	value_11: boolean;
+}
+
+export interface IMarketSubscriptionSubmission {
+	subscriptionList: {
+		subscriptionId: string;
+		acceptedAgreementIds: string[];
+	}[];
+	extendedData?: Partial<IMarketSubscriptionExtendedData>;
+}
+
+// UI type for selected market data items in cart
+export interface ISelectedMarketSubscription {
+	subscriptionId: string;
+	groupId: string;
+	groupTitle: string;
+	duration: number;
+	amount: number;
+	gstIndicator: number; // 1=inclusive, 2=no GST, 3=GST applies
+	hasAgreement: string | null; // "Y"/"N"
+	paymentType: number; // 1=free, 2=paid
+}
 
 // Product Subscription Types
 export interface IProductSubscription {

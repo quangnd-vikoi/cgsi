@@ -1,29 +1,55 @@
 "use client";
-import { Dispatch, useState } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { IMarketDataItem } from "../page";
 import CartItemsList from "./CartItemList";
 import { Step } from "../page";
 import { subscriptionService } from "@/lib/services/subscriptionService";
-import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { toast } from "@/components/ui/toaster";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
+import type {
+    ISelectedMarketSubscription,
+    ISubscriptionAgreement,
+    IMarketSubscriptionExtendedData,
+} from "@/types";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
-    selectedItems: Array<IMarketDataItem>;
+    selectedItems: Array<ISelectedMarketSubscription>;
+    declarationData: Partial<IMarketSubscriptionExtendedData> | null;
 }
 
-const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
+const TermsStep = ({ setCurrenStep, selectedItems, declarationData }: TermsStepProps) => {
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [agreements, setAgreements] = useState<ISubscriptionAgreement[]>([]);
 
-    const selectedAccount = useTradingAccountStore(
-        (state) => state.selectedAccount
-    );
+    useEffect(() => {
+        const idsWithAgreement = selectedItems
+            .filter(item => item.hasAgreement === "Y")
+            .map(item => item.subscriptionId);
+
+        if (idsWithAgreement.length > 0) {
+            subscriptionService.getMarketDataAgreements(idsWithAgreement).then(res => {
+                if (res.success && res.data) {
+                    setAgreements(res.data);
+                }
+            });
+        }
+    }, [selectedItems]);
+
+    const handleViewAgreement = async (agreementId: string) => {
+        const res = await subscriptionService.getMarketDataAgreementContent(agreementId);
+        if (res.success && res.data) {
+            const newWindow = window.open("", "_blank");
+            if (newWindow) {
+                newWindow.document.write(res.data.htmlContent);
+                newWindow.document.close();
+            }
+        }
+    };
 
     const handleTermConfirm = async () => {
         if (!agreed) {
@@ -34,37 +60,24 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
         setSubmitting(true);
 
         try {
-            // NOTE: Using product subscription endpoint as workaround
-            // TODO: Request proper market data submission endpoint from backend
-            // Expected endpoint: POST /subscription/api/v1/marketDataSubscription
+            const acceptedAgreementIds = agreements.map(a => a.agreementId);
 
-            const submissions = selectedItems.map((item) =>
-                subscriptionService.submitProductSubscription({
-                    productCode: item.title, // Using title as productCode (workaround)
-                    accountNo: selectedAccount?.accountNo || "",
-                    totalUnit: 1,
-                    paymentCurrency: "SGD",
-                    paymentMode: "PayNow",
-                })
-            );
+            const result = await subscriptionService.submitMarketDataSubscription({
+                subscriptionList: selectedItems.map(item => ({
+                    subscriptionId: item.subscriptionId,
+                    acceptedAgreementIds,
+                })),
+                extendedData: declarationData || undefined,
+            });
 
-            const results = await Promise.allSettled(submissions);
-            const allSucceeded = results.every(
-                (r) => r.status === "fulfilled" && r.value.success
-            );
-
-            if (allSucceeded) {
+            if (result.success && result.data?.isSuccess) {
                 setCurrenStep("success");
                 toast.success("Subscription Submitted",
                     "Your market data subscription has been submitted successfully.",
                 );
             } else {
-                const failedCount = results.filter(
-                    (r) => r.status === "rejected" || !r.value.success
-                ).length;
-
                 toast.error("Submission Failed",
-                    `${failedCount} subscription(s) failed. Please try again.`,
+                    "Failed to submit subscription. Please try again.",
                 );
             }
         } catch (error) {
@@ -76,6 +89,7 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
             setSubmitting(false);
         }
     };
+
     return (
         <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 py-6 pad-x overflow-y-auto sidebar-scroll sidebar-offset-2">
@@ -84,41 +98,32 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                 </h2>
 
                 {/* Terms & Conditions */}
-
-                <div className="border border-stroke-secondary p-4 rounded">
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">General T&C</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
+                {agreements.length > 0 && (
+                    <div className="border border-stroke-secondary p-4 rounded">
+                        {agreements.map((agreement, index) => (
+                            <div key={agreement.agreementId}>
+                                <div
+                                    className="flex justify-between items-center cursor-pointer"
+                                    onClick={() => handleViewAgreement(agreement.agreementId)}
+                                >
+                                    <p className="text-sm">{agreement.title}</p>
+                                    <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                                </div>
+                                {index !== agreements.length - 1 && <Separator className="my-4" />}
+                            </div>
+                        ))}
                     </div>
-
-                    <Separator className="my-4" />
-
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">SGX L2 Market Depth Campaign T&C</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">US Real-Time Market Data Online Agreement</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
-                    </div>
-                </div>
+                )}
 
                 <Separator className="my-6" />
 
                 {/* Subscription */}
                 <div>
-
                     <h2 className="text-lg font-semibold mb-2">
                         Subscription Summary
                     </h2>
                     <CartItemsList showRemove={false} selectedItems={selectedItems} onRemoveItem={() => { }} />
                 </div>
-
-
-
             </div>
 
             {/* Action Buttons */}
@@ -136,7 +141,6 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                     className="pad-x py-6 border-y border-stroke-secondary"
                 />
                 <div className="pad-x py-6">
-
                     <Button
                         onClick={handleTermConfirm}
                         className="w-full rounded"

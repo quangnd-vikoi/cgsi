@@ -4,113 +4,66 @@ import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
 import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
-import { IMarketDataItem } from '../page';
-
-// Type definitions
-interface DropDownItem {
-  label: string;
-  value: string;
-}
-
-interface MarketItemData {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  dropDownItems: DropDownItem[];
-}
-
-interface MarketDataResponse {
-  researchArticles: MarketItemData[];
-  marketData: MarketItemData[];
-}
-
-// Giả lập API fetch với khả năng random error
-const fetchMarketData = async (): Promise<MarketDataResponse> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const randomValue = Math.random();
-
-      if (randomValue > 0.8) {
-        reject(new Error('Failed to fetch market data. Please try again.'));
-      } else {
-        resolve({
-          researchArticles: [
-            {
-              id: 1,
-              title: "CGSI Research",
-              description: "From SGD 16.67/month",
-              image: "/images/market-data/item-1.png",
-              dropDownItems: [
-                { label: "1 Month", value: "21.80 SGD" },
-                { label: "3 Months", value: "50.00 SGD" },
-                { label: "6 Months", value: "109.00 SGD" },
-                { label: "12 Months", value: "218.00 SGD" }
-              ]
-            }
-          ],
-          marketData: [
-            {
-              id: 1,
-              title: "Singapore SGX Live Feed + Market Depth",
-              description: "From SGD 16.67/month",
-              image: "/images/market-data/item-2.png",
-              dropDownItems: [
-                { label: "1 Month", value: "21.80 SGD" },
-                { label: "3 Months", value: "50.00 SGD" },
-                { label: "6 Months", value: "109.00 SGD" },
-                { label: "12 Months", value: "218.00 SGD" }
-              ]
-            },
-            {
-              id: 2,
-              title: "Hong Kong HKEX Live Feed",
-              description: "From SGD 16.67/month",
-              image: "/images/market-data/item-3.png",
-              dropDownItems: [
-                { label: "1 Month", value: "21.80 SGD" },
-                { label: "3 Months", value: "50.00 SGD" },
-                { label: "6 Months", value: "109.00 SGD" },
-                { label: "12 Months", value: "218.00 SGD" }
-              ]
-            }
-          ]
-        });
-      }
-    }, 1000); // Giả lập delay 1 giây
-  });
-};
+import { subscriptionService } from '@/lib/services/subscriptionService';
+import type { IMarketSubscriptionGroup, ISelectedMarketSubscription } from '@/types';
 
 interface ProfessionalProps {
-  selectedItems: Array<IMarketDataItem>;
-  setSelectedItems: Dispatch<SetStateAction<Array<IMarketDataItem>>>;
+  selectedItems: Array<ISelectedMarketSubscription>;
+  setSelectedItems: Dispatch<SetStateAction<Array<ISelectedMarketSubscription>>>;
 }
 
 const Professional = ({ setSelectedItems }: ProfessionalProps) => {
-  const [researchArticles, setResearchArticles] = useState<MarketItemData[]>([]);
-  const [marketData, setMarketData] = useState<MarketItemData[]>([]);
+  const [researchGroups, setResearchGroups] = useState<IMarketSubscriptionGroup[]>([]);
+  const [marketDataGroups, setMarketDataGroups] = useState<IMarketSubscriptionGroup[]>([]);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     loadData();
   }, []);
 
+  const filterProfessional = (groups: IMarketSubscriptionGroup[]): IMarketSubscriptionGroup[] => {
+    return groups
+      .map(group => ({
+        ...group,
+        subscriptions: group.subscriptions.filter(s => s.professionalFlag === "Y"),
+      }))
+      .filter(group => group.subscriptions.length > 0);
+  };
+
   const loadData = async () => {
     try {
       setError(null);
-      const data = await fetchMarketData();
-      setResearchArticles(data.researchArticles);
-      setMarketData(data.marketData);
+      const [catalogRes, mySubsRes] = await Promise.all([
+        subscriptionService.getMarketDataSubscriptions(),
+        subscriptionService.getMyMarketDataSubscriptions(),
+      ]);
+
+      if (!catalogRes.success || !catalogRes.data) {
+        setError("Error fetching market data");
+        return;
+      }
+
+      // TODO: Use mySubsRes to mark already-subscribed items
+      void mySubsRes;
+
+      setResearchGroups(filterProfessional(catalogRes.data.research || []));
+      setMarketDataGroups(filterProfessional(catalogRes.data.marketData || []));
     } catch {
       setError("Error fetching market data");
-    } finally {
     }
+  };
+
+  const getDescription = (group: IMarketSubscriptionGroup) => {
+    const amounts = group.subscriptions.map(s => s.amount);
+    const min = Math.min(...amounts);
+    return `From SGD ${min.toFixed(2)}/month`;
   };
 
   if (error) {
     return <ErrorState title="Oops, Something Went Wrong" description='We are unable to display the content, please try again later.' />;
   }
 
-  if (researchArticles.length === 0 && marketData.length === 0) {
+  if (researchGroups.length === 0 && marketDataGroups.length === 0) {
     return <ErrorState title="No Subscription Items Found" description='Check back soon - new items are on the way!' type='empty' />;
   }
 
@@ -139,7 +92,7 @@ const Professional = ({ setSelectedItems }: ProfessionalProps) => {
                     Registered or qualified with the Securities and Exchange Commission, the Commodities Futures Trading Commission, any state securities agency, any securities exchange or association, or any commodities/futures contract market or association;
                   </li>
                   <li>
-                    Engaged as an “investment advisor” as defined in section 202(a)(11) of the Investment Advisor’s Act of 1940 (whether or not registered or qualified under that Act) of the United States of America;
+                    Engaged as an &quot;investment advisor&quot; as defined in section 202(a)(11) of the Investment Advisor&apos;s Act of 1940 (whether or not registered or qualified under that Act) of the United States of America;
                   </li>
                   <li>
                     Employed by a bank or other organization, exempt from registration under the laws of the United States of America, to perform functions that would require registration or qualification if performed in a registered bank or organization;
@@ -154,59 +107,53 @@ const Professional = ({ setSelectedItems }: ProfessionalProps) => {
         </p>
       </div>
 
+      {researchGroups.length > 0 && (
+        <>
+          <div className="flex items-center gap-2 mt-7">
+            <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
+            <Separator className="flex-1 border border-stroke-secondary" />
+          </div>
+          <div className="mt-2 space-y-3">
+            {researchGroups.map((group) => (
+              <MarketItem
+                key={group.groupId}
+                groupId={group.groupId}
+                groupTitle={group.groupTitle}
+                description={getDescription(group)}
+                image="/images/market-data/item-1.png"
+                subscriptions={group.subscriptions}
+                onSelectItem={(item) => {
+                  setSelectedItems((prev) => [...prev, item]);
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
-
-      <div className="flex items-center gap-2 mt-7">
-        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
-        <Separator className="flex-1 border border-stroke-secondary" />
-      </div>
-      <div className="mt-2 space-y-3">
-        {researchArticles.map((item) => (
-          <MarketItem
-            onSelectItem={(item) => {
-              setSelectedItems((prev) => [...prev, {
-                image: item.image,
-                title: item.title,
-                selectedOption: {
-                  value: item.selectedOption.value,
-                  label: item.selectedOption.label
-                }
-              }]);
-            }}
-            key={item.id}
-            title={item.title}
-            description={item.description}
-            image={item.image}
-            dropDownItems={item.dropDownItems}
-          />
-        ))}
-      </div>
-
-      <div className="flex items-center gap-2 mt-7">
-        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
-        <Separator className="flex-1 border border-stroke-secondary" />
-      </div>
-      <div className="mt-2 space-y-3">
-        {marketData.map((item) => (
-          <MarketItem
-            onSelectItem={(item) => {
-              setSelectedItems((prev) => [...prev, {
-                image: item.image,
-                title: item.title,
-                selectedOption: {
-                  value: item.selectedOption.value,
-                  label: item.selectedOption.label
-                }
-              }]);
-            }}
-            key={item.id}
-            title={item.title}
-            description={item.description}
-            image={item.image}
-            dropDownItems={item.dropDownItems}
-          />
-        ))}
-      </div>
+      {marketDataGroups.length > 0 && (
+        <>
+          <div className="flex items-center gap-2 mt-7">
+            <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
+            <Separator className="flex-1 border border-stroke-secondary" />
+          </div>
+          <div className="mt-2 space-y-3">
+            {marketDataGroups.map((group) => (
+              <MarketItem
+                key={group.groupId}
+                groupId={group.groupId}
+                groupTitle={group.groupTitle}
+                description={getDescription(group)}
+                image="/images/market-data/item-2.png"
+                subscriptions={group.subscriptions}
+                onSelectItem={(item) => {
+                  setSelectedItems((prev) => [...prev, item]);
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div >
   );
 };

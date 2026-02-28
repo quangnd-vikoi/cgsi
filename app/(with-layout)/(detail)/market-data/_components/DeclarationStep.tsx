@@ -1,21 +1,49 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { IMarketSubscriptionExtendedData } from "@/types";
 
 interface DeclarationStepProps {
-    onConfirm: () => void;
+    onConfirm: (data: Partial<IMarketSubscriptionExtendedData>) => void;
 }
 
 const FORM_FIELDS = [
     { id: "name", label: "Name" },
     { id: "address", label: "Address" },
     { id: "occupation", label: "Occupation" },
-    { id: "employerName", label: "Employer Name" },
-    { id: "title", label: "Title or Position" },
-    { id: "functions", label: "Employment Functions" },
+    { id: "employer", label: "Employer Name" },
+    { id: "employmentTitle", label: "Title or Position" },
+    { id: "employmentFunction", label: "Employment Functions" },
 ] as const;
 
+type FormFieldId = typeof FORM_FIELDS[number]["id"];
+
 const DeclarationStep = ({ onConfirm }: DeclarationStepProps) => {
+    const [formData, setFormData] = useState<Record<FormFieldId, string>>({
+        name: "",
+        address: "",
+        occupation: "",
+        employer: "",
+        employmentTitle: "",
+        employmentFunction: "",
+    });
+
+    const handleChange = (id: FormFieldId, value: string) => {
+        setFormData(prev => ({ ...prev, [id]: value }));
+    };
+
+    const handleContinue = () => {
+        onConfirm({
+            name: formData.name,
+            address: formData.address,
+            occupation: formData.occupation,
+            employer: formData.employer,
+            employmentTitle: formData.employmentTitle,
+            employmentFunction: formData.employmentFunction,
+        });
+    };
+
     return (
         <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2">
@@ -39,6 +67,8 @@ const DeclarationStep = ({ onConfirm }: DeclarationStepProps) => {
                                 className="mt-2 h-auto min-h-9 resize-none"
                                 rows={1}
                                 placeholder="Type Here"
+                                value={formData[field.id]}
+                                onChange={(e) => handleChange(field.id, e.target.value)}
                             />
                         </div>
                     ))}
@@ -47,7 +77,7 @@ const DeclarationStep = ({ onConfirm }: DeclarationStepProps) => {
 
             {/* Action Buttons */}
             <div className="border-t px-6 py-4">
-                <Button onClick={onConfirm} className="w-full rounded">
+                <Button onClick={handleContinue} className="w-full rounded">
                     Continue
                 </Button>
             </div>

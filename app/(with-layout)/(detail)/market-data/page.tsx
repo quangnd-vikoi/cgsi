@@ -12,22 +12,16 @@ import DeclarationStep from "./_components/DeclarationStep";
 import NonProDeclarationStep from "./_components/NonProDeclarationStep";
 import TermsStep from "./_components/TermsStep";
 import SuccessState from "@/public/icons/success-state.svg";
+import type { ISelectedMarketSubscription, IMarketSubscriptionExtendedData } from "@/types";
 
 export type Step = "select" | "cart" | "professional-declaration" | "non-professional-declaration" | "terms-and-conditions" | "success";
 
-export interface IMarketDataItem {
-    image: string;
-    title: string;
-    description?: string;
-    selectedOption: {
-        value: string;
-        label: string;
-    };
-}
-
 const MarketData = () => {
     const [currentStep, setCurrentStep] = useState<Step>("select");
-    const [selectedItems, setSelectedItems] = useState<IMarketDataItem[]>([]);
+    const [selectedItems, setSelectedItems] = useState<ISelectedMarketSubscription[]>([]);
+    const [activeTab, setActiveTab] = useState<"non-professional" | "professional">("non-professional");
+    const [declarationData, setDeclarationData] = useState<Partial<IMarketSubscriptionExtendedData> | null>(null);
+
     const handleGoToCart = () => {
         setCurrentStep("cart");
     };
@@ -41,20 +35,23 @@ const MarketData = () => {
         ) {
             setCurrentStep("cart");
         } else if (currentStep === "terms-and-conditions") {
-            setCurrentStep("professional-declaration");
+            setCurrentStep(
+                activeTab === "professional"
+                    ? "professional-declaration"
+                    : "non-professional-declaration"
+            );
         }
     };
 
-    const handleDeclarationConfirm = () => {
+    const handleDeclarationConfirm = (data: Partial<IMarketSubscriptionExtendedData>) => {
+        setDeclarationData(data);
         setCurrentStep("terms-and-conditions");
     };
 
     const calculateAmount = () => {
-        return selectedItems.reduce((total, item) => {
-            const price = Number(item.selectedOption?.value.split(" ")[0]);
-            return total + (isNaN(price) ? 0 : price);
-        }, 0);
+        return selectedItems.reduce((total, item) => total + item.amount, 0);
     };
+
     return (
         <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
             <div className="shrink-0">
@@ -82,7 +79,11 @@ const MarketData = () => {
             {/* Step 1 - Selection */}
             {currentStep === "select" && (
                 <div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
-                    <Tabs defaultValue="non-professional" className="flex flex-1 flex-col gap-0 min-h-0">
+                    <Tabs
+                        defaultValue="non-professional"
+                        className="flex flex-1 flex-col gap-0 min-h-0"
+                        onValueChange={(val) => setActiveTab(val as "non-professional" | "professional")}
+                    >
                         <div className="pad-x">
                             <TabsList className="w-full pt-6 shrink-0">
                                 <TabsTrigger className="w-1/2 pb-2" value="non-professional">
@@ -109,7 +110,7 @@ const MarketData = () => {
                     </Tabs>
                     <div className="px-6 py-4 border-t w-full flex justify-between relative gap-2">
                         <div>
-                            <p className="text-base font-semibold">{calculateAmount()} SGD</p>
+                            <p className="text-base font-semibold">{calculateAmount().toFixed(2)} SGD</p>
                             <p className="text-xs text-typo-tertiary">Excluding GST</p>
                         </div>
                         <Button className="text-base font-normal px-3 rounded" onClick={handleGoToCart}>
@@ -124,7 +125,13 @@ const MarketData = () => {
                 <CartStep
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}
-                    onCheckout={() => setCurrentStep("professional-declaration")}
+                    onCheckout={() =>
+                        setCurrentStep(
+                            activeTab === "professional"
+                                ? "professional-declaration"
+                                : "non-professional-declaration"
+                        )
+                    }
                 />
             )}
 
@@ -140,7 +147,11 @@ const MarketData = () => {
             )}
 
             {currentStep === "terms-and-conditions" && (
-                <TermsStep setCurrenStep={setCurrentStep} selectedItems={selectedItems} />
+                <TermsStep
+                    setCurrenStep={setCurrentStep}
+                    selectedItems={selectedItems}
+                    declarationData={declarationData}
+                />
             )}
 
             {/* Success */}
@@ -163,7 +174,13 @@ const MarketData = () => {
                                 <p className="text-sm font-semibold md:hidden">Total Price</p>
                                 <p className="text-xs">Inclusive of GST</p>
                             </div>
-                            <p className="text-base font-semibold">54.50 SGD</p>
+                            <p className="text-base font-semibold">
+                                {selectedItems.reduce((total, item) => {
+                                    const base = item.amount;
+                                    const gst = item.gstIndicator === 3 ? base * 0.09 : 0;
+                                    return total + base + gst;
+                                }, 0).toFixed(2)} SGD
+                            </p>
                         </div>
                     </div>
                     <div className="border-t px-6 py-4">

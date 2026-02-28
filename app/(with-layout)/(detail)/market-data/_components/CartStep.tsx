@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { IMarketDataItem } from "../page";
 import { Dispatch, SetStateAction } from "react";
 import { ErrorState } from "@/components/ErrorState";
 import Alert from "@/components/Alert";
 import { toast } from "@/components/ui/toaster";
 import CartItemsList from "./CartItemList";
+import type { ISelectedMarketSubscription } from "@/types";
 
 interface CartStepProps {
-    selectedItems: Array<IMarketDataItem>;
-    setSelectedItems: Dispatch<SetStateAction<Array<IMarketDataItem>>>;
+    selectedItems: Array<ISelectedMarketSubscription>;
+    setSelectedItems: Dispatch<SetStateAction<Array<ISelectedMarketSubscription>>>;
     onCheckout: () => void;
 }
 
@@ -20,8 +20,8 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
         toast.success("All Items Removed", "All items have been successfully removed from your cart.")
     };
 
-    const handleRemoveOneItem = (item: IMarketDataItem) => {
-        setSelectedItems(prev => prev.filter(i => i.title !== item.title))
+    const handleRemoveOneItem = (item: ISelectedMarketSubscription) => {
+        setSelectedItems(prev => prev.filter(i => i.subscriptionId !== item.subscriptionId))
         toast.success("Item Removed", "The selected item has been removed from your cart")
     };
     return (

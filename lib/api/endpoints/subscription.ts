@@ -7,11 +7,29 @@
  *
  * Authentication:
  * - All endpoints require Bearer token (useAuth: true)
- *
- * NOTE: Only PRODUCT subscription endpoints exist (IPO/IOP/AI).
- * Market data subscription endpoints do NOT exist in the API.
  */
 export const subscriptionEndpoints = {
+	// ============================================================================
+	// Market Data Subscription Endpoints
+	// ============================================================================
+	marketDataSubscriptions: () =>
+		`/subscription/api/v1/marketData/subscription`,
+
+	marketDataAgreements: (ids: string) =>
+		`/subscription/api/v1/marketData/subscription/agreement?ids=${ids}`,
+
+	marketDataAgreementContent: (agreementId: string) =>
+		`/subscription/api/v1/marketData/subscription/agreement/content?agreementId=${agreementId}`,
+
+	myMarketDataSubscriptions: () =>
+		`/subscription/api/v1/marketData/mySubscription`,
+
+	submitMarketDataSubscription: () =>
+		`/subscription/api/v1/marketData/mySubscription`,
+
+	unsubscribeMarketData: () =>
+		`/subscription/api/v1/marketData/mySubscription/unsubscribe`,
+
 	// ============================================================================
 	// Product Subscription Endpoints
 	// ============================================================================
