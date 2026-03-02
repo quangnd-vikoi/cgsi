@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { getContraDetails } from "@/lib/services/portfolioService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import type { IContra } from "@/types";
+import type { IContraDetail } from "@/types";
 
 interface ContraDetailsDialogProps {
 	open: boolean;
@@ -35,7 +35,7 @@ export function ContraDetailsDialog({
 	currency,
 	statementNo,
 }: ContraDetailsDialogProps) {
-	const [details, setDetails] = useState<IContra[]>([]);
+	const [details, setDetails] = useState<IContraDetail[]>([]);
 	const [loading, setLoading] = useState(false);
 	const { selectedAccount } = useTradingAccountStore();
 
@@ -45,7 +45,7 @@ export function ContraDetailsDialog({
 			setLoading(true);
 			const response = await getContraDetails(selectedAccount.accountNo, statementNo);
 			if (response.success && response.data) {
-				setDetails(response.data.contracts);
+				setDetails(response.data);
 			}
 			setLoading(false);
 		};
@@ -133,8 +133,8 @@ export function ContraDetailsDialog({
 											key={index}
 											className="border-b border-stroke-secondary last:border-0 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
 										>
-											<TableCell>{detail.statementDate}</TableCell>
-											<TableCell>{detail.statementNo}</TableCell>
+											<TableCell>{detail.tradeDate}</TableCell>
+											<TableCell>{detail.contractNo}</TableCell>
 											<TableCell>{detail.securityName}</TableCell>
 											<TableCell>{detail.settlementCurrency}</TableCell>
 											<TableCell

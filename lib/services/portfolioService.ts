@@ -3,13 +3,12 @@ import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { APIResponse } from "@/lib/api/types";
 import type {
 	IExchangeRate,
-	IAccountSummary,
 	ITrustBalance,
 	ITrustBalanceDetail,
 	IPortfolioHolding,
-	ICollateralFinancing,
 	IContract,
 	IContra,
+	IContraDetail,
 	IBorrowedShare,
 	ILoanedShare,
 	IPaynowTopUp,
@@ -20,12 +19,6 @@ import type {
 
 export const getFxRates = async (): Promise<APIResponse<IExchangeRate[]>> => {
 	return await fetchAPI<IExchangeRate[]>(ENDPOINTS.fxRates(), { useAuth: true });
-};
-
-export const getAccountSummary = async (
-	accountNo: string
-): Promise<APIResponse<IAccountSummary>> => {
-	return await fetchAPI<IAccountSummary>(ENDPOINTS.accountSummary(accountNo), { useAuth: true });
 };
 
 export const getTrustBalance = async (
@@ -39,8 +32,8 @@ export const getTrustBalanceDetails = async (
 	currency: string,
 	pageSize?: number,
 	pageIndex?: number
-): Promise<APIResponse<{ total: number; trustBalances: ITrustBalanceDetail[] }>> => {
-	return await fetchAPI<{ total: number; trustBalances: ITrustBalanceDetail[] }>(
+): Promise<APIResponse<{ total: number; trustBalanceDetails: ITrustBalanceDetail[] }>> => {
+	return await fetchAPI<{ total: number; trustBalanceDetails: ITrustBalanceDetail[] }>(
 		ENDPOINTS.trustBalanceDetails(accountNo, currency, pageSize, pageIndex),
 		{ useAuth: true }
 	);
@@ -57,12 +50,6 @@ export const getHoldings = async (
 	);
 };
 
-export const getMargin = async (
-	accountNo: string
-): Promise<APIResponse<ICollateralFinancing>> => {
-	return await fetchAPI<ICollateralFinancing>(ENDPOINTS.margin(accountNo), { useAuth: true });
-};
-
 export const getContracts = async (
 	accountNo: string,
 	marketCode?: string,
@@ -71,18 +58,6 @@ export const getContracts = async (
 ): Promise<APIResponse<{ total: number; contracts: IContract[] }>> => {
 	return await fetchAPI<{ total: number; contracts: IContract[] }>(
 		ENDPOINTS.contracts(accountNo, marketCode, pageSize, pageIndex),
-		{ useAuth: true }
-	);
-};
-
-export const getContractsPastDue = async (
-	accountNo: string,
-	marketCode?: string,
-	pageSize?: number,
-	pageIndex?: number
-): Promise<APIResponse<{ total: number; pastDue: IContract[] }>> => {
-	return await fetchAPI<{ total: number; pastDue: IContract[] }>(
-		ENDPOINTS.contractsPastDue(accountNo, marketCode, pageSize, pageIndex),
 		{ useAuth: true }
 	);
 };
@@ -102,8 +77,8 @@ export const getContra = async (
 export const getContraDetails = async (
 	accountNo: string,
 	statementNo: string
-): Promise<APIResponse<{ total: number; contracts: IContra[] }>> => {
-	return await fetchAPI<{ total: number; contracts: IContra[] }>(
+): Promise<APIResponse<IContraDetail[]>> => {
+	return await fetchAPI<IContraDetail[]>(
 		ENDPOINTS.contraDetails(accountNo, statementNo),
 		{ useAuth: true }
 	);
@@ -163,13 +138,10 @@ export const getCdpTransferStatus = async (): Promise<APIResponse<ICDPTransferSt
 
 export const portfolioService = {
 	getFxRates,
-	getAccountSummary,
 	getTrustBalance,
 	getTrustBalanceDetails,
 	getHoldings,
-	getMargin,
 	getContracts,
-	getContractsPastDue,
 	getContra,
 	getContraDetails,
 	getSblBorrowed,

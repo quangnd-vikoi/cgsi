@@ -18,7 +18,7 @@ import { ContraDetailsDialog } from "./_components/ContraDetailsDialog";
 import { SummarySection } from "./_components/SummarySection";
 import { ContractsTable } from "./_components/ContractsTable";
 import type { ContractDisplay } from "./_components/ContractsTable";
-import { getContracts, getContractsPastDue, getContra } from "@/lib/services/portfolioService";
+import { getContracts, getContra } from "@/lib/services/portfolioService";
 import type { IContract, IContra } from "@/types";
 
 type TabType = "contracts" | "contra";
@@ -79,30 +79,20 @@ export default function SettlePage() {
 
 	const accountNo = selectedAccount?.accountNo;
 
-	// Fetch contracts (outstanding + past due)
+	// Fetch contracts (outstanding)
 	const fetchContracts = useCallback(async () => {
 		if (!accountNo) return;
 		setContractsLoading(true);
 		const pageIndex = currentPage - 1;
 
-		const [outstandingRes, pastDueRes] = await Promise.all([
-			getContracts(accountNo, undefined, itemsPerPage, pageIndex),
-			getContractsPastDue(accountNo, undefined, itemsPerPage, pageIndex),
-		]);
+		const res = await getContracts(accountNo, undefined, itemsPerPage, pageIndex);
 
-		const outstanding = outstandingRes.success && outstandingRes.data
-			? outstandingRes.data.contracts.map(c => mapContract(c, "Outstanding"))
-			: [];
-		const pastDue = pastDueRes.success && pastDueRes.data
-			? pastDueRes.data.pastDue.map(c => mapContract(c, "Overdue"))
+		const contracts = res.success && res.data
+			? res.data.contracts.map(c => mapContract(c, "Outstanding"))
 			: [];
 
-		// Combine: past due first, then outstanding
-		const combined = [...pastDue, ...outstanding];
-		const totalCount = (outstandingRes.data?.total ?? 0) + (pastDueRes.data?.total ?? 0);
-
-		setContractsData(combined);
-		setContractsTotal(totalCount);
+		setContractsData(contracts);
+		setContractsTotal(res.data?.total ?? 0);
 		setContractsLoading(false);
 	}, [accountNo, currentPage, itemsPerPage]);
 
@@ -132,13 +122,9 @@ export default function SettlePage() {
 	// Also fetch the inactive tab counts on mount / account change
 	useEffect(() => {
 		if (!accountNo) return;
-		// Fetch both tabs' totals for tab count display
 		getContracts(accountNo, undefined, 1, 0).then(res => {
 			if (res.success && res.data) {
-				getContractsPastDue(accountNo, undefined, 1, 0).then(pdRes => {
-					const total = (res.data?.total ?? 0) + (pdRes.data?.total ?? 0);
-					setContractsTotal(total);
-				});
+				setContractsTotal(res.data.total);
 			}
 		});
 		getContra(accountNo, undefined, 1, 0).then(res => {

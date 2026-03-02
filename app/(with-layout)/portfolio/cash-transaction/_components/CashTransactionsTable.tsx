@@ -23,9 +23,9 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 						<TableHead>Transaction Date</TableHead>
 						<TableHead>Description</TableHead>
 						<TableHead className="text-right">Currency</TableHead>
-						<TableHead className="text-right">Traded Price</TableHead>
-						<TableHead className="text-right">Quantity</TableHead>
-						<TableHead className="text-right">Amount</TableHead>
+						<TableHead className="text-right">Debit</TableHead>
+						<TableHead className="text-right">Credit</TableHead>
+						<TableHead className="text-right">Balance</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -52,16 +52,13 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 								<TableCell>{transaction.description}</TableCell>
 								<TableCell className="text-right">{transaction.currency}</TableCell>
 								<TableCell className="text-right">
-									{transaction.tradedPrice.toFixed(3)}
+									{transaction.debit.toLocaleString("en-US", { minimumFractionDigits: 2 })}
 								</TableCell>
-								<TableCell className="text-right">{transaction.quantity}</TableCell>
-								<TableCell
-									className={`text-right ${transaction.amount > 0 ? "!text-status-success" : "!text-status-error"
-										}`}
-								>
-									{transaction.amount > 0 ? "+" : ""} {transaction.amount.toLocaleString("en-US", {
-										minimumFractionDigits: 2,
-									})}
+								<TableCell className="text-right">
+									{transaction.credit.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+								</TableCell>
+								<TableCell className="text-right">
+									{transaction.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
 								</TableCell>
 							</TableRow>
 						))

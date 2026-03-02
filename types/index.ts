@@ -505,24 +505,6 @@ export interface IExchangeRate {
 	offer: number;
 }
 
-export interface IAssetSummary {
-	currency: string;
-	value: number;
-}
-
-export interface IAccountSummary {
-	totalAsset: number;
-	contractsSell?: number;
-	contractsBuy?: number;
-	contraSell?: number;
-	contraBuy?: number;
-	tradeLimit?: number;
-	collateralValue?: number;
-	marginRatio?: number;
-	cashCall?: number;
-	assetList: IAssetSummary[];
-}
-
 export interface ITrustBalance {
 	currency: string;
 	balance: number;
@@ -535,9 +517,10 @@ export interface ITrustBalanceDetail {
 	transactionDate: string;
 	description: string;
 	currency: string;
-	tradedPrice: number;
-	quantity: number;
-	amount: number;
+	debit: number;
+	credit: number;
+	balance: number;
+	accode: string;
 }
 
 export interface IPortfolioHolding {
@@ -558,19 +541,6 @@ export interface IPortfolioHolding {
 	collateralValue?: number;
 	pendingBuy?: number;
 	pendingSell?: number;
-	lastUpdatedOn: string;
-}
-
-export interface ICollateralFinancing {
-	accountNo: string;
-	traderCode: string;
-	creditLimit: number;
-	ledgerBalance: number;
-	ytdInterest: number;
-	totalFinanced: number;
-	totalCollateral: number;
-	availableFinancing: number;
-	margin: number;
 	lastUpdatedOn: string;
 }
 
@@ -608,6 +578,14 @@ export interface IContra {
 	baseNetAmt: number;
 	lastUpdatedOn: string;
 	paid: boolean;
+}
+
+export interface IContraDetail {
+	tradeDate: string;
+	contractNo: string;
+	securityName: string;
+	settlementCurrency: string;
+	settlementNetAmount: number;
 }
 
 export interface IBorrowedShare {

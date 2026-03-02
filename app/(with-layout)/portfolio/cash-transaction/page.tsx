@@ -48,7 +48,7 @@ export default function CashTransactionPage() {
                 pageIndex
             );
             if (response.success && response.data) {
-                setTransactions(response.data.trustBalances);
+                setTransactions(response.data.trustBalanceDetails);
                 setTotalItems(response.data.total);
             }
             setLoading(false);
