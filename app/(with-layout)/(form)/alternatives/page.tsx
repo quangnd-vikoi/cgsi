@@ -30,7 +30,7 @@ function ApplyFooter() {
 }
 
 const Alternatives = () => {
-	const { selectedItem, selectedId, clearSelection } = useSelectionStore();
+	const { selectedId, clearSelection } = useSelectionStore();
 	const { selectedAccount, isInitialized } = useTradingAccountStore();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const router = useRouter();

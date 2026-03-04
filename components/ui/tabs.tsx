@@ -15,7 +15,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
 	return (
 		<TabsPrimitive.List
 			data-slot="tabs-list"
-			className={cn("border-b border-stroke-secondary flex", className)}
+			className={cn("border-b border-stroke-secondary flex gap-3 md:gap-4", className)}
 			{...props}
 		/>
 	);

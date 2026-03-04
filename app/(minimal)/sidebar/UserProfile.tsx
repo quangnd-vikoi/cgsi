@@ -49,12 +49,6 @@ const UserProfile = () => {
 							readOnly
 							className="bg-theme-neutral-095 text-typo-tertiary pr-20"
 						/>
-						<Button
-							variant="link"
-							className="text-cgs-blue underline underline-offset-2 text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
-						>
-							Update
-						</Button>
 					</div>
 				</div>
 

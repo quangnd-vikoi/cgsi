@@ -25,7 +25,7 @@ function ApplyFooter() {
 }
 
 const Securities = () => {
-	const { selectedItem, selectedId, clearSelection } = useSelectionStore();
+	const { selectedId, clearSelection } = useSelectionStore();
 
 	if (!selectedId) {
 		return (

@@ -36,7 +36,7 @@ const DetailNotification = () => {
 		if (notification?.status === "U") {
 			notificationService.markNotificationAsRead(notification.id).catch(console.error);
 		}
-	}, [notification?.id]);
+	}, [notification?.id, notification?.status]);
 
 	// Check if payload doesn't exist or is empty
 	if (!notification) {

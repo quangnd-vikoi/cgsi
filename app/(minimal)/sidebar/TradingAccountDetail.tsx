@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSheetStore } from "@/stores/sheetStore";
+import { Separator } from "@radix-ui/react-separator";
 
 interface LinkageItemProps {
 	label: string;
@@ -30,6 +31,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 	isLinked = false,
 	onUnlink,
 	actionContent,
+	showSeparator = true,
 }) => {
 	return (
 		<>
@@ -37,7 +39,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 				<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs md:text-sm">
 					{label}
 					<Tooltip>
-						<TooltipTrigger asChild>
+						<TooltipTrigger>
 							<WaringIcon />
 						</TooltipTrigger>
 						<TooltipContent side="bottom">
@@ -49,7 +51,9 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 				<div className="flex justify-between items-center gap-2">
 					{value ? (
 						<>
-							<p className="font-medium text-typo-primary text-sm md:text-base truncate flex-1">{value}</p>
+							<p className="font-medium text-typo-primary text-sm md:text-base truncate flex-1">
+								{value}
+							</p>
 							{isLinked ? (
 								<Badge variant="success" className="relative overflow-visible shrink-0">
 									<CircleCheck
@@ -64,7 +68,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 												e.preventDefault();
 												onUnlink();
 											}}
-											className="absolute text-status-error -top-5 right-0 text-xs hover:underline"
+											className="absolute text-status-error -top-7 right-0 text-xs hover:underline"
 										>
 											Unlink
 										</Link>
@@ -81,14 +85,23 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 						</>
 					)}
 				</div>
+
+				{showSeparator && <Separator className="h-[1px] bg-stroke-secondary mt-4 -mb-4" />}
 			</div>
 		</>
 	);
 };
 
+const ACCOUNT_TYPE_LABELS: Record<string, string> = {
+	CTA: "Cash Trading Account",
+	CUT: "CUT Account",
+	SBL: "Shares Borrowing Account",
+	MTA: "Margin Account",
+	iCash: "iCash Account",
+};
+
 const TradingAccountDetail = () => {
 	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
-	const [isPaymentMethodOpen, setIsPaymentMethodOpen] = useState(false);
 	const router = useRouter();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 
@@ -104,8 +117,12 @@ const TradingAccountDetail = () => {
 
 	if (!selectedAccount) return null;
 
-	const isCashAccount = selectedAccount.accountType === "Cash Trading Account";
-	const isSharesBorrowing = selectedAccount.accountType === "Shares Borrowing Account";
+	const accountType = selectedAccount.accountType ?? "";
+	const isCTA = accountType === "CTA";
+	const isCUT = accountType === "CUT";
+	const isSBL = accountType === "SBL";
+	const showCpfSrs = isCTA || isCUT;
+	const accountTypeLabel = ACCOUNT_TYPE_LABELS[accountType] ?? accountType;
 
 	return (
 		<div className="flex flex-col h-full">
@@ -113,7 +130,7 @@ const TradingAccountDetail = () => {
 
 			<div className="flex-1 mt-6 pb-4 overflow-y-auto scrollbar-offset-laptop">
 				<div className="mb-9">
-					<p className="text-typo-secondary text-xs">{selectedAccount.accountType}</p>
+					<p className="text-typo-secondary text-xs">{accountTypeLabel}</p>
 					<div className="flex items-center gap-2">
 						<p className="font-semibold text-typo-primary text-lg">{selectedAccount.accountNo}</p>
 						<Copy
@@ -124,22 +141,22 @@ const TradingAccountDetail = () => {
 					</div>
 				</div>
 
-				{!isSharesBorrowing && (
-					<Group showSeparator={false} title="Account Linkages" childrenClassName="gap-4">
+				{!isSBL && (
+					<Group showSeparator={false} title="Account Linkages" childrenClassName="gap-0">
 						<LinkageItem
 							label="CDP"
 							tooltipContent="Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
 							value={selectedAccount.cdp || undefined}
 							actionContent={
-								<div className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0">
+								<div className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0">
 									Update to SUB-CDP
 									<ChevronRight size={16} />
 								</div>
 							}
-							showSeparator={isCashAccount}
+							showSeparator={showCpfSrs}
 						/>
 
-						{isCashAccount && (
+						{showCpfSrs && (
 							<>
 								<LinkageItem
 									label="CPF"
@@ -149,7 +166,7 @@ const TradingAccountDetail = () => {
 									onUnlink={() => handleUnlink("cpf")}
 									actionContent={
 										<div
-											className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0"
+											className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0"
 											onClick={() => handleLink("cpf")}
 										>
 											Link Now
@@ -166,7 +183,7 @@ const TradingAccountDetail = () => {
 									onUnlink={() => handleUnlink("srs")}
 									actionContent={
 										<div
-											className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0"
+											className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0"
 											onClick={() => handleLink("srs")}
 										>
 											Link Now
@@ -175,41 +192,49 @@ const TradingAccountDetail = () => {
 									}
 								/>
 
-								<LinkageItem
-									label={selectedAccount.giro ? "GIRO" : selectedAccount.eps ? "EPS" : "Payment method"}
-									tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
-									value={selectedAccount.giro || selectedAccount.eps || undefined}
-									isLinked={!!(selectedAccount.giro || selectedAccount.eps)}
-									onUnlink={() => handleUnlink("payment")}
-									actionContent={
-										<DropdownMenu onOpenChange={setIsPaymentMethodOpen}>
-											<DropdownMenuTrigger asChild>
-												<p className="flex items-center gap-1 text-cgs-blue text-xs cursor-pointer shrink-0 whitespace-nowrap">
-													{isPaymentMethodOpen ? "Set Up Now" : "Payment Method"}
-													<ChevronDown size={16} />
-												</p>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent
-												className="w-36 px-0 py-2 text-sm"
-												align="end"
-											>
-												<DropdownMenuItem
-													onClick={() => handleLink("eps")}
-													className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
+								{isCTA && (
+									<LinkageItem
+										label={
+											selectedAccount.giro
+												? "Payment Method (GIRO)"
+												: selectedAccount.eps
+													? "Payment Method (EPS)"
+													: "Payment Method"
+										}
+										tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
+										value={selectedAccount.giro || selectedAccount.eps || undefined}
+										isLinked={!!(selectedAccount.giro || selectedAccount.eps)}
+										onUnlink={() => handleUnlink("payment")}
+										actionContent={
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<p className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0 whitespace-nowrap">
+														Setup Now
+														<ChevronDown size={16} />
+													</p>
+												</DropdownMenuTrigger>
+												<DropdownMenuContent
+													className="w-36 px-0 py-2 text-sm"
+													align="end"
 												>
-													EPS
-												</DropdownMenuItem>
-												<DropdownMenuItem
-													onClick={() => handleLink("giro")}
-													className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
-												>
-													GIRO
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									}
-									showSeparator={false}
-								/>
+													<DropdownMenuItem
+														onClick={() => handleLink("eps")}
+														className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
+													>
+														EPS
+													</DropdownMenuItem>
+													<DropdownMenuItem
+														onClick={() => handleLink("giro")}
+														className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
+													>
+														GIRO
+													</DropdownMenuItem>
+												</DropdownMenuContent>
+											</DropdownMenu>
+										}
+										showSeparator={false}
+									/>
+								)}
 							</>
 						)}
 					</Group>
@@ -218,7 +243,6 @@ const TradingAccountDetail = () => {
 				<div className="mt-9">
 					<Group title="Trading Representative" showSeparator={false}>
 						<div className="flex flex-col gap-4 p-4">
-
 							{[
 								{ label: "TR Name", value: selectedAccount.trName },
 								{
@@ -239,7 +263,10 @@ const TradingAccountDetail = () => {
 									hasArrow: true,
 								},
 							].map((item, index) => (
-								<div key={index} className="flex justify-between items-center text-sm md:text-base">
+								<div
+									key={index}
+									className="flex justify-between items-center text-sm md:text-base"
+								>
 									<p className="text-typo-secondary">{item.label}</p>
 									<div className="flex items-center gap-2 min-w-0">
 										<p className="font-medium text-typo-primary truncate">{item.value}</p>

@@ -176,7 +176,8 @@ const UpdateSignature = () => {
 
 		if (!uploadResponse.success || !uploadResponse.data) {
 			setIsSubmitting(false);
-			toast.error("Upload failed", uploadResponse.error || "Please try again later.");
+			setStatus("failed");
+			toast.error("Error Encountered", "Something went wrong. Please try again later");
 			return;
 		}
 
@@ -188,7 +189,8 @@ const UpdateSignature = () => {
 		if (submitResponse.success && submitResponse.data?.isSuccess) {
 			setStatus("success");
 		} else {
-			toast.error("Update failed", submitResponse.error || "Please try again later.");
+			setStatus("failed");
+			toast.error("Error Encountered", "Something went wrong. Please try again later");
 		}
 	};
 
@@ -211,7 +213,7 @@ const UpdateSignature = () => {
 			</div>
 
 			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
-				{status != "success" ? (
+				{status === "update" ? (
 					<Tabs defaultValue={tab} className="pad-x gap-0">
 						<TabsList className="">
 							<TabsTrigger className="pb-2.5" value="draw" onClick={() => setTab("draw")}>
@@ -395,6 +397,13 @@ const UpdateSignature = () => {
 							</div>
 						</TabsContent>
 					</Tabs>
+				) : status === "failed" ? (
+					<ErrorState
+						type="error"
+						title="Error Encountered"
+						description="Something went wrong. Please try again later"
+						className="m-auto px-4"
+					/>
 				) : (
 					<ErrorState
 						type="success"
@@ -404,7 +413,7 @@ const UpdateSignature = () => {
 					/>
 				)}
 
-				{status != "success" ? (
+				{status === "update" ? (
 					<div className="">
 						{/* Toast */}
 						{showToast != "" && (
@@ -428,6 +437,15 @@ const UpdateSignature = () => {
 								{isSubmitting ? "Submitting..." : "Submit"}
 							</Button>
 						</div>
+					</div>
+				) : status === "failed" ? (
+					<div className="px-6 py-4 border-t w-full relative flex gap-2">
+						<Button
+							className="w-full text-base font-normal"
+							onClick={() => setStatus("update")}
+						>
+							Try Again
+						</Button>
 					</div>
 				) : (
 					<div className="px-6 py-4 border-t w-full relative flex gap-2">

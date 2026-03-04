@@ -28,7 +28,7 @@ const timePeriods = [
 export default function CashTransactionPage() {
     const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
     const [selectedPeriod, setSelectedPeriod] = useState("last30days");
-    const [selectedCurrency, setSelectedCurrency] = useState("SGD");
+    const selectedCurrency = "SGD";
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [transactions, setTransactions] = useState<ITrustBalanceDetail[]>([]);

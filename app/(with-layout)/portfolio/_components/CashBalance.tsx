@@ -36,18 +36,15 @@ export const CashBalance = () => {
     const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [apiBalances, setApiBalances] = useState<ITrustBalance[]>([]);
-    const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
 
     useEffect(() => {
         const fetchBalances = async () => {
             if (!selectedAccount?.accountNo) return;
-            setLoading(true);
             const response = await getTrustBalance(selectedAccount.accountNo);
             if (response.success && response.data) {
                 setApiBalances(response.data);
             }
-            setLoading(false);
         };
         fetchBalances();
     }, [selectedAccount?.accountNo]);

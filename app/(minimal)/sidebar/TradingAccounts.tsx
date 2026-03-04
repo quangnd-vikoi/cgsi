@@ -5,6 +5,15 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@radix-ui/react-separator";
+
+const ACCOUNT_TYPE_LABELS: Record<string, string> = {
+	CTA: "Cash Trading Account",
+	CUT: "CUT Account",
+	SBL: "Shares Borrowing Account",
+	MTA: "Margin Account",
+	iCash: "iCash Account",
+};
 
 const TradingAccounts = () => {
 	const accounts = useTradingAccountStore((state) => state.accounts);
@@ -71,7 +80,11 @@ const TradingAccounts = () => {
 					>
 						<div className="flex justify-between items-start">
 							<div>
-								<p className="text-xs font-normal">{acc.accountType || "Trading Account"}</p>
+								<p className="text-xs font-normal">
+									{ACCOUNT_TYPE_LABELS[acc.accountType ?? ""] ??
+										acc.accountType ??
+										"Trading Account"}
+								</p>
 								<div className="flex gap-2 items-center mt-1">
 									<p className="text-lg font-semibold">{acc.accountNo}</p>
 									<Copy
@@ -84,9 +97,13 @@ const TradingAccounts = () => {
 									/>
 								</div>
 							</div>
-							<ChevronRight className="text-cgs-blue group-hover:translate-x-0.5 transition-transform" size={14} />
+							<ChevronRight
+								className="text-cgs-blue group-hover:translate-x-0.5 transition-transform"
+								size={14}
+							/>
 						</div>
-						<div className="flex justify-between mt-6 text-xs">
+						<Separator className="h-[1px] bg-stroke-secondary my-4" /> 
+						<div className="flex justify-between text-xs sm:text-sm">
 							<p className="text-typo-secondary font-normal">TR Name:</p>
 							<p className="text-typo-primary font-semibold">{acc.trName || "-"}</p>
 						</div>

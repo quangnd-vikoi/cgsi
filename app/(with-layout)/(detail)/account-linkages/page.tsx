@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Headset } from "lucide-react";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
-import { cpf, eps, giro, srs, subcdp } from "./data";
+import { cpf, cpfUnlink, eps, epsUnlink, giro, giroUnlink, srs, srsUnlink, subcdp, subcdpUnlink } from "./data";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -48,12 +48,21 @@ const tabData = {
 	giro: giro,
 };
 
+const tabDataUnlink = {
+	subcdp: subcdpUnlink,
+	cpf: cpfUnlink,
+	srs: srsUnlink,
+	eps: epsUnlink,
+	giro: giroUnlink,
+};
+
 const AccountLinkages = () => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const searchParams = useSearchParams();
 	const router = useRouter();
 
 	const tabParam = searchParams.get("tab") || "subcdp";
+	const isUnlink = searchParams.get("action") === "unlink";
 	const [activeTab, setActiveTab] = useState(tabParam);
 
 	useEffect(() => {
@@ -117,7 +126,7 @@ const AccountLinkages = () => {
 					</div>
 
 					<div className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-						{Object.entries(tabData).map(([key, data]) => (
+						{Object.entries(isUnlink ? tabDataUnlink : tabData).map(([key, data]) => (
 							<TabsContent key={key} value={key} className="h-full flex flex-col m-0 flex-1">
 								<div className="w-full">
 									<div className="pad-x">

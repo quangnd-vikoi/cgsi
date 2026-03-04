@@ -3,7 +3,7 @@ import Title from "@/components/Title";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/userStore";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
 import Alert from "@/components/Alert";
@@ -132,6 +132,13 @@ const UpdateMobile = () => {
 	const [selectedCountry, setSelectedCountry] = useState<Country>(
 		createCountry(parsedCurrentMobile.countryCode)
 	);
+	const [showOtpBanner, setShowOtpBanner] = useState(false);
+
+	useEffect(() => {
+		if (!showOtpBanner) return;
+		const timer = setTimeout(() => setShowOtpBanner(false), 5000);
+		return () => clearTimeout(timer);
+	}, [showOtpBanner]);
 
 	// OTP countdown tracker to determine if OTP is expired or just wrong
 	const { countdown, reset: resetCountdown } = useOTPCountdown({
@@ -184,6 +191,7 @@ const UpdateMobile = () => {
 			// Reset countdown when OTP is sent
 			resetCountdown();
 			setStep(2);
+			setShowOtpBanner(true);
 		} else {
 			toast.error("Failed to send OTP", response.error || "Please try again later.");
 		}
@@ -196,6 +204,7 @@ const UpdateMobile = () => {
 		if (response.success && response.data) {
 			setTransactionId(response.data.transactionId);
 			// Reset countdown when OTP is resent (will be called by OTPStep component)
+			setShowOtpBanner(true);
 			toast.success("OTP Resent", "A new OTP code has been sent to your mobile number.");
 		} else {
 			toast.error("Failed to resend OTP", response.error || "Please try again later.");
@@ -217,13 +226,8 @@ const UpdateMobile = () => {
 		setIsSubmitting(false);
 
 		if (response.success && response.data?.isSuccess) {
-			// Refresh user profile to update store with new mobile number
-			try {
-				await refreshUserProfile();
-			} catch {
-				// Non-critical — show success screen regardless
-			}
 			setStep(3);
+			refreshUserProfile().catch(() => {}); // non-critical, fire-and-forget
 		} else {
 			// Handle OTP validation failure
 			// When API returns success=true but isSuccess=false, it means OTP validation failed
@@ -309,7 +313,7 @@ const UpdateMobile = () => {
 				{step === 3 && <ConfirmStep />}
 
 				<div className="">
-					{step === 2 && (
+					{showOtpBanner && (
 						<div className="rounded-full bg-theme-blue-085 text-xs w-fit mx-auto mb-4 px-4 py-2 shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] text-theme-blue-03">
 							{`SMS OTP has been sent to ${selectedCountry.dialCode + phoneNumber}`}
 						</div>

@@ -53,7 +53,6 @@ const Alert: React.FC<AlertProps> = ({
 						{title}
 						<AlertDialogPrimitive.Cancel
 							className="p-0 bg-transparent hover:opacity-60 outline-none cursor-pointer shrink-0 border-none shadow-none"
-							onClick={onCancel}
 						>
 							<X size={24} />
 						</AlertDialogPrimitive.Cancel>
