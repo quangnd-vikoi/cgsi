@@ -27,6 +27,7 @@ import { getBgImageClass } from "@/lib/utils";
 import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
 import { useUserStore } from "@/stores/userStore";
 import { authService } from "@/lib/services/authService";
+import { parsePhoneNumber } from "@/lib/utils/phoneHelper";
 
 // Centralized icon stroke width - easy to change
 const ICON_STROKE_WIDTH = 1.5;
@@ -37,7 +38,10 @@ const ProfileInfo = () => {
 	// Fallback values when API returns null/undefined
 	const displayName = profile?.name || profile?.userId || "Guest User";
 	const displayEmail = profile?.email || "email@example.com";
-	const displayMobile = profile?.mobileNo || "+65 XXXX XXXX";
+	const parsedPhone = parsePhoneNumber(profile?.mobileNo);
+	const displayMobile = profile?.mobileNo
+		? `${parsedPhone.dialCode} ${parsedPhone.phoneNumber}`
+		: "+65 XXXX XXXX";
 
 	return (
 		<div className="flex flex-col gap-1.5 text-white">

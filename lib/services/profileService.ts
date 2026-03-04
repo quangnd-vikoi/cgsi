@@ -2,7 +2,7 @@ import { fetchAPI, postAPI, postFormData } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import { useUserStore } from "@/stores/userStore";
 import type {
-	UserProfileResponse,
+	UserInfoResponse,
 	UserAccountResponse,
 	TrInfoResponse,
 	TradingInfoResponse,
@@ -29,14 +29,20 @@ import type {
 } from "@/types";
 import type { APIResponse } from "@/lib/api/types";
 
-export const getUserProfile = async (): Promise<APIResponse<UserProfileResponse>> => {
-	const response = await fetchAPI<UserProfileResponse>(ENDPOINTS.profile(), {
+export const getUserProfile = async (): Promise<APIResponse<UserInfoResponse>> => {
+	const response = await fetchAPI<UserInfoResponse>(ENDPOINTS.userInfo(), {
 		useAuth: true,
 	});
 
 	if (response.success && response.data) {
 		const { setProfile } = useUserStore.getState();
-		setProfile(response.data);
+		setProfile({
+			profileId: response.data.userId,
+			userId: response.data.userId,
+			name: response.data.userName,
+			email: response.data.userEmail,
+			mobileNo: response.data.userMobile?.replace("|", ""),
+		});
 	}
 
 	return response;
@@ -128,7 +134,7 @@ export const getUserEmail = async (): Promise<string | null> => {
 	}
 
 	const response = await getUserProfile();
-	return response.data?.email || null;
+	return response.data?.userEmail || null;
 };
 
 export const getUserMobile = async (): Promise<string | null> => {
@@ -139,7 +145,7 @@ export const getUserMobile = async (): Promise<string | null> => {
 	}
 
 	const response = await getUserProfile();
-	return response.data?.mobileNo || null;
+	return response.data?.userMobile || null;
 };
 
 export const getAcknowledgementList =

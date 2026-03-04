@@ -20,29 +20,22 @@ import type { ITrustBalance } from "@/types";
 const INITIAL_DISPLAY_COUNT = 4;
 const LOAD_MORE_COUNT = 10;
 
-// Map currency code to country code for flag display
-const currencyToCountryCode: Record<string, string> = {
-    SGD: "sg", HKD: "hk", USD: "us", GBP: "gb", EUR: "eu", JPY: "jp",
-    AUD: "au", CAD: "ca", CHF: "ch", CNY: "cn", NZD: "nz", SEK: "se",
-    KRW: "kr", NOK: "no", DKK: "dk", MYR: "my", THB: "th", PHP: "ph",
-    IDR: "id", INR: "in", RMB: "cn", TWD: "tw",
-};
-
-// Map currency code to display name
-const currencyNames: Record<string, string> = {
-    SGD: "Singapore Dollars", HKD: "Hong Kong Dollars", USD: "United States Dollars",
-    GBP: "British Pound Sterling", EUR: "Euro", JPY: "Japanese Yen",
-    AUD: "Australian Dollars", CAD: "Canadian Dollars", CHF: "Swiss Franc",
-    CNY: "Chinese Yuan", NZD: "New Zealand Dollars", SEK: "Swedish Krona",
-    KRW: "South Korean Won", NOK: "Norwegian Krone", DKK: "Danish Krone",
-    MYR: "Malaysian Ringgit", THB: "Thai Baht", PHP: "Philippine Peso",
-    IDR: "Indonesian Rupiah", INR: "Indian Rupee", RMB: "Chinese Renminbi", TWD: "Taiwan Dollar",
-};
+const CURRENCIES: { currency: string; name: string; countryCode: string }[] = [
+    { currency: "SGD", name: "Singapore Dollars", countryCode: "sg" },
+    { currency: "MYR", name: "Malaysian Ringgits", countryCode: "my" },
+    { currency: "HKD", name: "Hongkong Dollars", countryCode: "hk" },
+    { currency: "USD", name: "United States Dollars", countryCode: "us" },
+    { currency: "CNY", name: "Chinese Yuan", countryCode: "cn" },
+    { currency: "JPY", name: "Japanese Yen", countryCode: "jp" },
+    { currency: "AUD", name: "Australian Dollar", countryCode: "au" },
+    { currency: "EUR", name: "Euro", countryCode: "eu" },
+    { currency: "GBP", name: "Pound Sterling", countryCode: "gb" },
+];
 
 export const CashBalance = () => {
     const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [balances, setBalances] = useState<ITrustBalance[]>([]);
+    const [apiBalances, setApiBalances] = useState<ITrustBalance[]>([]);
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
 
@@ -52,12 +45,18 @@ export const CashBalance = () => {
             setLoading(true);
             const response = await getTrustBalance(selectedAccount.accountNo);
             if (response.success && response.data) {
-                setBalances(response.data);
+                setApiBalances(response.data);
             }
             setLoading(false);
         };
         fetchBalances();
     }, [selectedAccount?.accountNo]);
+
+    // Always render all 9 currencies; merge API data in when available
+    const balances = CURRENCIES.map((c) => {
+        const found = apiBalances.find((b) => b.currency === c.currency);
+        return { ...c, balance: found?.balance ?? 0 };
+    });
 
     const handleShowMore = () => {
         setDisplayCount((prev) => Math.min(prev + LOAD_MORE_COUNT, balances.length));
@@ -65,10 +64,6 @@ export const CashBalance = () => {
 
     const handleShowLess = () => {
         setDisplayCount(INITIAL_DISPLAY_COUNT);
-    };
-
-    const handleDepositClick = () => {
-        setIsPaymentModalOpen(true);
     };
 
     const visibleBalances = balances.slice(0, displayCount);
@@ -89,7 +84,7 @@ export const CashBalance = () => {
                                 Cash Transactions
                             </Button>
                         </Link>
-                        <Button size="sm" className="text-sm rounded" onClick={handleDepositClick}>
+                        <Button size="sm" className="text-sm rounded" onClick={() => setIsPaymentModalOpen(true)}>
                             <CirclePlus size={16} />
                             Deposit
                         </Button>
@@ -109,7 +104,7 @@ export const CashBalance = () => {
                                     Cash Transactions
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleDepositClick}>
+                            <DropdownMenuItem onClick={() => setIsPaymentModalOpen(true)}>
                                 <CirclePlus size={16} />
                                 Deposit
                             </DropdownMenuItem>
@@ -119,35 +114,24 @@ export const CashBalance = () => {
 
                 <div className="space-y-0">
                     <div className="grid grid-cols-2 py-2 text-xs text-typo-secondary">
-                        <p className="">Currency</p>
+                        <p>Currency</p>
                         <p className="text-right">Balance</p>
                     </div>
 
-                    {loading ? (
-                        <div className="py-8 text-center text-sm text-typo-secondary">Loading cash balances...</div>
-                    ) : visibleBalances.length === 0 ? (
-                        <div className="py-8 text-center text-sm text-typo-secondary">No cash balances available</div>
-                    ) : (
-                        visibleBalances.map((item, index) => {
-                            const countryCode = currencyToCountryCode[item.currency] || item.currency.substring(0, 2).toLowerCase();
-                            const currencyName = currencyNames[item.currency] || item.currency;
-                            return (
-                                <div
-                                    key={item.currency}
-                                    className={`grid grid-cols-2 py-4 px-2 ${index < visibleBalances.length - 1 ? "border-b border-stroke-secondary" : ""
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <CircleFlag countryCode={countryCode} className="w4 md:w-5 h-4 md:h-5 shrink-0" />
-                                        <p className="text-xs md:text-sm font-medium text-typo-primary">{currencyName}</p>
-                                    </div>
-                                    <p className="text-xs md:text-sm font-medium text-typo-primary text-right">
-                                        {item.balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {item.currency}
-                                    </p>
-                                </div>
-                            );
-                        })
-                    )}
+                    {visibleBalances.map((item, index) => (
+                        <div
+                            key={item.currency}
+                            className={`grid grid-cols-2 py-4 px-2 ${index < visibleBalances.length - 1 ? "border-b border-stroke-secondary" : ""}`}
+                        >
+                            <div className="flex items-center gap-2">
+                                <CircleFlag countryCode={item.countryCode} className="w-4 md:w-5 h-4 md:h-5 shrink-0" />
+                                <p className="text-xs md:text-sm font-medium text-typo-primary">{item.name}</p>
+                            </div>
+                            <p className="text-xs md:text-sm font-medium text-typo-primary text-right">
+                                {(item.balance ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {item.currency}
+                            </p>
+                        </div>
+                    ))}
                 </div>
 
                 {(hasMore || canCollapse) && (

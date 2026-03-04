@@ -102,6 +102,13 @@ export interface IUserProfile {
 
 export type UserProfileResponse = IUserProfile;
 
+export interface UserInfoResponse {
+	userId: string;
+	userName: string;
+	userEmail: string;
+	userMobile: string;
+}
+
 // Trading Account Types
 export interface TradingAccount {
 	accountNo: string;

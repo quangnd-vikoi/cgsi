@@ -120,12 +120,11 @@ const UpdateMobile = () => {
 	const router = useRouter();
 	const profile = useUserStore((state) => state.profile);
 
-	// Parse current mobile number to pre-fill form
+	// Parse current mobile number to pre-fill form and validate against
 	const parsedCurrentMobile = parsePhoneNumber(profile?.mobileNo);
-	const currentMobileFormatted = profile?.mobileNo || ""; // Keep original format for comparison
 
 	const [step, setStep] = useState<1 | 2 | 3>(1);
-	const [phoneNumber, setPhoneNumber] = useState("");
+	const [phoneNumber, setPhoneNumber] = useState(parsedCurrentMobile.phoneNumber);
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
@@ -136,7 +135,7 @@ const UpdateMobile = () => {
 
 	// OTP countdown tracker to determine if OTP is expired or just wrong
 	const { countdown, reset: resetCountdown } = useOTPCountdown({
-		initialSeconds: 120,
+		initialSeconds: 60,
 	});
 
 	// Validate phone number
@@ -164,9 +163,11 @@ const UpdateMobile = () => {
 			return;
 		}
 
-		// Check if same as old phone (compare full formatted number)
-		const newFormattedNumber = formatMobileForApi();
-		if (newFormattedNumber === currentMobileFormatted) {
+		// Check if same as old phone (compare parsed parts to avoid format mismatch)
+		if (
+			selectedCountry.dialCode === parsedCurrentMobile.dialCode &&
+			phoneNumber === parsedCurrentMobile.phoneNumber
+		) {
 			setError("Kindly provide a new mobile number to continue");
 			return;
 		}
@@ -217,7 +218,11 @@ const UpdateMobile = () => {
 
 		if (response.success && response.data?.isSuccess) {
 			// Refresh user profile to update store with new mobile number
-			await refreshUserProfile();
+			try {
+				await refreshUserProfile();
+			} catch {
+				// Non-critical — show success screen regardless
+			}
 			setStep(3);
 		} else {
 			// Handle OTP validation failure
@@ -226,7 +231,7 @@ const UpdateMobile = () => {
 				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
 				if (countdown <= 0) {
 					// OTP has expired after 2 minutes
-					setError("OTP has expired after 2 minutes, please request for a new one");
+					setError("OTP has expired after 1 minute, please request for a new one");
 				} else {
 					// OTP is still valid but user entered wrong code
 					setError("OTP Code Authentication Failed");
@@ -255,14 +260,20 @@ const UpdateMobile = () => {
 				<Title
 					title="Update Mobile Number"
 					rightContent={
-						<Alert
-							trigger={<X />}
-							title="Exit Update Mobile Number?"
-							description={<p>Any information previously entered will be discarded.</p>}
-							actionText="Back To Form"
-							cancelText="Exit without Saving"
-							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
-						/>
+						step === 3 ? (
+							<button className="cursor-pointer hover:opacity-60" onClick={() => router.back()}>
+								<X />
+							</button>
+						) : (
+							<Alert
+								trigger={<X />}
+								title="Exit Update Mobile Number?"
+								description={<p>Any information previously entered will be discarded.</p>}
+								actionText="Back To Form"
+								cancelText="Quit Anyways"
+								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
+							/>
+						)
 					}
 				/>
 			</div>

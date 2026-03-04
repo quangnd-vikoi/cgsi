@@ -17,7 +17,6 @@ import { CashTransactionsTable } from "./_components/CashTransactionsTable";
 import { getTrustBalanceDetails } from "@/lib/services/portfolioService";
 import type { ITrustBalanceDetail } from "@/types";
 
-// Time period options
 const timePeriods = [
     { value: "last7days", label: "Last 7 Days" },
     { value: "last30days", label: "Last 30 Days" },

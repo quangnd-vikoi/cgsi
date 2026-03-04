@@ -44,10 +44,10 @@ const InputStep = ({
 
 	return (
 		<div className="pad-x">
-			<h2 className="text-base font-semibold mb-6">Enter Your New Email Here</h2>
+			<h2 className="text-base font-semibold mb-6">Enter Your New Email Address</h2>
 
 			<Input
-				placeholder="Enter here"
+				placeholder="E.g. user@gmail.com"
 				value={newEmail}
 				onChange={handleEmailChange}
 				onKeyPress={handleKeyPress}
@@ -113,7 +113,7 @@ const OTPStep = ({
 				className="mb-6 text-cgs-blue cursor-pointer text-base font-normal mt-1 underline underline-offset-2"
 				onClick={() => setStep(1)}
 			>
-				Change Email?
+				Wrong Email Address?
 			</p>
 
 			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting}>
@@ -164,7 +164,7 @@ const UpdateEmail = () => {
 	// Fallback to empty string if no email in profile
 	const currentEmail = profile?.email || "";
 	const [step, setStep] = useState<1 | 2 | 3>(1);
-	const [newEmail, setNewEmail] = useState("");
+	const [newEmail, setNewEmail] = useState(currentEmail);
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
@@ -172,7 +172,7 @@ const UpdateEmail = () => {
 
 	// OTP countdown tracker to determine if OTP is expired or just wrong
 	const { countdown, reset: resetCountdown } = useOTPCountdown({
-		initialSeconds: 120,
+		initialSeconds: 60,
 	});
 
 	// Validate email format
@@ -185,13 +185,13 @@ const UpdateEmail = () => {
 	const handleStep1Continue = async () => {
 		// Check if empty
 		if (!newEmail.trim()) {
-			setError("Field cannot be empty");
+			setError("Kindly provide a new email address to continue");
 			return;
 		}
 
 		// Check if valid email format
 		if (!isValidEmail(newEmail)) {
-			setError("Email Address do not meet the minimum criteria");
+			setError("Invalid email address");
 			return;
 		}
 
@@ -247,7 +247,11 @@ const UpdateEmail = () => {
 
 		if (response.success && response.data?.isSuccess) {
 			// Refresh user profile to update store with new email
-			await refreshUserProfile();
+			try {
+				await refreshUserProfile();
+			} catch {
+				// Non-critical — show success screen regardless
+			}
 			setStep(3);
 		} else {
 			// Handle OTP validation failure
@@ -256,7 +260,7 @@ const UpdateEmail = () => {
 				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
 				if (countdown <= 0) {
 					// OTP has expired after 2 minutes
-					setError("OTP has expired after 2 minutes, please request for a new one");
+					setError("OTP has expired after 1 minute, please request for a new one");
 				} else {
 					// OTP is still valid but user entered wrong code
 					setError("OTP Code Authentication Failed");
@@ -285,14 +289,20 @@ const UpdateEmail = () => {
 				<Title
 					title="Update Email"
 					rightContent={
-						<Alert
-							trigger={<X />}
-							title="Exit Update Email Address?"
-							description={<p>Any information previously entered will be discarded.</p>}
-							actionText="Back To Form"
-							cancelText="Exit without Saving"
-							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
-						/>
+						step === 3 ? (
+							<button className="cursor-pointer hover:opacity-60" onClick={() => router.back()}>
+								<X />
+							</button>
+						) : (
+							<Alert
+								trigger={<X />}
+								title="Exit Update Email Address?"
+								description={<p>Any information previously entered will be discarded.</p>}
+								actionText="Back To Form"
+								cancelText="Quit Anyways"
+								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
+							/>
+						)
 					}
 				/>
 			</div>
