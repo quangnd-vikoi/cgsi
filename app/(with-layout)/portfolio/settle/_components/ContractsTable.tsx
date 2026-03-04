@@ -7,6 +7,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CGSI } from "@/constants/routes";
 import Link from "next/link";
 
@@ -29,9 +30,10 @@ interface ContractsTableProps {
 	contracts: ContractDisplay[];
 	activeTab: "contracts" | "contra";
 	onOpenContraDetails: (contract: ContractDisplay) => void;
+	loading?: boolean;
 }
 
-export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: ContractsTableProps) {
+export function ContractsTable({ contracts, activeTab, onOpenContraDetails, loading = false }: ContractsTableProps) {
 	return (
 		<div className="overflow-x-auto rounded border border-stroke-secondary mb-4">
 			<Table>
@@ -52,7 +54,21 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails }: Co
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{contracts.map((contract) => (
+					{loading ? (
+						Array.from({ length: 5 }).map((_, i) => (
+							<TableRow key={i} className="[&>td]:px-4 [&>td]:py-3">
+								{Array.from({ length: 10 }).map((_, j) => (
+									<TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+								))}
+							</TableRow>
+						))
+					) : contracts.length === 0 ? (
+						<TableRow>
+							<TableCell colSpan={10} className="text-center py-8 text-sm text-typo-secondary">
+								No data available
+							</TableCell>
+						</TableRow>
+					) : contracts.map((contract) => (
 						<TableRow
 							key={contract.id}
 							className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-3 [&>td]:py-3"

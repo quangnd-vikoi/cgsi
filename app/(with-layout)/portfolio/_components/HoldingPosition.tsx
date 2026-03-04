@@ -24,6 +24,7 @@ import { PortfolioType } from "@/types";
 import type { IPortfolioHolding } from "@/types";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getHoldings } from "@/lib/services/portfolioService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
@@ -133,11 +134,13 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                         </TableHeader>
                         <TableBody>
                             {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={10} className="text-center py-8 text-sm text-typo-secondary">
-                                        Loading holdings...
-                                    </TableCell>
-                                </TableRow>
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i} className="[&>td]:!px-4 [&>td]:py-3">
+                                        {Array.from({ length: 10 }).map((_, j) => (
+                                            <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
                             ) : holdings.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={10} className="text-center py-8 text-sm text-typo-secondary">
@@ -180,6 +183,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                     onItemsPerPageChange={handleItemsPerPageChange}
                     itemsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                     className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-stroke-secondary"
+                    loading={loading}
                 />
             </div>
         </div>

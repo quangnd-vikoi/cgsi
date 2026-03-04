@@ -240,17 +240,12 @@ export default function SettlePage() {
 						<SummarySection contracts={currentData} />
 
 						{/* Table */}
-						{loading ? (
-							<div className="flex-1 flex items-center justify-center py-8 text-sm text-typo-secondary">
-								Loading...
-							</div>
-						) : (
-							<ContractsTable
-								contracts={currentData}
-								activeTab={activeTab}
-								onOpenContraDetails={handleOpenContraDetails}
-							/>
-						)}
+						<ContractsTable
+							contracts={currentData}
+							activeTab={activeTab}
+							onOpenContraDetails={handleOpenContraDetails}
+							loading={loading}
+						/>
 
 						{/* Pagination Footer */}
 						<PaginationFooter
@@ -261,6 +256,7 @@ export default function SettlePage() {
 							onItemsPerPageChange={handleItemsPerPageChange}
 							itemsPerPageOptions={[10, 20, 50]}
 							className="mt-auto"
+							loading={loading}
 						/>
 					</div>
 
