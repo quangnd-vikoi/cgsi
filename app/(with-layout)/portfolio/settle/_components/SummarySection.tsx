@@ -1,8 +1,8 @@
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import type { Contract } from "../../_components/data";
+import type { ContractDisplay } from "./ContractsTable";
 
 interface SummarySectionProps {
-	contracts: Contract[];
+	contracts: ContractDisplay[];
 }
 interface SummaryCardProps {
 	label: string | React.ReactNode;

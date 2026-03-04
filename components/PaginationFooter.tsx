@@ -17,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PaginationFooterProps {
     currentPage: number;
@@ -28,6 +29,7 @@ interface PaginationFooterProps {
     showItemsPerPage?: boolean;
     maxVisiblePages?: number;
     className?: string;
+    loading?: boolean;
 }
 
 export const PaginationFooter = ({
@@ -40,6 +42,7 @@ export const PaginationFooter = ({
     showItemsPerPage = true,
     maxVisiblePages = 5,
     className = "",
+    loading = false,
 }: PaginationFooterProps) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -77,7 +80,13 @@ export const PaginationFooter = ({
             <div className="flex justify-between items-center">
                 {/* Items count */}
                 <div className="text-xs md:text-sm text-typo-secondary shrink-0 w-[200px]">
-                    Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} out of {totalItems}
+                    {loading ? (
+                        <Skeleton className="h-4 w-36" />
+                    ) : totalItems === 0 ? (
+                        "Showing 0 out of 0"
+                    ) : (
+                        `Showing ${startIndex + 1}-${Math.min(endIndex, totalItems)} out of ${totalItems}`
+                    )}
                 </div>
 
                 {/* Pagination controls */}
@@ -87,7 +96,7 @@ export const PaginationFooter = ({
                             <PaginationPrevious
                                 onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                                 className={`size-7 md:size-9 p-0 ${
-                                    currentPage === 1
+                                    loading || totalItems === 0 || currentPage === 1
                                         ? "pointer-events-none opacity-50"
                                         : "cursor-pointer"
                                 }`}
@@ -114,7 +123,7 @@ export const PaginationFooter = ({
                             <PaginationNext
                                 onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
                                 className={`size-7 md:size-9 p-0 ${
-                                    currentPage === totalPages
+                                    loading || totalItems === 0 || currentPage === totalPages
                                         ? "pointer-events-none opacity-50"
                                         : "cursor-pointer"
                                 }`}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -18,17 +18,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical, Expand, FileOutput } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
-import { mockBorrowedSharesData } from "./data";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { getSblBorrowed } from "@/lib/services/portfolioService";
+import type { IBorrowedShare } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
 export const BorrowedShares = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [borrowedShares, setBorrowedShares] = useState<IBorrowedShare[]>([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const { selectedAccount } = useTradingAccountStore();
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentData = mockBorrowedSharesData.slice(startIndex, endIndex);
+    useEffect(() => {
+        const fetchBorrowedShares = async () => {
+            if (!selectedAccount?.accountNo) return;
+            setLoading(true);
+            const pageIndex = currentPage - 1;
+            const response = await getSblBorrowed(selectedAccount.accountNo, undefined, itemsPerPage, pageIndex);
+            if (response.success && response.data) {
+                setBorrowedShares(response.data.borrowedShares);
+                setTotalItems(response.data.total);
+            }
+            setLoading(false);
+        };
+        fetchBorrowedShares();
+    }, [selectedAccount?.accountNo, currentPage, itemsPerPage]);
 
     const handleItemsPerPageChange = (value: number) => {
         setItemsPerPage(value);
@@ -96,28 +114,44 @@ export const BorrowedShares = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {currentData.map((item, index) => (
-                                <TableRow
-                                    key={`${item.code}-${index}`}
-                                    className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
-                                >
-                                    <TableCell>{item.assetClass}</TableCell>
-                                    <TableCell>{item.market}</TableCell>
-                                    <TableCell>{item.code}</TableCell>
-                                    <TableCell>{item.name}</TableCell>
-                                    <TableCell className="text-right">{item.borrowedQty}</TableCell>
-                                    <TableCell className="text-right">{item.pendIn}</TableCell>
-                                    <TableCell className="text-right">{item.pendOut}</TableCell>
-                                    <TableCell className="text-right">{item.netQty}</TableCell>
-                                    <TableCell className="text-right">{item.currency}</TableCell>
-                                    <TableCell className="text-right">
-                                        {item.closingPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </TableCell>
-                                    <TableCell className="font-medium text-right">
-                                        {item.borrowValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i} className="[&>td]:!px-4 [&>td]:py-3">
+                                        {Array.from({ length: 11 }).map((_, j) => (
+                                            <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : borrowedShares.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={11} className="text-center py-8 text-sm text-typo-secondary">
+                                        No borrowed shares data available
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ) : (
+                                borrowedShares.map((item, index) => (
+                                    <TableRow
+                                        key={`${item.securityCode}-${index}`}
+                                        className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
+                                    >
+                                        <TableCell>{item.assetClass}</TableCell>
+                                        <TableCell>{item.marketCode}</TableCell>
+                                        <TableCell>{item.securityCode}</TableCell>
+                                        <TableCell>{item.securityName}</TableCell>
+                                        <TableCell className="text-right">{item.borrowedQty}</TableCell>
+                                        <TableCell className="text-right">{item.pendingIn}</TableCell>
+                                        <TableCell className="text-right">{item.pendingOut}</TableCell>
+                                        <TableCell className="text-right">{item.borrowedQty + item.pendingIn - item.pendingOut}</TableCell>
+                                        <TableCell className="text-right">{item.currency}</TableCell>
+                                        <TableCell className="text-right">
+                                            {item.closingPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </TableCell>
+                                        <TableCell className="font-medium text-right">
+                                            {item.marketValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </div>
@@ -125,12 +159,13 @@ export const BorrowedShares = () => {
                 {/* Pagination Footer */}
                 <PaginationFooter
                     currentPage={currentPage}
-                    totalItems={mockBorrowedSharesData.length}
+                    totalItems={totalItems}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                     onItemsPerPageChange={handleItemsPerPageChange}
                     itemsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                     className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-stroke-secondary"
+                    loading={loading}
                 />
             </div>
         </div>

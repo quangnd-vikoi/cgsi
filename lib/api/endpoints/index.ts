@@ -4,6 +4,7 @@ import { authEndpoints as rawAuthEndpoints } from "./auth";
 import { profileEndpoints as rawProfileEndpoints } from "./profile";
 import { subscriptionEndpoints as rawSubscriptionEndpoints } from "./subscription";
 import { externalSSOEndpoints as rawExternalSSOEndpoints } from "./externalSSO";
+import { portfolioEndpoints as rawPortfolioEndpoints } from "./portfolio";
 import { API_BASE_URL, CONTENT_BASE_URL, withBaseUrl } from "../config";
 
 export const contentEndpoints = withBaseUrl(CONTENT_BASE_URL, rawContentEndpoints);
@@ -18,6 +19,8 @@ export const subscriptionEndpoints = withBaseUrl(API_BASE_URL, rawSubscriptionEn
 
 export const externalSSOEndpoints = withBaseUrl(API_BASE_URL, rawExternalSSOEndpoints);
 
+export const portfolioEndpoints = withBaseUrl(API_BASE_URL, rawPortfolioEndpoints);
+
 export const ENDPOINTS = {
 	...contentEndpoints,
 	...notificationEndpoints,
@@ -25,6 +28,7 @@ export const ENDPOINTS = {
 	...profileEndpoints,
 	...subscriptionEndpoints,
 	...externalSSOEndpoints,
+	...portfolioEndpoints,
 } as const;
 
 export { LANG, API_BASE_URL, CONTENT_BASE_URL, type Language } from "../config";

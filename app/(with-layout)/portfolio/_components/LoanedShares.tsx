@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -18,17 +18,35 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical, Expand, FileOutput } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
-import { mockLoanedSharesData } from "./data";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { getSblLoaned } from "@/lib/services/portfolioService";
+import type { ILoanedShare } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
 export const LoanedShares = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [loanedShares, setLoanedShares] = useState<ILoanedShare[]>([]);
+    const [totalItems, setTotalItems] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const { selectedAccount } = useTradingAccountStore();
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentData = mockLoanedSharesData.slice(startIndex, endIndex);
+    useEffect(() => {
+        const fetchLoanedShares = async () => {
+            if (!selectedAccount?.accountNo) return;
+            setLoading(true);
+            const pageIndex = currentPage - 1;
+            const response = await getSblLoaned(selectedAccount.accountNo, undefined, itemsPerPage, pageIndex);
+            if (response.success && response.data) {
+                setLoanedShares(response.data.loanedShares);
+                setTotalItems(response.data.total);
+            }
+            setLoading(false);
+        };
+        fetchLoanedShares();
+    }, [selectedAccount?.accountNo, currentPage, itemsPerPage]);
 
     const handleItemsPerPageChange = (value: number) => {
         setItemsPerPage(value);
@@ -93,25 +111,41 @@ export const LoanedShares = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {currentData.map((item, index) => (
-                                <TableRow
-                                    key={`${item.code}-${index}`}
-                                    className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
-                                >
-                                    <TableCell>{item.assetClass}</TableCell>
-                                    <TableCell>{item.market}</TableCell>
-                                    <TableCell>{item.code}</TableCell>
-                                    <TableCell>{item.name}</TableCell>
-                                    <TableCell className="text-right">{item.loanedQty}</TableCell>
-                                    <TableCell className="text-right">{item.currency}</TableCell>
-                                    <TableCell className="text-right">
-                                        {item.closingPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                    </TableCell>
-                                    <TableCell className="font-medium text-right">
-                                        {item.lendingValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i} className="[&>td]:!px-4 [&>td]:py-3">
+                                        {Array.from({ length: 8 }).map((_, j) => (
+                                            <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : loanedShares.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={8} className="text-center py-8 text-sm text-typo-secondary">
+                                        No loaned shares data available
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ) : (
+                                loanedShares.map((item, index) => (
+                                    <TableRow
+                                        key={`${item.securityCode}-${index}`}
+                                        className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
+                                    >
+                                        <TableCell>{item.assetClass}</TableCell>
+                                        <TableCell>{item.marketCode}</TableCell>
+                                        <TableCell>{item.securityCode}</TableCell>
+                                        <TableCell>{item.securityName}</TableCell>
+                                        <TableCell className="text-right">{item.loanedQty}</TableCell>
+                                        <TableCell className="text-right">{item.currency}</TableCell>
+                                        <TableCell className="text-right">
+                                            {item.closingPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </TableCell>
+                                        <TableCell className="font-medium text-right">
+                                            {item.lendingValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </div>
@@ -119,12 +153,13 @@ export const LoanedShares = () => {
                 {/* Pagination Footer */}
                 <PaginationFooter
                     currentPage={currentPage}
-                    totalItems={mockLoanedSharesData.length}
+                    totalItems={totalItems}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                     onItemsPerPageChange={handleItemsPerPageChange}
                     itemsPerPageOptions={ITEMS_PER_PAGE_OPTIONS}
                     className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-stroke-secondary"
+                    loading={loading}
                 />
             </div>
         </div>

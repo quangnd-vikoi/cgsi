@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Alert from "@/components/Alert";
 import {
 	Table,
@@ -10,14 +10,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-
-interface ContraDetail {
-	tradeDate: string;
-	contractId: string;
-	name: string;
-	currency: string;
-	gainLoss: number;
-}
+import { getContraDetails } from "@/lib/services/portfolioService";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import type { IContraDetail } from "@/types";
 
 interface ContraDetailsDialogProps {
 	open: boolean;
@@ -27,27 +22,8 @@ interface ContraDetailsDialogProps {
 	dueDate: string;
 	netGainLoss: number;
 	currency: string;
+	statementNo: string;
 }
-
-// Mock data for contra details
-const getMockContraDetails = (): ContraDetail[] => {
-	return [
-		{
-			tradeDate: "11-Jun-2025",
-			contractId: "199324823/I",
-			name: "Apple Inc.",
-			currency: "SGD",
-			gainLoss: -1988.0,
-		},
-		{
-			tradeDate: "12-Jun-2025",
-			contractId: "192353523/I",
-			name: "Apple Inc.",
-			currency: "SGD",
-			gainLoss: 1000.0,
-		},
-	];
-};
 
 export function ContraDetailsDialog({
 	open,
@@ -57,8 +33,24 @@ export function ContraDetailsDialog({
 	dueDate,
 	netGainLoss,
 	currency,
+	statementNo,
 }: ContraDetailsDialogProps) {
-	const details = getMockContraDetails();
+	const [details, setDetails] = useState<IContraDetail[]>([]);
+	const [loading, setLoading] = useState(false);
+	const { selectedAccount } = useTradingAccountStore();
+
+	useEffect(() => {
+		if (!open || !selectedAccount?.accountNo || !statementNo) return;
+		const fetchDetails = async () => {
+			setLoading(true);
+			const response = await getContraDetails(selectedAccount.accountNo, statementNo);
+			if (response.success && response.data) {
+				setDetails(response.data);
+			}
+			setLoading(false);
+		};
+		fetchDetails();
+	}, [open, selectedAccount?.accountNo, statementNo]);
 
 	return (
 		<Alert
@@ -123,28 +115,42 @@ export function ContraDetailsDialog({
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{details.map((detail, index) => (
-									<TableRow
-										key={index}
-										className="border-b border-stroke-secondary last:border-0 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
-									>
-										<TableCell>{detail.tradeDate}</TableCell>
-										<TableCell>{detail.contractId}</TableCell>
-										<TableCell>{detail.name}</TableCell>
-										<TableCell>{detail.currency}</TableCell>
-										<TableCell
-											className={`text-right ${detail.gainLoss >= 0
-												? "!text-status-success"
-												: "!text-status-error"
-												}`}
-										>
-											{detail.gainLoss >= 0 ? "+" : "-"}{" "}
-											{Math.abs(detail.gainLoss).toLocaleString("en-US", {
-												minimumFractionDigits: 2,
-											})}
+								{loading ? (
+									<TableRow>
+										<TableCell colSpan={5} className="text-center py-8 text-sm text-typo-secondary">
+											Loading...
 										</TableCell>
 									</TableRow>
-								))}
+								) : details.length === 0 ? (
+									<TableRow>
+										<TableCell colSpan={5} className="text-center py-8 text-sm text-typo-secondary">
+											No details available
+										</TableCell>
+									</TableRow>
+								) : (
+									details.map((detail, index) => (
+										<TableRow
+											key={index}
+											className="border-b border-stroke-secondary last:border-0 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
+										>
+											<TableCell>{detail.tradeDate}</TableCell>
+											<TableCell>{detail.contractNo}</TableCell>
+											<TableCell>{detail.securityName}</TableCell>
+											<TableCell>{detail.settlementCurrency}</TableCell>
+											<TableCell
+												className={`text-right ${detail.settlementNetAmount >= 0
+													? "!text-status-success"
+													: "!text-status-error"
+													}`}
+											>
+												{detail.settlementNetAmount >= 0 ? "+" : "-"}{" "}
+												{Math.abs(detail.settlementNetAmount).toLocaleString("en-US", {
+													minimumFractionDigits: 2,
+												})}
+											</TableCell>
+										</TableRow>
+									))
+								)}
 							</TableBody>
 						</Table>
 					</div>
