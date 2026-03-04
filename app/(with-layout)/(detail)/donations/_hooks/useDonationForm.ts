@@ -239,7 +239,8 @@ export function useDonationForm(
 					accountNo,
 					amount,
 					currency: "SGD",
-					paymentMethod: paymentMethod === "now" ? "LS_ACCSET" : paymentMethod === "trust" ? "LS_ACCSET" : "PLAN",
+					// TODO: confirm with backend — PayNow vs Trust Account mapping to PLAN/LS_ACCSET
+				paymentMethod: paymentMethod === "now" ? "LS_ACCSET" : paymentMethod === "trust" ? "LS_ACCSET" : "PLAN",
 					paymentMode: "DONATE",
 					...(donationType === "recurring" && { months }),
 				};

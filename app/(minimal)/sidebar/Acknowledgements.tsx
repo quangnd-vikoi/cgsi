@@ -5,14 +5,7 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { getAcknowledgementList, getAcknowledgementDetail } from "@/lib/services/profileService";
-import type { IAcknowledgementItem, AcknowledgementDetailResponse } from "@/types";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
-} from "@/components/ui/dialog";
+import type { IAcknowledgementItem } from "@/types";
 
 interface AgreementCategory {
 	category: string;
@@ -30,29 +23,36 @@ const formatDate = (dateString: string): string => {
 };
 
 const stripHtmlTags = (html: string): string => {
-	return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+	return html
+		.replace(/<[^>]*>/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
 };
 
 const AgreementItem = ({
 	record,
 	onClick,
+	loading,
 }: {
 	record: IAcknowledgementItem;
 	onClick: () => void;
+	loading: boolean;
 }) => {
 	const displayTitle = stripHtmlTags(record.title);
 
 	return (
 		<button
 			onClick={onClick}
-			className="w-full text-left hover:opacity-80 transition-opacity cursor-pointer p-4"
+			disabled={loading}
+			className="w-full text-left hover:opacity-80 transition-opacity cursor-pointer p-4 disabled:opacity-60"
 		>
 			<div className="flex justify-between items-start mb-3">
 				<div className="text-sm md:text-base font-normal text-typo-primary">{displayTitle}</div>
-				<ChevronRight
-					className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5"
-					strokeWidth={2}
-				/>
+				{loading ? (
+					<Loader2 className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5 animate-spin" />
+				) : (
+					<ChevronRight className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5" strokeWidth={2} />
+				)}
 			</div>
 
 			<div className="flex justify-between text-xs md:text-sm text-typo-tertiary font-normal">
@@ -63,63 +63,11 @@ const AgreementItem = ({
 	);
 };
 
-const AcknowledgementDetailDialog = ({
-	open,
-	onOpenChange,
-	detail,
-	loading,
-}: {
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
-	detail: AcknowledgementDetailResponse | null;
-	loading: boolean;
-}) => {
-	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
-				<DialogHeader>
-					<DialogTitle>
-						{loading ? "Loading..." : detail ? stripHtmlTags(detail.title) : "Agreement Details"}
-					</DialogTitle>
-					{detail && (
-						<DialogDescription>
-							Version {detail.versionNo} • Accepted: {formatDate(detail.acceptedOn)}
-						</DialogDescription>
-					)}
-				</DialogHeader>
-				{loading ? (
-					<div className="flex items-center justify-center py-8">
-						<Loader2 className="w-6 h-6 animate-spin text-cgs-blue" />
-					</div>
-				) : detail?.htmlContent ? (
-					<div
-						className="prose prose-sm max-w-none text-typo-secondary"
-						dangerouslySetInnerHTML={{ __html: detail.htmlContent }}
-					/>
-				) : detail?.url ? (
-					<a
-						href={detail.url}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-cgs-blue underline"
-					>
-						View Agreement Document
-					</a>
-				) : (
-					<p className="text-typo-tertiary">No content available</p>
-				)}
-			</DialogContent>
-		</Dialog>
-	);
-};
-
 const Acknowledgements = () => {
 	const [categories, setCategories] = useState<AgreementCategory[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedDetail, setSelectedDetail] = useState<AcknowledgementDetailResponse | null>(null);
-	const [detailLoading, setDetailLoading] = useState(false);
-	const [dialogOpen, setDialogOpen] = useState(false);
+	const [loadingId, setLoadingId] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchAcknowledgements = async () => {
@@ -133,8 +81,6 @@ const Acknowledgements = () => {
 				setCategories([
 					{ category: "Text Based Agreements", records: data.textBase || [] },
 					{ category: "Online Based Agreements", records: data.onlineBase || [] },
-					{ category: "Interactive Based Agreements", records: data.interactiveBase || [] },
-					{ category: "PDF Based Agreements", records: data.pdfBase || [] },
 				]);
 			} else {
 				setError(response.error || "Failed to load acknowledgements");
@@ -147,17 +93,15 @@ const Acknowledgements = () => {
 	}, []);
 
 	const handleItemClick = async (agreementId: string) => {
-		setDialogOpen(true);
-		setDetailLoading(true);
-		setSelectedDetail(null);
+		setLoadingId(agreementId);
 
 		const response = await getAcknowledgementDetail(agreementId);
 
-		if (response.success && response.data) {
-			setSelectedDetail(response.data);
+		if (response.success && response.data?.url) {
+			window.open(response.data.url, "_blank", "noopener,noreferrer");
 		}
 
-		setDetailLoading(false);
+		setLoadingId(null);
 	};
 
 	if (loading) {
@@ -195,7 +139,10 @@ const Acknowledgements = () => {
 			</div>
 
 			<div className="text-base md:text-lg text-typo-primary font-semibold">Agreements List</div>
-			<div className="mt-2 text-sm md:text-base text-typo-secondary">Details of agreements and declarations you have acknowledged are displayed here for your reference.</div>
+			<div className="mt-2 text-sm md:text-base text-typo-secondary">
+				Details of agreements and declarations you have acknowledged are displayed here for your
+				reference.
+			</div>
 			<div className="pb-6 pt-3 flex flex-col gap-10 overflow-y-auto flex-1">
 				{categories.map((categoryData, index) => (
 					<Group key={index} title={categoryData.category}>
@@ -205,6 +152,7 @@ const Acknowledgements = () => {
 									key={record.agreementId}
 									record={record}
 									onClick={() => handleItemClick(record.agreementId)}
+									loading={loadingId === record.agreementId}
 								/>
 							))
 						) : (
@@ -215,12 +163,6 @@ const Acknowledgements = () => {
 					</Group>
 				))}
 			</div>
-			<AcknowledgementDetailDialog
-				open={dialogOpen}
-				onOpenChange={setDialogOpen}
-				detail={selectedDetail}
-				loading={detailLoading}
-			/>
 		</div>
 	);
 };

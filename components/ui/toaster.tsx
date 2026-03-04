@@ -135,7 +135,7 @@ interface ToastOptions extends ExternalToast {
 
 const toast = {
 	success: (title: string, description?: string, options?: ToastOptions) => {
-		const duration = options?.duration || 4000;
+		const duration = options?.duration || 5000;
 		return sonnerToast.custom(
 			(t) => (
 				<CustomToast
@@ -153,7 +153,7 @@ const toast = {
 	},
 
 	error: (title: string, description?: string, options?: ToastOptions) => {
-		const duration = options?.duration || 4000;
+		const duration = options?.duration || 5000;
 		return sonnerToast.custom(
 			(t) => (
 				<CustomToast
@@ -171,7 +171,7 @@ const toast = {
 	},
 
 	warning: (title: string, description?: string, options?: ToastOptions) => {
-		const duration = options?.duration || 4000;
+		const duration = options?.duration || 5000;
 		return sonnerToast.custom(
 			(t) => (
 				<CustomToast
@@ -189,7 +189,7 @@ const toast = {
 	},
 
 	info: (title: string, description?: string, options?: ToastOptions) => {
-		const duration = options?.duration || 4000;
+		const duration = options?.duration || 5000;
 		return sonnerToast.custom(
 			(t) => (
 				<CustomToast
@@ -207,7 +207,7 @@ const toast = {
 	},
 
 	loading: (title: string, description?: string, options?: ToastOptions) => {
-		const duration = options?.duration || 4000;
+		const duration = options?.duration || 5000;
 		return sonnerToast.custom(
 			(t) => (
 				<CustomToast

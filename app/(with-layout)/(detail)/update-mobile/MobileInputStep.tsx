@@ -254,7 +254,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 				</Dialog>
 				<Input
 					className="flex-1 pl-24 text-sm focus:bg-background-section focus:!border-b-cgs-blue"
-					placeholder="Enter here"
+					placeholder="Type Here"
 					value={phoneNumber}
 					onChange={handlePhoneChange}
 					error={error}

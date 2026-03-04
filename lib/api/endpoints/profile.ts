@@ -60,6 +60,17 @@ export const profileEndpoints = {
 	profile: () => `/profile/api/v1/internal/profile`,
 
 	/**
+	 * Get User Info
+	 *
+	 * GET /profile/api/v1/userInfo
+	 *
+	 * @requires Header X-PROFILE-ID (sub claim from JWT)
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 * @returns UserInfoResponse - userId, userName, userEmail, userMobile
+	 */
+	userInfo: () => `/profile/api/v1/userInfo`,
+
+	/**
 	 * Get User Trading Accounts
 	 *
 	 * GET /profile/api/v1/accounts

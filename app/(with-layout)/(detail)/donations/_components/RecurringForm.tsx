@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toaster";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import RecurringDonation from "@/public/icons/discover/RecurringDonation.svg";
 import { CirclePlusIcon, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import Alert from "@/components/Alert";
 import { useFormErrors } from "@/hooks/form/useFormErrors";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
-import { submitDonation, cancelDonation } from "@/lib/services/profileService";
+import { submitDonation, cancelDonation, getDonationPlans } from "@/lib/services/profileService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import type { DonationPlanResponse } from "@/types";
 
@@ -48,20 +48,9 @@ const SELECT_FIELDS = [
 	},
 ];
 
-interface RecurringFormProps {
-	plans: DonationPlanResponse[];
-}
-
-interface RecurringDonationItem {
-	id: number;
-	duration: string;
-	amount: string;
-}
-
-const RecurringForm = ({}: RecurringFormProps) => {
+const RecurringForm = () => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
-	// Align state naming and structure with ApplicationForm
 	const [formValues, setFormValues] = useState({ duration: "", amount: "" });
 	const [agreed, setAgreed] = useState(false);
 	const {
@@ -73,8 +62,19 @@ const RecurringForm = ({}: RecurringFormProps) => {
 		setShowValidationErrors,
 	} = useFormErrors();
 	const [open, setOpen] = useState(false);
-	const [recurringDonations, setRecurringDonations] = useState<RecurringDonationItem[]>([]);
+	const [recurringDonations, setRecurringDonations] = useState<DonationPlanResponse[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const fetchPlans = useCallback(async () => {
+		const response = await getDonationPlans();
+		if (response.success && response.data) {
+			setRecurringDonations(response.data);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchPlans();
+	}, [fetchPlans]);
 
 	const updateFormValue = (field: string, value: string) => {
 		setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -126,14 +126,7 @@ const RecurringForm = ({}: RecurringFormProps) => {
 			});
 
 			if (response.success && response.data?.isSuccess) {
-				// Add to recurring donations list with mock ID (backend should return this)
-				const newDonation: RecurringDonationItem = {
-					id: Date.now(), // Mock ID - replace with actual ID from backend
-					duration: `${months}-month${months > 1 ? "s" : ""}`,
-					amount: formValues.amount,
-				};
-
-				setRecurringDonations((prev) => [...prev, newDonation]);
+				await fetchPlans();
 				setOpen(false);
 				toast.success(
 					"Setup Success!",
@@ -155,12 +148,12 @@ const RecurringForm = ({}: RecurringFormProps) => {
 		}
 	};
 
-	const handleCancelDonations = async (donationItem: RecurringDonationItem) => {
+	const handleCancelDonations = async (plan: DonationPlanResponse) => {
 		try {
-			const response = await cancelDonation(donationItem.id);
+			const response = await cancelDonation(plan.id);
 
 			if (response.success && response.data?.isSuccess) {
-				setRecurringDonations((prev) => prev.filter((item) => item.id !== donationItem.id));
+				setRecurringDonations((prev) => prev.filter((item) => item.id !== plan.id));
 				toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 			} else {
 				toast.error("Cancellation Failed", response.error || "Please try again later.");
@@ -305,21 +298,22 @@ const RecurringForm = ({}: RecurringFormProps) => {
 			) : (
 				<div className="mt-6 pad-x flex-1 min-h-0 overflow-y-auto">
 					<div className="w-full flex flex-col gap-3 pb-6">
-						{recurringDonations.map((item) => {
-							// Calculate end date based on current date + duration
-							const endDate = new Date();
-							const months = parseInt(item.duration.split("-")[0], 10);
-							endDate.setMonth(endDate.getMonth() + months);
-							const formattedEndDate = endDate.toLocaleDateString("en-GB", {
+						{recurringDonations.map((plan) => {
+							const formattedEnd = new Date(plan.end).toLocaleDateString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+							});
+							const formattedStart = new Date(plan.start).toLocaleDateString("en-GB", {
 								day: "2-digit",
 								month: "short",
 								year: "numeric",
 							});
 
 							return (
-								<div key={item.id}>
+								<div key={plan.id}>
 									<div className="flex justify-between items-center font-normal gap-3">
-										<div className="text-sm text-typo-primary">SGD {item.amount}</div>
+										<div className="text-sm text-typo-primary">{plan.currency} {plan.amount.toFixed(2)}</div>
 										<Alert
 											trigger={
 												<div className="text-status-error text-xs cursor-pointer">
@@ -336,12 +330,12 @@ const RecurringForm = ({}: RecurringFormProps) => {
 											}
 											actionText="Cancel"
 											cancelText="Close"
-											onAction={() => handleCancelDonations(item)}
+											onAction={() => handleCancelDonations(plan)}
 										/>
 									</div>
 									<div className="flex justify-between items-center text-xs font-medium text-typo-tertiary mt-3">
-										<p>{item.duration}</p>
-										<p>End Date: {formattedEndDate}</p>
+										<p>Start: {formattedStart}</p>
+										<p>End: {formattedEnd}</p>
 									</div>
 								</div>
 							);

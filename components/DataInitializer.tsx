@@ -2,10 +2,9 @@
 "use client";
 
 import { useEffect } from "react";
-// import { useUserStore } from "@/stores/userStore";
+import { useUserStore } from "@/stores/userStore";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-// import { getUserProfile, getUserAccounts } from "@/lib/services/profileService";
-import { getUserAccounts } from "@/lib/services/profileService";
+import { getUserProfile, getUserAccounts } from "@/lib/services/profileService";
 
 /**
  * DataInitializer Component
@@ -22,24 +21,23 @@ import { getUserAccounts } from "@/lib/services/profileService";
  * Usage: Add to root layout alongside NotificationPolling
  */
 export function DataInitializer() {
-	// const profile = useUserStore((state) => state.profile);
+	const profile = useUserStore((state) => state.profile);
 	const tradingAccountsInitialized = useTradingAccountStore((state) => state.isInitialized);
 	const setAccounts = useTradingAccountStore((state) => state.setAccounts);
 	const setSelectedAccount = useTradingAccountStore((state) => state.setSelectedAccount);
 
-	// TODO: Re-enable when profile API is ready
-	// const fetchUserProfile = async () => {
-	// 	try {
-	// 		const response = await getUserProfile();
+	const fetchUserProfile = async () => {
+		try {
+			const response = await getUserProfile();
 
-	// 		if (!response.success) {
-	// 			console.error("Failed to fetch user profile:", response.error);
-	// 		}
-	// 		// Note: getUserProfile automatically syncs to userStore (see profileService.ts:38)
-	// 	} catch (err) {
-	// 		console.error("Error fetching user profile:", err);
-	// 	}
-	// };
+			if (!response.success) {
+				console.error("Failed to fetch user profile:", response.error);
+			}
+			// Note: getUserProfile automatically syncs to userStore (see profileService.ts:38)
+		} catch (err) {
+			console.error("Error fetching user profile:", err);
+		}
+	};
 
 	// Fetch trading accounts on mount (if not already loaded)
 	const fetchTradingAccounts = async () => {
@@ -61,12 +59,11 @@ export function DataInitializer() {
 		}
 	};
 
-	// TODO: Re-enable when profile API is ready
-	// useEffect(() => {
-	// 	if (!profile) {
-	// 		fetchUserProfile();
-	// 	}
-	// }, []);
+	useEffect(() => {
+		if (!profile) {
+			fetchUserProfile();
+		}
+	}, []);
 
 	// Initialize trading accounts on mount
 	useEffect(() => {

@@ -19,6 +19,7 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
+import Logo from "@/public/icons/iTrade-header.svg";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
@@ -145,13 +146,7 @@ const Header = () => {
 			<div className="flex justify-between h-full">
 				<div className="flex items-center my-auto gap-12">
 					<Link href={"/"}>
-						<Image
-							src="/icons/iTrade-header.svg"
-							alt="Logo"
-							width={75}
-							height={23}
-							className="object-contain"
-						/>
+						<Logo className="w-[75px] h-[23px]" aria-label="Logo" />
 					</Link>
 
 					<div className="hidden md:flex gap-6">

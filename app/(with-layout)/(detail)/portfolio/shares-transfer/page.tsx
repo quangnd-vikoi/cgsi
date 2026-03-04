@@ -17,6 +17,8 @@ import {
 import { Label } from "@/components/ui/label";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { ErrorState } from "@/components/ErrorState";
+import { getCdpTransfer, submitCdpTransfer } from "@/lib/services/portfolioService";
+import type { ICDPTransfer } from "@/types";
 
 interface InfoRowProps {
     label: string;
@@ -66,40 +68,45 @@ const SuccessStep = () => {
 
 const SharesTransfer = () => {
     const router = useRouter();
-    const { accounts } = useTradingAccountStore();
+    const accounts = useTradingAccountStore(s => s.accounts);
     const [step, setStep] = useState<1 | 2>(1);
     const [transferAccount, setTransferAccount] = useState<string>("");
     const [agreed, setAgreed] = useState(false);
     const [checkboxError, setCheckboxError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const [cdpData, setCdpData] = useState<ICDPTransfer | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Mock data - replace with actual user data
-    const clientInfo = {
-        name: "Rayhan Abhirama",
-        nric: "SKXXX5152",
-        cdpAccount: "0521-1234-5678",
-        broker: "CGS International Securities Pte Ltd (CGSI)",
-    };
-    // Set first account as default value
     useEffect(() => {
-        if (accounts.length > 0 && !transferAccount) {
-            setTransferAccount(accounts[0].accountNo);
-        }
-    }, [accounts, transferAccount]);
+        const init = async () => {
+            const res = await getCdpTransfer();
+            if (res.success && res.data) {
+                setCdpData(res.data);
+                const firstAccount = res.data.accountList[0]?.acctNo;
+                if (firstAccount) setTransferAccount(firstAccount);
+            } else {
+                const fallback = useTradingAccountStore.getState().accounts;
+                if (fallback.length > 0) setTransferAccount(fallback[0].accountNo);
+            }
+            setLoading(false);
+        };
+        init();
+    }, []);
 
-    const handleConfirm = () => {
-        // Validate checkbox
+    const handleConfirm = async () => {
         if (!agreed) {
             setCheckboxError("You must agree to the terms and conditions");
             return;
         }
+        if (!transferAccount) return;
 
-        if (!transferAccount) {
-            return;
+        setSubmitting(true);
+        const response = await submitCdpTransfer(transferAccount);
+        setSubmitting(false);
+
+        if (response.success) {
+            setStep(2);
         }
-        // TODO: Handle shares transfer API call
-
-        // Move to success step
-        setStep(2);
     };
 
     const handleCheckboxChange = (checked: boolean) => {
@@ -108,6 +115,14 @@ const SharesTransfer = () => {
             setCheckboxError("");
         }
     };
+
+    const accountList = cdpData?.accountList ?? accounts.map(a => ({
+        acctNo: a.accountNo,
+        acctType: a.accountType ?? "",
+        trCode: "",
+        trName: a.trName ?? "",
+    }));
+    const selectedAccountInfo = accountList.find(a => a.acctNo === transferAccount);
 
     return (
         <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
@@ -126,10 +141,23 @@ const SharesTransfer = () => {
 
                                 {/* Client Information */}
                                 <div className="mb-10 p-4 bg-background-section space-y-4 rounded">
-                                    <InfoRow label="Client Name" value={clientInfo.name} />
-                                    <InfoRow label="NRIC/ Passport" value={clientInfo.nric} />
-                                    <InfoRow label="CDP Account No." value={clientInfo.cdpAccount} />
-                                    <InfoRow label="Broker" value={clientInfo.broker} />
+                                    {loading ? (
+                                        <>
+                                            {["Client Name", "NRIC/ Passport", "CDP Account No.", "Broker"].map((label) => (
+                                                <div key={label} className="grid grid-cols-2 gap-2">
+                                                    <p className="text-sm md:text-base text-typo-secondary">{label}</p>
+                                                    <div className="h-4 w-32 bg-stroke-secondary animate-pulse rounded ml-auto" />
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <InfoRow label="Client Name" value={cdpData?.name ?? ""} />
+                                            <InfoRow label="NRIC/ Passport" value={cdpData?.nricPassport ?? ""} />
+                                            <InfoRow label="CDP Account No." value={cdpData?.cdpNo ?? ""} />
+                                            <InfoRow label="Broker" value="CGS International Securities Pte Ltd (CGSI)" />
+                                        </>
+                                    )}
                                 </div>
 
                                 {/* Transfer Statement */}
@@ -145,11 +173,11 @@ const SharesTransfer = () => {
                                             <SelectValue placeholder="Select account" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {accounts.map((account) => (
-                                                <SelectItem key={account.accountNo} value={account.accountNo}>
+                                            {accountList.map((account) => (
+                                                <SelectItem key={account.acctNo} value={account.acctNo}>
                                                     <div className="flex flex-col items-start">
                                                         <span className="text-sm md:text-base font-medium text-typo-primary">
-                                                            (CTA) {account.accountNo}
+                                                            {account.acctType ? `(${account.acctType}) ` : ""}{account.acctNo}
                                                         </span>
                                                     </div>
                                                 </SelectItem>
@@ -157,7 +185,7 @@ const SharesTransfer = () => {
                                         </SelectContent>
                                     </Select>
                                     <p className="text-xs md:text-sm text-typo-secondary mt-2">
-                                        Trading Representative: {accounts.find(a => a.accountNo === transferAccount)?.trName || ""}
+                                        Trading Representative: {selectedAccountInfo?.trName ?? ""}
                                     </p>
                                 </div>
                             </div>
@@ -218,8 +246,9 @@ const SharesTransfer = () => {
                                 <Button
                                     className="flex-1"
                                     onClick={handleConfirm}
+                                    disabled={submitting}
                                 >
-                                    Confirm
+                                    {submitting ? "Submitting..." : "Confirm"}
                                 </Button>
                             </div>
                         </div>

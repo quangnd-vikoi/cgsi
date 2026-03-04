@@ -34,17 +34,22 @@ export function parsePhoneNumber(phoneNumber: string | undefined | null): Parsed
 
 	if (!match) {
 		// If no match, try without dash: "+{dialCode}{phoneNumber}"
-		const matchNoDash = phoneNumber.match(/^\+(\d{1,4})(.+)$/);
-		if (!matchNoDash) {
-			return defaultResult;
+		// Try dial code lengths from longest (4) to shortest (1) to find a valid country
+		const noPlusDigits = phoneNumber.startsWith("+") ? phoneNumber.slice(1) : phoneNumber;
+		for (let len = 4; len >= 1; len--) {
+			const dialCodePart = noPlusDigits.substring(0, len);
+			const phonePart = noPlusDigits.substring(len);
+			if (!phonePart) continue;
+			const country = findCountryByDialCode(dialCodePart);
+			if (country) {
+				return {
+					countryCode: country,
+					dialCode: `+${dialCodePart}`,
+					phoneNumber: phonePart,
+				};
+			}
 		}
-		const [, extractedDialCode, phone] = matchNoDash;
-		const country = findCountryByDialCode(extractedDialCode);
-		return {
-			countryCode: country || "SG",
-			dialCode: `+${extractedDialCode}`,
-			phoneNumber: phone,
-		};
+		return defaultResult;
 	}
 
 	const [, extractedDialCode, phone] = match;
