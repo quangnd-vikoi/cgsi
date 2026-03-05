@@ -124,7 +124,7 @@ const UpdateMobile = () => {
 	const parsedCurrentMobile = parsePhoneNumber(profile?.mobileNo);
 
 	const [step, setStep] = useState<1 | 2 | 3>(1);
-	const [phoneNumber, setPhoneNumber] = useState(parsedCurrentMobile.phoneNumber);
+	const [phoneNumber, setPhoneNumber] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
@@ -225,7 +225,7 @@ const UpdateMobile = () => {
 
 		setIsSubmitting(false);
 
-		if (response.success && response.data?.isSuccess) {
+		if (response.success && response.data?.isSuccess !== false) {
 			setStep(3);
 			refreshUserProfile().catch(() => {}); // non-critical, fire-and-forget
 		} else {
@@ -264,11 +264,7 @@ const UpdateMobile = () => {
 				<Title
 					title="Update Mobile Number"
 					rightContent={
-						step === 3 ? (
-							<button className="cursor-pointer hover:opacity-60" onClick={() => router.back()}>
-								<X />
-							</button>
-						) : (
+						step !== 3 ? (
 							<Alert
 								trigger={<X />}
 								title="Exit Update Mobile Number?"
@@ -277,7 +273,7 @@ const UpdateMobile = () => {
 								cancelText="Quit Anyways"
 								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
 							/>
-						)
+						) : null
 					}
 				/>
 			</div>

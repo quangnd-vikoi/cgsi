@@ -105,12 +105,12 @@ const TradingAccountDetail = () => {
 	const router = useRouter();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 
-	const handleUnlink = (accountType: "cpf" | "srs" | "payment") => {
+	const handleUnlink = (accountType: "sub-cdp" | "cpf" | "srs" | "giro" | "eps") => {
 		setOpenSheet(null);
 		router.push(`/account-linkages?tab=${accountType}&action=unlink`);
 	};
 
-	const handleLink = (accountType: "cpf" | "srs" | "giro" | "eps") => {
+	const handleLink = (accountType: "sub-cdp" | "cpf" | "srs" | "giro" | "eps") => {
 		setOpenSheet(null);
 		router.push(`/account-linkages?tab=${accountType}`);
 	};
@@ -123,7 +123,7 @@ const TradingAccountDetail = () => {
 	const isSBL = accountType === "SBL";
 	const showCpfSrs = isCTA || isCUT;
 	const accountTypeLabel = ACCOUNT_TYPE_LABELS[accountType] ?? accountType;
-
+	const isSubCDP = selectedAccount.cdp?.startsWith("217 1");
 	return (
 		<div className="flex flex-col h-full">
 			<CustomSheetTitle backTo="trading_accounts" title="Account Details" />
@@ -144,14 +144,23 @@ const TradingAccountDetail = () => {
 				{!isSBL && (
 					<Group showSeparator={false} title="Account Linkages" childrenClassName="gap-0">
 						<LinkageItem
-							label="CDP"
-							tooltipContent="Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
+							label={isSubCDP ? "Sub-CDP" : "CDP"}
+							tooltipContent={
+								isSubCDP
+									? "An arrangement where your SGX-listed securities are held in custody under CGSI, offering greater convenience and smoother trade settlements."
+									: "Your SGX-listed securities are held in your personal CDP account. For greater convenience and smoother trade settlement, consider switching to a Sub-CDP with CGSI."
+							}
 							value={selectedAccount.cdp || undefined}
 							actionContent={
-								<div className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0">
-									Update to SUB-CDP
-									<ChevronRight size={16} />
-								</div>
+								!isSubCDP && (
+									<div
+										className="flex items-center gap-1 text-cgs-blue text-xs font-medium cursor-pointer shrink-0"
+										onClick={() => handleLink("sub-cdp")}
+									>
+										Update to SUB-CDP
+										<ChevronRight size={16} />
+									</div>
+								)
 							}
 							showSeparator={showCpfSrs}
 						/>
@@ -204,7 +213,7 @@ const TradingAccountDetail = () => {
 										tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
 										value={selectedAccount.giro || selectedAccount.eps || undefined}
 										isLinked={!!(selectedAccount.giro || selectedAccount.eps)}
-										onUnlink={() => handleUnlink("payment")}
+										onUnlink={() => handleUnlink(selectedAccount.giro ? "giro" : "eps")}
 										actionContent={
 											<DropdownMenu>
 												<DropdownMenuTrigger asChild>

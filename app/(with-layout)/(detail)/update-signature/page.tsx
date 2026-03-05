@@ -176,7 +176,6 @@ const UpdateSignature = () => {
 
 		if (!uploadResponse.success || !uploadResponse.data) {
 			setIsSubmitting(false);
-			setStatus("failed");
 			toast.error("Error Encountered", "Something went wrong. Please try again later");
 			return;
 		}
@@ -186,10 +185,9 @@ const UpdateSignature = () => {
 
 		setIsSubmitting(false);
 
-		if (submitResponse.success && submitResponse.data?.isSuccess) {
+		if (submitResponse.success && submitResponse.data?.isSuccess !== false) {
 			setStatus("success");
 		} else {
-			setStatus("failed");
 			toast.error("Error Encountered", "Something went wrong. Please try again later");
 		}
 	};
@@ -200,14 +198,16 @@ const UpdateSignature = () => {
 				<Title
 					title="Update Signature"
 					rightContent={
-						<Alert
-							trigger={<X />}
-							title="Exit Update Signature?"
-							description={<p>Any information previously entered will be discarded.</p>}
-							actionText="Back To Form"
-							cancelText="Exit without Saving"
-							onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
-						/>
+						status !== "success" ? (
+							<Alert
+								trigger={<X />}
+								title="Exit Update Signature?"
+								description={<p>Any information previously entered will be discarded.</p>}
+								actionText="Back To Form"
+								cancelText="Exit without Saving"
+								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
+							/>
+						) : null
 					}
 				/>
 			</div>

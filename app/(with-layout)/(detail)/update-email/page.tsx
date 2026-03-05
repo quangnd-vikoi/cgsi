@@ -164,7 +164,7 @@ const UpdateEmail = () => {
 	// Fallback to empty string if no email in profile
 	const currentEmail = profile?.email || "";
 	const [step, setStep] = useState<1 | 2 | 3>(1);
-	const [newEmail, setNewEmail] = useState(currentEmail);
+	const [newEmail, setNewEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [error, setError] = useState("");
 	const [transactionId, setTransactionId] = useState("");
@@ -254,7 +254,7 @@ const UpdateEmail = () => {
 
 		setIsSubmitting(false);
 
-		if (response.success && response.data?.isSuccess) {
+		if (response.success && response.data?.isSuccess !== false) {
 			setStep(3);
 			refreshUserProfile().catch(() => {}); // non-critical, fire-and-forget
 		} else {
@@ -293,11 +293,7 @@ const UpdateEmail = () => {
 				<Title
 					title="Update Email"
 					rightContent={
-						step === 3 ? (
-							<button className="cursor-pointer hover:opacity-60" onClick={() => router.back()}>
-								<X />
-							</button>
-						) : (
+						step !== 3 ? (
 							<Alert
 								trigger={<X />}
 								title="Exit Update Email Address?"
@@ -306,7 +302,7 @@ const UpdateEmail = () => {
 								cancelText="Quit Anyways"
 								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
 							/>
-						)
+						) : null
 					}
 				/>
 			</div>

@@ -5,7 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Headset } from "lucide-react";
 import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
-import { cpf, cpfUnlink, eps, epsUnlink, giro, giroUnlink, srs, srsUnlink, subcdp, subcdpUnlink } from "./data";
+import {
+	cpf,
+	cpfUnlink,
+	eps,
+	epsUnlink,
+	giro,
+	giroUnlink,
+	srs,
+	srsUnlink,
+	subcdp,
+	subcdpUnlink,
+} from "./data";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -88,7 +99,7 @@ const AccountLinkages = () => {
 					title="Account Linkages"
 					rightContent={
 						<Button
-							onClick={() => setOpenSheet("trading_representative")}
+							onClick={() => setOpenSheet("contact")}
 							className="hidden md:inline-flex border-1 border-stroke-secondary text-typo-primary rounded-sm px-3 py-1.5 text-sm bg-transparent hover:bg-transparent hover:opacity-75 font-normal transition-colors h-8"
 						>
 							<Headset className="text-icon-light" size={24} />
