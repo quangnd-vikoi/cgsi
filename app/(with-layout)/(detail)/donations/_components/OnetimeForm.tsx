@@ -13,13 +13,24 @@ import { Loader2, Wallet } from "lucide-react";
 import { useState } from "react";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { depositPaynow } from "@/lib/services/portfolioService";
+import { submitDonation } from "@/lib/services/profileService";
+import { S2BPayButton } from "@/components/S2BPayButton";
 
 const OneTimeForm = () => {
 	const [inputValue, setInputValue] = useState<string>("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [paynowData, setPaynowData] = useState<{
+		s2bPayUrl: string;
+		corpId: string;
+		encStr: string;
+	} | null>(null);
+
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
 
 	const {
+		amount,
 		setAmount,
 		paymentMethod,
 		setPaymentMethod,
@@ -27,33 +38,11 @@ const OneTimeForm = () => {
 		setAgreed,
 		errors,
 		handleSubmit,
-		isSubmitting,
 		reset,
 	} = useDonationForm({
 		accountNo: accountNo || undefined,
 		donationType: "onetime",
-		submitToAPI: true,
-		onSuccess: (values) => {
-			if (values.paymentMethod === "now") {
-				// PayNow success
-				toast.success(
-					"Payment Successful",
-					"Your PayNow donation has been processed successfully."
-				);
-			} else {
-				// Trust Account success
-				toast.success(
-					"Thank you!",
-					"Your donation will go a long way in uplifting lives. We truly appreciate it."
-				);
-			}
-			// Reset form
-			setInputValue("");
-			reset();
-		},
-		onError: () => {
-			toast.error("Donation Payment Failed");
-		},
+		submitToAPI: false,
 		minAmount: 1.0,
 	});
 
@@ -62,8 +51,60 @@ const OneTimeForm = () => {
 			toast.error("No trading account found", "Please contact support to set up your account");
 			return;
 		}
-		await handleSubmit();
+
+		const valid = await handleSubmit();
+		if (!valid) return;
+
+		setIsSubmitting(true);
+
+		if (paymentMethod === "now") {
+			const response = await depositPaynow({
+				accountNo,
+				mode: "DONATE",
+				amount: amount!,
+				currency: "SGD",
+				refNo: `DONATE-${Date.now()}`,
+			});
+
+			if (!response.success || !response.data) {
+				toast.error("Donation Payment Failed", response.error ?? "Please try again.");
+			} else {
+				setPaynowData(response.data);
+			}
+		} else {
+			const response = await submitDonation({
+				accountNo,
+				amount: amount!,
+				currency: "SGD",
+				paymentMethod: "LS_ACCSET",
+				paymentMode: "DONATE",
+			});
+
+			if (!response.success || !response.data?.isSuccess) {
+				toast.error("Donation Payment Failed", response.error ?? "Please try again.");
+			} else {
+				toast.success(
+					"Thank you!",
+					"Your donation will go a long way in uplifting lives. We truly appreciate it."
+				);
+				setInputValue("");
+				reset();
+			}
+		}
+
+		setIsSubmitting(false);
 	};
+
+	if (paynowData) {
+		return (
+			<div className="flex flex-col flex-1 items-center justify-center gap-4 pad-x py-6">
+				<p className="text-sm text-typo-secondary text-center">
+					Click the button below to complete your PayNow donation.
+				</p>
+				<S2BPayButton {...paynowData} />
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col flex-1 min-h-0 overflow-hidden">
