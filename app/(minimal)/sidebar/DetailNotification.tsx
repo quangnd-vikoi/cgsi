@@ -42,7 +42,7 @@ const DetailNotification = () => {
 	if (!notification) {
 		return (
 			<div>
-				<CustomSheetTitle title="Detail" backTo={"notification"} />
+				<CustomSheetTitle title="Details" backTo={"notification"} />
 				<div className="mt-6 text-center text-typo-secondary">
 					<p>No notification selected</p>
 				</div>
@@ -53,7 +53,7 @@ const DetailNotification = () => {
 	return (
 		<div>
 			<div className="relative h-full flex flex-col">
-				<CustomSheetTitle title="Detail" backTo={"notification"} />
+				<CustomSheetTitle title="Details" backTo={"notification"} />
 				<div className="mt-6">
 					{/* Only show image if imageUrl exists */}
 					{notification.imageUrl && (
@@ -66,16 +66,8 @@ const DetailNotification = () => {
 						/>
 					)}
 					<p className="text-base font-semibold text-typo-primary line-clamp-2">{notification.title}</p>
-					<p className="text-xs text-typo-tertiary leading-4 mt-4">{formatDate(notification.createdOn)}</p>
+					<p className="text-xs text-typo-secondary leading-4 mt-4">{formatDate(notification.createdOn)}</p>
 
-					{/* Category badge (optional) */}
-					{notification.category && (
-						<div className="mt-2">
-							<span className="inline-block px-2 py-1 text-xs bg-theme-blue-100 text-theme-cgs-blue rounded">
-								{notification.category}
-							</span>
-						</div>
-					)}
 
 					<div className="w-full h-[1px] border-t my-4"></div>
 					<p className="text-sm text-typo-secondary whitespace-pre-wrap">{notification.description}</p>

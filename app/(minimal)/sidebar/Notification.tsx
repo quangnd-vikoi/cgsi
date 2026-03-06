@@ -53,14 +53,14 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 				{isUnread && (
 					<Dot className="text-status-error relative right-1 -mr-1.5 shrink-0" strokeWidth="5" color="#D92B2B" />
 				)}
-				<span className="text-sm font-semibold leading-5 line-clamp-2 flex-1 min-w-0">{notification.title}</span>
+				<span className="text-base font-semibold leading-5 line-clamp-2 flex-1 min-w-0">{notification.title}</span>
 			</div>
 
-			<p className="line-clamp-3 text-typo-secondary text-xs mt-1.5 leading-4">
+			<p className="line-clamp-3 text-typo-secondary text-sm mt-1.5 leading-4">
 				{notification.description}
 			</p>
 
-			<p className="text-typo-tertiary mt-4 text-xs">{formatDate(notification.createdOn)}</p>
+			<p className="text-typo-secondary mt-4 text-xs">{formatDate(notification.createdOn)}</p>
 		</div>
 	);
 };
@@ -205,8 +205,8 @@ const Notification = () => {
 		<div className="relative h-full flex flex-col">
 			<CustomSheetTitle title="Notification Centre" />
 
-			<div className="flex justify-between items-center text-xs mt-6 flex-shrink-0">
-				<p>
+			<div className="flex justify-between items-center mt-6 flex-shrink-0">
+				<p className="text-sm font-medium text-typo-secondary">
 					{unreadCount} Unread Notification{unreadCount !== 1 ? "s" : ""}
 				</p>
 
@@ -216,11 +216,11 @@ const Notification = () => {
 							disabled={!hasUnread}
 							className={cn(
 								"font-medium flex gap-1 items-center bg-transparent p-0 hover:bg-transparent border ",
-								hasUnread ? "text-cgs-blue border-cgs-blue underline underline-offset-2 md:no-underline" : "text-status-disable-primary border-status-disable-primary bg-status-disable-secondary"
+								hasUnread ? "text-cgs-blue border-cgs-blue underline underline-offset-2 md:no-underline" : "text-[#BAC3D1] border-[#BAC3D1] bg-transparent"
 							)}
 						>
 							<MailOpen className="w-4 p-0" />
-							<span className="text-xs">Mark All as Read</span>
+							<span className="text-sm">Mark All as Read</span>
 						</Button>
 					}
 					title="Mark All as Read"

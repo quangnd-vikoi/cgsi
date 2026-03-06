@@ -41,7 +41,7 @@ const TermsAndConditionsCheckbox = ({
 				/>
 				<Label
 					htmlFor={id}
-					className="text-xs md:text-sm text-typo-secondary cursor-pointer leading-5 font-normal select-text"
+					className="text-sm md:text-base text-typo-primary cursor-pointer leading-5 font-normal select-text"
 				>
 					<span>
 						{labelText}
@@ -51,7 +51,7 @@ const TermsAndConditionsCheckbox = ({
 								<Link
 									href={termsUrl}
 									target="_blank"
-									className="inline text-cgs-blue font-semibold !underline !underline-offset-2"
+									className="inline text-cgs-blue font-medium !underline !underline-offset-2"
 								>
 									Terms & Conditions
 								</Link>

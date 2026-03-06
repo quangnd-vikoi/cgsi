@@ -34,18 +34,34 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 }) => {
 	const isMobile = useMediaQuery("mobile");
 	const router = useRouter();
+	const [loading, setLoading] = useState(false);
 
 	const { value, toggle } = useToggle();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
-	const selectedAccount = useTradingAccountStore((s) => s.selectedAccount);
-	const isAI = selectedAccount?.accreditedInvestor === "Yes";
 
 	const handleClick = () => {
 		if (title === "Alternatives") {
-			if (isAI) {
-				router.push(href);
+			const { selectedAccount, isInitialized } =
+				useTradingAccountStore.getState();
+			if (isInitialized) {
+				if (selectedAccount?.accreditedInvestor === "Yes") {
+					router.push(href);
+				} else {
+					toggle();
+				}
 			} else {
-				toggle();
+				setLoading(true);
+				const unsub = useTradingAccountStore.subscribe((state) => {
+					if (state.isInitialized) {
+						unsub();
+						setLoading(false);
+						if (state.selectedAccount?.accreditedInvestor === "Yes") {
+							router.push(href);
+						} else {
+							toggle();
+						}
+					}
+				});
 			}
 		} else {
 			router.push(href);
@@ -60,7 +76,10 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	return (
 		<div
 			onClick={() => handleClick()}
-			className="cursor-pointer relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm"
+			className={cn(
+				"relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm",
+				loading ? "cursor-wait" : "cursor-pointer"
+			)}
 		>
 			<div className="relative border border-transparent rounded w-full hover:shadow-sm">
 				<div
@@ -106,9 +125,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 const Investment = () => {
 	const [securitiesCount, setSecuritiesCount] = useState<number | null>(null);
 	const [alternativesCount, setAlternativesCount] = useState<number | null>(null);
+	const selectedAccount = useTradingAccountStore((s) => s.selectedAccount);
+	const isInitialized = useTradingAccountStore((s) => s.isInitialized);
+	const isAI = isInitialized && selectedAccount?.accreditedInvestor === "Yes";
 
 	useEffect(() => {
-		// Check if closing date has passed
+		if (!isInitialized) return;
+
 		const isClosingDatePassed = (endTime: string): boolean => {
 			const closingDate = new Date(endTime);
 			const now = new Date();
@@ -116,11 +139,16 @@ const Investment = () => {
 		};
 
 		const fetchProductCounts = async () => {
-			const [iopResponse, aiResponse] = await Promise.allSettled([
+			const promises: Promise<Awaited<ReturnType<typeof getProductSubscriptionsByType>>>[] = [
 				getProductSubscriptionsByType("IOP"),
-				getProductSubscriptionsByType("AI"),
-			]);
+			];
+			if (isAI) {
+				promises.push(getProductSubscriptionsByType("AI"));
+			}
 
+			const results = await Promise.allSettled(promises);
+
+			const iopResponse = results[0];
 			if (iopResponse.status === "fulfilled" && iopResponse.value.success && iopResponse.value.data?.productSubs) {
 				const count = iopResponse.value.data.productSubs.filter(
 					(product) => !isClosingDatePassed(product.endTime)
@@ -128,16 +156,19 @@ const Investment = () => {
 				setSecuritiesCount(count);
 			}
 
-			if (aiResponse.status === "fulfilled" && aiResponse.value.success && aiResponse.value.data?.productSubs) {
-				const count = aiResponse.value.data.productSubs.filter(
-					(product) => !isClosingDatePassed(product.endTime)
-				).length;
-				setAlternativesCount(count);
+			if (isAI && results[1]) {
+				const aiResponse = results[1];
+				if (aiResponse.status === "fulfilled" && aiResponse.value.success && aiResponse.value.data?.productSubs) {
+					const count = aiResponse.value.data.productSubs.filter(
+						(product) => !isClosingDatePassed(product.endTime)
+					).length;
+					setAlternativesCount(count);
+				}
 			}
 		};
 
 		fetchProductCounts();
-	}, []);
+	}, [isInitialized, isAI]);
 
 	return (
 		<div className="bg-white container-default">

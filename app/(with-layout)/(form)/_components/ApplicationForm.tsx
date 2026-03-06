@@ -14,14 +14,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus, Loader2 } from "lucide-react";
 import { cn, convertTo2DigitsNumber } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { CGSI } from "@/constants/routes";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import Image from "@/components/Image";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
+import { authService } from "@/lib/services/authService";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
@@ -32,15 +31,6 @@ const PAYMENT_FIELD = {
 	id: "payment",
 	label: "Preferred Payment Mode",
 	placeholder: "Select a payment option",
-	defaultValue: "",
-	options: [
-		{ value: "bank-transfer", label: "Bank Transfer" },
-		{ value: "giro", label: "Giro" },
-		{ value: "margin-account", label: "Margin Account" },
-		{ value: "paynow", label: "Paynow" },
-		{ value: "telegraphic-transfer", label: "Telegraphic Transfer" },
-		{ value: "trust-account", label: "Trust Account" },
-	],
 };
 
 const CURRENCY_OPTIONS = [
@@ -74,7 +64,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	// Filter cash accounts (CTA = Cash Trading Account)
 	const cashAccounts = accounts.filter((acc) => acc.accountType === "CTA");
 	const hasOnlySingleCashAccount = cashAccounts.length === 1;
-	const defaultAccountNo = cashAccounts[0]?.accountNo ?? ""
+	const defaultAccountNo = cashAccounts[0]?.accountNo ?? "";
 
 	const [quantity, setQuantity] = useState<number | "">("");
 	const [agreed, setAgreed] = useState(false);
@@ -87,8 +77,6 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const [showValidationErrors, setShowValidationErrors] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const router = useRouter();
-
 	// Handle click on disabled account field
 	const handleDisabledAccountClick = () => {
 		toast.info("Account currently only has 1 Cash Account");
@@ -126,6 +114,12 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 		baseCurrency: productDetails.baseCurrency || "USD",
 	};
 
+	// Filter settlement currency: always SGD, plus baseCurrency if different
+	const baseCurrencyLower = FORM_CONFIG.baseCurrency.toLowerCase();
+	const availableCurrencies = CURRENCY_OPTIONS.filter(
+		(c) => c.value === "sgd" || c.value === baseCurrencyLower,
+	);
+
 	// Validation logic
 	const currentQuantity = quantity === "" ? 0 : quantity;
 	const isValidIncremental = quantity === "" || currentQuantity % FORM_CONFIG.unitIncremental === 0;
@@ -134,10 +128,6 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const isValid = isValidIncremental && isBiggerThanMinimum && isQuantityFilled;
 	const estNetValue = (currentQuantity * FORM_CONFIG.issuePrice).toFixed(2);
 	const hasQuantityError = showValidationErrors && !isQuantityFilled;
-
-	const openNoteTab = () => {
-		window.open("/application-note", "_blank", "noopener,noreferrer");
-	};
 
 	const handleSubmit = async () => {
 		// Validate form
@@ -168,7 +158,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				// Success
 				toast.success(
 					"Success!",
-					`Your ${productDetails.productType} Application for ${FORM_CONFIG.productName} has been submitted successfully.`
+					`Your ${productDetails.productType} Application for ${FORM_CONFIG.productName} has been submitted successfully.`,
 				);
 
 				// Refetch product details to update subscription status
@@ -186,42 +176,42 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					currency: productDetails.baseCurrency?.toLowerCase() ?? "sgd",
 				});
 
-				// Open note tab or redirect based on pathname
-				if (pathname === "alternatives") {
-					openNoteTab();
-				} else {
-					// For IOP, check if we have subscriptionId to generate invoice token
-					if (result.data.subscriptionId) {
-						router.push(CGSI.INVOICE(result.data.subscriptionId));
-					} else {
-						openNoteTab();
-					}
-				}
+				// Logout user after successful submission
+				authService.logout();
 			} else {
 				// Error from API
 				toast.error(
 					"Submission Failed",
-					result.error || "Unable to submit your application. Please try again."
+					result.error || "Unable to submit your application. Please try again.",
 				);
 			}
 		} catch (error) {
 			// Unexpected error
 			console.error("Submission error:", error);
-			toast.error(
-				"Error Encountered",
-				"Something went wrong. Please try again later."
-			);
+			toast.error("Error Encountered", "Something went wrong. Please try again later.");
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
-	const handleQuantityChange = (delta: number) => {
-		// When empty and clicking +, land on minQuantity (not minQuantity + increment)
-		const currentQty = quantity === "" ? FORM_CONFIG.minQuantity - FORM_CONFIG.unitIncremental : quantity;
-		const newQty = currentQty + delta;
-		if (newQty >= 0) {
-			setQuantity(newQty);
+	const handleQuantityChange = (direction: 1 | -1) => {
+		const increment = FORM_CONFIG.unitIncremental;
+		if (quantity === "") {
+			if (direction === 1) setQuantity(FORM_CONFIG.minQuantity);
+			return;
+		}
+		if (direction === 1) {
+			const next =
+				quantity % increment === 0
+					? quantity + increment
+					: Math.ceil(quantity / increment) * increment;
+			setQuantity(next);
+		} else {
+			const prev =
+				quantity % increment === 0
+					? quantity - increment
+					: Math.floor(quantity / increment) * increment;
+			if (prev >= 0) setQuantity(prev);
 		}
 	};
 
@@ -231,7 +221,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 			setQuantity("");
 			return;
 		}
-		const numValue = parseInt(value);
+		const numValue = parseInt(value.replace(/,/g, ""));
 		if (!isNaN(numValue) && numValue >= 0) {
 			setQuantity(numValue);
 		}
@@ -270,8 +260,8 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				onInteractOutside={(e) => isSubmitting && e.preventDefault()}
 				onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
 			>
-				<DialogHeader className="pad pt-4 flex-shrink-0">
-					<DialogTitle className="text-lg font-bold text-typo-primary leading-[26px]">
+				<DialogHeader className="pad flex-shrink-0">
+					<DialogTitle className="text-base md:text-lg font-semibold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
 							: "IOP Application Form"}
@@ -281,10 +271,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<div className="pad-x overflow-y-auto flex-1 min-h-0">
 					{/* Product Info */}
 					<div className="bg-background-section rounded p-4 mb-6">
-						<h3 className="font-semibold text-base text-typo-primary mb-2 leading-6">
+						<h3 className="font-semibold text-sm md:text-base text-typo-primary mb-2 leading-6">
 							{FORM_CONFIG.productName}
 						</h3>
-						<p className="text-xs px-3 rounded-full border border-stroke-secondary inline-block py-1 text-typo-secondary leading-4">
+						<p className="text-xs md:text-sm px-3 rounded-full border border-stroke-secondary inline-block py-1 text-typo-secondary leading-4">
 							{FORM_CONFIG.productCode}
 						</p>
 					</div>
@@ -293,33 +283,39 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<div className="mb-6">
 						<Label
 							htmlFor="account"
-							className="text-sm font-semibold text-typo-primary mb-1.5"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 						>
 							Account
 						</Label>
 						<div onClick={hasOnlySingleCashAccount ? handleDisabledAccountClick : undefined}>
-						<Select
-						value={formValues.account}
-						onValueChange={(value) => updateFormValue("account", value)}
-						disabled={hasOnlySingleCashAccount}
-					>
-						<SelectTrigger
-							id="account"
-							className={cn(
-								"w-full disabled:bg-status-disable-secondary disabled:border-stroke-secondary disabled:pointer-events-none",
-								showValidationErrors && !formValues.account && "border-status-error bg-background-error"
-							)}
-						>
-							<SelectValue placeholder="Select an account" />
-						</SelectTrigger>
-						<SelectContent className="z-[105]">
-							{cashAccounts.map((account) => (
-								<SelectItem key={account.accountNo} value={account.accountNo}>
-									<p>(Cash) {account.accountNo}</p>
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
+							<Select
+								value={formValues.account}
+								onValueChange={(value) => updateFormValue("account", value)}
+								disabled={hasOnlySingleCashAccount}
+							>
+								<SelectTrigger
+									id="account"
+									className={cn(
+										"w-full text-sm md:text-base disabled:bg-status-disable-secondary disabled:border-stroke-secondary disabled:pointer-events-none disabled:text-typo-tertiary disabled:opacity-100",
+										showValidationErrors &&
+											!formValues.account &&
+											"border-status-error bg-background-error",
+									)}
+								>
+									<SelectValue placeholder="Select an account" />
+								</SelectTrigger>
+								<SelectContent className="z-[105]">
+									{cashAccounts.map((account) => (
+										<SelectItem
+											key={account.accountNo}
+											value={account.accountNo}
+											className="text-sm md:text-base font-normal"
+										>
+											<p>(Cash) {account.accountNo}</p>
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
 						</div>
 					</div>
 
@@ -327,7 +323,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<div className="mb-6">
 						<Label
 							htmlFor={PAYMENT_FIELD.id}
-							className="text-sm font-semibold text-typo-primary mb-1.5"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 						>
 							{PAYMENT_FIELD.label}
 						</Label>
@@ -338,25 +334,38 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							<SelectTrigger
 								id={PAYMENT_FIELD.id}
 								className={cn(
-									"w-full",
-									showValidationErrors && !formValues.payment && "border-status-error bg-background-error"
+									"w-full text-sm md:text-base",
+									showValidationErrors &&
+										!formValues.payment &&
+										"border-status-error bg-background-error",
 								)}
 							>
 								<SelectValue placeholder={PAYMENT_FIELD.placeholder} />
 							</SelectTrigger>
 							<SelectContent className="z-[105]">
-								{PAYMENT_FIELD.options.map((option) => (
-									<SelectItem key={option.value} value={option.value}>
-										<p>{option.label}</p>
-									</SelectItem>
-								))}
+								{(productDetails.paymentMode ?? "")
+									.split(",")
+									.map((mode) => mode.trim())
+									.filter(Boolean)
+									.map((mode) => (
+										<SelectItem
+											key={mode}
+											value={mode}
+											className="text-sm md:text-base font-normal"
+										>
+											<p>{mode}</p>
+										</SelectItem>
+									))}
 							</SelectContent>
 						</Select>
 					</div>
 
 					{/* Currency Select */}
 					<div className="mb-6">
-						<Label htmlFor="currency" className="text-sm font-semibold text-typo-primary mb-1.5">
+						<Label
+							htmlFor="currency"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
+						>
 							Settlement Currency
 						</Label>
 						<Select
@@ -366,20 +375,20 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							<SelectTrigger
 								id="currency"
 								className={cn(
-									"w-full",
+									"w-full text-sm md:text-base py-4",
 									showValidationErrors &&
-									!formValues.currency &&
-									"border-status-error bg-background-error"
+										!formValues.currency &&
+										"border-status-error bg-background-error",
 								)}
 							>
 								<SelectValue placeholder="Select a currency" />
 							</SelectTrigger>
 							<SelectContent className="z-[105]">
-								{CURRENCY_OPTIONS.map((currency) => (
+								{availableCurrencies.map((currency) => (
 									<SelectItem
 										key={currency.value}
 										value={currency.value}
-										className="px-3 py-2.5"
+										className="px-3 py-2.5 text-sm md:text-base font-normal"
 									>
 										<div className="flex items-center gap-2">
 											<Image
@@ -389,7 +398,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 												height={20}
 												className={cn(
 													"rounded-full object-cover aspect-square",
-													currency.flagPosition
+													currency.flagPosition,
 												)}
 											/>
 											<span className="text-typo-primary">{currency.label}</span>
@@ -401,8 +410,8 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					</div>
 
 					{/* Quantity Requested */}
-					<div className="border rounded py-4 pad-x mb-6 border-stroke-secondary">
-						<Label className="text-sm font-semibold text-typo-primary mb-1.5">
+					<div className="border rounded py-4 px-4 mb-6 border-stroke-secondary">
+						<Label className="text-sm md:text-base font-semibold text-typo-primary mb-1.5">
 							Quantity Requested
 						</Label>
 
@@ -410,12 +419,12 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							className={cn(
 								"flex items-center justify-between mb-4 border-b border-stroke-secondary px-1.5 py-2.5",
 								(hasQuantityError || (isQuantityFilled && !isValid)) &&
-								"border-status-error bg-background-error"
+									"border-status-error bg-background-error",
 							)}
 						>
 							<Button
 								type="button"
-								onClick={() => handleQuantityChange(-FORM_CONFIG.unitIncremental)}
+								onClick={() => handleQuantityChange(-1)}
 								disabled={quantity === "" || currentQuantity <= 0}
 								variant="outline"
 								size="icon"
@@ -425,31 +434,31 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							</Button>
 							<div className="flex-1 mx-4">
 								<Input
-									type="number"
-									value={quantity}
+									type="text"
+									value={quantity === "" ? "" : quantity.toLocaleString()}
 									onChange={handleInputChange}
 									placeholder={`Min. ${FORM_CONFIG.minQuantity} Unit(s)`}
 									min={FORM_CONFIG.minQuantity}
-									className="text-center border-0 text-sm font-normal text-typo-primary w-full focus:ring-0"
+									className="text-center border-0 text-sm md:text-base font-normal text-typo-primary w-full focus:ring-0"
 								/>
 							</div>
 							<Button
 								type="button"
-								onClick={() => handleQuantityChange(FORM_CONFIG.unitIncremental)}
+								onClick={() => handleQuantityChange(1)}
 								variant="outline"
 								size="icon"
 								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
 							>
-								<Plus className="w-4 h-4" />
+								<Plus className="w-5 h-5" />
 							</Button>
 						</div>
 
-						<div className="space-y-3 text-xs">
+						<div className="space-y-3 text-xs md:text-sm">
 							{quantityDetails.map((detail) => (
 								<div key={detail.label} className="flex justify-between">
 									<span
 										className={cn(
-											detail.isError ? "text-status-error" : "text-typo-secondary"
+											detail.isError ? "text-status-error" : "text-typo-secondary",
 										)}
 									>
 										{detail.label}
@@ -457,18 +466,18 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									<span
 										className={cn(
 											"font-medium",
-											detail.isError ? "text-status-error" : "text-typo-primary"
+											detail.isError ? "text-status-error" : "text-typo-primary",
 										)}
 									>
 										{detail.value}
 									</span>
 								</div>
 							))}
-							<div className="flex justify-between text-sm">
-								<span className="text-typo-primary font-medium w-1/2">
+							<div className="flex justify-between text-xs md:text-sm">
+								<span className="text-typo-secondary font-medium w-1/2">
 									Est. Net Application Value
 								</span>
-								<span className="font-semibold text-typo-primary">
+								<span className="font-medium text-typo-primary">
 									{convertTo2DigitsNumber(estNetValue)} {FORM_CONFIG.baseCurrency}
 								</span>
 							</div>
@@ -490,11 +499,11 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					/>
 				</div>
 
-				<DialogFooter className="flex-shrink-0 border-t border-stroke-secondary">
+				<DialogFooter className="flex-shrink-0 border-t border-stroke-secondary px-6 py-6">
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}
-						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-normal text-base disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isSubmitting ? (
 							<>
