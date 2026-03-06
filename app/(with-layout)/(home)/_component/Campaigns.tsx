@@ -16,6 +16,7 @@ import { prefetchCampaigns, type Campaign } from "./campaignsPrefetch";
 import ViewAll from "@/components/ViewAll";
 import { useMediaQuery } from "@/hooks/useMediaQuerry";
 import CampaignsSkeleton from "./skeletons/CampaignsSkeleton";
+import { ErrorState } from "@/components/ErrorState";
 
 // Unified campaign card - same DOM structure, different styles based on position
 // Using memo to prevent unnecessary re-renders
@@ -181,10 +182,6 @@ const Campaigns = () => {
 		return <CampaignsSkeleton />;
 	}
 
-	if (campaigns.length === 0) {
-		return null;
-	}
-
 	return (
 		<section className="bg-background-section">
 			<div className="py-6 md:py-8 lg:py-10 container-default ">
@@ -197,6 +194,13 @@ const Campaigns = () => {
 				</div>
 
 				{/* Carousel Container */}
+				{campaigns.length === 0 ? (
+					<ErrorState
+						type="empty"
+						title="Currently No Promotions & Campaigns"
+						description="Check back soon, new Promotions & Campaigns are on the way!"
+					/>
+				) : (
 				<div className="relative">
 					<Carousel
 						setApi={setApi}
@@ -324,6 +328,7 @@ const Campaigns = () => {
 						</div>
 					)}
 				</div>
+				)}
 			</div>
 		</section>
 	);

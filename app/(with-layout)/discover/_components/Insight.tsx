@@ -10,6 +10,7 @@ import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import ViewAll from "@/components/ViewAll";
 import { formatDate } from "@/lib/utils";
+import { ErrorState } from "@/components/ErrorState";
 
 // API Response Interface
 interface InsightAPIItem {
@@ -94,9 +95,15 @@ const Insight = () => {
 					<ViewAll href={CGSI.INSIGHTS} />
 				</div>
 
-				{/* Event Carousel */}
+				{/* Insight Carousel */}
 				<div className="mt-4 md:mt-8">
-					{insights.length > 0 && (
+					{insights.length === 0 ? (
+						<ErrorState
+							type="empty"
+							title="Currently No Scheduled Articles"
+							description="Check back soon, new articles are on the way!"
+						/>
+					) : (
 						<CustomizeCarousel<InsightAPIItem>
 							items={insights}
 							renderItem={(item) => (
