@@ -36,7 +36,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
-	const { value, toggle } = useToggle();
+	const { value, toggle, setFalse } = useToggle();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 
 	const handleClick = () => {
@@ -52,7 +52,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 			} else {
 				setLoading(true);
 				const unsub = useTradingAccountStore.subscribe((state) => {
-					if (state.isInitialized) {
+					if (state.isInitialized && (state.selectedAccount !== null || state.accounts.length === 0)) {
 						unsub();
 						setLoading(false);
 						if (state.selectedAccount?.accreditedInvestor === "Yes") {
@@ -69,56 +69,58 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 	};
 
 	const handleAlert = () => {
-		toggle();
+		setFalse();
 		setOpenSheet("contact");
 	};
 
 	return (
-		<div
-			onClick={() => handleClick()}
-			className={cn(
-				"relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm",
-				loading ? "cursor-wait" : "cursor-pointer"
-			)}
-		>
-			<div className="relative border border-transparent rounded w-full hover:shadow-sm">
-				<div
-					className="overflow-hidden"
-				>
-					<div className="p-6 w-3/4">
-						<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
-							<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
-							{available != null && (
-								<span className="text-xs text-typo-tertiary md:text-sm">
-									{available} Available
-								</span>
-							)}
+		<>
+			<div
+				onClick={() => handleClick()}
+				className={cn(
+					"relative border border-stroke-secondary rounded-md w-full text-typo-primary hover:shadow-sm",
+					loading ? "cursor-wait" : "cursor-pointer"
+				)}
+			>
+				<div className="relative border border-transparent rounded w-full hover:shadow-sm">
+					<div
+						className="overflow-hidden"
+					>
+						<div className="p-6 w-3/4">
+							<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
+								<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
+								{available != null && (
+									<span className="text-xs text-typo-tertiary md:text-sm">
+										{available} Available
+									</span>
+								)}
+							</div>
+							<p
+								hidden={isMobile}
+								className="max-w-[70%] lg:max-w-[82%] text-typo-secondary text-base line-clamp-2 leading-relaxed"
+							>
+								{subtext}
+							</p>
 						</div>
-						<p
-							hidden={isMobile}
-							className="max-w-[70%] lg:max-w-[82%] text-typo-secondary text-base line-clamp-2 leading-relaxed"
-						>
-							{subtext}
-						</p>
 					</div>
 				</div>
-			</div>
-			<div className={cn("right-6 md:right-5 bottom-0 absolute ", title === "Securities" ? "h-[105%]" : "h-full")}>
-				<Image
-					src={imageSrc}
-					alt={imageAlt ?? title}
-					className="w-auto h-full object-contain"
-					width={imageWidth}
-					height={imageHeight}
-				/>
+				<div className={cn("right-6 md:right-5 bottom-0 absolute ", title === "Securities" ? "h-[105%]" : "h-full")}>
+					<Image
+						src={imageSrc}
+						alt={imageAlt ?? title}
+						className="w-auto h-full object-contain"
+						width={imageWidth}
+						height={imageHeight}
+					/>
+				</div>
 			</div>
 			<AlternativesAccessAlert
 				open={value}
-				onOpenChange={toggle}
-				onCancel={toggle}
+				onOpenChange={(open) => { if (!open) setFalse(); }}
+				onCancel={setFalse}
 				onAction={handleAlert}
 			/>
-		</div>
+		</>
 	);
 };
 

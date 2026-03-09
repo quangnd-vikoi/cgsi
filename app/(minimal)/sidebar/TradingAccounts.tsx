@@ -87,14 +87,6 @@ const TradingAccounts = () => {
 								</p>
 								<div className="flex gap-2 items-center mt-1">
 									<p className="text-lg font-semibold">{acc.accountNo}</p>
-									<Copy
-										className="text-cgs-blue cursor-pointer hover:text-cgs-blue"
-										size={16}
-										onClick={(e) => {
-											e.stopPropagation();
-											navigator.clipboard.writeText(acc.accountNo);
-										}}
-									/>
 								</div>
 							</div>
 							<ChevronRight
@@ -102,7 +94,7 @@ const TradingAccounts = () => {
 								size={14}
 							/>
 						</div>
-						<Separator className="h-[1px] bg-stroke-secondary my-4" /> 
+						<Separator className="h-[1px] bg-stroke-secondary my-4" />
 						<div className="flex justify-between text-xs sm:text-sm">
 							<p className="text-typo-secondary font-normal">TR Name:</p>
 							<p className="text-typo-primary font-semibold">{acc.trName || "-"}</p>

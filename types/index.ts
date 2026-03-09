@@ -486,7 +486,7 @@ export interface UpdateSubmitRequest {
 }
 
 export interface UpdateSubmitResponse {
-	isSuccess: boolean;
+	success: boolean;
 }
 
 // Signature Upload Response

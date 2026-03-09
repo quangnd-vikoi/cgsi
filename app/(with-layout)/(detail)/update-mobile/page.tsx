@@ -225,13 +225,13 @@ const UpdateMobile = () => {
 
 		setIsSubmitting(false);
 
-		if (response.success && response.data?.isSuccess !== false) {
+		if (response.success && response.data?.success !== false) {
 			setStep(3);
 			refreshUserProfile().catch(() => {}); // non-critical, fire-and-forget
 		} else {
 			// Handle OTP validation failure
-			// When API returns success=true but isSuccess=false, it means OTP validation failed
-			if (response.success && response.data?.isSuccess === false) {
+			// When API returns success=true but data.success=false, it means OTP validation failed
+			if (response.success && response.data?.success === false) {
 				// Check if OTP is expired (countdown reached 0) or just wrong (countdown > 0)
 				if (countdown <= 0) {
 					// OTP has expired after 2 minutes

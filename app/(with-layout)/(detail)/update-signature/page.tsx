@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorState } from "@/components/ErrorState";
 import { toast } from "@/components/ui/toaster";
-import { uploadSignature, submitSignatureUpdate } from "@/lib/services/profileService";
+import { uploadSignature } from "@/lib/services/profileService";
 
 const UpdateSignature = () => {
 	const router = useRouter();
@@ -167,25 +167,14 @@ const UpdateSignature = () => {
 
 		setIsSubmitting(true);
 
-		// Step 1: Upload the file
 		const uploadResponse = await uploadSignature(
 			fileToUpload,
-			// JSON.stringify({ type: tab === "draw" ? "drawn" : "uploaded" })
 			"main"
 		);
 
-		if (!uploadResponse.success || !uploadResponse.data) {
-			setIsSubmitting(false);
-			toast.error("Error Encountered", "Something went wrong. Please try again later");
-			return;
-		}
-
-		// Step 2: Submit the signature update
-		const submitResponse = await submitSignatureUpdate(uploadResponse.data.transactionId);
-
 		setIsSubmitting(false);
 
-		if (submitResponse.success && submitResponse.data?.isSuccess !== false) {
+		if (uploadResponse.success && uploadResponse.data) {
 			setStatus("success");
 		} else {
 			toast.error("Error Encountered", "Something went wrong. Please try again later");
