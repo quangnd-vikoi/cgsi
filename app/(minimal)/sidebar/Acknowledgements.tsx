@@ -5,7 +5,8 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { getAcknowledgementList, getAcknowledgementDetail } from "@/lib/services/profileService";
-import type { IAcknowledgementItem } from "@/types";
+import type { IAcknowledgementItem, AcknowledgementDetailResponse } from "@/types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AgreementCategory {
 	category: string;
@@ -68,6 +69,7 @@ const Acknowledgements = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [loadingId, setLoadingId] = useState<string | null>(null);
+	const [dialogData, setDialogData] = useState<AcknowledgementDetailResponse | null>(null);
 
 	useEffect(() => {
 		const fetchAcknowledgements = async () => {
@@ -97,8 +99,8 @@ const Acknowledgements = () => {
 
 		const response = await getAcknowledgementDetail(agreementId);
 
-		if (response.success && response.data?.url) {
-			window.open(response.data.url, "_blank", "noopener,noreferrer");
+		if (response.success && response.data) {
+			setDialogData(response.data);
 		}
 
 		setLoadingId(null);
@@ -163,6 +165,28 @@ const Acknowledgements = () => {
 					</Group>
 				))}
 			</div>
+
+			<Dialog open={!!dialogData} onOpenChange={(open) => !open && setDialogData(null)}>
+				<DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0 gap-0">
+					<DialogHeader className="flex-shrink-0 p-4 md:p-6 pb-3 md:pb-3">
+						<DialogTitle className="text-base md:text-lg font-semibold text-typo-primary pr-8">
+							{dialogData && stripHtmlTags(dialogData.title)}
+						</DialogTitle>
+						{dialogData && (
+							<div className="flex gap-4 text-xs md:text-sm text-typo-tertiary">
+								<span>Version No. {dialogData.versionNo}</span>
+								<span>Accepted: {formatDate(dialogData.acceptedOn)}</span>
+							</div>
+						)}
+					</DialogHeader>
+					<div
+						className="flex-1 overflow-y-auto p-4 md:p-6 pt-0 md:pt-0 text-sm text-typo-secondary"
+						dangerouslySetInnerHTML={{
+							__html: dialogData?.htmlContent || "",
+						}}
+					/>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 };
