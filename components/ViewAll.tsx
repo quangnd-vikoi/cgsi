@@ -15,7 +15,9 @@ const ViewAll = ({ href, onClick, className = "", isLoading }: ViewAllProps) => 
 			<button
 				type="button"
 				onClick={!isLoading ? onClick : undefined}
-				className={`${baseClassName} ${isLoading ? "cursor-wait opacity-60" : ""}`}
+				disabled={isLoading}
+				style={isLoading ? { cursor: "wait" } : undefined}
+				className={`${baseClassName} ${isLoading ? "opacity-60" : ""}`}
 			>
 				View All
 			</button>
