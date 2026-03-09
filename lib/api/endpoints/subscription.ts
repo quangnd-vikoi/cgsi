@@ -3,13 +3,10 @@
  * All paths are relative - base URL prepended in index.ts via withBaseUrl()
  *
  * Base URL: https://stgitrade.cgsi.com.sg/portal (from API_BASE_URL)
- * Source: subscription-api-0.0.1-snapshot.json
+ * Source: api-doc-v4/subscription-api-1.0.0.json
  *
  * Authentication:
  * - All endpoints require Bearer token (useAuth: true)
- *
- * NOTE: Only PRODUCT subscription endpoints exist (IPO/IOP/AI).
- * Market data subscription endpoints do NOT exist in the API.
  */
 export const subscriptionEndpoints = {
 	// ============================================================================
@@ -111,4 +108,76 @@ export const subscriptionEndpoints = {
 	 */
 	productSubscriptionDetails: (productCode: string) =>
 		`/subscription/api/v1/product/details/${productCode}`,
+
+	// ============================================================================
+	// Market Data Subscription Endpoints
+	// ============================================================================
+	/**
+	 * Get Available Market Data Subscription Catalog
+	 *
+	 * GET /subscription/api/v1/marketData/subscription
+	 *
+	 * @returns IMarketSubscriptionCatalog - { research[], marketData[] } groups
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	marketDataCatalog: () => `/subscription/api/v1/marketData/subscription`,
+
+	/**
+	 * Get Subscription Agreement Titles
+	 *
+	 * GET /subscription/api/v1/marketData/subscription/agreement?ids=001,002
+	 *
+	 * @param ids - array of subscription IDs
+	 * @returns ISubscriptionAgreement[] - agreement list per subscription
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	marketDataAgreements: (ids: string[]) =>
+		`/subscription/api/v1/marketData/subscription/agreement?ids=${ids.join(",")}`,
+
+	/**
+	 * Get Agreement HTML Content
+	 *
+	 * GET /subscription/api/v1/marketData/subscription/agreement/content?agreementId=
+	 *
+	 * @param agreementId - single agreement ID
+	 * @returns ISubscriptionAgreementContent - { htmlContent, url }
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	marketDataAgreementContent: (agreementId: string) =>
+		`/subscription/api/v1/marketData/subscription/agreement/content?agreementId=${agreementId}`,
+
+	/**
+	 * Submit Market Data Subscription
+	 *
+	 * POST /subscription/api/v1/marketData/mySubscription
+	 *
+	 * @param body - IMarketSubscriptionSubmitRequest
+	 * @returns IMarketSubscriptionSubmitResponse - { isSuccess: boolean }
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	submitMarketDataSubscription: () =>
+		`/subscription/api/v1/marketData/mySubscription`,
+
+	/**
+	 * Get User's Active Market Data Subscriptions
+	 *
+	 * GET /subscription/api/v1/marketData/mySubscription
+	 *
+	 * @returns IUserMarketSubscription[]
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	myMarketDataSubscriptions: () =>
+		`/subscription/api/v1/marketData/mySubscription`,
+
+	/**
+	 * Unsubscribe from Market Data
+	 *
+	 * POST /subscription/api/v1/marketData/mySubscription/unsubscribe
+	 *
+	 * @param body - { subscriptionId: string }
+	 * @returns { isSuccess: boolean }
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	unsubscribeMarketData: () =>
+		`/subscription/api/v1/marketData/mySubscription/unsubscribe`,
 } as const;

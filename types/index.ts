@@ -191,29 +191,87 @@ export type ContactUsCentralDealingDeskResponse = IContactUsCentralDealingDesk;
 // Subscription API Types
 // ============================================================================
 
-// Market Data Subscription Types (from YAML)
-export interface ISubscription {
+// Market Data Subscription Catalog Types (v4)
+export interface IMarketSubscriptionItem {
 	id: string;
-	category: string;
-	description: string;
+	subscriptionModel: string; // "1"=one-time, "2"=time-based, "3"=variable
+	duration: number;
+	paymentType: string; // "1"=free, "2"=paid
 	amount: number;
-	needDeclaration: boolean;
+	gstIndicator: string; // "0"=NA, "1"=inclusive, "2"=no GST, "3"=apply
+	professionalFlag: string | null; // "1"=Professional, "2"=Non-Professional, null=NA
+	hasAgreement: string | null; // "Y" | "N" | null
 }
 
-export type SubscriptionResponse = ISubscription;
+export interface IMarketSubscriptionGroup {
+	groupId: string;
+	groupTitle: string;
+	subscriptions: IMarketSubscriptionItem[];
+}
 
-// User Market Data Subscription Types (from YAML)
-export interface IUserSubscription {
+export interface IMarketSubscriptionCatalog {
+	research: IMarketSubscriptionGroup[];
+	marketData: IMarketSubscriptionGroup[];
+}
+
+// Market Data Subscription Agreement Types (v4)
+export interface ISubscriptionAgreement {
 	subscriptionId: string;
-	category: string;
+	agreements: Array<{ agreementId: string; subject: string }>;
+}
+
+export interface ISubscriptionAgreementContent {
+	htmlContent: string;
+	url: string;
+}
+
+// Market Data Subscription Submission Types (v4)
+export interface IMarketSubscriptionExtendedData {
+	name: string;
+	address: string;
+	occupation: string;
+	employer?: string;
+	employerAddress?: string;
+	employmentTitle?: string;
+	employmentFunction?: string;
+	value_01?: boolean;
+	value_02?: boolean;
+	value_03?: boolean;
+	value_04?: boolean;
+	value_05?: boolean;
+	value_06?: boolean;
+	value_07?: boolean;
+	value_08?: boolean;
+	value_09?: boolean;
+	value_10?: boolean;
+	value_11?: boolean;
+}
+
+export interface IMarketSubscriptionSubmitRequest {
+	extendedData: IMarketSubscriptionExtendedData;
+	subscriptionList: Array<{
+		subscriptionId: string;
+		acceptedAgreementIds?: string[];
+	}>;
+}
+
+export interface IMarketSubscriptionSubmitResponse {
+	isSuccess: boolean;
+}
+
+// User Market Data Subscription Types (v4)
+export interface IUserMarketSubscription {
+	groupId: string;
+	groupTitle: string;
+	groupType: string;
+	subscriptionId: string;
 	description: string;
 	start: string; // ISO date
 	end: string; // ISO date
 	paymentStatus: string;
 	allowRenew: boolean;
+	isPromo: boolean;
 }
-
-export type UserSubscriptionResponse = IUserSubscription;
 
 // Product Subscription Types
 export interface IProductSubscription {

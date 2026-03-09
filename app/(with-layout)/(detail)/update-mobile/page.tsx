@@ -1,6 +1,6 @@
 "use client";
 import Title from "@/components/Title";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -320,7 +320,7 @@ const UpdateMobile = () => {
 							onClick={handleContinue}
 							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
-							{isSubmitting ? "Processing..." : step === 3 ? "Back to Home" : "Continue"}
+							{isSubmitting ? <Loader2 className="animate-spin" /> : step === 3 ? "Back to Home" : "Continue"}
 						</Button>
 					</div>
 				</div>

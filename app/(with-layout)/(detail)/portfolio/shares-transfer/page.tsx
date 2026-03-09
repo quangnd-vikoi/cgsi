@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { ErrorState } from "@/components/ErrorState";
 import { getCdpTransfer, submitCdpTransfer } from "@/lib/services/portfolioService";
@@ -248,7 +249,7 @@ const SharesTransfer = () => {
                                     onClick={handleConfirm}
                                     disabled={submitting}
                                 >
-                                    {submitting ? "Submitting..." : "Confirm"}
+                                    {submitting ? <Loader2 className="animate-spin" /> : "Confirm"}
                                 </Button>
                             </div>
                         </div>

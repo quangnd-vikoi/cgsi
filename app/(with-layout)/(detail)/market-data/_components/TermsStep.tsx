@@ -1,29 +1,41 @@
 "use client";
 import { Dispatch, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ChevronDown, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { IMarketDataItem } from "../page";
 import CartItemsList from "./CartItemList";
 import { Step } from "../page";
-import { subscriptionService } from "@/lib/services/subscriptionService";
-import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { toast } from "@/components/ui/toaster";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
+import { submitMarketDataSubscription } from "@/lib/services/subscriptionService";
+import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
     selectedItems: Array<IMarketDataItem>;
+    agreements: ISubscriptionAgreement[];
+    agreementContents: Record<string, ISubscriptionAgreementContent>;
+    extendedData: IMarketSubscriptionExtendedData;
 }
 
-const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
+const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents, extendedData }: TermsStepProps) => {
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const [expandedId, setExpandedId] = useState<string | null>(null);
 
-    const selectedAccount = useTradingAccountStore(
-        (state) => state.selectedAccount
+    // Flatten all agreements from all subscriptions
+    const allAgreements = agreements.flatMap((s) =>
+        s.agreements.map((a) => ({
+            ...a,
+            subscriptionId: s.subscriptionId,
+        }))
     );
+
+    const toggleAgreement = (agreementId: string) => {
+        setExpandedId((prev) => (prev === agreementId ? null : agreementId));
+    };
 
     const handleTermConfirm = async () => {
         if (!agreed) {
@@ -34,37 +46,34 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
         setSubmitting(true);
 
         try {
-            // NOTE: Using product subscription endpoint as workaround
-            // TODO: Request proper market data submission endpoint from backend
-            // Expected endpoint: POST /subscription/api/v1/marketDataSubscription
+            // Build subscription list with accepted agreement IDs
+            const subscriptionList = selectedItems
+                .filter((item) => item.subscriptionId)
+                .map((item) => {
+                    const subAgreement = agreements.find(
+                        (a) => a.subscriptionId === item.subscriptionId
+                    );
+                    return {
+                        subscriptionId: item.subscriptionId!,
+                        acceptedAgreementIds: subAgreement
+                            ? subAgreement.agreements.map((a) => a.agreementId)
+                            : [],
+                    };
+                });
 
-            const submissions = selectedItems.map((item) =>
-                subscriptionService.submitProductSubscription({
-                    productCode: item.title, // Using title as productCode (workaround)
-                    accountNo: selectedAccount?.accountNo || "",
-                    totalUnit: 1,
-                    paymentCurrency: "SGD",
-                    paymentMode: "PayNow",
-                })
-            );
+            const res = await submitMarketDataSubscription({
+                extendedData,
+                subscriptionList,
+            });
 
-            const results = await Promise.allSettled(submissions);
-            const allSucceeded = results.every(
-                (r) => r.status === "fulfilled" && r.value.success
-            );
-
-            if (allSucceeded) {
+            if (res.success) {
                 setCurrenStep("success");
                 toast.success("Subscription Submitted",
                     "Your market data subscription has been submitted successfully.",
                 );
             } else {
-                const failedCount = results.filter(
-                    (r) => r.status === "rejected" || !r.value.success
-                ).length;
-
                 toast.error("Submission Failed",
-                    `${failedCount} subscription(s) failed. Please try again.`,
+                    res.error || "Failed to submit subscription. Please try again.",
                 );
             }
         } catch (error) {
@@ -76,6 +85,7 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
             setSubmitting(false);
         }
     };
+
     return (
         <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             <div className="flex-1 py-6 pad-x overflow-y-auto sidebar-scroll sidebar-offset-2">
@@ -83,46 +93,68 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                     Terms & Conditions
                 </h2>
 
-                {/* Terms & Conditions */}
-
-                <div className="border border-stroke-secondary p-4 rounded">
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">General T&C</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
+                {allAgreements.length > 0 ? (
+                    <div className="border border-stroke-secondary rounded">
+                        {allAgreements.map((agreement, idx) => (
+                            <div key={agreement.agreementId}>
+                                {idx > 0 && <Separator />}
+                                <button
+                                    type="button"
+                                    className="w-full flex justify-between items-center p-4 cursor-pointer"
+                                    onClick={() => toggleAgreement(agreement.agreementId)}
+                                >
+                                    <p className="text-sm text-left">{agreement.subject}</p>
+                                    {expandedId === agreement.agreementId ? (
+                                        <ChevronDown size={16} className="text-cgs-blue shrink-0" />
+                                    ) : (
+                                        <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                                    )}
+                                </button>
+                                {expandedId === agreement.agreementId && (
+                                    <div className="px-4 pb-4">
+                                        {agreementContents[agreement.agreementId]?.htmlContent ? (
+                                            <div
+                                                className="text-sm text-typo-secondary prose prose-sm max-w-none border-t pt-4"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: agreementContents[agreement.agreementId].htmlContent,
+                                                }}
+                                            />
+                                        ) : agreementContents[agreement.agreementId]?.url ? (
+                                            <a
+                                                href={agreementContents[agreement.agreementId].url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-sm text-cgs-blue underline border-t pt-4 block"
+                                            >
+                                                View Agreement
+                                            </a>
+                                        ) : (
+                                            <p className="text-sm text-typo-tertiary border-t pt-4">
+                                                No content available
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
                     </div>
-
-                    <Separator className="my-4" />
-
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">SGX L2 Market Depth Campaign T&C</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
-                    </div>
-
-                    <Separator className="my-4" />
-
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm">US Real-Time Market Data Online Agreement</p>
-                        <ChevronRight size={16} className="text-cgs-blue cursor-pointer shrink-0" />
-                    </div>
-                </div>
+                ) : (
+                    <p className="text-sm text-typo-tertiary">No agreements required.</p>
+                )}
 
                 <Separator className="my-6" />
 
-                {/* Subscription */}
+                {/* Subscription Summary */}
                 <div>
-
                     <h2 className="text-lg font-semibold mb-2">
                         Subscription Summary
                     </h2>
                     <CartItemsList showRemove={false} selectedItems={selectedItems} onRemoveItem={() => { }} />
                 </div>
-
-
-
             </div>
 
             {/* Action Buttons */}
-            <div className="">
+            <div>
                 <TermsAndConditionsCheckbox
                     id="terms"
                     checked={agreed}
@@ -136,13 +168,12 @@ const TermsStep = ({ setCurrenStep, selectedItems }: TermsStepProps) => {
                     className="pad-x py-6 border-y border-stroke-secondary"
                 />
                 <div className="pad-x py-6">
-
                     <Button
                         onClick={handleTermConfirm}
                         className="w-full rounded"
                         disabled={submitting}
                     >
-                        {submitting ? "Submitting..." : "Continue"}
+                        {submitting ? <Loader2 className="animate-spin" /> : "Continue"}
                     </Button>
                 </div>
             </div>

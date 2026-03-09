@@ -7,6 +7,12 @@ import type {
 	UserProductSubscriptionDetailResponse,
 	ProductionSubscriptionListResponse,
 	ProductSubscriptionDetailResponse,
+	IMarketSubscriptionCatalog,
+	ISubscriptionAgreement,
+	ISubscriptionAgreementContent,
+	IMarketSubscriptionSubmitRequest,
+	IMarketSubscriptionSubmitResponse,
+	IUserMarketSubscription,
 } from "@/types";
 
 export const getUserProductSubscriptions = async (): Promise<
@@ -64,6 +70,73 @@ export const getProductDetails = async (
 	);
 };
 
+export const getMarketDataCatalog = async (): Promise<
+	APIResponse<IMarketSubscriptionCatalog>
+> => {
+	return await fetchAPI<IMarketSubscriptionCatalog>(
+		ENDPOINTS.marketDataCatalog(),
+		{
+			useAuth: true,
+		}
+	);
+};
+
+export const getMarketDataAgreements = async (
+	ids: string[]
+): Promise<APIResponse<ISubscriptionAgreement[]>> => {
+	return await fetchAPI<ISubscriptionAgreement[]>(
+		ENDPOINTS.marketDataAgreements(ids),
+		{
+			useAuth: true,
+		}
+	);
+};
+
+export const getMarketDataAgreementContent = async (
+	agreementId: string
+): Promise<APIResponse<ISubscriptionAgreementContent>> => {
+	return await fetchAPI<ISubscriptionAgreementContent>(
+		ENDPOINTS.marketDataAgreementContent(agreementId),
+		{
+			useAuth: true,
+		}
+	);
+};
+
+export const submitMarketDataSubscription = async (
+	body: IMarketSubscriptionSubmitRequest
+): Promise<APIResponse<IMarketSubscriptionSubmitResponse>> => {
+	return await postAPI<
+		IMarketSubscriptionSubmitResponse,
+		IMarketSubscriptionSubmitRequest
+	>(ENDPOINTS.submitMarketDataSubscription(), body, {
+		useAuth: true,
+	});
+};
+
+export const getMyMarketDataSubscriptions = async (): Promise<
+	APIResponse<IUserMarketSubscription[]>
+> => {
+	return await fetchAPI<IUserMarketSubscription[]>(
+		ENDPOINTS.myMarketDataSubscriptions(),
+		{
+			useAuth: true,
+		}
+	);
+};
+
+export const unsubscribeMarketData = async (
+	subscriptionId: string
+): Promise<APIResponse<{ isSuccess: boolean }>> => {
+	return await postAPI<{ isSuccess: boolean }, { subscriptionId: string }>(
+		ENDPOINTS.unsubscribeMarketData(),
+		{ subscriptionId },
+		{
+			useAuth: true,
+		}
+	);
+};
+
 export const getAllUserSubscriptions = async () => {
 	const productSubsRes = await getUserProductSubscriptions();
 
@@ -81,8 +154,13 @@ export const subscriptionService = {
 	getUserProductSubscriptions,
 	submitProductSubscription,
 	getProductSubscriptionsByType,
+	getMarketDataAgreements,
+	submitMarketDataSubscription,
+	getMyMarketDataSubscriptions,
+	unsubscribeMarketData,
 	getUserSubscriptionDetails,
 	getProductDetails,
+	getMarketDataCatalog,
 	getAllUserSubscriptions,
 	canSubscribe,
 };

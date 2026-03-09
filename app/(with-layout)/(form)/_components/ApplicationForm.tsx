@@ -505,14 +505,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						disabled={isSubmitting}
 						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isSubmitting ? (
-							<>
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								Submitting...
-							</>
-						) : (
-							"Submit Application"
-						)}
+						{isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Application"}
 					</Button>
 				</DialogFooter>
 			</DialogContent>
