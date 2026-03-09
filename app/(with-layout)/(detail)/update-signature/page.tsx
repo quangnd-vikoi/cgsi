@@ -2,7 +2,7 @@
 import Alert from "@/components/Alert";
 import Title from "@/components/Title";
 import { INTERNAL_ROUTES } from "@/constants/routes";
-import { FileUp, X } from "lucide-react";
+import { FileUp, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React, { useRef, useState, useEffect } from "react";
@@ -423,7 +423,7 @@ const UpdateSignature = () => {
 								onClick={() => handleSubmit()}
 								disabled={isSubmitting}
 							>
-								{isSubmitting ? "Submitting..." : "Submit"}
+								{isSubmitting ? <Loader2 className="animate-spin" /> : "Submit"}
 							</Button>
 						</div>
 					</div>

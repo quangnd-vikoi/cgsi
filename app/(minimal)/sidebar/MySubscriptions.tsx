@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
-import type { UserProductSubscriptionDto } from '@/types';
+import type { UserProductSubscriptionDto, IUserMarketSubscription } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
 type SubcriptionItem = {
@@ -28,6 +28,8 @@ type SubcriptionItem = {
     endDate: string;
     image: string;
     status: SubscriptionStatus;
+    subscriptionId?: string;
+    type?: "product" | "marketData";
 };
 
 type SubscriptionGroup = {
@@ -61,6 +63,7 @@ const getSubscriptionImage = (category: string): string => {
 const MySubscriptions = () => {
 	// State management
 	const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
+	const [marketDataSubs, setMarketDataSubs] = useState<IUserMarketSubscription[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -84,14 +87,21 @@ const MySubscriptions = () => {
 		setLoading(true);
 		setError(null);
 
-		// NOTE: Only product subscriptions are fetched
-		// Market data subscription endpoints do NOT exist in the API
-		const result = await subscriptionService.getUserProductSubscriptions();
+		const [productResult, marketDataResult] = await Promise.all([
+			subscriptionService.getUserProductSubscriptions(),
+			subscriptionService.getMyMarketDataSubscriptions(),
+		]);
 
-		if (result.success && result.data) {
-			setProductSubs(result.data.userProductSubs);
-		} else {
-			setError(result.error || "Failed to load subscriptions. Please try again later.");
+		if (productResult.success && productResult.data) {
+			setProductSubs(productResult.data.userProductSubs);
+		}
+
+		if (marketDataResult.success && marketDataResult.data) {
+			setMarketDataSubs(marketDataResult.data);
+		}
+
+		if (!productResult.success && !marketDataResult.success) {
+			setError("Failed to load subscriptions. Please try again later.");
 		}
 
 		setLoading(false);
@@ -102,25 +112,64 @@ const MySubscriptions = () => {
 		fetchSubscriptions();
 	}, [fetchSubscriptions]);
 
+	// Helper to determine market data subscription status
+	const determineMarketDataStatus = (sub: IUserMarketSubscription): SubscriptionStatus => {
+		if (sub.paymentStatus === "Pending") return "Pending Payment";
+		if (!sub.end) return "Active";
+
+		const endDate = new Date(sub.end);
+		const now = new Date();
+		const daysUntilExpiry = Math.ceil(
+			(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+		);
+
+		if (endDate < now) return "Expired";
+		if (daysUntilExpiry <= 30) return "Expiring Soon";
+		return "Active";
+	};
+
 	// Map API data to UI structure
-	// NOTE: Market data subscriptions removed - endpoints do not exist
 	const subscriptions: SubscriptionGroup[] = [
-		{
-			category: "Product Subscriptions",
-			items: productSubs.map((sub) => ({
-				title: sub.productName,
-				description: sub.productType || "",
-				endDate: sub.endTime
-					? new Date(sub.endTime).toLocaleDateString("en-GB", {
-							day: "2-digit",
-							month: "short",
-							year: "numeric",
-					  })
-					: "N/A",
-				image: getSubscriptionImage(sub.productType || ""),
-				status: determineProductStatus(sub),
-			})),
-		},
+		...(marketDataSubs.length > 0
+			? [{
+				category: "Market Data Subscriptions",
+				items: marketDataSubs.map((sub) => ({
+					title: sub.groupTitle,
+					description: sub.description || sub.groupType || "",
+					endDate: sub.end
+						? new Date(sub.end).toLocaleDateString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+						  })
+						: "N/A",
+					image: getSubscriptionImage(sub.groupTitle || ""),
+					status: determineMarketDataStatus(sub),
+					subscriptionId: sub.subscriptionId,
+					type: "marketData" as const,
+				})),
+			}]
+			: []),
+		...(productSubs.length > 0
+			? [{
+				category: "Product Subscriptions",
+				items: productSubs.map((sub) => ({
+					title: sub.productName,
+					description: sub.productType || "",
+					endDate: sub.endTime
+						? new Date(sub.endTime).toLocaleDateString("en-GB", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+						  })
+						: "N/A",
+					image: getSubscriptionImage(sub.productType || ""),
+					status: determineProductStatus(sub),
+					subscriptionId: sub.subscriptionId,
+					type: "product" as const,
+				})),
+			}]
+			: []),
 	];
 
 	function statusClass(status: SubscriptionStatus): {
@@ -159,11 +208,26 @@ const MySubscriptions = () => {
 		}
 	}
 
-	const handleUnsubcribe = (item: SubcriptionItem) => {
-		toast.success(
-			"Unsubscribed",
-			`You have successfully unsubscribed from "${item.title} - ${item.description}".`
-		);
+	const [unsubAlert, setUnsubAlert] = useState<{ open: boolean; item: SubcriptionItem | null }>({ open: false, item: null });
+
+	const handleUnsubcribe = async (item: SubcriptionItem) => {
+		if (item.type === "marketData" && item.subscriptionId) {
+			const res = await subscriptionService.unsubscribeMarketData(item.subscriptionId);
+			if (res.success) {
+				setMarketDataSubs((prev) => prev.filter((s) => s.subscriptionId !== item.subscriptionId));
+				toast.success(
+					"Unsubscribed",
+					`You have successfully unsubscribed from "${item.title}".`
+				);
+			} else {
+				toast.error("Failed", res.error || "Unable to unsubscribe. Please try again.");
+			}
+		} else {
+			toast.success(
+				"Unsubscribed",
+				`You have successfully unsubscribed from "${item.title}".`
+			);
+		}
 	};
 
 	// Loading state
@@ -260,11 +324,11 @@ const MySubscriptions = () => {
                                                     </button>
                                                 </DropdownMenuTrigger>
 
-                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs'>
+                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200]'>
                                                     {
                                                         item.status === "Expired" &&
                                                         <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                            <DropdownMenuItem>
+                                                            <DropdownMenuItem className="cursor-pointer">
                                                                 <DropdownMenuLabel>Resubcribe</DropdownMenuLabel>
                                                             </DropdownMenuItem>
                                                         </Link>
@@ -272,29 +336,19 @@ const MySubscriptions = () => {
                                                     {
                                                         (item.status === "Expiring Soon" || item.status === "Active") &&
                                                         <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                            <DropdownMenuItem>
+                                                            <DropdownMenuItem className="cursor-pointer">
                                                                 <DropdownMenuLabel>Extend Subscription</DropdownMenuLabel>
                                                             </DropdownMenuItem>
                                                         </Link>
                                                     }
                                                     {
                                                         (item.status === "Pending Payment" || item.status === "Active" || item.status === "Expiring Soon") &&
-                                                        <Alert
-                                                            trigger={
-                                                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                                                    <DropdownMenuLabel>Unsubscribe</DropdownMenuLabel>
-                                                                </DropdownMenuItem>
-                                                            }
-                                                            title="Unsubscribe?"
-                                                            description={
-                                                                <p>
-                                                                    Are you sure you want to unsubscribe from this &quot;{item.title} - {item.description}&quot;?
-                                                                </p>
-                                                            }
-                                                            actionText="Confirm"
-                                                            cancelText="Cancel"
-                                                            onAction={() => handleUnsubcribe(item)}
-                                                        />
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer"
+                                                            onSelect={() => setUnsubAlert({ open: true, item })}
+                                                        >
+                                                            <DropdownMenuLabel>Unsubscribe</DropdownMenuLabel>
+                                                        </DropdownMenuItem>
                                                     }
                                                 </DropdownMenuContent>
 
@@ -321,6 +375,24 @@ const MySubscriptions = () => {
                     </div>
                 ))}
             </div>
+
+            <Alert
+                open={unsubAlert.open}
+                onOpenChange={(open) => setUnsubAlert((prev) => ({ ...prev, open }))}
+                title="Unsubscribe?"
+                description={
+                    <p>
+                        Are you sure you want to unsubscribe from &quot;{unsubAlert.item?.title} - {unsubAlert.item?.description}&quot;?
+                    </p>
+                }
+                actionText="Confirm"
+                cancelText="Cancel"
+                onAction={() => {
+                    if (unsubAlert.item) handleUnsubcribe(unsubAlert.item);
+                    setUnsubAlert({ open: false, item: null });
+                }}
+                onCancel={() => setUnsubAlert({ open: false, item: null })}
+            />
         </div>
     )
 }

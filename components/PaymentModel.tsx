@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -171,7 +171,7 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 									disabled={!selectedAccount || !amount || !confirmed || isLoading}
 									className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
 								>
-									{isLoading ? "Processing..." : "Proceed"}
+									{isLoading ? <Loader2 className="animate-spin" /> : "Proceed"}
 								</Button>
 							</div>
 						</DialogFooter>

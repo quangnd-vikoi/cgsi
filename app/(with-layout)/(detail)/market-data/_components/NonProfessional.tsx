@@ -1,80 +1,82 @@
 "use client"
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
 import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
 import { IMarketDataItem } from '../page';
+import type { IMarketSubscriptionGroup } from '@/types';
 
-// Type definitions
-interface DropDownItem {
-    label: string;
-    value: string;
+/** Static images cycled per group index */
+const GROUP_IMAGES = [
+    "/images/market-data/item-1.png",
+    "/images/market-data/item-2.png",
+    "/images/market-data/item-3.png",
+    "/images/market-data/item-4.png",
+    "/images/market-data/item-5.png",
+    "/images/market-data/item-6.png",
+];
+
+function formatDuration(months: number): string {
+    return months === 1 ? "1 Month" : `${months} Months`;
 }
 
-interface MarketItemData {
-    id: number;
-    title: string;
-    description: string;
-    image: string;
-    dropDownItems: DropDownItem[];
+function groupToDropdownItems(group: IMarketSubscriptionGroup) {
+    return group.subscriptions.map((sub) => ({
+        id: sub.id,
+        label: formatDuration(sub.duration),
+        value: `${sub.amount.toFixed(2)} SGD`,
+    }));
 }
 
-interface MarketDataResponse {
-    researchArticles: MarketItemData[];
-    marketData: MarketItemData[];
+function groupDescription(group: IMarketSubscriptionGroup): string {
+    const paidSubs = group.subscriptions.filter((s) => s.paymentType !== "1");
+    if (paidSubs.length === 0) return "Free";
+    const longest = paidSubs.reduce((a, b) => (b.duration > a.duration ? b : a));
+    const monthly = longest.amount / (longest.duration || 1);
+    if (monthly === 0) return "Free";
+    return `From SGD ${monthly.toFixed(2)}/month`;
 }
-
-// Fetch market data from API
-const fetchMarketData = async (): Promise<MarketDataResponse> => {
-    // TODO: Market data subscription endpoints do NOT exist in the API
-    // Waiting for backend team to implement:
-    // - GET /subscription/api/v1/subscription (get available subscriptions)
-    // - GET /subscription/api/v1/userSubscription (get user's subscriptions)
-    //
-    // For now, return empty arrays which will trigger the "No Subscription Items Found" message
-
-    return {
-        researchArticles: [],
-        marketData: [],
-    };
-};
 
 interface NonProfessionalProps {
     selectedItems: Array<IMarketDataItem>;
     setSelectedItems: Dispatch<SetStateAction<Array<IMarketDataItem>>>;
+    researchGroups: IMarketSubscriptionGroup[];
+    marketDataGroups: IMarketSubscriptionGroup[];
+    loading: boolean;
+    error: string | null;
 }
 
-const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
-    const [researchArticles, setResearchArticles] = useState<MarketItemData[]>([]);
-    const [marketData, setMarketData] = useState<MarketItemData[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    useEffect(() => {
-        loadData();
-    }, []);
+/** Find the dropdown item matching an existing selection for a group */
+function findDefaultSelected(
+    group: IMarketSubscriptionGroup,
+    selectedItems: IMarketDataItem[]
+) {
+    const match = selectedItems.find((item) => item.title === group.groupTitle);
+    if (!match) return null;
+    const items = groupToDropdownItems(group);
+    return items.find((d) => d.value === match.selectedOption.value) ?? null;
+}
 
-    const loadData = async () => {
-        try {
-            setError(null);
-            const data = await fetchMarketData();
-            setResearchArticles(data.researchArticles);
-            setMarketData(data.marketData);
-        } catch {
-            setError("Error fetching market data");
-        } finally {
-        }
-    };
+const NonProfessional = ({
+    selectedItems,
+    setSelectedItems,
+    researchGroups,
+    marketDataGroups,
+    loading,
+    error,
+}: NonProfessionalProps) => {
 
     if (error) {
         return <ErrorState title="Oops, Something Went Wrong" description='We are unable to display the content, please try again later.' />;
     }
 
-    if (researchArticles.length === 0 && marketData.length === 0) {
+    if (!loading && researchGroups.length === 0 && marketDataGroups.length === 0) {
         return <ErrorState title="No Subscription Items Found" description='Check back soon - new items are on the way!' type='empty' />;
     }
 
     return (
-        <div className="py-6 pad-x max-w-4xl mx-auto">
+        <div className={`py-6 pad-x max-w-4xl mx-auto${loading ? " cursor-wait" : ""}`}>
             <div>
                 <p className="text-sm text-typo-secondary">
                     <span className="font-bold mr-1">
@@ -110,59 +112,75 @@ const NonProfessional = ({ setSelectedItems }: NonProfessionalProps) => {
                 </p>
             </div>
 
+            {researchGroups.length > 0 && (
+                <>
+                    <div className="flex items-center gap-2 mt-7">
+                        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
+                        <Separator className="flex-1 border border-stroke-secondary" />
+                    </div>
+                    <div className="mt-2 space-y-3">
+                        {researchGroups.map((group, idx) => (
+                            <MarketItem
+                                onSelectItem={(item) => {
+                                    setSelectedItems((prev) => [
+                                        ...prev.filter((i) => i.title !== item.title),
+                                        {
+                                            image: item.image,
+                                            title: item.title,
+                                            subscriptionId: item.subscriptionId,
+                                            selectedOption: {
+                                                value: item.selectedOption.value,
+                                                label: item.selectedOption.label
+                                            }
+                                        }
+                                    ]);
+                                }}
+                                key={group.groupId}
+                                title={group.groupTitle}
+                                description={groupDescription(group)}
+                                image={GROUP_IMAGES[idx % GROUP_IMAGES.length]}
+                                dropDownItems={groupToDropdownItems(group)}
+                                defaultSelected={findDefaultSelected(group, selectedItems)}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
 
-
-            <div className="flex items-center gap-2 mt-7">
-                <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
-                <Separator className="flex-1 border border-stroke-secondary" />
-            </div>
-            <div className="mt-2 space-y-3">
-                {researchArticles.map((item) => (
-                    <MarketItem
-                        onSelectItem={(item) => {
-                            setSelectedItems((prev) => [...prev, {
-                                image: item.image,
-                                title: item.title,
-                                selectedOption: {
-                                    value: item.selectedOption.value,
-                                    label: item.selectedOption.label
-                                }
-                            }]);
-                        }}
-                        key={item.id}
-                        title={item.title}
-                        description={item.description}
-                        image={item.image}
-                        dropDownItems={item.dropDownItems}
-                    />
-                ))}
-            </div>
-
-            <div className="flex items-center gap-2 mt-7">
-                <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
-                <Separator className="flex-1 border border-stroke-secondary" />
-            </div>
-            <div className="mt-2 space-y-3">
-                {marketData.map((item) => (
-                    <MarketItem
-                        onSelectItem={(item) => {
-                            setSelectedItems((prev) => [...prev, {
-                                image: item.image,
-                                title: item.title,
-                                selectedOption: {
-                                    value: item.selectedOption.value,
-                                    label: item.selectedOption.label
-                                }
-                            }]);
-                        }}
-                        key={item.id}
-                        title={item.title}
-                        description={item.description}
-                        image={item.image}
-                        dropDownItems={item.dropDownItems}
-                    />
-                ))}
-            </div>
+            {marketDataGroups.length > 0 && (
+                <>
+                    <div className="flex items-center gap-2 mt-7">
+                        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
+                        <Separator className="flex-1 border border-stroke-secondary" />
+                    </div>
+                    <div className="mt-2 space-y-3">
+                        {marketDataGroups.map((group, idx) => (
+                            <MarketItem
+                                onSelectItem={(item) => {
+                                    setSelectedItems((prev) => [
+                                        ...prev.filter((i) => i.title !== item.title),
+                                        {
+                                            image: item.image,
+                                            title: item.title,
+                                            subscriptionId: item.subscriptionId,
+                                            selectedOption: {
+                                                value: item.selectedOption.value,
+                                                label: item.selectedOption.label
+                                            }
+                                        }
+                                    ]);
+                                }}
+                                key={group.groupId}
+                                title={group.groupTitle}
+                                description={groupDescription(group)}
+                                image={GROUP_IMAGES[(researchGroups.length + idx) % GROUP_IMAGES.length]}
+                                dropDownItems={groupToDropdownItems(group)}
+                                defaultSelected={findDefaultSelected(group, selectedItems)}
+                            />
+                        ))}
+                    </div>
+                </>
+            )}
         </div >
     );
 };
