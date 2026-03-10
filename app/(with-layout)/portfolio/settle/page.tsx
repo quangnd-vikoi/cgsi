@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { FileDown } from "lucide-react";
+import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,6 +20,9 @@ import { ContractsTable } from "./_components/ContractsTable";
 import type { ContractDisplay } from "./_components/ContractsTable";
 import { getContracts, getContra } from "@/lib/services/portfolioService";
 import type { IContract, IContra } from "@/types";
+import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
+import { contractsColumns } from "@/lib/exportConfigs";
+import { toast } from "@/components/ui/toaster";
 
 type TabType = "contracts" | "contra";
 
@@ -77,7 +80,40 @@ export default function SettlePage() {
 	const [contraTotal, setContraTotal] = useState(0);
 	const [contraLoading, setContraLoading] = useState(true);
 
+	const [exporting, setExporting] = useState(false);
 	const accountNo = selectedAccount?.accountNo;
+
+	const handleExport = async () => {
+		if (exporting || !accountNo) return;
+		setExporting(true);
+		try {
+			let allData: ContractDisplay[];
+			if (activeTab === "contracts") {
+				const items = await fetchAllForExport(
+					(pageSize, pageIndex) => getContracts(accountNo, undefined, pageSize, pageIndex),
+					(data) => data.contracts,
+				);
+				allData = items.map(c => mapContract(c, "Outstanding"));
+			} else {
+				const items = await fetchAllForExport(
+					(pageSize, pageIndex) => getContra(accountNo, undefined, pageSize, pageIndex),
+					(data) => data.contra,
+				);
+				allData = items.map(mapContra);
+			}
+			if (allData.length === 0) {
+				toast.warning("No Data", "There is no data to export.");
+				return;
+			}
+			const label = activeTab === "contracts" ? "Contracts" : "Contra";
+			exportToExcel({ filename: `${label}_${accountNo}`, columns: contractsColumns, data: allData });
+			toast.success("Export Complete", `${allData.length} rows exported.`);
+		} catch {
+			toast.error("Export Failed", "Unable to export. Please try again.");
+		} finally {
+			setExporting(false);
+		}
+	};
 
 	// Fetch contracts (outstanding)
 	const fetchContracts = useCallback(async () => {
@@ -202,8 +238,10 @@ export default function SettlePage() {
 								variant="outline"
 								size="sm"
 								className="hidden md:flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+								onClick={handleExport}
+								disabled={exporting}
 							>
-								<FileDown className="size-4" />
+								{exporting ? <Loader2 className="size-4 animate-spin" /> : <FileDown className="size-4" />}
 								Export to Excel
 							</Button>
 						</div>
@@ -231,8 +269,10 @@ export default function SettlePage() {
 							variant="outline"
 							size="sm"
 							className="flex md:hidden border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 mb-6"
+							onClick={handleExport}
+							disabled={exporting}
 						>
-							<FileDown className="size-4" />
+							{exporting ? <Loader2 className="size-4 animate-spin" /> : <FileDown className="size-4" />}
 							Export to Excel
 						</Button>
 

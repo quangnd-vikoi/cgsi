@@ -16,7 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowRightLeft, EllipsisVertical, Expand, FileOutput } from "lucide-react";
+import { ArrowRightLeft, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
@@ -25,6 +25,9 @@ import type { IPortfolioHolding } from "@/types";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getHoldings } from "@/lib/services/portfolioService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
+import { holdingsColumns } from "@/lib/exportConfigs";
+import { toast } from "@/components/ui/toaster";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
@@ -35,6 +38,28 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
     const [totalItems, setTotalItems] = useState(0);
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        if (exporting || !selectedAccount?.accountNo) return;
+        setExporting(true);
+        try {
+            const allData = await fetchAllForExport(
+                (pageSize, pageIndex) => getHoldings(selectedAccount.accountNo, pageSize, pageIndex),
+                (data) => data.portfolio,
+            );
+            if (allData.length === 0) {
+                toast.warning("No Data", "There is no data to export.");
+                return;
+            }
+            exportToExcel({ filename: `Holdings_${selectedAccount.accountNo}`, columns: holdingsColumns, data: allData });
+            toast.success("Export Complete", `${allData.length} rows exported.`);
+        } catch {
+            toast.error("Export Failed", "Unable to export. Please try again.");
+        } finally {
+            setExporting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchHoldings = async () => {
@@ -71,8 +96,10 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                             variant="outline"
                             size="sm"
                             className="border border-cgs-blue text-sm text-cgs-blue rounded gap-2 hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+                            onClick={handleExport}
+                            disabled={exporting}
                         >
-                            <FileOutput className="size-4" />
+                            {exporting ? <Loader2 className="size-4 animate-spin" /> : <FileOutput className="size-4" />}
                             Export to Excel
                         </Button>
                         {type === "CTA" && (
@@ -100,8 +127,8 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem>
-                                    <FileOutput size={16} />
+                                <DropdownMenuItem onClick={handleExport} disabled={exporting}>
+                                    {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileOutput size={16} />}
                                     Export to Excel
                                 </DropdownMenuItem>
                                 {type === "CTA" && (

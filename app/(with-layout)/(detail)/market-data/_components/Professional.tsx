@@ -6,6 +6,7 @@ import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
 import { IMarketDataItem } from '../page';
 import type { IMarketSubscriptionGroup } from '@/types';
+import { Loader2 } from 'lucide-react';
 
 /** Static images cycled per group index */
 const GROUP_IMAGES = [
@@ -67,16 +68,24 @@ const Professional = ({
     error,
 }: ProfessionalProps) => {
 
+    if (loading) {
+        return (
+            <div className="flex-1 flex items-center justify-center py-20">
+                <Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+            </div>
+        );
+    }
+
     if (error) {
         return <ErrorState title="Oops, Something Went Wrong" description='We are unable to display the content, please try again later.' />;
     }
 
-    if (!loading && researchGroups.length === 0 && marketDataGroups.length === 0) {
+    if (researchGroups.length === 0 && marketDataGroups.length === 0) {
         return <ErrorState title="No Subscription Items Found" description='Check back soon - new items are on the way!' type='empty' />;
     }
 
     return (
-        <div className={`py-6 pad-x max-w-4xl mx-auto${loading ? " cursor-wait" : ""}`}>
+        <div className="py-6 pad-x max-w-4xl mx-auto">
             <div>
                 <p className="text-sm text-typo-secondary">
                     <span className="font-bold mr-0.5">

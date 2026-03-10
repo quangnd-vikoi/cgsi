@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FileDown } from "lucide-react";
+import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -16,6 +16,9 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { CashTransactionsTable } from "./_components/CashTransactionsTable";
 import { getTrustBalanceDetails } from "@/lib/services/portfolioService";
 import type { ITrustBalanceDetail } from "@/types";
+import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
+import { cashTransactionColumns } from "@/lib/exportConfigs";
+import { toast } from "@/components/ui/toaster";
 
 const timePeriods = [
     { value: "last7days", label: "Last 7 Days" },
@@ -34,6 +37,28 @@ export default function CashTransactionPage() {
     const [transactions, setTransactions] = useState<ITrustBalanceDetail[]>([]);
     const [totalItems, setTotalItems] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        if (exporting || !selectedAccount?.accountNo) return;
+        setExporting(true);
+        try {
+            const allData = await fetchAllForExport(
+                (pageSize, pageIndex) => getTrustBalanceDetails(selectedAccount.accountNo, selectedCurrency, pageSize, pageIndex),
+                (data) => data.trustBalanceDetails,
+            );
+            if (allData.length === 0) {
+                toast.warning("No Data", "There is no data to export.");
+                return;
+            }
+            exportToExcel({ filename: `CashTransactions_${selectedAccount.accountNo}`, columns: cashTransactionColumns, data: allData });
+            toast.success("Export Complete", `${allData.length} rows exported.`);
+        } catch {
+            toast.error("Export Failed", "Unable to export. Please try again.");
+        } finally {
+            setExporting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchTransactions = async () => {
@@ -119,8 +144,10 @@ export default function CashTransactionPage() {
                                 variant="outline"
                                 size="sm"
                                 className="border border-cgs-blue text-sm font-normal text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+                                onClick={handleExport}
+                                disabled={exporting}
                             >
-                                <FileDown className="size-4" />
+                                {exporting ? <Loader2 className="size-4 animate-spin" /> : <FileDown className="size-4" />}
                                 Export to Excel
                             </Button>
                         </div>
