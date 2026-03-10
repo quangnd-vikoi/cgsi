@@ -103,30 +103,33 @@ export const redirectToNTP = async (): Promise<void> => {
 	const response = await getNTPSSO();
 
 	if (response.success && response.data) {
-		// For NTP, we might need to create a form with multiple fields
-		// Adjust this based on actual NTP SSO requirements
-		const { postUrl, togaToken, assertion } = response.data;
+		const { postUrl, act, token, assertion, transactionId, page } = response.data;
 
 		const form = document.createElement("form");
 		form.method = "POST";
 		form.action = postUrl;
 		form.target = "_blank";
+		form.name = "ssoLogin"
 
-		// Add togaToken field
-		const togaInput = document.createElement("input");
-		togaInput.type = "hidden";
-		togaInput.name = "togaToken";
-		togaInput.value = togaToken;
-		form.appendChild(togaInput);
+		const fields: Record<string, string> = {
+			Act: act,
+			TogaToken: token,
+			assertion,
+			transactionID: transactionId,
+			page,
+		};
 
-		// Add assertion field
-		const assertionInput = document.createElement("input");
-		assertionInput.type = "hidden";
-		assertionInput.name = "assertion";
-		assertionInput.value = assertion;
-		form.appendChild(assertionInput);
+		for (const [name, value] of Object.entries(fields)) {
+			const input = document.createElement("input");
+			input.type = "hidden";
+			input.name = name;
+			input.value = value;
+			form.appendChild(input);
+		}
 
 		document.body.appendChild(form);
+
+		console.log(form)
 		form.submit();
 		document.body.removeChild(form);
 	}

@@ -18,6 +18,7 @@ import { TriangleAlert, X } from "lucide-react";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
+import { redirectToNTP } from "@/lib/services/externalSSOService";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
@@ -123,9 +124,16 @@ const Header = () => {
 	const unreadCount = useNotificationStore((state) => state.unreadCount);
 	const pathName = usePathname();
 
+	const [isTradeLoading, setIsTradeLoading] = useState(false);
+
 	const handleTradeNowClick = async () => {
-		// await redirectToNTP();
-		window.open(CGSI.TRADE, "_blank");
+		if (isTradeLoading) return;
+		setIsTradeLoading(true);
+		try {
+			await redirectToNTP();
+		} finally {
+			setIsTradeLoading(false);
+		}
 	};
 
 	const isIconFill = openSheet
@@ -184,8 +192,12 @@ const Header = () => {
 					<div className="hidden md:block w-[2px] h-8 bg-stroke-secondary"></div>
 					<Button
 						onClick={handleTradeNowClick}
+						disabled={isTradeLoading}
 						variant={"default"}
-						className="h-8 rounded bg-cgs-blue px-2 md:px-3 font-medium hover:bg-cgs-blue/70 text-sm"
+						className={cn(
+							"h-8 rounded bg-cgs-blue px-2 md:px-3 font-medium hover:bg-cgs-blue/70 text-sm",
+							isTradeLoading && "cursor-wait opacity-70"
+						)}
 					>
 						<Image
 							src="/icons/Charts.svg"

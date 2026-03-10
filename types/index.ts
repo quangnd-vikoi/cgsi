@@ -62,6 +62,17 @@ export interface IResearchArticleProps {
 	url: string;
 }
 
+// API Response type for GET /notification/api/v1/research/articles
+export interface IResearchArticle {
+	id: string;
+	type: string;
+	title: string;
+	description: string;
+	publishedDate: string;
+	publishedBy: string;
+	reportUrl: string;
+}
+
 export interface IInsightProps {
 	id: string;
 	imageUrl: string;
@@ -403,7 +414,7 @@ export interface UserProductSubscriptionSubmissionRequest {
 export interface NtpSSOResponse {
 	postUrl: string;
 	act: string;
-	togaToken: string;
+	token: string;
 	assertion: string;
 	transactionId: string;
 	page: string;

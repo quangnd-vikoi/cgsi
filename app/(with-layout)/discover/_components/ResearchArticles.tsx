@@ -2,13 +2,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Calendar, UserRoundPen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IResearchArticleProps } from "@/types";
+import type { IResearchArticle } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
 import { ErrorState } from "@/components/ErrorState";
 import ViewAll from "@/components/ViewAll";
 import Alert from "@/components/Alert";
 import { getResearchSSO, redirectToSSO } from "@/lib/services/externalSSOService";
+import { getResearchArticles } from "@/lib/services/notificationService";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 
 // Research Article Card Component
@@ -42,50 +44,39 @@ const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) =>
 	);
 };
 
-// Fixed research articles array - 4 articles
-const articles: Array<IResearchArticleProps> = [
-	{
-		id: "1",
-		title: "CJ ENM - What if China opens a door for K-content?",
-		description: `We observe nascent signs of a Korea–China thaw, with the first K-pop concert approval since 2015 and policy support for overseas content imports. Potential China reopening could add W40bn revenue and W32bn net income, driving FY26F/FY27F EPS upside potential of 84%/47% vs. consensus.`,
-		date: "25-Aug-2025",
-		author: "Joshua Kim",
-		tag: "Idea of the Day",
-		url: "https://rfs.cgsi.com/api/download?file=7a06a036-c5a0-4b77-b738-1ef6da8626d5",
-	},
-	{
-		id: "2",
-		title: "Global Markets Push Higher as Fed Rate Cut Hopes Build",
-		description: `Global markets rise on Fed rate cut hopes; U.S. healthcare, Europe earnings, and Asia tech lead gains amid diverging regional momentum.`,
-		date: "30-Jul-2025",
-		author: "Rayhan Abhir",
-		tag: "Trendspotter",
-		url: "https://rfs.cgsi.com/api/download?file=7a06a036-c5a0-4b77-b738-1ef6da8626d5",
-	},
-	{
-		id: "3",
-		title: "Markets at a Crossroad: Stock Optimism versus Economic Concerns",
-		description: `July US headline CPI was +2.7% yoy, slightly below expectations, while core CPI ticked up to +3.1%, which is its highest in five months. Markets saw this as a green light for for for for for for for for for for for for for for for for for for for for for for for for for for for for for for imminent rate cuts, sparking a wave of optimism across equities, bonds, and risk assets as investors interpreted the data as a sign that inflation pressures are cooling just enough to give the Fed room to pivot sooner rather than later.`,
-		date: "05-July-2025",
-		author: "Lim Yi Bin",
-		tag: "Idea of the Day",
-		url: "https://rfs.cgsi.com/api/download?file=7a06a036-c5a0-4b77-b738-1ef6da8626d5",
-	},
-	{
-		id: "4",
-		title: "Merdeka Copper Gold - Undervalued gold and copper invites opportunities",
-		description: `MDKA plans to start Pani Gold in 2026F and TB Copper in 2028F, which we believe could be significant growth drivers for the company. We expect 54% EBITDA CAGR in FY25-28F. We also estimate MDKA’s TB Copper project is undervalued by 50% by the market. A key category th...`,
-		date: "15-May-2025",
-		author: "Dlynn Tan",
-		tag: "Trading Lens",
-		url: "https://rfs.cgsi.com/api/download?file=7a06a036-c5a0-4b77-b738-1ef6da8626d5",
-	},
-];
+const mapArticle = (item: IResearchArticle): IResearchArticleProps => ({
+	id: item.id,
+	title: item.title,
+	description: item.description,
+	date: item.publishedDate,
+	author: item.publishedBy,
+	tag: item.type,
+	url: item.reportUrl,
+});
 
 const ResearchArticles = () => {
 	const router = useRouter();
+	const [articles, setArticles] = useState<IResearchArticle[]>([]);
+	const [loading, setLoading] = useState(true);
 	const [isLoading, setIsLoading] = useState(false);
 	const [showSubscribeAlert, setShowSubscribeAlert] = useState(false);
+
+	useEffect(() => {
+		const fetchArticles = async () => {
+			try {
+				const response = await getResearchArticles();
+				if (response.success && response.data) {
+					setArticles(response.data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch research articles:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchArticles();
+	}, []);
 
 	const handleViewAll = async () => {
 		setIsLoading(true);
@@ -100,6 +91,10 @@ const ResearchArticles = () => {
 			setIsLoading(false);
 		}
 	};
+
+	if (loading) {
+		return null;
+	}
 
 	return (
 		<>
@@ -124,7 +119,7 @@ const ResearchArticles = () => {
 						/>
 					) : (
 						<CustomizeCarousel<IResearchArticleProps>
-							items={articles}
+							items={articles.map(mapArticle)}
 							renderItem={(article) => <ResearchArticleCard article={article} />}
 							getItemKey={(article) => article.id}
 							itemsPerView={{

@@ -6,6 +6,7 @@ import type {
 	INotification,
 	NotificationMarkAsReadRequest,
 	NotificationMarkAsReadResponse,
+	IResearchArticle,
 } from "@/types";
 
 export const getNotifications = async (
@@ -82,6 +83,12 @@ export const markAllAsRead = async (): Promise<APIResponse<NotificationMarkAsRea
 	return await markNotificationsAsRead(unreadIds);
 };
 
+export const getResearchArticles = async (): Promise<APIResponse<IResearchArticle[]>> => {
+	return await fetchAPI<IResearchArticle[]>(ENDPOINTS.researchArticles(), {
+		useAuth: true,
+	});
+};
+
 export const notificationService = {
 	getNotifications,
 	getLatestNotifications,
@@ -89,6 +96,7 @@ export const notificationService = {
 	markNotificationAsRead,
 	getUnreadCount,
 	markAllAsRead,
+	getResearchArticles,
 };
 
 export default notificationService;

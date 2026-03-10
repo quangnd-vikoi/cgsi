@@ -30,4 +30,11 @@ export const notificationEndpoints = {
 	 * Requires: Authentication (Bearer token)
 	 */
 	notificationMarkAsRead: () => `/notification/api/v1/markAsRead`,
+
+	/**
+	 * Get Research Article List
+	 * Returns: IResearchArticle[]
+	 * Requires: Authentication (Bearer token)
+	 */
+	researchArticles: () => `/notification/api/v1/research/articles`,
 } as const;
