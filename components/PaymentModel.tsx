@@ -49,7 +49,13 @@ const paymentMethods: PaymentMethod[] = [
 	},
 ];
 
-function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
+interface PayNowDialogProps {
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	onProceed: (accountNo: string, amount: number) => Promise<void>;
+}
+
+function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 	const accounts = useTradingAccountStore((s) => s.accounts);
 	const getDefaultAccountNo = useTradingAccountStore((s) => s.getDefaultAccountNo);
 	const userName = useUserStore((s) => s.profile?.name ?? "");
@@ -58,11 +64,6 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 	const [amount, setAmount] = React.useState("");
 	const [confirmed, setConfirmed] = React.useState(false);
 	const [isLoading, setIsLoading] = React.useState(false);
-	const [paynowData, setPaynowData] = React.useState<{
-		s2bPayUrl: string;
-		corpId: string;
-		encStr: string;
-	} | null>(null);
 
 	React.useEffect(() => {
 		if (open) {
@@ -70,7 +71,6 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 			setSelectedAccount(defaultNo ?? accounts[0]?.accountNo ?? "");
 			setAmount("");
 			setConfirmed(false);
-			setPaynowData(null);
 		}
 	}, [open, accounts, getDefaultAccountNo]);
 
@@ -82,21 +82,9 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 
 	const handleProceed = async () => {
 		setIsLoading(true);
-		const response = await depositPaynow({
-			accountNo: selectedAccount,
-			mode: "DEPOSIT",
-			amount: parseFloat(amount),
-			currency: "SGD",
-			refNo: `PAYNOW-${Date.now()}`,
-		});
+		await onProceed(selectedAccount, parseFloat(amount));
 		setIsLoading(false);
-
-		if (!response.success || !response.data) {
-			toast.error(response.error ?? "Failed to initiate PayNow deposit. Please try again.");
-			return;
-		}
-
-		setPaynowData(response.data);
+		onOpenChange(false);
 	};
 
 	return (
@@ -108,75 +96,65 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 					</DialogTitle>
 				</DialogHeader>
 
-				{paynowData ? (
-					<div className="pad-x pb-6 flex flex-col items-center gap-4">
-						<p className="text-sm text-typo-secondary text-center">
-							Click the button below to complete your PayNow deposit.
-						</p>
-						<S2BPayButton {...paynowData} />
+				<div className="pad-x pb-6 space-y-5">
+					<div className="space-y-1.5">
+						<p className="text-sm font-medium text-typo-primary">Account</p>
+						<Select value={selectedAccount} onValueChange={setSelectedAccount}>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Select account">
+									{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent>
+								{accounts.map((acc) => (
+									<SelectItem key={acc.accountNo} value={acc.accountNo}>
+										{acc.accountType
+											? `(${acc.accountType}) ${acc.accountNo}`
+											: acc.accountNo}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</div>
-				) : (
-					<>
-						<div className="pad-x pb-6 space-y-5">
-							<div className="space-y-1.5">
-								<p className="text-sm font-medium text-typo-primary">Account</p>
-								<Select value={selectedAccount} onValueChange={setSelectedAccount}>
-									<SelectTrigger className="w-full">
-										<SelectValue placeholder="Select account">
-											{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
-										</SelectValue>
-									</SelectTrigger>
-									<SelectContent>
-										{accounts.map((acc) => (
-											<SelectItem key={acc.accountNo} value={acc.accountNo}>
-												{acc.accountType
-													? `(${acc.accountType}) ${acc.accountNo}`
-													: acc.accountNo}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
 
-							<div className="space-y-1.5">
-								<p className="text-sm font-medium text-typo-primary">Deposit Amount (SGD)</p>
-								<Input
-									type="number"
-									placeholder="Enter an amount"
-									value={amount}
-									onChange={(e) => setAmount(e.target.value)}
-								/>
-							</div>
+					<div className="space-y-1.5">
+						<p className="text-sm font-medium text-typo-primary">Deposit Amount (SGD)</p>
+						<Input
+							type="number"
+							placeholder="Enter an amount"
+							value={amount}
+							onChange={(e) => setAmount(e.target.value)}
+						/>
+					</div>
 
-							<div className="flex items-start gap-3">
-								<Checkbox
-									id="paynow-confirm"
-									checked={confirmed}
-									onCheckedChange={(v) => setConfirmed(!!v)}
-									className="mt-0.5"
-								/>
-								<label
-									htmlFor="paynow-confirm"
-									className="text-xs text-typo-secondary leading-relaxed cursor-pointer"
-								>
-									By checking this box, you confirm that your trading account is funded in your name
-									{userName ? ` - ${userName}` : ""}
-								</label>
-							</div>
-						</div>
-						<DialogFooter>
-							<div className="flex justify-end pt-1">
-								<Button
-									onClick={handleProceed}
-									disabled={!selectedAccount || !amount || !confirmed || isLoading}
-									className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
-								>
-									{isLoading ? <Loader2 className="animate-spin" /> : "Proceed"}
-								</Button>
-							</div>
-						</DialogFooter>
-					</>
-				)}
+					<div className="flex items-start gap-3">
+						<Checkbox
+							id="paynow-confirm"
+							checked={confirmed}
+							onCheckedChange={(v) => setConfirmed(!!v)}
+							className="mt-0.5"
+						/>
+						<label
+							htmlFor="paynow-confirm"
+							className="text-xs text-typo-secondary leading-relaxed cursor-pointer"
+						>
+							By checking this box, you confirm that your trading account is funded in your name
+							{userName ? ` - ${userName}` : ""}
+						</label>
+					</div>
+				</div>
+
+				<DialogFooter>
+					<div className="flex justify-end pt-1">
+						<Button
+							onClick={handleProceed}
+							disabled={!selectedAccount || !amount || !confirmed || isLoading}
+							className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
+						>
+							{isLoading ? <Loader2 className="animate-spin" /> : "Proceed"}
+						</Button>
+					</div>
+				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
@@ -184,6 +162,11 @@ function PayNowDialog({ open, onOpenChange }: PaymentModelProps) {
 
 export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 	const [showPayNow, setShowPayNow] = React.useState(false);
+	const [paynowData, setPaynowData] = React.useState<{
+		s2bPayUrl: string;
+		corpId: string;
+		encStr: string;
+	} | null>(null);
 
 	const handleSelectMethod = (id: string) => {
 		if (id === "paynow") {
@@ -192,6 +175,23 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		} else {
 			onOpenChange(false);
 		}
+	};
+
+	const handleProceed = async (accountNo: string, amount: number) => {
+		const response = await depositPaynow({
+			accountNo,
+			mode: "DEPOSIT",
+			amount,
+			currency: "SGD",
+			refNo: `PAYNOW-${Date.now()}`,
+		});
+
+		if (!response.success || !response.data) {
+			toast.error(response.error ?? "Failed to initiate PayNow deposit. Please try again.");
+			return;
+		}
+
+		setPaynowData(response.data);
 	};
 
 	return (
@@ -231,7 +231,18 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 				</DialogContent>
 			</Dialog>
 
-			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} />
+			<PayNowDialog
+				open={showPayNow}
+				onOpenChange={setShowPayNow}
+				onProceed={handleProceed}
+			/>
+
+			{paynowData && (
+				<S2BPayButton
+					{...paynowData}
+					onAutoClick={() => setPaynowData(null)}
+				/>
+			)}
 		</>
 	);
 }

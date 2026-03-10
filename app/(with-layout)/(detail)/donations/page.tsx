@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Title from "@/components/Title";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OneTimeForm from "./_components/OnetimeForm";
@@ -14,10 +15,13 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/ErrorState";
 
 const Donations = () => {
+	const [paynowError, setPaynowError] = useState(false);
+
 	return (
-		<div className="max-w-[480px] mx-auto flex-1 flex flex-col h-full">
+		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
 					title="Donation"
@@ -79,29 +83,38 @@ const Donations = () => {
 
 			{/* Content */}
 			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
-				<Tabs defaultValue="onetime" className="flex flex-1 flex-col gap-0 min-h-0">
-					{/* Thanh tab */}
-					<div className="pad-x">
-						<TabsList className="w-full pt-6 shrink-0 ">
-							<TabsTrigger className="w-1/2 pb-2" value="onetime">
-								One-Time Donation
-							</TabsTrigger>
-							<TabsTrigger className="w-1/2 pb-2" value="recurring">
-								Recurring Donation
-							</TabsTrigger>
-						</TabsList>
-					</div>
+				{paynowError ? (
+					<ErrorState
+						type="error"
+						title="Oops, Something Went Wrong"
+						description="We are unable to display the content, please try again later."
+						descriptionClassName="w-3/4"
+					/>
+				) : (
+					<Tabs defaultValue="onetime" className="flex flex-1 flex-col gap-0 min-h-0">
+						{/* Thanh tab */}
+						<div className="pad-x">
+							<TabsList className="w-full pt-6 shrink-0 ">
+								<TabsTrigger className="w-1/2 pb-2" value="onetime">
+									One-Time Donation
+								</TabsTrigger>
+								<TabsTrigger className="w-1/2 pb-2" value="recurring">
+									Recurring Donation
+								</TabsTrigger>
+							</TabsList>
+						</div>
 
-					{/* Nội dung co giãn */}
-					<div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-						<TabsContent value="onetime" className="h-full flex flex-col m-0 flex-1">
-							<OneTimeForm />
-						</TabsContent>
-						<TabsContent value="recurring" className="h-full flex flex-col m-0 flex-1">
-							<RecurringForm />
-						</TabsContent>
-					</div>
-				</Tabs>
+						{/* Nội dung co giãn */}
+						<div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+							<TabsContent value="onetime" className="h-full flex flex-col m-0 flex-1">
+								<OneTimeForm onPaynowError={() => setPaynowError(true)} />
+							</TabsContent>
+							<TabsContent value="recurring" className="h-full flex flex-col m-0 flex-1">
+								<RecurringForm />
+							</TabsContent>
+						</div>
+					</Tabs>
+				)}
 			</div>
 		</div>
 	);

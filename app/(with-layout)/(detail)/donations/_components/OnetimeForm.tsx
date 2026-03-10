@@ -17,7 +17,11 @@ import { depositPaynow } from "@/lib/services/portfolioService";
 import { submitDonation } from "@/lib/services/profileService";
 import { S2BPayButton } from "@/components/S2BPayButton";
 
-const OneTimeForm = () => {
+interface OneTimeFormProps {
+	onPaynowError?: () => void;
+}
+
+const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [paynowData, setPaynowData] = useState<{
@@ -95,18 +99,8 @@ const OneTimeForm = () => {
 		setIsSubmitting(false);
 	};
 
-	if (paynowData) {
-		return (
-			<div className="flex flex-col flex-1 items-center justify-center gap-4 pad-x py-6">
-				<p className="text-sm text-typo-secondary text-center">
-					Click the button below to complete your PayNow donation.
-				</p>
-				<S2BPayButton {...paynowData} />
-			</div>
-		);
-	}
-
 	return (
+		<>
 		<div className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Nội dung chính */}
 			<div className="flex-1 space-y-6 pad-x py-6 overflow-y-auto">
@@ -248,6 +242,22 @@ const OneTimeForm = () => {
 				</div>
 			</div>
 		</div>
+
+		{paynowData && (
+			<S2BPayButton
+				{...paynowData}
+				onAutoClick={() => {
+					setPaynowData(null);
+					setIsSubmitting(false);
+				}}
+				onError={() => {
+					setPaynowData(null);
+					setIsSubmitting(false);
+					onPaynowError?.();
+				}}
+			/>
+		)}
+		</>
 	);
 };
 
