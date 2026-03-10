@@ -42,8 +42,8 @@ function filterByProfessional(
             ...group,
             subscriptions: group.subscriptions.filter((sub) =>
                 professional
-                    ? sub.professionalFlag === "1"
-                    : sub.professionalFlag !== "1"
+                    ? sub.professionalFlag === "1" || sub.professionalFlag == null
+                    : sub.professionalFlag !== "1" || sub.professionalFlag == null
             ),
         }))
         .filter((group) => group.subscriptions.length > 0);

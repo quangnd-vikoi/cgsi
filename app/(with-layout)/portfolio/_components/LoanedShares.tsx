@@ -16,12 +16,15 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Expand, FileOutput } from "lucide-react";
+import { EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getSblLoaned } from "@/lib/services/portfolioService";
 import type { ILoanedShare } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
+import { loanedSharesColumns } from "@/lib/exportConfigs";
+import { toast } from "@/components/ui/toaster";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
@@ -32,6 +35,28 @@ export const LoanedShares = () => {
     const [totalItems, setTotalItems] = useState(0);
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
+    const [exporting, setExporting] = useState(false);
+
+    const handleExport = async () => {
+        if (exporting || !selectedAccount?.accountNo) return;
+        setExporting(true);
+        try {
+            const allData = await fetchAllForExport(
+                (pageSize, pageIndex) => getSblLoaned(selectedAccount.accountNo, undefined, pageSize, pageIndex),
+                (data) => data.loanedShares,
+            );
+            if (allData.length === 0) {
+                toast.warning("No Data", "There is no data to export.");
+                return;
+            }
+            exportToExcel({ filename: `LoanedShares_${selectedAccount.accountNo}`, columns: loanedSharesColumns, data: allData });
+            toast.success("Export Complete", `${allData.length} rows exported.`);
+        } catch {
+            toast.error("Export Failed", "Unable to export. Please try again.");
+        } finally {
+            setExporting(false);
+        }
+    };
 
     useEffect(() => {
         const fetchLoanedShares = async () => {
@@ -68,8 +93,10 @@ export const LoanedShares = () => {
                             variant="outline"
                             size="sm"
                             className="border border-cgs-blue text-sm text-cgs-blue rounded gap-2 hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+                            onClick={handleExport}
+                            disabled={exporting}
                         >
-                            <FileOutput className="size-4" />
+                            {exporting ? <Loader2 className="size-4 animate-spin" /> : <FileOutput className="size-4" />}
                             Export to Excel
                         </Button>
                     </div>
@@ -86,8 +113,8 @@ export const LoanedShares = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48">
-                                <DropdownMenuItem>
-                                    <FileOutput size={16} />
+                                <DropdownMenuItem onClick={handleExport} disabled={exporting}>
+                                    {exporting ? <Loader2 size={16} className="animate-spin" /> : <FileOutput size={16} />}
                                     Export to Excel
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

@@ -148,7 +148,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 									isPriority={index === 0}
 								/>
 							)}
-							getItemKey={(item) => item.SEO_Page_Name}
+							getItemKey={(item, index) => `${item.SEO_Page_Name}-${index}`}
 							itemsPerView={{
 								mobile: "basis-[75.2%]",
 								tablet: "md:basis-[50.8%]",

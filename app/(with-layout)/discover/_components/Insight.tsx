@@ -118,7 +118,7 @@ const Insight = () => {
 									}}
 								/>
 							)}
-							getItemKey={(item) => item.SEO_Page_Name}
+							getItemKey={(item, index) => `${item.SEO_Page_Name}-${index}`}
 							contentClassName="lg:gap-0 xl:gap-2"
 							centerThreshold={{
 								desktop: 3,
