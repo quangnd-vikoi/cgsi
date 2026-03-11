@@ -12,7 +12,7 @@ import DeclarationStep from "./_components/DeclarationStep";
 import NonProDeclarationStep from "./_components/NonProDeclarationStep";
 import TermsStep from "./_components/TermsStep";
 import SuccessState from "@/public/icons/success-state.svg";
-import { getMarketDataCatalog, getMarketDataAgreements, getMarketDataAgreementContent, getMyMarketDataSubscriptions } from "@/lib/services/subscriptionService";
+import { getMarketDataCatalog, getMarketDataAgreements, getMarketDataAgreementContent } from "@/lib/services/subscriptionService";
 import type { IMarketSubscriptionCatalog, IMarketSubscriptionGroup, ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 

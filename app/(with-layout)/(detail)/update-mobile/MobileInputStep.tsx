@@ -57,8 +57,6 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 
 	const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-	console.log(selectedCountry)
-
 	const countries = useMemo(() => {
 		return getCountries().map((code) => ({
 			code,

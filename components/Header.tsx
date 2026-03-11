@@ -17,7 +17,7 @@ import {
 import { TriangleAlert, X } from "lucide-react";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
-import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 import { redirectToNTP } from "@/lib/services/externalSSOService";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Loader2 } from "lucide-react";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
