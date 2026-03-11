@@ -16,7 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getSblBorrowed } from "@/lib/services/portfolioService";
@@ -24,6 +24,7 @@ import type { IBorrowedShare } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { borrowedSharesColumns } from "@/lib/exportConfigs";
+import { ASSET_CLASS_LABELS } from "@/constants/accounts";
 import { toast } from "@/components/ui/toaster";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
@@ -36,6 +37,32 @@ export const BorrowedShares = () => {
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
     const [exporting, setExporting] = useState(false);
+    type SortCol = keyof IBorrowedShare | "netQty";
+    const [sortColumn, setSortColumn] = useState<SortCol>("securityName");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+    const handleSort = (col: SortCol) => {
+        if (col === sortColumn) {
+            setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+        } else {
+            setSortColumn(col);
+            setSortDirection("desc");
+        }
+    };
+
+    const getVal = (item: IBorrowedShare, col: SortCol) =>
+        col === "netQty" ? item.borrowedQty + item.pendingIn - item.pendingOut : item[col];
+
+    const sortedShares = [...borrowedShares].sort((a, b) => {
+        const aVal = getVal(a, sortColumn);
+        const bVal = getVal(b, sortColumn);
+        const dir = sortDirection === "asc" ? 1 : -1;
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return dir;
+        if (bVal == null) return -dir;
+        if (typeof aVal === "number" && typeof bVal === "number") return (aVal - bVal) * dir;
+        return String(aVal).localeCompare(String(bVal)) * dir;
+    });
 
     const handleExport = async () => {
         if (exporting || !selectedAccount?.accountNo) return;
@@ -126,18 +153,33 @@ export const BorrowedShares = () => {
                 <div className="overflow-x-auto rounded">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
-                                <TableHead>Asset Class</TableHead>
-                                <TableHead>Market</TableHead>
-                                <TableHead>Code</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead className="text-right">Borrowed Qty</TableHead>
-                                <TableHead className="text-right">Pend. In</TableHead>
-                                <TableHead className="text-right">Pend. Out</TableHead>
-                                <TableHead className="text-right">Net Qty</TableHead>
-                                <TableHead className="text-right">Currency</TableHead>
-                                <TableHead className="text-right">Closing Price</TableHead>
-                                <TableHead className="text-right">Borrow Value Value</TableHead>
+                            <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs md:[&>th]:text-sm [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
+                                {(
+                                    [
+                                        { label: "Asset Class", col: "assetClass" as SortCol },
+                                        { label: "Market", col: "marketCode" as SortCol },
+                                        { label: "Code", col: "securityCode" as SortCol },
+                                        { label: "Name", col: "securityName" as SortCol },
+                                        { label: "Borrowed Qty", col: "borrowedQty" as SortCol, right: true },
+                                        { label: "Pend. In", col: "pendingIn" as SortCol, right: true },
+                                        { label: "Pend. Out", col: "pendingOut" as SortCol, right: true },
+                                        { label: "Net Qty", col: "netQty" as SortCol, right: true },
+                                        { label: "Currency", col: "currency" as SortCol, right: true },
+                                        { label: "Closing Price", col: "closingPrice" as SortCol, right: true },
+                                        { label: "Borrow Value", col: "marketValue" as SortCol, right: true },
+                                    ] as { label: string; col: SortCol; right?: boolean }[]
+                                ).map(({ label, col, right }) => (
+                                    <TableHead key={col} className={right ? "text-right" : ""} onClick={() => handleSort(col)}>
+                                        <button className={`inline-flex items-center gap-1 cursor-pointer select-none${right ? " flex-row-reverse" : ""}`}>
+                                            {label}
+                                            {sortColumn === col ? (
+                                                sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                                            ) : (
+                                                <ArrowUpDown className="size-3 text-typo-secondary/50" />
+                                            )}
+                                        </button>
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -156,12 +198,12 @@ export const BorrowedShares = () => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                borrowedShares.map((item, index) => (
+                                sortedShares.map((item, index) => (
                                     <TableRow
                                         key={`${item.securityCode}-${index}`}
                                         className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
                                     >
-                                        <TableCell>{item.assetClass}</TableCell>
+                                        <TableCell>{ASSET_CLASS_LABELS[item.assetClass] ?? item.assetClass}</TableCell>
                                         <TableCell>{item.marketCode}</TableCell>
                                         <TableCell>{item.securityCode}</TableCell>
                                         <TableCell>{item.securityName}</TableCell>

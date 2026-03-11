@@ -123,7 +123,7 @@ export interface UserInfoResponse {
 // Trading Account Types
 export interface TradingAccount {
 	accountNo: string;
-	accountType?: string;
+	accountType?: PortfolioType;
 	trName?: string;
 	trCode?: string;
 	eps?: string;
@@ -595,6 +595,8 @@ export interface ITrustBalanceDetail {
 	transactionDate: string;
 	description: string;
 	currency: string;
+	quantity: number;
+	tradedPrice: number;
 	debit: number;
 	credit: number;
 	balance: number;

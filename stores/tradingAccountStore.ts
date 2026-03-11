@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { TradingAccount } from "@/types";
+import { ACCOUNT_TYPE_PRIORITY } from "@/constants/accounts";
 
 interface TradingAccountStore {
 	accounts: TradingAccount[];
@@ -53,9 +54,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 		}
 
 		// Multiple accounts → select by priority
-		const priorityOrder = ["CTA", "CUT", "iCash", "MTA", "SBL"];
-
-		for (const type of priorityOrder) {
+		for (const type of ACCOUNT_TYPE_PRIORITY) {
 			const found = accounts.find((acc) => acc.accountType === type);
 			if (found) {
 				return found.accountNo;

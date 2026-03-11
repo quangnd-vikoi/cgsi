@@ -7,6 +7,7 @@ import WaringIcon from "@/public/icons/Warning.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { handleCopy } from "@/lib/utils";
+import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -92,14 +93,6 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 	);
 };
 
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-	CTA: "Cash Trading Account",
-	CUT: "CUT Account",
-	SBL: "Shares Borrowing Account",
-	MTA: "Margin Account",
-	iCash: "iCash Account",
-};
-
 const TradingAccountDetail = () => {
 	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
 	const router = useRouter();
@@ -117,12 +110,12 @@ const TradingAccountDetail = () => {
 
 	if (!selectedAccount) return null;
 
-	const accountType = selectedAccount.accountType ?? "";
+	const accountType = selectedAccount.accountType;
 	const isCTA = accountType === "CTA";
 	const isCUT = accountType === "CUT";
 	const isSBL = accountType === "SBL";
 	const showCpfSrs = isCTA || isCUT;
-	const accountTypeLabel = ACCOUNT_TYPE_LABELS[accountType] ?? accountType;
+	const accountTypeLabel = accountType ? (ACCOUNT_TYPE_LABELS[accountType] ?? accountType) : "";
 	const isSubCDP = selectedAccount.cdp?.startsWith("217 1");
 	return (
 		<div className="flex flex-col h-full">

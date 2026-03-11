@@ -6,6 +6,7 @@ import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { getAcknowledgementList, getAcknowledgementDetail } from "@/lib/services/profileService";
 import type { IAcknowledgementItem, AcknowledgementDetailResponse } from "@/types";
+import { formatDate } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AgreementCategory {
@@ -13,15 +14,6 @@ interface AgreementCategory {
 	records: IAcknowledgementItem[];
 }
 
-const formatDate = (dateString: string): string => {
-	if (!dateString) return "";
-	const date = new Date(dateString);
-	return date.toLocaleDateString("en-GB", {
-		day: "2-digit",
-		month: "short",
-		year: "numeric",
-	});
-};
 
 const stripHtmlTags = (html: string): string => {
 	return html

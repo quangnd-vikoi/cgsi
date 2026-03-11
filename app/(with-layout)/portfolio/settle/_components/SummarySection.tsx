@@ -1,8 +1,10 @@
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ContractDisplay } from "./ContractsTable";
 
 interface SummarySectionProps {
 	contracts: ContractDisplay[];
+	loading?: boolean;
 }
 interface SummaryCardProps {
 	label: string | React.ReactNode;
@@ -21,7 +23,7 @@ export function SummaryCard({ label, value, valueClassName }: SummaryCardProps) 
 	);
 }
 
-export function SummarySection({ contracts }: SummarySectionProps) {
+export function SummarySection({ contracts, loading = false }: SummarySectionProps) {
 	const { selectedAccount } = useTradingAccountStore();
 
 	const sellContracts = contracts.filter((c) => c.side === "Sell");
@@ -30,42 +32,42 @@ export function SummarySection({ contracts }: SummarySectionProps) {
 	const totalSellAmount = sellContracts.reduce((sum, c) => sum + Math.abs(c.gainLoss), 0);
 	const totalBuyAmount = buyContracts.reduce((sum, c) => sum + Math.abs(c.gainLoss), 0);
 
-	const sellCurrency = "SGD";
-	const buyCurrency = "SGD";
+	const skeletonVal = <Skeleton className="h-5 w-28 rounded mt-1" />;
+	const skeletonLabel = <Skeleton className="h-4 w-32 rounded" />;
 
 	return (
 		<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
 				<SummaryCard
-					label={`Sell Contracts (${sellContracts.length})`}
-					value={`+ ${totalSellAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} ${sellCurrency}`}
+					label={loading ? skeletonLabel : `Sell Contracts (${sellContracts.length})`}
+					value={loading ? skeletonVal : `+ ${totalSellAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} SGD`}
 					valueClassName="text-status-success"
 				/>
 
 				<SummaryCard
-					label={`Buy Contracts (${buyContracts.length})`}
-					value={`- ${totalBuyAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} ${buyCurrency}`}
+					label={loading ? skeletonLabel : `Buy Contracts (${buyContracts.length})`}
+					value={loading ? skeletonVal : `- ${totalBuyAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} SGD`}
 					valueClassName="text-status-error"
 				/>
 
 				<SummaryCard
-					label={
+					label={loading ? skeletonLabel : (
 						<>
 							<span className="md:hidden">Linked Payment Method - GIRO</span>
 							<span className="hidden md:inline">Linked Payment Method</span>
 						</>
-					}
-					value={
+					)}
+					value={loading ? skeletonVal : (
 						<>
 							<span className="md:hidden">(DBS) 01208923</span>
 							<span className="hidden md:inline">GIRO (DBS) 01208923</span>
 						</>
-					}
+					)}
 				/>
 
 				<SummaryCard
-					label="Trading Representative"
-					value={selectedAccount?.trName || "U7- Lim Yi Bin"}
+					label={loading ? skeletonLabel : "Trading Representative"}
+					value={loading ? skeletonVal : (selectedAccount?.trName || "—")}
 				/>
 			</div>
 		</div>

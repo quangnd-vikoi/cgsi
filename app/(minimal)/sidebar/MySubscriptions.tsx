@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import Image from '@/components/Image';
 import { Badge } from '@/components/ui/badge';
 import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -136,13 +136,7 @@ const MySubscriptions = () => {
 				items: marketDataSubs.map((sub) => ({
 					title: sub.groupTitle,
 					description: sub.description || sub.groupType || "",
-					endDate: sub.end
-						? new Date(sub.end).toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-						  })
-						: "N/A",
+					endDate: formatDate(sub.end, "N/A"),
 					image: getSubscriptionImage(sub.groupTitle || ""),
 					status: determineMarketDataStatus(sub),
 					subscriptionId: sub.subscriptionId,
@@ -156,13 +150,7 @@ const MySubscriptions = () => {
 				items: productSubs.map((sub) => ({
 					title: sub.productName,
 					description: sub.productType || "",
-					endDate: sub.endTime
-						? new Date(sub.endTime).toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-						  })
-						: "N/A",
+					endDate: formatDate(sub.endTime, "N/A"),
 					image: getSubscriptionImage(sub.productType || ""),
 					status: determineProductStatus(sub),
 					subscriptionId: sub.subscriptionId,

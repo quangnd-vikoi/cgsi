@@ -172,6 +172,8 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		if (id === "paynow") {
 			onOpenChange(false);
 			setShowPayNow(true);
+		} else if (id === "bank-transfer") {
+			window.open("https://www.cgsi.com.sg/uploads/CGSI_Remittance_Details_8fc969c302.pdf", "_blank");
 		} else {
 			onOpenChange(false);
 		}
@@ -186,7 +188,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 			refNo: `PAYNOW-${Date.now()}`,
 		});
 
-		if (!response.success || !response.data) {
+		if (!response.success) {
 			toast.error(response.error ?? "Failed to initiate PayNow deposit. Please try again.");
 			return;
 		}
@@ -231,18 +233,9 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 				</DialogContent>
 			</Dialog>
 
-			<PayNowDialog
-				open={showPayNow}
-				onOpenChange={setShowPayNow}
-				onProceed={handleProceed}
-			/>
+			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} onProceed={handleProceed} />
 
-			{paynowData && (
-				<S2BPayButton
-					{...paynowData}
-					onAutoClick={() => setPaynowData(null)}
-				/>
-			)}
+			{paynowData && <S2BPayButton {...paynowData} onAutoClick={() => setPaynowData(null)} />}
 		</>
 	);
 }

@@ -2,6 +2,7 @@ import { toast } from "@/components/ui/toaster";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { PortfolioType } from "@/types";
+import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 export const getBasePath = () => process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export function cn(...inputs: ClassValue[]) {
@@ -47,14 +48,8 @@ export const getBgImageClass = (imagePath: string): string => {
 
 
 export const getAccountTypeCode = (type: string): PortfolioType => {
-	const typeMap: Record<string, PortfolioType> = {
-		"Cash Trading Account": "CTA",
-		"Margin Trading Account": "MTA",
-		"Shares Borrowing Account": "SBL",
-		"CUT Account": "CUT",
-		"iCash Account": "iCash"
-	}
-	return typeMap[type] || "CTA"
+	const entry = (Object.entries(ACCOUNT_TYPE_LABELS) as [PortfolioType, string][]).find(([, label]) => label === type);
+	return entry ? entry[0] : "CTA";
 }
 
 /**
@@ -67,22 +62,33 @@ export const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
 	}
 }
 
-/**
- * Format date string to DD-MMM-YYYY format
- * @param dateString - Date string in any valid format (e.g., YYYY-MM-DD)
- * @returns Formatted date string (e.g., "20-Jan-2026")
- */
-export const formatDate = (dateString: string): string => {
-	const date = new Date(dateString);
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-	// Check if date is valid
-	if (isNaN(date.getTime())) {
-		return dateString; // Return original string if invalid
+/**
+ * Format date string to DD-MMM-YYYY format (e.g. "13-Jun-2025").
+ * Handles ISO strings, YYYY-MM-DD, and DD/MM/YYYY.
+ * @param dateString - Input date value (string, null, or undefined)
+ * @param fallback   - Returned when input is missing or unparseable (default: "-")
+ */
+export const formatDate = (dateString: string | null | undefined, fallback = "-"): string => {
+	if (!dateString) return fallback;
+
+	let date: Date;
+	if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+		// DD/MM/YYYY
+		const [day, month, year] = dateString.split("/");
+		date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+	} else if (/^\d{8}$/.test(dateString)) {
+		// YYYYMMDD
+		date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
+	} else {
+		date = new Date(dateString);
 	}
 
+	if (isNaN(date.getTime())) return fallback;
+
 	const day = date.getDate().toString().padStart(2, "0");
-	const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-	const month = monthNames[date.getMonth()];
+	const month = MONTH_NAMES[date.getMonth()];
 	const year = date.getFullYear();
 
 	return `${day}-${month}-${year}`;

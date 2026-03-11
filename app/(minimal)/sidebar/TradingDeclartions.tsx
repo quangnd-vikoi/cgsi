@@ -10,6 +10,7 @@ import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
 import { getEW8SSO, getECRSSSO, redirectToSSO, redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
+import { formatDate } from "@/lib/utils";
 import { getTradingInfo, createBcanRequest } from "@/lib/services/profileService";
 import type { TradingInfoResponse } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,31 +62,13 @@ const StatusIcon = ({ status }: { status: DeclarationStatus }) => {
 	return null;
 };
 
-const parseDate = (dateString: string | null): Date | null => {
-	if (!dateString) return null;
-	try {
-		if (dateString.includes("/")) {
-			const [day, month, year] = dateString.split("/");
-			return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-		}
-		return new Date(dateString);
-	} catch {
-		return null;
-	}
-};
-
-const formatDate = (dateString: string | null): string => {
-	const date = parseDate(dateString);
-	if (!date || isNaN(date.getTime())) return "-";
-	const day = date.getDate().toString().padStart(2, "0");
-	const month = date.toLocaleDateString("en-US", { month: "short" });
-	const year = date.getFullYear();
-	return `${day}-${month}-${year}`;
-};
 
 const getDaysUntilExpiry = (dateString: string | null): number | null => {
-	const expDate = parseDate(dateString);
-	if (!expDate || isNaN(expDate.getTime())) return null;
+	if (!dateString) return null;
+	const expDate = dateString.includes("/")
+		? (() => { const [d, m, y] = dateString.split("/"); return new Date(+y, +m - 1, +d); })()
+		: new Date(dateString);
+	if (isNaN(expDate.getTime())) return null;
 	const now = new Date();
 	return Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 };

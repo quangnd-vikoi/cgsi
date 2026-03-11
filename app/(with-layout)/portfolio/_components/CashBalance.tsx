@@ -14,11 +14,10 @@ import Link from "next/link";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { PaymentModel } from "@/components/PaymentModel";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { getTrustBalance } from "@/lib/services/portfolioService";
-import type { ITrustBalance } from "@/types";
+import { getTrustBalance, getFxRates } from "@/lib/services/portfolioService";
+import type { ITrustBalance, IExchangeRate } from "@/types";
 
 const INITIAL_DISPLAY_COUNT = 4;
-const LOAD_MORE_COUNT = 10;
 
 const CURRENCIES: { currency: string; name: string; countryCode: string }[] = [
     { currency: "SGD", name: "Singapore Dollars", countryCode: "sg" },
@@ -33,39 +32,50 @@ const CURRENCIES: { currency: string; name: string; countryCode: string }[] = [
 ];
 
 export const CashBalance = () => {
-    const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
+    const [showOthers, setShowOthers] = useState(false);
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [apiBalances, setApiBalances] = useState<ITrustBalance[]>([]);
+    const [fxRates, setFxRates] = useState<IExchangeRate[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
 
     useEffect(() => {
         const fetchBalances = async () => {
             if (!selectedAccount?.accountNo) return;
-            const response = await getTrustBalance(selectedAccount.accountNo);
-            if (response.success && response.data) {
-                setApiBalances(response.data);
-            }
+            setIsLoading(true);
+            setApiBalances([]);
+            const [balanceRes, fxRes] = await Promise.all([
+                getTrustBalance(selectedAccount.accountNo),
+                getFxRates(),
+            ]);
+            if (balanceRes.success && balanceRes.data) setApiBalances(balanceRes.data);
+            if (fxRes.success && fxRes.data) setFxRates(fxRes.data);
+            setIsLoading(false);
         };
         fetchBalances();
     }, [selectedAccount?.accountNo]);
 
-    // Always render all 9 currencies; merge API data in when available
+    const toSGD = (currency: string, balance: number) => {
+        if (currency === "SGD") return balance;
+        const rate = fxRates.find((r) => r.fromCurrency === currency && r.toCurrency === "SGD");
+        return rate ? balance * rate.bid : 0;
+    };
+
+    // Merge API data, then sort: nonzero first (desc by SGD equivalent), then zeros
     const balances = CURRENCIES.map((c) => {
         const found = apiBalances.find((b) => b.currency === c.currency);
         return { ...c, balance: found?.balance ?? 0 };
+    }).sort((a, b) => {
+        const sgdA = toSGD(a.currency, a.balance);
+        const sgdB = toSGD(b.currency, b.balance);
+        if (sgdA > 0 && sgdB === 0) return -1;
+        if (sgdA === 0 && sgdB > 0) return 1;
+        return sgdB - sgdA;
     });
 
-    const handleShowMore = () => {
-        setDisplayCount((prev) => Math.min(prev + LOAD_MORE_COUNT, balances.length));
-    };
-
-    const handleShowLess = () => {
-        setDisplayCount(INITIAL_DISPLAY_COUNT);
-    };
-
-    const visibleBalances = balances.slice(0, displayCount);
-    const hasMore = displayCount < balances.length;
-    const canCollapse = displayCount > INITIAL_DISPLAY_COUNT;
+    const topBalances = balances.slice(0, INITIAL_DISPLAY_COUNT);
+    const otherBalances = balances.slice(INITIAL_DISPLAY_COUNT);
+    const hasOthers = otherBalances.length > 0;
 
     return (
         <div className="bg-white rounded border border-stroke-secondary">
@@ -115,10 +125,37 @@ export const CashBalance = () => {
                         <p className="text-right">Balance</p>
                     </div>
 
-                    {visibleBalances.map((item, index) => (
+                    {isLoading ? (
+                        Array.from({ length: INITIAL_DISPLAY_COUNT }).map((_, i) => (
+                            <div key={i} className={`grid grid-cols-2 py-4 px-2 ${i < INITIAL_DISPLAY_COUNT - 1 ? "border-b border-stroke-secondary" : ""}`}>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 md:w-5 h-4 md:h-5 rounded-full bg-gray-200 animate-pulse shrink-0" />
+                                    <div className="h-3.5 w-32 bg-gray-200 animate-pulse rounded" />
+                                </div>
+                                <div className="flex justify-end">
+                                    <div className="h-3.5 w-24 bg-gray-200 animate-pulse rounded" />
+                                </div>
+                            </div>
+                        ))
+                    ) : topBalances.map((item, index) => (
                         <div
                             key={item.currency}
-                            className={`grid grid-cols-2 py-4 px-2 ${index < visibleBalances.length - 1 ? "border-b border-stroke-secondary" : ""}`}
+                            className={`grid grid-cols-2 py-4 px-2 ${index < topBalances.length - 1 || (showOthers && hasOthers) ? "border-b border-stroke-secondary" : ""}`}
+                        >
+                            <div className="flex items-center gap-2">
+                                <CircleFlag countryCode={item.countryCode} className="w-4 md:w-5 h-4 md:h-5 shrink-0" />
+                                <p className="text-xs md:text-sm font-medium text-typo-primary">{item.name}</p>
+                            </div>
+                            <p className="text-xs md:text-sm font-medium text-typo-primary text-right">
+                                {(item.balance ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {item.currency}
+                            </p>
+                        </div>
+                    ))}
+
+                    {!isLoading && showOthers && otherBalances.map((item, index) => (
+                        <div
+                            key={item.currency}
+                            className={`grid grid-cols-2 py-4 px-2 ${index < otherBalances.length - 1 ? "border-b border-stroke-secondary" : ""}`}
                         >
                             <div className="flex items-center gap-2">
                                 <CircleFlag countryCode={item.countryCode} className="w-4 md:w-5 h-4 md:h-5 shrink-0" />
@@ -131,25 +168,18 @@ export const CashBalance = () => {
                     ))}
                 </div>
 
-                {(hasMore || canCollapse) && (
+                {!isLoading && hasOthers && (
                     <div className="mt-4 flex justify-center">
-                        {hasMore ? (
-                            <button
-                                onClick={handleShowMore}
-                                className="flex items-center gap-1 text-sm text-cgs-blue hover:text-cgs-blue/75"
-                            >
-                                Show others
-                                <ChevronDown size={16} />
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleShowLess}
-                                className="flex items-center gap-1 text-sm text-cgs-blue hover:text-cgs-blue/75"
-                            >
-                                Show less
-                                <ChevronUp size={16} />
-                            </button>
-                        )}
+                        <button
+                            onClick={() => setShowOthers((prev) => !prev)}
+                            className="flex items-center gap-1 text-sm text-cgs-blue hover:text-cgs-blue/75"
+                        >
+                            {showOthers ? (
+                                <>Show less <ChevronUp size={16} /></>
+                            ) : (
+                                <>Show others <ChevronDown size={16} /></>
+                            )}
+                        </button>
                     </div>
                 )}
             </div>

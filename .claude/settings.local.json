@@ -44,7 +44,16 @@
       "Bash(cp -r \"C:/Users/Quang Nguyen/OneDrive/.claude-original/skills/.\" \"C:/Users/Quang Nguyen/.claude/skills/\" && echo \"Done\" 2>&1)",
       "Bash(cp:*)",
       "Bash(python3:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/cash-transaction/_components/CashTransactionsTable.tsx\" | sed -n '51,57p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/MySubscriptions.tsx\" | sed -n '139,145p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/MySubscriptions.tsx\" | sed -n '139,146p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/donations/_components/RecurringForm.tsx\" | sed -n '300,315p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/MySubscriptions.tsx\" | sed -n '155,167p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/MySubscriptions.tsx\" | sed -n '149,162p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/settle/page.tsx\" | sed -n '324,329p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/settle/page.tsx\" | sed -n '344,348p')",
+      "Bash(ls \"D:/cgsi/app/\\(with-layout\\)/portfolio/cash-transaction/_components/\")"
     ],
     "deny": [],
     "ask": []

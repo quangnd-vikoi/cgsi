@@ -1,4 +1,8 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { formatDate as fmtDate } from "@/lib/utils";
 import {
 	Table,
 	TableBody,
@@ -8,14 +12,13 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CGSI } from "@/constants/routes";
-import Link from "next/link";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 
 // Display type for the contracts/contra table (mapped from API IContract/IContra)
 export interface ContractDisplay {
 	id: string;
 	contractId: string;
-	status: "Overdue" | "Outstanding" | "Contra";
+	status: "Overdue" | "Outstanding";
 	tradeDate: string;
 	dueDate: string;
 	settlementCcy: string;
@@ -23,6 +26,7 @@ export interface ContractDisplay {
 	side: string;
 	market: string;
 	code: string;
+	name: string;
 	statementNo?: string;
 }
 
@@ -30,25 +34,75 @@ interface ContractsTableProps {
 	contracts: ContractDisplay[];
 	activeTab: "contracts" | "contra";
 	onOpenContraDetails: (contract: ContractDisplay) => void;
+	onPayNow: (contract: ContractDisplay) => void;
 	loading?: boolean;
 }
 
-export function ContractsTable({ contracts, activeTab, onOpenContraDetails, loading = false }: ContractsTableProps) {
+type SortCol = keyof Omit<ContractDisplay, "id" | "statementNo">;
+
+const COLS: { label: string; col: SortCol; right?: boolean; w: string }[] = [
+	{ label: "Contract ID",    col: "contractId",   w: "min-w-[120px]" },
+	{ label: "Status",         col: "status",        w: "min-w-[100px]" },
+	{ label: "Trade Date",     col: "tradeDate",     w: "min-w-[110px]" },
+	{ label: "Due Date",       col: "dueDate",       w: "min-w-[110px]" },
+	{ label: "Settlement Ccy", col: "settlementCcy", w: "min-w-[120px]", right: true },
+	{ label: "Gain/Loss",      col: "gainLoss",      w: "min-w-[110px]", right: true },
+	{ label: "Side",           col: "side",          w: "min-w-[70px]" },
+	{ label: "Market",         col: "market",        w: "min-w-[80px]" },
+	{ label: "Code",           col: "code",          w: "min-w-[90px]" },
+	{ label: "Name",           col: "name",          w: "min-w-[140px]" },
+];
+
+const ACTION_W = "min-w-[120px]";
+
+const thBase = "text-xs md:text-sm font-semibold text-typo-primary whitespace-nowrap px-4 py-4";
+const tdBase = "text-xs md:text-sm text-typo-primary whitespace-nowrap px-4 py-3";
+
+export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPayNow, loading = false }: ContractsTableProps) {
+	const [sortColumn, setSortColumn] = useState<SortCol>("dueDate");
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+	const handleSort = (col: SortCol) => {
+		if (col === sortColumn) {
+			setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+		} else {
+			setSortColumn(col);
+			setSortDirection("asc");
+		}
+	};
+
+	const sorted = [...contracts].sort((a, b) => {
+		const aVal = a[sortColumn];
+		const bVal = b[sortColumn];
+		const dir = sortDirection === "asc" ? 1 : -1;
+		if (aVal == null && bVal == null) return 0;
+		if (aVal == null) return dir;
+		if (bVal == null) return -dir;
+		if (typeof aVal === "number" && typeof bVal === "number") return (aVal - bVal) * dir;
+		return String(aVal).localeCompare(String(bVal)) * dir;
+	});
+
 	return (
 		<div className="overflow-x-auto rounded border border-stroke-secondary mb-4">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:px-4 [&>th]:py-4">
-						<TableHead>Contract ID</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Trade Date</TableHead>
-						<TableHead>Due Date</TableHead>
-						<TableHead className="text-right">Settlement Ccy</TableHead>
-						<TableHead className="text-right">Gain/Loss</TableHead>
-						<TableHead>Side</TableHead>
-						<TableHead>Market</TableHead>
-						<TableHead className="!px-4">Code</TableHead>
-						<TableHead className="text-center sticky !px-9 right-0 bg-background-section">
+					<TableRow className="bg-background-section border-b border-stroke-secondary">
+						{COLS.map(({ label, col, right, w }) => (
+							<TableHead
+								key={col}
+								className={`${thBase} ${w} ${right ? "text-right" : ""}`}
+								onClick={() => handleSort(col)}
+							>
+								<button className={`inline-flex items-center gap-1 cursor-pointer select-none ${right ? "flex-row-reverse" : ""}`}>
+									{col === "contractId" && activeTab === "contra" ? "Contra ID" : label}
+									{sortColumn === col
+										? sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+										: <ArrowUpDown className="size-3 text-typo-secondary/50" />
+									}
+								</button>
+							</TableHead>
+						))}
+						<TableHead className={`${thBase} ${ACTION_W} text-center sticky px-4 right-0 bg-background-section`}>
 							Action
 						</TableHead>
 					</TableRow>
@@ -56,48 +110,46 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, load
 				<TableBody>
 					{loading ? (
 						Array.from({ length: 5 }).map((_, i) => (
-							<TableRow key={i} className="[&>td]:px-4 [&>td]:py-3">
-								{Array.from({ length: 10 }).map((_, j) => (
-									<TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
+							<TableRow key={i} className="border-b border-stroke-secondary">
+								{COLS.map(({ col, w }) => (
+									<TableCell key={col} className={`${tdBase} ${w}`}>
+										<Skeleton className="h-4 w-full" />
+									</TableCell>
 								))}
+								<TableCell className={`${tdBase} ${ACTION_W}`}>
+									<Skeleton className="h-8 w-full rounded" />
+								</TableCell>
 							</TableRow>
 						))
-					) : contracts.length === 0 ? (
+					) : sorted.length === 0 ? (
 						<TableRow>
-							<TableCell colSpan={10} className="text-center py-8 text-sm text-typo-secondary">
+							<TableCell colSpan={11} className="text-center py-8 text-sm text-typo-secondary">
 								No data available
 							</TableCell>
 						</TableRow>
-					) : contracts.map((contract) => (
+					) : sorted.map((contract) => (
 						<TableRow
 							key={contract.id}
-							className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-3 [&>td]:py-3"
+							className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50"
 						>
-							<TableCell>{contract.contractId}</TableCell>
-							<TableCell>
-								<span
-									className={`px-2 py-1 rounded text-xs ${contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"
-										}`}
-								>
+							<TableCell className={`${tdBase} min-w-[120px]`}>{contract.contractId}</TableCell>
+							<TableCell className={`${tdBase} min-w-[100px]`}>
+								<span className={contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"}>
 									{contract.status}
 								</span>
 							</TableCell>
-							<TableCell>{contract.tradeDate}</TableCell>
-							<TableCell>{contract.dueDate}</TableCell>
-							<TableCell className="text-right">{contract.settlementCcy}</TableCell>
-							<TableCell
-								className={`text-right ${contract.gainLoss > 0 ? "!text-status-success" : "!text-status-error"
-									}`}
-							>
-								{contract.gainLoss > 0 ? "+" : "-"}{" "}
-								{Math.abs(contract.gainLoss).toLocaleString("en-US", {
-									minimumFractionDigits: 2,
-								})}
+							<TableCell className={`${tdBase} min-w-[110px]`}>{fmtDate(contract.tradeDate)}</TableCell>
+							<TableCell className={`${tdBase} min-w-[110px]`}>{fmtDate(contract.dueDate)}</TableCell>
+							<TableCell className={`${tdBase} min-w-[120px] text-right`}>{contract.settlementCcy}</TableCell>
+							<TableCell className={`${tdBase} min-w-[110px] text-right ${["SELL", "CR"].includes(contract.side) ? "text-status-success" : "text-status-error"}`}>
+								{["SELL", "CR"].includes(contract.side) ? "+" : "-"}{" "}
+								{Math.abs(contract.gainLoss).toLocaleString("en-US", { minimumFractionDigits: 2 })}
 							</TableCell>
-							<TableCell>{contract.side}</TableCell>
-							<TableCell>{contract.market}</TableCell>
-							<TableCell>{contract.code}</TableCell>
-							<TableCell className="text-center sticky right-0 bg-white flex gap-2 justify-center">
+							<TableCell className={`${tdBase} min-w-[70px]`}>{contract.side}</TableCell>
+							<TableCell className={`${tdBase} min-w-[80px]`}>{contract.market}</TableCell>
+							<TableCell className={`${tdBase} min-w-[90px]`}>{contract.code}</TableCell>
+							<TableCell className={`${tdBase} min-w-[140px]`}>{contract.name}</TableCell>
+							<TableCell className={`${tdBase} ${ACTION_W} text-center sticky right-0 bg-white flex gap-2 justify-center`}>
 								{activeTab === "contra" && (
 									<Button
 										size="sm"
@@ -105,18 +157,17 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, load
 										onClick={() => onOpenContraDetails(contract)}
 										className="shadow-none border-none font-medium text-cgs-blue hover:text-cgs-blue/80 hover:bg-white rounded px-3"
 									>
-										Detail
+										Details
 									</Button>
 								)}
-								<Link href={CGSI.PAYMENT} target="_blank">
-									<Button
-										size="sm"
-										disabled={contract.gainLoss >= 0}
-										className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
-									>
-										Pay
-									</Button>
-								</Link>
+								<Button
+									size="sm"
+									disabled={!["BUY", "DR"].includes(contract.side) || contract.settlementCcy !== "SGD"}
+									className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
+									onClick={() => onPayNow(contract)}
+								>
+									PayNow
+								</Button>
 							</TableCell>
 						</TableRow>
 					))}

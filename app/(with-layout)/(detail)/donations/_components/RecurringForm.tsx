@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/utils";
 import {
 	Dialog,
 	DialogContent,
@@ -299,16 +300,8 @@ const RecurringForm = () => {
 				<div className="mt-6 pad-x flex-1 min-h-0 overflow-y-auto">
 					<div className="w-full flex flex-col gap-3 pb-6">
 						{recurringDonations.map((plan) => {
-							const formattedEnd = new Date(plan.end).toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-							});
-							const formattedStart = new Date(plan.start).toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "numeric",
-							});
+							const formattedEnd = formatDate(plan.end);
+							const formattedStart = formatDate(plan.start);
 
 							return (
 								<div key={plan.id}>

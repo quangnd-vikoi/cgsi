@@ -15,9 +15,9 @@ export const portfolioEndpoints = {
 	/** GET /portfolio/api/v1/trustBalance/{accountNo} */
 	trustBalance: (accountNo: string) => `/portfolio/api/v1/trustBalance/${accountNo}`,
 
-	/** GET /portfolio/api/v1/trustBalance/{accountNo}/details/{currency}?pageSize=&pageIndex= */
-	trustBalanceDetails: (accountNo: string, currency: string, pageSize = 20, pageIndex = 0) =>
-		`/portfolio/api/v1/trustBalance/${accountNo}/details/${currency}?pageSize=${pageSize}&pageIndex=${pageIndex}`,
+	/** GET /portfolio/api/v1/trustBalance/{accountNo}/details?pageSize=&pageIndex= */
+	trustBalanceDetails: (accountNo: string, pageSize = 20, pageIndex = 0) =>
+		`/portfolio/api/v1/trustBalance/${accountNo}/details?pageSize=${pageSize}&pageIndex=${pageIndex}`,
 
 	/** GET /portfolio/api/v1/holdings/{accountNo}?pageSize=&pageIndex= */
 	holdings: (accountNo: string, pageSize = 20, pageIndex = 0) =>

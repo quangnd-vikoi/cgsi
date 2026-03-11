@@ -6,14 +6,7 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@radix-ui/react-separator";
-
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-	CTA: "Cash Trading Account",
-	CUT: "CUT Account",
-	SBL: "Shares Borrowing Account",
-	MTA: "Margin Account",
-	iCash: "iCash Account",
-};
+import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 
 const TradingAccounts = () => {
 	const accounts = useTradingAccountStore((state) => state.accounts);
@@ -81,7 +74,7 @@ const TradingAccounts = () => {
 						<div className="flex justify-between items-start">
 							<div>
 								<p className="text-xs font-normal">
-									{ACCOUNT_TYPE_LABELS[acc.accountType ?? ""] ??
+									{(acc.accountType ? ACCOUNT_TYPE_LABELS[acc.accountType] : null) ??
 										acc.accountType ??
 										"Trading Account"}
 								</p>

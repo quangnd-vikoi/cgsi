@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import type { UserProductSubscriptionDetailResponse } from "@/types";
 import { ErrorState } from "@/components/ErrorState";
+import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const NoteContent = () => {
@@ -42,15 +43,6 @@ const NoteContent = () => {
 
 	const handlePrint = () => {
 		window.print();
-	};
-
-	const formatDate = (dateString?: string) => {
-		if (!dateString) return "N/A";
-		return new Date(dateString).toLocaleString("en-GB", {
-			day: "2-digit",
-			month: "short",
-			year: "numeric",
-		});
 	};
 
 	const formatDateTime = (dateString?: string) => {
@@ -105,8 +97,8 @@ const NoteContent = () => {
 		{ label: "Account No.", value: details.accountNo || "N/A" },
 		{ label: "Purchase/Sale", value: `${details.productType || "Product"} Application` },
 		{ label: "Tax Note No.", value: details.taxNoteNo || "N/A" },
-		{ label: "Note Generated Date", value: formatDate(details.noteGenerateDate) },
-		{ label: "Application Date", value: formatDate(details.applicationDate) },
+		{ label: "Note Generated Date", value: formatDate(details.noteGenerateDate, "N/A") },
+		{ label: "Application Date", value: formatDate(details.applicationDate, "N/A") },
 	];
 
 	const grossProceed = details.grossProceed || 0;

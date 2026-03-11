@@ -29,12 +29,11 @@ export const getTrustBalance = async (
 
 export const getTrustBalanceDetails = async (
 	accountNo: string,
-	currency: string,
 	pageSize?: number,
 	pageIndex?: number
 ): Promise<APIResponse<{ total: number; trustBalanceDetails: ITrustBalanceDetail[] }>> => {
 	return await fetchAPI<{ total: number; trustBalanceDetails: ITrustBalanceDetail[] }>(
-		ENDPOINTS.trustBalanceDetails(accountNo, currency, pageSize, pageIndex),
+		ENDPOINTS.trustBalanceDetails(accountNo, pageSize, pageIndex),
 		{ useAuth: true }
 	);
 };

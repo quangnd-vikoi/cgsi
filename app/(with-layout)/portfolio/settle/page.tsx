@@ -4,54 +4,62 @@ import React, { useState, useEffect, useCallback } from "react";
 import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Title from "@/components/Title";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { ContraDetailsDialog } from "./_components/ContraDetailsDialog";
 import { SummarySection } from "./_components/SummarySection";
 import { ContractsTable } from "./_components/ContractsTable";
 import type { ContractDisplay } from "./_components/ContractsTable";
-import { getContracts, getContra } from "@/lib/services/portfolioService";
+import { getContracts, getContra, depositPaynow } from "@/lib/services/portfolioService";
 import type { IContract, IContra } from "@/types";
 import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { contractsColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
+import { S2BPayButton } from "@/components/S2BPayButton";
 
 type TabType = "contracts" | "contra";
 
-// Map API IContract to display format
-const mapContract = (c: IContract, status: "Outstanding" | "Overdue"): ContractDisplay => ({
-	id: c.contractNo,
-	contractId: c.contractNo,
-	status,
-	tradeDate: c.tradeDate,
-	dueDate: c.settlementDueDate,
-	settlementCcy: c.settlementCurrency,
-	gainLoss: c.netAmount,
-	side: c.type,
-	market: c.marketCode,
-	code: c.securityName,
-});
+// Map API IContract to display format — status derived from due date
+const mapContract = (c: IContract): ContractDisplay => {
+	const due = new Date(c.settlementDueDate);
+	due.setHours(0, 0, 0, 0);
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const status = due < today ? "Overdue" : "Outstanding";
+	return {
+		id: c.contractNo,
+		contractId: c.contractNo,
+		status,
+		tradeDate: c.tradeDate,
+		dueDate: c.settlementDueDate,
+		settlementCcy: c.settlementCurrency,
+		gainLoss: c.netAmount,
+		side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
+		market: c.marketCode,
+		code: c.securityName,
+		name: c.securityName,
+	};
+};
+
+const sortByDueDate = (items: ContractDisplay[]): ContractDisplay[] =>
+	[...items].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
 // Map API IContra to display format
 const mapContra = (c: IContra): ContractDisplay => ({
 	id: c.statementNo,
 	contractId: c.statementNo,
-	status: "Contra",
+	status: "Overdue",
 	tradeDate: c.statementDate,
 	dueDate: c.lastUpdatedOn,
 	settlementCcy: c.settlementCurrency,
 	gainLoss: c.settlementNetAmount,
-	side: c.type,
+	side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
 	market: c.marketCode,
 	code: c.securityName,
+	name: c.securityName,
 	statementNo: c.statementNo,
 });
 
@@ -81,7 +89,29 @@ export default function SettlePage() {
 	const [contraLoading, setContraLoading] = useState(true);
 
 	const [exporting, setExporting] = useState(false);
+	const [paynowData, setPaynowData] = useState<{
+		s2bPayUrl: string;
+		corpId: string;
+		encStr: string;
+	} | null>(null);
 	const accountNo = selectedAccount?.accountNo;
+
+	const handlePayNow = async (contract: ContractDisplay) => {
+		if (!accountNo) return;
+		const mode = activeTab === "contracts" ? "CONTRACT" : "CONTRA";
+		const response = await depositPaynow({
+			accountNo,
+			mode,
+			amount: Math.abs(contract.gainLoss),
+			currency: "SGD",
+			refNo: contract.id,
+		});
+		if (!response.success) {
+			toast.error("PayNow Failed", response.error ?? "Please try again.");
+		} else {
+			setPaynowData(response.data);
+		}
+	};
 
 	const handleExport = async () => {
 		if (exporting || !accountNo) return;
@@ -93,7 +123,7 @@ export default function SettlePage() {
 					(pageSize, pageIndex) => getContracts(accountNo, undefined, pageSize, pageIndex),
 					(data) => data.contracts,
 				);
-				allData = items.map(c => mapContract(c, "Outstanding"));
+				allData = sortByDueDate(items.map(mapContract));
 			} else {
 				const items = await fetchAllForExport(
 					(pageSize, pageIndex) => getContra(accountNo, undefined, pageSize, pageIndex),
@@ -123,9 +153,7 @@ export default function SettlePage() {
 
 		const res = await getContracts(accountNo, undefined, itemsPerPage, pageIndex);
 
-		const contracts = res.success && res.data
-			? res.data.contracts.map(c => mapContract(c, "Outstanding"))
-			: [];
+		const contracts = res.success && res.data ? sortByDueDate(res.data.contracts.map(mapContract)) : [];
 
 		setContractsData(contracts);
 		setContractsTotal(res.data?.total ?? 0);
@@ -140,11 +168,19 @@ export default function SettlePage() {
 
 		const response = await getContra(accountNo, undefined, itemsPerPage, pageIndex);
 		if (response.success && response.data) {
-			setContraData(response.data.contra.map(mapContra));
+			setContraData(sortByDueDate(response.data.contra.map(mapContra)));
 			setContraTotal(response.data.total);
 		}
 		setContraLoading(false);
 	}, [accountNo, currentPage, itemsPerPage]);
+
+	// Auto-select first CTA account if current selection is not CTA
+	useEffect(() => {
+		if (!selectedAccount || selectedAccount.accountType !== "CTA") {
+			const ctaAccount = accounts.find((acc) => acc.accountType === "CTA");
+			if (ctaAccount) setSelectedAccount(ctaAccount);
+		}
+	}, [accounts]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	// Fetch data based on active tab
 	useEffect(() => {
@@ -158,12 +194,12 @@ export default function SettlePage() {
 	// Also fetch the inactive tab counts on mount / account change
 	useEffect(() => {
 		if (!accountNo) return;
-		getContracts(accountNo, undefined, 1, 0).then(res => {
+		getContracts(accountNo, undefined, 1, 0).then((res) => {
 			if (res.success && res.data) {
 				setContractsTotal(res.data.total);
 			}
 		});
-		getContra(accountNo, undefined, 1, 0).then(res => {
+		getContra(accountNo, undefined, 1, 0).then((res) => {
 			if (res.success && res.data) {
 				setContraTotal(res.data.total);
 			}
@@ -207,32 +243,39 @@ export default function SettlePage() {
 					<div className="bg-white pad rounded flex-1 flex flex-col">
 						{/* Account Selector & Export Button */}
 						<div className="mb-6 flex justify-between items-center">
-							<Select
-								value={selectedAccount?.accountNo}
-								onValueChange={(value) => {
-									const account = accounts.find((acc) => acc.accountNo === value);
-									setSelectedAccount(account || null);
-								}}
-							>
-								<SelectTrigger className="w-full md:max-w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
-									<SelectValue placeholder="Select trading account">
-										{selectedAccount && (
+							{!selectedAccount ? (
+								<Skeleton className="h-9 w-full md:max-w-[258px] rounded-md" />
+							) : (
+								<Select
+									value={selectedAccount.accountNo}
+									onValueChange={(value) => {
+										const account = accounts.find((acc) => acc.accountNo === value);
+										setSelectedAccount(account || null);
+									}}
+								>
+									<SelectTrigger className="w-full md:max-w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
+										<SelectValue>
 											<span className="text-sm text-typo-primary font-medium">
-												({selectedAccount.accountType || ""}) {selectedAccount.accountNo}
+												({selectedAccount.accountType || ""}){" "}
+												{selectedAccount.accountNo}
 											</span>
-										)}
-									</SelectValue>
-								</SelectTrigger>
-								<SelectContent className="w-[--radix-select-trigger-width]">
-									{accounts.map((account) => (
-										<SelectItem key={account.accountNo} value={account.accountNo}>
-											<span className="text-sm">
-												({account.accountType || ""}) {account.accountNo}
-											</span>
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
+										</SelectValue>
+									</SelectTrigger>
+									<SelectContent className="w-[--radix-select-trigger-width]">
+										{accounts.map((account) => (
+											<SelectItem
+												key={account.accountNo}
+												value={account.accountNo}
+												disabled={account.accountType !== "CTA"}
+											>
+												<span className="text-sm">
+													({account.accountType || ""}) {account.accountNo}
+												</span>
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							)}
 
 							<Button
 								variant="outline"
@@ -241,7 +284,11 @@ export default function SettlePage() {
 								onClick={handleExport}
 								disabled={exporting}
 							>
-								{exporting ? <Loader2 className="size-4 animate-spin" /> : <FileDown className="size-4" />}
+								{exporting ? (
+									<Loader2 className="size-4 animate-spin" />
+								) : (
+									<FileDown className="size-4" />
+								)}
 								Export to Excel
 							</Button>
 						</div>
@@ -253,13 +300,13 @@ export default function SettlePage() {
 									value="contracts"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contracts ({contractsTotal})
+									Contracts{" "}{contractsLoading ? <Skeleton className="inline-block h-4 w-6 rounded align-middle" /> : `(${contractsTotal})`}
 								</TabsTrigger>
 								<TabsTrigger
 									value="contra"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contra ({contraTotal})
+									Contra{" "}{contraLoading ? <Skeleton className="inline-block h-4 w-6 rounded align-middle" /> : `(${contraTotal})`}
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
@@ -272,18 +319,23 @@ export default function SettlePage() {
 							onClick={handleExport}
 							disabled={exporting}
 						>
-							{exporting ? <Loader2 className="size-4 animate-spin" /> : <FileDown className="size-4" />}
+							{exporting ? (
+								<Loader2 className="size-4 animate-spin" />
+							) : (
+								<FileDown className="size-4" />
+							)}
 							Export to Excel
 						</Button>
 
 						{/* Summary Cards */}
-						<SummarySection contracts={currentData} />
+						<SummarySection contracts={currentData} loading={loading} />
 
 						{/* Table */}
 						<ContractsTable
 							contracts={currentData}
 							activeTab={activeTab}
 							onOpenContraDetails={handleOpenContraDetails}
+							onPayNow={handlePayNow}
 							loading={loading}
 						/>
 
@@ -299,6 +351,18 @@ export default function SettlePage() {
 							loading={loading}
 						/>
 					</div>
+
+					{/* PayNow S2B */}
+					{paynowData && (
+						<S2BPayButton
+							{...paynowData}
+							onAutoClick={() => setPaynowData(null)}
+							onError={() => {
+								setPaynowData(null);
+								toast.error("PayNow Failed", "Unable to launch PayNow. Please try again.");
+							}}
+						/>
+					)}
 
 					{/* Contra Details Dialog */}
 					{selectedContra && (

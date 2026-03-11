@@ -16,9 +16,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowRightLeft, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowRightLeft, ArrowUp, ArrowUpDown, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import { ASSET_CLASS_LABELS } from "@/constants/accounts";
 import Link from "next/link";
 import { PortfolioType } from "@/types";
 import type { IPortfolioHolding } from "@/types";
@@ -39,6 +40,28 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
     const [exporting, setExporting] = useState(false);
+    const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding>("securityName");
+    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+    const handleSort = (column: keyof IPortfolioHolding) => {
+        if (column === sortColumn) {
+            setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+        } else {
+            setSortColumn(column);
+            setSortDirection("desc");
+        }
+    };
+
+    const sortedHoldings = [...holdings].sort((a, b) => {
+        const aVal = a[sortColumn];
+        const bVal = b[sortColumn];
+        const dir = sortDirection === "asc" ? 1 : -1;
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return dir;
+        if (bVal == null) return -dir;
+        if (typeof aVal === "number" && typeof bVal === "number") return (aVal - bVal) * dir;
+        return String(aVal).localeCompare(String(bVal)) * dir;
+    });
 
     const handleExport = async () => {
         if (exporting || !selectedAccount?.accountNo) return;
@@ -146,17 +169,36 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                 <div className="overflow-x-auto  rounded">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
-                                <TableHead>Asset Class</TableHead>
-                                <TableHead>Market</TableHead>
-                                <TableHead>Code</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead className="text-right">Total Qty</TableHead>
-                                <TableHead className="text-right">Earmarked</TableHead>
-                                <TableHead className="text-right">Avail Qty</TableHead>
-                                <TableHead className="text-right">Currency</TableHead>
-                                <TableHead className="text-right">Closing Price</TableHead>
-                                <TableHead className="text-right">Market Value</TableHead>
+                            <TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs md:[&>th]:text-sm [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
+                                {(
+                                    [
+                                        { label: "Asset Class", col: "assetClass" as const },
+                                        { label: "Market", col: "marketCode" as const },
+                                        { label: "Security Code", col: "securityCode" as const },
+                                        { label: "Security Name", col: "securityName" as const },
+                                        { label: "Total Qty", col: "totalQty" as const, right: true },
+                                        { label: "Avail. Qty", col: "availQty" as const, right: true },
+                                        { label: "Earmarked Qty", col: "earmarkQty" as const, right: true },
+                                        { label: "Currency", col: "currency" as const, right: true },
+                                        { label: "Closing Price", col: "closingPrice" as const, right: true },
+                                        { label: "Market Value", col: "marketValue" as const, right: true },
+                                    ] as { label: string; col: keyof IPortfolioHolding; right?: boolean }[]
+                                ).map(({ label, col, right }) => (
+                                    <TableHead
+                                        key={col}
+                                        className={right ? "text-right" : ""}
+                                        onClick={() => handleSort(col)}
+                                    >
+                                        <button className={`inline-flex items-center gap-1 cursor-pointer select-none${right ? " flex-row-reverse" : ""}`}>
+                                            {label}
+                                            {sortColumn === col ? (
+                                                sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
+                                            ) : (
+                                                <ArrowUpDown className="size-3 text-typo-secondary/50" />
+                                            )}
+                                        </button>
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -175,18 +217,18 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                holdings.map((item, index) => (
+                                sortedHoldings.map((item, index) => (
                                     <TableRow
                                         key={`${item.securityCode}-${index}`}
                                         className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
                                     >
-                                        <TableCell>{item.assetClass}</TableCell>
+                                        <TableCell>{ASSET_CLASS_LABELS[item.assetClass] ?? item.assetClass}</TableCell>
                                         <TableCell>{item.marketCode}</TableCell>
                                         <TableCell>{item.securityCode}</TableCell>
                                         <TableCell>{item.securityName}</TableCell>
                                         <TableCell className="text-right">{item.totalQty}</TableCell>
-                                        <TableCell className="text-right">{item.earmarkQty ?? 0}</TableCell>
                                         <TableCell className="text-right">{item.availQty ?? 0}</TableCell>
+                                        <TableCell className="text-right">{item.earmarkQty ?? 0}</TableCell>
                                         <TableCell className="text-right">{item.currency}</TableCell>
                                         <TableCell className="text-right">
                                             {item.closingPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
