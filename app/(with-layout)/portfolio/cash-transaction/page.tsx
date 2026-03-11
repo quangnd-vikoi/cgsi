@@ -14,14 +14,8 @@ import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { cashTransactionColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
 
-const timePeriods = [
-	{ value: "last30days", label: "Current Month" },
-	{ value: "last60days", label: "Last 60 Days" },
-];
-
 export default function CashTransactionPage() {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
-	const [selectedPeriod, setSelectedPeriod] = useState("last30days");
 	const selectedCurrency = "SGD";
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -118,20 +112,6 @@ export default function CashTransactionPage() {
 									</SelectContent>
 								</Select>
 
-								<Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-									<SelectTrigger className="w-full md:w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
-										<SelectValue placeholder="Select period">
-											{timePeriods.find((p) => p.value === selectedPeriod)?.label}
-										</SelectValue>
-									</SelectTrigger>
-									<SelectContent className="w-[--radix-select-trigger-width]">
-										{timePeriods.map((period) => (
-											<SelectItem key={period.value} value={period.value}>
-												<span className="text-sm">{period.label}</span>
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
 							</div>
 
 							<Button

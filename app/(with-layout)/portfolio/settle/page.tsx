@@ -22,13 +22,28 @@ import { S2BPayButton } from "@/components/S2BPayButton";
 
 type TabType = "contracts" | "contra";
 
+// Parse date strings of formats: YYYY-MM-DD, YYYYMMDD, DD/MM/YYYY, ISO
+const parseDate = (s: string | null | undefined): Date | null => {
+	if (!s) return null;
+	let d: Date;
+	if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+		const [day, month, year] = s.split("/");
+		d = new Date(+year, +month - 1, +day);
+	} else if (/^\d{8}$/.test(s)) {
+		d = new Date(`${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`);
+	} else {
+		d = new Date(s);
+	}
+	return isNaN(d.getTime()) ? null : d;
+};
+
 // Map API IContract to display format — status derived from due date
 const mapContract = (c: IContract): ContractDisplay => {
-	const due = new Date(c.settlementDueDate);
-	due.setHours(0, 0, 0, 0);
+	const due = parseDate(c.settlementDueDate);
+	if (due) due.setHours(0, 0, 0, 0);
 	const today = new Date();
 	today.setHours(0, 0, 0, 0);
-	const status = due < today ? "Overdue" : "Outstanding";
+	const status = due && due < today ? "Overdue" : "Outstanding";
 	return {
 		id: c.contractNo,
 		contractId: c.contractNo,
@@ -39,29 +54,43 @@ const mapContract = (c: IContract): ContractDisplay => {
 		gainLoss: c.netAmount,
 		side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
 		market: c.marketCode,
-		code: c.securityName,
 		name: c.securityName,
+		tradeCcy: c.tradedCurrency,
+		price: c.price,
+		quantity: c.quantity,
+		mode: c.channel,
+		remarks: c.remark,
 	};
 };
 
 const sortByDueDate = (items: ContractDisplay[]): ContractDisplay[] =>
-	[...items].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+	[...items].sort((a, b) => (parseDate(a.dueDate)?.getTime() ?? 0) - (parseDate(b.dueDate)?.getTime() ?? 0));
 
 // Map API IContra to display format
-const mapContra = (c: IContra): ContractDisplay => ({
-	id: c.statementNo,
-	contractId: c.statementNo,
-	status: "Overdue",
-	tradeDate: c.statementDate,
-	dueDate: c.lastUpdatedOn,
-	settlementCcy: c.settlementCurrency,
-	gainLoss: c.settlementNetAmount,
-	side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
-	market: c.marketCode,
-	code: c.securityName,
-	name: c.securityName,
-	statementNo: c.statementNo,
-});
+const mapContra = (c: IContra): ContractDisplay => {
+	const base = parseDate(c.statementDate);
+	const due = base ? new Date(base.getTime()) : null;
+	if (due) due.setDate(due.getDate() + 7);
+	const today = new Date(new Date().setHours(0, 0, 0, 0));
+	return {
+		id: c.statementNo,
+		contractId: c.statementNo,
+		status: due ? (due < today ? "Overdue" : "Outstanding") : "Outstanding",
+		tradeDate: c.statementDate ?? "",
+		dueDate: due ? `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, "0")}-${String(due.getDate()).padStart(2, "0")}` : "",
+		settlementCcy: c.settlementCurrency,
+		gainLoss: c.settlementNetAmount,
+		side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
+		market: c.marketCode,
+		name: c.securityName,
+		tradeCcy: "",
+		price: 0,
+		quantity: 0,
+		mode: "",
+		remarks: "",
+		statementNo: c.statementNo,
+	};
+};
 
 export default function SettlePage() {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();

@@ -64,5 +64,5 @@ export const contractsColumns: ExportColumn<ContractDisplay>[] = [
 	{ header: "Gain/Loss", accessor: "gainLoss" },
 	{ header: "Side", accessor: "side" },
 	{ header: "Market", accessor: "market" },
-	{ header: "Code", accessor: "code" },
+	{ header: "Code", accessor: "name" },
 ];

@@ -38,7 +38,7 @@ const defaultChartConfig = {
         color: "#003E86",
     },
     structured: {
-        label: "Structured Products",
+        label: "Warrants",
         color: "#005CC8",
     },
     bonds: {
