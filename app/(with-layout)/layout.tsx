@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SheetManager } from "@/app/(minimal)/sidebar/SheetManager";
 import { NotificationPolling } from "@/components/NotificationPolling";
 import { DataInitializer } from "@/components/DataInitializer";
+import { RouteGuard } from "@/components/RouteGuard";
 
 export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
@@ -17,7 +18,9 @@ export default function MainLayout({ children }: Readonly<{ children: React.Reac
 
 			<AnnouncementBar />
 
-			<main className="flex-1 flex flex-col min-h-0">{children}</main>
+			<main className="flex-1 flex flex-col min-h-0">
+				<RouteGuard>{children}</RouteGuard>
+			</main>
 
 			<footer>
 				<Footer />

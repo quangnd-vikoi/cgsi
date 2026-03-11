@@ -4,21 +4,18 @@
 import { useEffect } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { useUserTypeStore } from "@/stores/userTypeStore";
 import { getUserProfile, getUserAccounts } from "@/lib/services/profileService";
+import { deriveUserType } from "@/constants/userTypes";
 
 /**
  * DataInitializer Component
  *
  * Fetches critical user data as soon as the user accesses the application:
- * 1. User Profile (name, email, mobile, etc.)
- * 2. Trading Accounts (accountNo is used everywhere)
+ * 1. User Profile (name, email, mobile, userCategory)
+ * 2. Trading Accounts (accountNo, accountType)
  *
- * Similar to NotificationPolling, this component:
- * - Runs on mount
- * - Fetches data once and stores in Zustand
- * - Prevents duplicate API calls with initialization flags
- *
- * Usage: Add to root layout alongside NotificationPolling
+ * After both resolve, derives and persists the user type for route access control.
  */
 export function DataInitializer() {
 	const profile = useUserStore((state) => state.profile);
@@ -26,59 +23,53 @@ export function DataInitializer() {
 	const setAccounts = useTradingAccountStore((state) => state.setAccounts);
 	const setSelectedAccount = useTradingAccountStore((state) => state.setSelectedAccount);
 
-	const fetchUserProfile = async () => {
-		try {
-			const response = await getUserProfile();
+	useEffect(() => {
+		if (profile && tradingAccountsInitialized) return;
 
-			if (!response.success) {
-				console.error("Failed to fetch user profile:", response.error);
-			}
-			// Note: getUserProfile automatically syncs to userStore (see profileService.ts:38)
-		} catch (err) {
-			console.error("Error fetching user profile:", err);
-		}
-	};
+		const initializeData = async () => {
+			try {
+				const [profileResponse, accountsResponse] = await Promise.all([
+					profile ? Promise.resolve(null) : getUserProfile(),
+					tradingAccountsInitialized ? Promise.resolve(null) : getUserAccounts(),
+				]);
 
-	// Fetch trading accounts on mount (if not already loaded)
-	const fetchTradingAccounts = async () => {
-		try {
-			const response = await getUserAccounts();
-
-			if (response.success && response.data) {
-				const ACCOUNT_TYPE_MAP: Record<string, string> = { ICASH: "iCash" };
-				const normalized = response.data.map((acc) => ({
-					...acc,
-					accountType: acc.accountType
-						? (ACCOUNT_TYPE_MAP[acc.accountType] ?? acc.accountType)
-						: acc.accountType,
-				}));
-				setAccounts(normalized as typeof response.data);
-
-				// Auto-select first account as default
-				if (normalized.length > 0) {
-					setSelectedAccount(normalized[0] as (typeof response.data)[0]);
+				if (profileResponse && !profileResponse.success) {
+					console.error("Failed to fetch user profile:", profileResponse.error);
 				}
-			} else {
-				console.error("Failed to fetch trading accounts:", response.error);
+
+				let normalizedAccounts = useTradingAccountStore.getState().accounts;
+
+				if (accountsResponse?.success && accountsResponse.data) {
+					const ACCOUNT_TYPE_MAP: Record<string, string> = { ICASH: "iCash" };
+					normalizedAccounts = accountsResponse.data.map((acc) => ({
+						...acc,
+						accountType: acc.accountType
+							? (ACCOUNT_TYPE_MAP[acc.accountType] ?? acc.accountType)
+							: acc.accountType,
+					})) as typeof accountsResponse.data;
+
+					setAccounts(normalizedAccounts);
+
+					if (normalizedAccounts.length > 0) {
+						setSelectedAccount(normalizedAccounts[0]);
+					}
+				} else if (accountsResponse && !accountsResponse.success) {
+					console.error("Failed to fetch trading accounts:", accountsResponse.error);
+				}
+
+				// Derive user type from combined data
+				const userCategory =
+					profileResponse?.data?.userCategory ??
+					useUserStore.getState().profile?.userCategoryId;
+				const derived = deriveUserType(userCategory, normalizedAccounts);
+				useUserTypeStore.getState().setUserType(derived);
+			} catch (err) {
+				console.error("Error initializing data:", err);
 			}
-		} catch (err) {
-			console.error("Error fetching trading accounts:", err);
-		}
-	};
+		};
 
-	useEffect(() => {
-		if (!profile) {
-			fetchUserProfile();
-		}
+		initializeData();
 	}, []);
 
-	// Initialize trading accounts on mount
-	useEffect(() => {
-		if (!tradingAccountsInitialized) {
-			fetchTradingAccounts();
-		}
-	}, []);
-
-	// This component doesn't render anything
 	return null;
 }

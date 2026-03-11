@@ -34,6 +34,8 @@ export interface IEventProps {
 
 export type PortfolioType = "CTA" | "MTA" | "SBL" | "CUT" | "iCash";
 
+export type AccountType = PortfolioType | "INDV" | "JOINT" | "CORP";
+
 export type SheetType =
 	| "notification"
 	| "profile"
@@ -118,12 +120,13 @@ export interface UserInfoResponse {
 	userName: string;
 	userEmail: string;
 	userMobile: string;
+	userCategory: string;
 }
 
 // Trading Account Types
 export interface TradingAccount {
 	accountNo: string;
-	accountType?: PortfolioType;
+	accountType?: AccountType;
 	trName?: string;
 	trCode?: string;
 	eps?: string;

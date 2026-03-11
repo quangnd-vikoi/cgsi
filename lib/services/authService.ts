@@ -1,6 +1,7 @@
 import { postAPI } from "@/lib/api/client";
 import { authEndpoints } from "@/lib/api/endpoints";
 import { useAuthStore } from "@/stores/authStore";
+import { useUserTypeStore } from "@/stores/userTypeStore";
 
 export interface TokenResponse {
 	idToken: string;
@@ -38,6 +39,7 @@ export const redirectToLogin = (): void => {
 
 export const logout = (): void => {
 	clearTokens();
+	useUserTypeStore.getState().clearUserType();
 	if (isBrowser()) {
 		localStorage.removeItem("announcement-dismissed");
 		window.location.href = LOGOUT_URL;
