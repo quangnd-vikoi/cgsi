@@ -12,7 +12,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 // Display type for the contracts/contra table (mapped from API IContract/IContra)
 export interface ContractDisplay {
@@ -79,12 +79,13 @@ const tdBase = "text-xs md:text-sm text-typo-primary whitespace-nowrap px-4 py-3
 
 export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPayNow, loading = false }: ContractsTableProps) {
 	const COLS = activeTab === "contra" ? CONTRA_COLS : CONTRACT_COLS;
-	const [sortColumn, setSortColumn] = useState<SortCol>("dueDate");
+	const [sortColumn, setSortColumn] = useState<SortCol | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const handleSort = (col: SortCol) => {
 		if (col === sortColumn) {
-			setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+			if (sortDirection === "asc") setSortDirection("desc");
+			else setSortColumn(null);
 		} else {
 			setSortColumn(col);
 			setSortDirection("asc");
@@ -92,6 +93,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 	};
 
 	const sorted = [...contracts].sort((a, b) => {
+		if (!sortColumn) return 0;
 		const aVal = a[sortColumn];
 		const bVal = b[sortColumn];
 		const dir = sortDirection === "asc" ? 1 : -1;
@@ -117,7 +119,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 									{label}
 									{sortColumn === col
 										? sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
-										: <ArrowUpDown className="size-3 text-typo-secondary/50" />
+										: <ArrowUp className="size-3 invisible" />
 									}
 								</button>
 							</TableHead>

@@ -13,7 +13,6 @@ import {
 	ArrowDown,
 	ArrowRightLeft,
 	ArrowUp,
-	ArrowUpDown,
 	EllipsisVertical,
 	Expand,
 	FileOutput,
@@ -90,19 +89,21 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 	const [loading, setLoading] = useState(true);
 	const { selectedAccount } = useTradingAccountStore();
 	const [exporting, setExporting] = useState(false);
-	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding>("securityName");
+	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const handleSort = (column: keyof IPortfolioHolding) => {
 		if (column === sortColumn) {
-			setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+			if (sortDirection === "asc") setSortDirection("desc");
+			else setSortColumn(null);
 		} else {
 			setSortColumn(column);
-			setSortDirection("desc");
+			setSortDirection("asc");
 		}
 	};
 
 	const sortedHoldings = [...holdings].sort((a, b) => {
+		if (!sortColumn) return 0;
 		const aVal = a[sortColumn];
 		const bVal = b[sortColumn];
 		const dir = sortDirection === "asc" ? 1 : -1;
@@ -256,7 +257,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 													<ArrowDown className="size-3" />
 												)
 											) : (
-												<ArrowUpDown className="size-3 text-typo-secondary/50" />
+												<ArrowUp className="size-3 invisible" />
 											)}
 										</button>
 									</TableHead>

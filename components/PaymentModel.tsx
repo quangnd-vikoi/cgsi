@@ -52,7 +52,7 @@ const paymentMethods: PaymentMethod[] = [
 interface PayNowDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onProceed: (accountNo: string, amount: number) => Promise<void>;
+	onProceed: (accountNo: string, amount: number, accountType: string) => Promise<void>;
 }
 
 function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
@@ -81,8 +81,9 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 	};
 
 	const handleProceed = async () => {
+		const acc = accounts.find((a) => a.accountNo === selectedAccount);
 		setIsLoading(true);
-		await onProceed(selectedAccount, parseFloat(amount));
+		await onProceed(selectedAccount, parseFloat(amount), acc?.accountType ?? "");
 		setIsLoading(false);
 		onOpenChange(false);
 	};
@@ -179,10 +180,11 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		}
 	};
 
-	const handleProceed = async (accountNo: string, amount: number) => {
+	const handleProceed = async (accountNo: string, amount: number, accountType: string) => {
+		const mode = accountType === "iCash" ? "ICASH" : "DEPOSIT";
 		const response = await depositPaynow({
 			accountNo,
-			mode: "DEPOSIT",
+			mode,
 			amount,
 			currency: "SGD",
 			refNo: `PAYNOW-${Date.now()}`,

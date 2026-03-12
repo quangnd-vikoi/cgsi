@@ -694,9 +694,11 @@ export interface ILoanedShare {
 	lastUpdatedOn: string;
 }
 
+export type PayNowMode = "CONTRA" | "CONTRACT" | "DEPOSIT" | "ICASH" | "DONATE";
+
 export interface IPaynowTopUp {
 	accountNo: string;
-	mode: string;
+	mode: PayNowMode;
 	amount: number;
 	currency: string;
 	refNo: string;

@@ -113,7 +113,7 @@ export default function CashTransactionPage() {
 								</Select>
 
 							</div>
-
+										
 							<Button
 								variant="outline"
 								size="sm"

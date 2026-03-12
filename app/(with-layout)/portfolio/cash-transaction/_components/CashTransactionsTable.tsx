@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import type { ITrustBalanceDetail } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 
 interface CashTransactionsTableProps {
 	transactions: ITrustBalanceDetail[];
@@ -24,15 +24,16 @@ const getAmount = (t: ITrustBalanceDetail) =>
 	t.credit > 0 ? t.credit : t.debit > 0 ? -t.debit : 0;
 
 export function CashTransactionsTable({ transactions, loading }: CashTransactionsTableProps) {
-	const [sortColumn, setSortColumn] = useState<SortCol>("transactionDate");
-	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+	const [sortColumn, setSortColumn] = useState<SortCol | null>(null);
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const handleSort = (col: SortCol) => {
 		if (col === sortColumn) {
-			setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+			if (sortDirection === "asc") setSortDirection("desc");
+			else setSortColumn(null);
 		} else {
 			setSortColumn(col);
-			setSortDirection("desc");
+			setSortDirection("asc");
 		}
 	};
 
@@ -40,6 +41,7 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 		col === "amount" ? getAmount(t) : t[col];
 
 	const sorted = [...transactions].sort((a, b) => {
+		if (!sortColumn) return 0;
 		const aVal = getVal(a, sortColumn);
 		const bVal = getVal(b, sortColumn);
 		const dir = sortDirection === "asc" ? 1 : -1;
@@ -72,7 +74,7 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 									{sortColumn === col ? (
 										sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
 									) : (
-										<ArrowUpDown className="size-3 text-typo-secondary/50" />
+										<ArrowUp className="size-3 invisible" />
 									)}
 								</button>
 							</TableHead>

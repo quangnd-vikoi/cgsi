@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { getFxRates } from "@/lib/services/portfolioService";
 import type { IExchangeRate } from "@/types";
 
@@ -15,19 +15,21 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
 	const [rates, setRates] = useState<IExchangeRate[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [lastUpdated, setLastUpdated] = useState(lastUpdatedProp || "");
-	const [sortColumn, setSortColumn] = useState<keyof IExchangeRate>("fromCurrency");
+	const [sortColumn, setSortColumn] = useState<keyof IExchangeRate | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	const handleSort = (col: keyof IExchangeRate) => {
 		if (col === sortColumn) {
-			setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+			if (sortDirection === "asc") setSortDirection("desc");
+			else setSortColumn(null);
 		} else {
 			setSortColumn(col);
-			setSortDirection("desc");
+			setSortDirection("asc");
 		}
 	};
 
 	const sortedRates = [...rates].sort((a, b) => {
+		if (!sortColumn) return 0;
 		const aVal = a[sortColumn];
 		const bVal = b[sortColumn];
 		const dir = sortDirection === "asc" ? 1 : -1;
@@ -39,7 +41,7 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
 		sortColumn === col ? (
 			sortDirection === "asc" ? <ArrowUp className="size-3 inline-block ml-1" /> : <ArrowDown className="size-3 inline-block ml-1" />
 		) : (
-			<ArrowUpDown className="size-3 inline-block ml-1 text-typo-secondary/50" />
+			<ArrowUp className="size-3 inline-block ml-1 invisible" />
 		);
 
 	useEffect(() => {

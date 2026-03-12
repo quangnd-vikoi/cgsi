@@ -16,7 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getSblBorrowed } from "@/lib/services/portfolioService";
@@ -38,15 +38,16 @@ export const BorrowedShares = () => {
     const { selectedAccount } = useTradingAccountStore();
     const [exporting, setExporting] = useState(false);
     type SortCol = keyof IBorrowedShare | "netQty";
-    const [sortColumn, setSortColumn] = useState<SortCol>("securityName");
+    const [sortColumn, setSortColumn] = useState<SortCol | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     const handleSort = (col: SortCol) => {
         if (col === sortColumn) {
-            setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+            if (sortDirection === "asc") setSortDirection("desc");
+            else setSortColumn(null);
         } else {
             setSortColumn(col);
-            setSortDirection("desc");
+            setSortDirection("asc");
         }
     };
 
@@ -54,6 +55,7 @@ export const BorrowedShares = () => {
         col === "netQty" ? item.borrowedQty + item.pendingIn - item.pendingOut : item[col];
 
     const sortedShares = [...borrowedShares].sort((a, b) => {
+        if (!sortColumn) return 0;
         const aVal = getVal(a, sortColumn);
         const bVal = getVal(b, sortColumn);
         const dir = sortDirection === "asc" ? 1 : -1;
@@ -175,7 +177,7 @@ export const BorrowedShares = () => {
                                             {sortColumn === col ? (
                                                 sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
                                             ) : (
-                                                <ArrowUpDown className="size-3 text-typo-secondary/50" />
+                                                <ArrowUp className="size-3 invisible" />
                                             )}
                                         </button>
                                     </TableHead>

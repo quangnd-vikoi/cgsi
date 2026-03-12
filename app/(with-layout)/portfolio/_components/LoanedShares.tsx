@@ -16,7 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
+import { ArrowDown, ArrowUp, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { getSblLoaned } from "@/lib/services/portfolioService";
@@ -37,19 +37,21 @@ export const LoanedShares = () => {
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
     const [exporting, setExporting] = useState(false);
-    const [sortColumn, setSortColumn] = useState<keyof ILoanedShare>("securityName");
+    const [sortColumn, setSortColumn] = useState<keyof ILoanedShare | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
     const handleSort = (col: keyof ILoanedShare) => {
         if (col === sortColumn) {
-            setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
+            if (sortDirection === "asc") setSortDirection("desc");
+            else setSortColumn(null);
         } else {
             setSortColumn(col);
-            setSortDirection("desc");
+            setSortDirection("asc");
         }
     };
 
     const sortedShares = [...loanedShares].sort((a, b) => {
+        if (!sortColumn) return 0;
         const aVal = a[sortColumn];
         const bVal = b[sortColumn];
         const dir = sortDirection === "asc" ? 1 : -1;
@@ -168,7 +170,7 @@ export const LoanedShares = () => {
                                             {sortColumn === col ? (
                                                 sortDirection === "asc" ? <ArrowUp className="size-3" /> : <ArrowDown className="size-3" />
                                             ) : (
-                                                <ArrowUpDown className="size-3 text-typo-secondary/50" />
+                                                <ArrowUp className="size-3 invisible" />
                                             )}
                                         </button>
                                     </TableHead>
