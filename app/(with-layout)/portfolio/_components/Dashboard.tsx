@@ -379,7 +379,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				<div className="flex w-full justify-end">
 					<Button
 						variant={"ghost"}
-						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75 hover:bg-transparent"
+						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75 hover:bg-transparent p-0 h-fit"
 						onClick={() => setShowPaymentModel(true)}
 					>
 						<p>Fund Account</p>
