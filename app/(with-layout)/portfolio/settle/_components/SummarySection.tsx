@@ -1,9 +1,10 @@
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ContractDisplay } from "./ContractsTable";
+import type { IAccountSummary } from "@/types";
 
 interface SummarySectionProps {
-	contracts: ContractDisplay[];
+	accountSummary: IAccountSummary | null;
+	activeTab: "contracts" | "contra";
 	loading?: boolean;
 }
 interface SummaryCardProps {
@@ -23,46 +24,83 @@ export function SummaryCard({ label, value, valueClassName }: SummaryCardProps) 
 	);
 }
 
-export function SummarySection({ contracts, loading = false }: SummarySectionProps) {
+function formatSignedAmount(value: number | undefined | null): { text: string; className: string } {
+	if (value === undefined || value === null) return { text: "—", className: "text-typo-primary" };
+	const abs = Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2 });
+	if (value < 0) {
+		return { text: `-${abs} SGD`, className: "text-status-error" };
+	}
+	return { text: `+${abs} SGD`, className: "text-status-success" };
+}
+
+function getPaymentMethod(account: { giro?: string; eps?: string } | null | undefined): { label: string; value: string } {
+	if (account?.giro) return { label: "Linked Payment Method - GIRO", value: account.giro };
+	if (account?.eps) return { label: "Linked Payment Method - EPS", value: account.eps };
+	return { label: "Linked Payment Method", value: "—" };
+}
+
+export function SummarySection({ accountSummary, activeTab, loading = false }: SummarySectionProps) {
 	const { selectedAccount } = useTradingAccountStore();
-
-	const sellContracts = contracts.filter((c) => c.side === "Sell");
-	const buyContracts = contracts.filter((c) => c.side === "Buy");
-
-	const totalSellAmount = sellContracts.reduce((sum, c) => sum + Math.abs(c.gainLoss), 0);
-	const totalBuyAmount = buyContracts.reduce((sum, c) => sum + Math.abs(c.gainLoss), 0);
 
 	const skeletonVal = <Skeleton className="h-5 w-28 rounded mt-1" />;
 	const skeletonLabel = <Skeleton className="h-4 w-32 rounded" />;
+	const paymentMethod = getPaymentMethod(selectedAccount);
+
+	if (activeTab === "contra") {
+		const gain = formatSignedAmount(accountSummary?.contraGain);
+		const loss = formatSignedAmount(accountSummary?.contraLoss);
+
+		return (
+			<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">
+				<div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
+					<SummaryCard
+						label={loading ? skeletonLabel : "Contra Gain"}
+						value={loading ? skeletonVal : gain.text}
+						valueClassName={loading ? undefined : gain.className}
+					/>
+
+					<SummaryCard
+						label={loading ? skeletonLabel : "Contra Loss"}
+						value={loading ? skeletonVal : loss.text}
+						valueClassName={loading ? undefined : loss.className}
+					/>
+
+					<SummaryCard
+						label={loading ? skeletonLabel : paymentMethod.label}
+						value={loading ? skeletonVal : paymentMethod.value}
+					/>
+
+					<SummaryCard
+						label={loading ? skeletonLabel : "Trading Representative"}
+						value={loading ? skeletonVal : (selectedAccount?.trName || "—")}
+					/>
+				</div>
+			</div>
+		);
+	}
+
+	// Contracts tab
+	const sell = formatSignedAmount(accountSummary?.contractsSell);
+	const buy = formatSignedAmount(accountSummary?.contractsBuy);
 
 	return (
 		<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
 				<SummaryCard
-					label={loading ? skeletonLabel : `Sell Contracts (${sellContracts.length})`}
-					value={loading ? skeletonVal : `+ ${totalSellAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} SGD`}
-					valueClassName="text-status-success"
+					label={loading ? skeletonLabel : "Sell Contracts"}
+					value={loading ? skeletonVal : sell.text}
+					valueClassName={loading ? undefined : sell.className}
 				/>
 
 				<SummaryCard
-					label={loading ? skeletonLabel : `Buy Contracts (${buyContracts.length})`}
-					value={loading ? skeletonVal : `- ${totalBuyAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })} SGD`}
-					valueClassName="text-status-error"
+					label={loading ? skeletonLabel : "Buy Contracts"}
+					value={loading ? skeletonVal : buy.text}
+					valueClassName={loading ? undefined : buy.className}
 				/>
 
 				<SummaryCard
-					label={loading ? skeletonLabel : (
-						<>
-							<span className="md:hidden">Linked Payment Method - GIRO</span>
-							<span className="hidden md:inline">Linked Payment Method</span>
-						</>
-					)}
-					value={loading ? skeletonVal : (
-						<>
-							<span className="md:hidden">(DBS) 01208923</span>
-							<span className="hidden md:inline">GIRO (DBS) 01208923</span>
-						</>
-					)}
+					label={loading ? skeletonLabel : paymentMethod.label}
+					value={loading ? skeletonVal : paymentMethod.value}
 				/>
 
 				<SummaryCard

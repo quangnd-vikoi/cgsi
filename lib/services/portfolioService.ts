@@ -2,6 +2,7 @@ import { fetchAPI, postAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { APIResponse } from "@/lib/api/types";
 import type {
+	IAccountSummary,
 	IExchangeRate,
 	ITrustBalance,
 	ITrustBalanceDetail,
@@ -16,6 +17,12 @@ import type {
 	ICDPTransfer,
 	ICDPTransferStatus,
 } from "@/types";
+
+export const getAccountSummary = async (
+	accountNo: string
+): Promise<APIResponse<IAccountSummary>> => {
+	return await fetchAPI<IAccountSummary>(ENDPOINTS.accountSummary(accountNo), { useAuth: true });
+};
 
 export const getFxRates = async (): Promise<APIResponse<IExchangeRate[]>> => {
 	return await fetchAPI<IExchangeRate[]>(ENDPOINTS.fxRates(), { useAuth: true });
@@ -136,6 +143,7 @@ export const getCdpTransferStatus = async (): Promise<APIResponse<ICDPTransferSt
 };
 
 export const portfolioService = {
+	getAccountSummary,
 	getFxRates,
 	getTrustBalance,
 	getTrustBalanceDetails,

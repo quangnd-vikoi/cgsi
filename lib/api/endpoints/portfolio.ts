@@ -12,6 +12,9 @@ export const portfolioEndpoints = {
 	/** GET /portfolio/api/v1/fx — FX exchange rates */
 	fxRates: () => `/portfolio/api/v1/fx`,
 
+	/** GET /portfolio/api/v1/accountSummary/{accountNo} */
+	accountSummary: (accountNo: string) => `/portfolio/api/v1/accountSummary/${accountNo}`,
+
 	/** GET /portfolio/api/v1/trustBalance/{accountNo} */
 	trustBalance: (accountNo: string) => `/portfolio/api/v1/trustBalance/${accountNo}`,
 

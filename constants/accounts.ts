@@ -17,3 +17,47 @@ export const ACCOUNT_TYPE_LABELS: Record<PortfolioType, string> = {
 };
 
 export const ACCOUNT_TYPE_PRIORITY: PortfolioType[] = ["CTA", "CUT", "iCash", "MTA", "SBL"];
+
+/** Maps legacy currency symbol → ISO currency code (API returns legacy format) */
+export const LEGACY_CURRENCY_TO_ISO: Record<string, string> = {
+	"S$": "SGD",
+	"M$": "MYR",
+	"H$": "HKD",
+	"HK$": "HKD",
+	"US$": "USD",
+	PES: "PHP",
+	RP: "IDR",
+	STL: "GBP",
+	YEN: "JPY",
+	BTS: "THB",
+	"A$": "AUD",
+	"NZ$": "NZD",
+	RMB: "CNY",
+};
+
+/** Maps currency code → market code (temporary: API returns currency instead of market) */
+export const CURRENCY_TO_MARKET: Record<string, string> = {
+	SGD: "SG",
+	MYR: "MY",
+	HKD: "HK",
+	USD: "US",
+	THB: "TH",
+	IDR: "ID",
+	AUD: "AU",
+	GBP: "UK",
+	JPY: "JP",
+	KRW: "KR",
+	NOK: "NO",
+	NZD: "NZ",
+	PHP: "PH",
+	TWD: "TW",
+	ANG: "NL",
+	CNH: "CN",
+	CAD: "CA",
+	FRF: "FR",
+	SEK: "SE",
+	USS: "US",
+	DEM: "DK",
+	USN: "US",
+	VND: "VN",
+};

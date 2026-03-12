@@ -13,8 +13,9 @@ import { ContraDetailsDialog } from "./_components/ContraDetailsDialog";
 import { SummarySection } from "./_components/SummarySection";
 import { ContractsTable } from "./_components/ContractsTable";
 import type { ContractDisplay } from "./_components/ContractsTable";
-import { getContracts, getContra, depositPaynow } from "@/lib/services/portfolioService";
-import type { IContract, IContra } from "@/types";
+import { LEGACY_CURRENCY_TO_ISO } from "@/constants/accounts";
+import { getContracts, getContra, depositPaynow, getAccountSummary } from "@/lib/services/portfolioService";
+import type { IContract, IContra, IAccountSummary } from "@/types";
 import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { contractsColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
@@ -50,12 +51,12 @@ const mapContract = (c: IContract): ContractDisplay => {
 		status,
 		tradeDate: c.tradeDate,
 		dueDate: c.settlementDueDate,
-		settlementCcy: c.settlementCurrency,
+		settlementCcy: LEGACY_CURRENCY_TO_ISO[c.settlementCurrency] ?? c.settlementCurrency,
 		gainLoss: c.netAmount,
 		side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
 		market: c.marketCode,
 		name: c.securityName,
-		tradeCcy: c.tradedCurrency,
+		tradeCcy: LEGACY_CURRENCY_TO_ISO[c.tradedCurrency] ?? c.tradedCurrency,
 		price: c.price,
 		quantity: c.quantity,
 		mode: c.channel,
@@ -78,7 +79,7 @@ const mapContra = (c: IContra): ContractDisplay => {
 		status: due ? (due < today ? "Overdue" : "Outstanding") : "Outstanding",
 		tradeDate: c.statementDate ?? "",
 		dueDate: due ? `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, "0")}-${String(due.getDate()).padStart(2, "0")}` : "",
-		settlementCcy: c.settlementCurrency,
+		settlementCcy: LEGACY_CURRENCY_TO_ISO[c.settlementCurrency] ?? c.settlementCurrency,
 		gainLoss: c.settlementNetAmount,
 		side: c.type?.toUpperCase() === "B" ? "BUY" : c.type?.toUpperCase() === "S" ? "SELL" : c.type,
 		market: c.marketCode,
@@ -111,11 +112,16 @@ export default function SettlePage() {
 	const [contractsData, setContractsData] = useState<ContractDisplay[]>([]);
 	const [contractsTotal, setContractsTotal] = useState(0);
 	const [contractsLoading, setContractsLoading] = useState(true);
+	const [contractsCountLoaded, setContractsCountLoaded] = useState(false);
 
 	// Contra tab data
 	const [contraData, setContraData] = useState<ContractDisplay[]>([]);
 	const [contraTotal, setContraTotal] = useState(0);
 	const [contraLoading, setContraLoading] = useState(true);
+	const [contraCountLoaded, setContraCountLoaded] = useState(false);
+
+	const [accountSummary, setAccountSummary] = useState<IAccountSummary | null>(null);
+	const [summaryLoading, setSummaryLoading] = useState(true);
 
 	const [exporting, setExporting] = useState(false);
 	const [paynowData, setPaynowData] = useState<{
@@ -220,18 +226,32 @@ export default function SettlePage() {
 		}
 	}, [activeTab, fetchContracts, fetchContra]);
 
-	// Also fetch the inactive tab counts on mount / account change
+	// Fetch both tab counts on mount / account change so badges always show totals
 	useEffect(() => {
 		if (!accountNo) return;
+		setContractsCountLoaded(false);
+		setContraCountLoaded(false);
 		getContracts(accountNo, undefined, 1, 0).then((res) => {
 			if (res.success && res.data) {
 				setContractsTotal(res.data.total);
 			}
+			setContractsCountLoaded(true);
 		});
 		getContra(accountNo, undefined, 1, 0).then((res) => {
 			if (res.success && res.data) {
 				setContraTotal(res.data.total);
 			}
+			setContraCountLoaded(true);
+		});
+	}, [accountNo]);
+
+	// Fetch account summary on mount / account change
+	useEffect(() => {
+		if (!accountNo) return;
+		setSummaryLoading(true);
+		getAccountSummary(accountNo).then((res) => {
+			setAccountSummary(res.success && res.data ? res.data : null);
+			setSummaryLoading(false);
 		});
 	}, [accountNo]);
 
@@ -334,19 +354,19 @@ export default function SettlePage() {
 									value="contracts"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contracts{" "}{contractsLoading ? <Skeleton className="inline-block h-4 w-6 rounded align-middle" /> : `(${contractsTotal})`}
+									Contracts{" "}{contractsCountLoaded ? `(${contractsTotal})` : <Skeleton className="inline-block h-4 w-6 rounded align-middle" />}
 								</TabsTrigger>
 								<TabsTrigger
 									value="contra"
 									className="border-b-2 border-transparent rounded-none data-[state=active]:border-cgs-blue data-[state=active]:text-cgs-blue pb-2.5"
 								>
-									Contra{" "}{contraLoading ? <Skeleton className="inline-block h-4 w-6 rounded align-middle" /> : `(${contraTotal})`}
+									Contra{" "}{contraCountLoaded ? `(${contraTotal})` : <Skeleton className="inline-block h-4 w-6 rounded align-middle" />}
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
 
 						{/* Summary Cards */}
-						<SummarySection contracts={currentData} loading={loading} />
+						<SummarySection accountSummary={accountSummary} activeTab={activeTab} loading={summaryLoading} />
 
 						{/* Table */}
 						<ContractsTable

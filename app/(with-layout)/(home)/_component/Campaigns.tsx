@@ -120,10 +120,7 @@ const Campaigns = () => {
 						(campaign, index, self) =>
 							index === self.findIndex((c) => c.SEO_Page_Name === campaign.SEO_Page_Name)
 					);
-					// TODO: remove duplicate when API returns enough data (>6)
-					const duplicated = [...uniqueCampaigns, ...uniqueCampaigns];
-					setCampaigns(duplicated.slice(0, 6));
-					// Original: setCampaigns(uniqueCampaigns.slice(0, 6));
+					setCampaigns(uniqueCampaigns.slice(0, 6));
 				}
 			} finally {
 				setLoading(false);

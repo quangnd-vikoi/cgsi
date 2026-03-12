@@ -90,10 +90,7 @@ const Events = ({ imageClassName }: EventsProps) => {
 						(event, index, self) =>
 							index === self.findIndex((e) => e.SEO_Page_Name === event.SEO_Page_Name)
 					);
-					// TODO: remove duplicate when API returns enough data (>6)
-					const duplicated = [...uniqueEvents, ...uniqueEvents];
-					setEvents(duplicated.slice(0, 6));
-					// Original: setEvents(uniqueEvents.slice(0, 6));
+					setEvents(uniqueEvents.slice(0, 6));
 				}
 			} catch (error) {
 				console.error("Failed to fetch events:", error);

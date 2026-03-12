@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { LEGACY_CURRENCY_TO_ISO } from "@/constants/accounts";
 import Alert from "@/components/Alert";
 import {
 	Table,
@@ -136,7 +137,7 @@ export function ContraDetailsDialog({
 											<TableCell>{detail.tradeDate}</TableCell>
 											<TableCell>{detail.contractNo}</TableCell>
 											<TableCell>{detail.securityName}</TableCell>
-											<TableCell>{detail.settlementCurrency}</TableCell>
+											<TableCell>{LEGACY_CURRENCY_TO_ISO[detail.settlementCurrency] ?? detail.settlementCurrency}</TableCell>
 											<TableCell
 												className={`text-right ${detail.settlementNetAmount >= 0
 													? "!text-status-success"

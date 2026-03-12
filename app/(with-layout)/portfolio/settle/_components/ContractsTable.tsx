@@ -44,32 +44,35 @@ interface ContractsTableProps {
 
 type SortCol = keyof Omit<ContractDisplay, "id" | "statementNo">;
 
-const CONTRACT_COLS: { label: string; col: SortCol; right?: boolean; w: string }[] = [
-	{ label: "Contract ID",    col: "contractId",   w: "min-w-[120px]" },
-	{ label: "Status",         col: "status",        w: "min-w-[100px]" },
-	{ label: "Due Date",       col: "dueDate",       w: "min-w-[110px]" },
-	{ label: "Settlement Ccy", col: "settlementCcy", w: "min-w-[120px]", right: true },
-	{ label: "Gain/Loss",      col: "gainLoss",      w: "min-w-[110px]", right: true },
-	{ label: "Trade Date",     col: "tradeDate",     w: "min-w-[110px]" },
-	{ label: "Side",           col: "side",          w: "min-w-[70px]" },
-	{ label: "Market",         col: "market",        w: "min-w-[80px]" },
-	{ label: "Name",           col: "name",          w: "min-w-[140px]" },
-	{ label: "Trade Ccy",      col: "tradeCcy",      w: "min-w-[90px]", right: true },
-	{ label: "Price",          col: "price",         w: "min-w-[90px]", right: true },
-	{ label: "Quantity",       col: "quantity",      w: "min-w-[90px]", right: true },
-	{ label: "Mode",           col: "mode",          w: "min-w-[80px]" },
-	{ label: "Remarks",        col: "remarks",       w: "min-w-[120px]" },
+// Shared first 5 columns — fixed widths so both tabs align perfectly
+const SHARED_COLS: { label: string; col: SortCol; right?: boolean; w: string; skeletonW: string }[] = [
+	{ label: "ID",             col: "contractId",   w: "w-[130px] min-w-[130px] max-w-[130px]", skeletonW: "w-20" },
+	{ label: "Status",         col: "status",        w: "w-[110px] min-w-[110px] max-w-[110px]", skeletonW: "w-16" },
+	{ label: "Due Date",       col: "dueDate",       w: "w-[120px] min-w-[120px] max-w-[120px]", skeletonW: "w-20" },
+	{ label: "Settlement Ccy", col: "settlementCcy", w: "w-[130px] min-w-[130px] max-w-[130px]", right: true, skeletonW: "w-10" },
+	{ label: "Gain/Loss",      col: "gainLoss",      w: "w-[120px] min-w-[120px] max-w-[120px]", right: true, skeletonW: "w-16" },
 ];
 
-const CONTRA_COLS: { label: string; col: SortCol; right?: boolean; w: string }[] = [
-	{ label: "Contra ID",      col: "contractId",   w: "min-w-[120px]" },
-	{ label: "Status",         col: "status",        w: "min-w-[100px]" },
-	{ label: "Due Date",       col: "dueDate",       w: "min-w-[110px]" },
-	{ label: "Settlement Ccy", col: "settlementCcy", w: "min-w-[120px]", right: true },
-	{ label: "Gain/Loss",      col: "gainLoss",      w: "min-w-[110px]", right: true },
-	{ label: "Statement Date", col: "tradeDate",     w: "min-w-[120px]" },
-	{ label: "Market",         col: "market",        w: "min-w-[80px]" },
-	{ label: "Name",           col: "name",          w: "min-w-[140px]" },
+const CONTRACT_COLS: { label: string; col: SortCol; right?: boolean; w: string; skeletonW: string }[] = [
+	{ ...SHARED_COLS[0], label: "Contract ID" },
+	...SHARED_COLS.slice(1),
+	{ label: "Trade Date",     col: "tradeDate",     w: "min-w-[110px]", skeletonW: "w-18" },
+	{ label: "Side",           col: "side",          w: "min-w-[70px]", skeletonW: "w-8" },
+	{ label: "Market",         col: "market",        w: "min-w-[80px]", skeletonW: "w-10" },
+	{ label: "Name",           col: "name",          w: "min-w-[140px]", skeletonW: "w-24" },
+	{ label: "Trade Ccy",      col: "tradeCcy",      w: "min-w-[90px]", right: true, skeletonW: "w-10" },
+	{ label: "Price",          col: "price",         w: "min-w-[90px]", right: true, skeletonW: "w-14" },
+	{ label: "Quantity",       col: "quantity",      w: "min-w-[90px]", right: true, skeletonW: "w-12" },
+	{ label: "Mode",           col: "mode",          w: "min-w-[80px]", skeletonW: "w-12" },
+	{ label: "Remarks",        col: "remarks",       w: "min-w-[120px]", skeletonW: "w-20" },
+];
+
+const CONTRA_COLS: { label: string; col: SortCol; right?: boolean; w: string; skeletonW: string }[] = [
+	{ ...SHARED_COLS[0], label: "Contra ID" },
+	...SHARED_COLS.slice(1),
+	{ label: "Statement Date", col: "tradeDate",     w: "min-w-[120px]", skeletonW: "w-18" },
+	{ label: "Market",         col: "market",        w: "min-w-[80px]", skeletonW: "w-10" },
+	{ label: "Name",           col: "name",          w: "min-w-[140px]", skeletonW: "w-24" },
 ];
 
 const ACTION_W = "min-w-[120px]";
@@ -133,13 +136,13 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 					{loading ? (
 						Array.from({ length: 5 }).map((_, i) => (
 							<TableRow key={i} className="border-b border-stroke-secondary">
-								{COLS.map(({ col, w }) => (
+								{COLS.map(({ col, w, skeletonW }) => (
 									<TableCell key={col} className={`${tdBase} ${w}`}>
-										<Skeleton className="h-4 w-full" />
+										<Skeleton className={`h-4 ${skeletonW} rounded`} />
 									</TableCell>
 								))}
 								<TableCell className={`${tdBase} ${ACTION_W}`}>
-									<Skeleton className="h-8 w-full rounded" />
+									<Skeleton className="h-8 w-20 rounded" />
 								</TableCell>
 							</TableRow>
 						))
@@ -154,15 +157,15 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 							key={contract.id}
 							className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50"
 						>
-							<TableCell className={`${tdBase} min-w-[120px]`}>{contract.contractId}</TableCell>
-							<TableCell className={`${tdBase} min-w-[100px]`}>
+							<TableCell className={`${tdBase} w-[130px] min-w-[130px] max-w-[130px]`}>{contract.contractId}</TableCell>
+							<TableCell className={`${tdBase} w-[110px] min-w-[110px] max-w-[110px]`}>
 								<span className={contract.status === "Overdue" ? "text-status-error" : "text-typo-primary"}>
 									{contract.status}
 								</span>
 							</TableCell>
-							<TableCell className={`${tdBase} min-w-[110px]`}>{fmtDate(contract.dueDate)}</TableCell>
-							<TableCell className={`${tdBase} min-w-[120px] text-right`}>{contract.settlementCcy}</TableCell>
-							<TableCell className={`${tdBase} min-w-[110px] text-right ${["SELL", "CR"].includes(contract.side) ? "text-status-success" : "text-status-error"}`}>
+							<TableCell className={`${tdBase} w-[120px] min-w-[120px] max-w-[120px]`}>{fmtDate(contract.dueDate)}</TableCell>
+							<TableCell className={`${tdBase} w-[130px] min-w-[130px] max-w-[130px] text-right`}>{contract.settlementCcy}</TableCell>
+							<TableCell className={`${tdBase} w-[120px] min-w-[120px] max-w-[120px] text-right ${["SELL", "CR"].includes(contract.side) ? "text-status-success" : "text-status-error"}`}>
 								{["SELL", "CR"].includes(contract.side) ? "+" : "-"}{" "}
 								{Math.abs(contract.gainLoss).toLocaleString("en-US", { minimumFractionDigits: 2 })}
 							</TableCell>

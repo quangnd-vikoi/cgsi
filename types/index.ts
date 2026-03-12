@@ -576,6 +576,24 @@ export interface SignatureSubmitResponse {
 // Portfolio API Types
 // ============================================================================
 
+export interface IAssetSummary {
+	currency: string;
+	value: number;
+}
+
+export interface IAccountSummary {
+	totalAsset?: number;
+	contractsSell?: number;
+	contractsBuy?: number;
+	contraGain?: number;
+	contraLoss?: number;
+	tradeLimit?: number;
+	collateralValue?: number;
+	marginRatio?: number;
+	cashCall?: number;
+	assetList?: IAssetSummary[];
+}
+
 export interface IExchangeRate {
 	fromCurrency: string;
 	toCurrency: string;
