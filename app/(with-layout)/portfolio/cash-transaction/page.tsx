@@ -13,9 +13,10 @@ import type { ITrustBalanceDetail } from "@/types";
 import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { cashTransactionColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CashTransactionPage() {
-	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
+	const { accounts, selectedAccount, setSelectedAccount, isInitialized } = useTradingAccountStore();
 	const selectedCurrency = "SGD";
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -80,8 +81,10 @@ export default function CashTransactionPage() {
 					{/* Content Box */}
 					<div className="bg-white pad rounded flex-1 flex flex-col">
 						{/* Account Selector & Time Period & Export Button */}
-						<div className="mb-6 flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
-							<div className="flex flex-col gap-4 md:flex-row md:items-center">
+						<div className="mb-6 flex flex-row gap-4 justify-between items-center">
+							{!isInitialized ? (
+								<Skeleton className="h-10 w-full md:w-[258px]" />
+							) : (
 								<Select
 									value={selectedAccount?.accountNo}
 									onValueChange={(value) => {
@@ -89,7 +92,7 @@ export default function CashTransactionPage() {
 										setSelectedAccount(account || null);
 									}}
 								>
-									<SelectTrigger className="w-full md:w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
+									<SelectTrigger className="w-[258px] bg-white border border-stroke-secondary rounded-md shadow-none h-auto py-2 px-3">
 										<SelectValue placeholder="Select trading account">
 											{selectedAccount && (
 												<span className="text-sm text-typo-primary font-medium">
@@ -111,11 +114,11 @@ export default function CashTransactionPage() {
 										))}
 									</SelectContent>
 								</Select>
+							)}
 
-							</div>
 
 							<div className="flex gap-4 items-center">
-								<p className="text-sm text-typo-secondary">
+								<p className="hidden md:inline text-sm text-typo-secondary">
 									Record only avail for up to 2 Months
 								</p>
 
@@ -131,7 +134,12 @@ export default function CashTransactionPage() {
 									) : (
 										<FileDown className="size-4" />
 									)}
-									Export to Excel
+									<span className="hidden md:inline">
+										Export to Excel
+									</span>
+									<span className="md:hidden">
+										Excel
+									</span>
 								</Button>
 							</div>
 						</div>

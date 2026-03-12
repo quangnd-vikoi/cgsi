@@ -215,7 +215,7 @@ const DashboardSkeleton = () => (
 			</div>
 		</div>
 		<div className="mt-6">
-			<Skeleton className="h-48 w-full" />
+			<Skeleton className="h-80 w-full" />
 		</div>
 	</div>
 );

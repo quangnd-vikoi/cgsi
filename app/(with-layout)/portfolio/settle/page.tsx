@@ -271,7 +271,7 @@ export default function SettlePage() {
 					{/* Content Box */}
 					<div className="bg-white pad rounded flex-1 flex flex-col">
 						{/* Account Selector & Export Button */}
-						<div className="mb-6 flex justify-between items-center">
+						<div className="mb-6 flex justify-between items-center gap-4">
 							{!selectedAccount ? (
 								<Skeleton className="h-9 w-full md:max-w-[258px] rounded-md" />
 							) : (
@@ -309,7 +309,7 @@ export default function SettlePage() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="hidden md:flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+								className="flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 text-xs md:text-sm py-1 px-2 md:py-1.5 md:px-3"
 								onClick={handleExport}
 								disabled={exporting}
 							>
@@ -318,7 +318,12 @@ export default function SettlePage() {
 								) : (
 									<FileDown className="size-4" />
 								)}
-								Export to Excel
+								<span className="hidden md:inline">
+									Export to Excel
+								</span>
+								<span className="md:hidden">
+									Export
+								</span>
 							</Button>
 						</div>
 
@@ -339,22 +344,6 @@ export default function SettlePage() {
 								</TabsTrigger>
 							</TabsList>
 						</Tabs>
-
-						{/* Mobile Export Button */}
-						<Button
-							variant="outline"
-							size="sm"
-							className="flex md:hidden border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 mb-6"
-							onClick={handleExport}
-							disabled={exporting}
-						>
-							{exporting ? (
-								<Loader2 className="size-4 animate-spin" />
-							) : (
-								<FileDown className="size-4" />
-							)}
-							Export to Excel
-						</Button>
 
 						{/* Summary Cards */}
 						<SummarySection contracts={currentData} loading={loading} />

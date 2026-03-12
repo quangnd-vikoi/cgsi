@@ -46,7 +46,9 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
 					variant: isActive ? "outline" : "ghost",
 					size,
 				}),
-				isActive && "border-cgs-blue text-white bg-cgs-blue/90 hover:bg-cgs-blue",
+				isActive
+					? "border-cgs-blue text-white bg-cgs-blue/90 hover:bg-cgs-blue hover:text-white"
+					: "text-typo-secondary hover:bg-cgs-blue/10 hover:text-cgs-blue",
 				className
 			)}
 			{...props}
