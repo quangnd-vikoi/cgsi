@@ -113,21 +113,27 @@ export default function CashTransactionPage() {
 								</Select>
 
 							</div>
-										
-							<Button
-								variant="outline"
-								size="sm"
-								className="border border-cgs-blue text-sm font-normal text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
-								onClick={handleExport}
-								disabled={exporting}
-							>
-								{exporting ? (
-									<Loader2 className="size-4 animate-spin" />
-								) : (
-									<FileDown className="size-4" />
-								)}
-								Export to Excel
-							</Button>
+
+							<div className="flex gap-4 items-center">
+								<p className="text-sm text-typo-secondary">
+									Record only avail for up to 2 Months
+								</p>
+
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-2 border-cgs-blue text-sm font-medium text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75"
+									onClick={handleExport}
+									disabled={exporting}
+								>
+									{exporting ? (
+										<Loader2 className="size-4 animate-spin" />
+									) : (
+										<FileDown className="size-4" />
+									)}
+									Export to Excel
+								</Button>
+							</div>
 						</div>
 
 						{/* Table */}
