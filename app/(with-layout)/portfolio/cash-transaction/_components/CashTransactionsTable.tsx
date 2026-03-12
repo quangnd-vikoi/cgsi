@@ -9,6 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ITrustBalanceDetail } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -52,14 +53,14 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 		return String(aVal).localeCompare(String(bVal)) * dir;
 	});
 
-	const cols: { label: string; col: SortCol; right?: boolean }[] = [
-		{ label: "Transaction ID", col: "transactionNo" },
-		{ label: "Transaction Date", col: "transactionDate" },
+	const cols: { label: string; col: SortCol; right?: boolean; w?: string }[] = [
+		{ label: "Transaction ID", col: "transactionNo", w: "w-[15%]" },
+		{ label: "Transaction Date", col: "transactionDate", w: "w-[13%]" },
 		{ label: "Description", col: "description" },
-		{ label: "Currency", col: "currency", right: true },
-		{ label: "Traded Price", col: "tradedPrice", right: true },
-		{ label: "Quantity", col: "quantity", right: true },
-		{ label: "Amount", col: "amount", right: true },
+		{ label: "Currency", col: "currency", right: true, w: "w-[10%]" },
+		{ label: "Traded Price", col: "tradedPrice", right: true, w: "w-[12%]" },
+		{ label: "Quantity", col: "quantity", right: true, w: "w-[10%]" },
+		{ label: "Amount", col: "amount", right: true, w: "w-[12%]" },
 	];
 
 	return (
@@ -67,8 +68,8 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 			<Table>
 				<TableHeader>
 					<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs md:[&>th]:text-sm [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
-						{cols.map(({ label, col, right }) => (
-							<TableHead key={col} className={right ? "text-right" : ""} onClick={() => handleSort(col)}>
+						{cols.map(({ label, col, right, w }) => (
+							<TableHead key={col} className={`${w || ""} ${right ? "text-right" : ""}`} onClick={() => handleSort(col)}>
 								<button className={`inline-flex items-center gap-1 cursor-pointer select-none${right ? " flex-row-reverse" : ""}`}>
 									{label}
 									{sortColumn === col ? (
@@ -83,11 +84,15 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 				</TableHeader>
 				<TableBody>
 					{loading ? (
-						<TableRow>
-							<TableCell colSpan={7} className="text-center py-8 text-sm text-typo-secondary">
-								Loading transactions...
-							</TableCell>
-						</TableRow>
+						Array.from({ length: 5 }).map((_, i) => (
+							<TableRow key={i} className="border-b border-stroke-secondary last:border-0 [&>td]:px-4 [&>td]:py-3">
+								{cols.map(({ col }) => (
+									<TableCell key={col}>
+										<Skeleton className="h-4 w-full" />
+									</TableCell>
+								))}
+							</TableRow>
+						))
 					) : sorted.length === 0 ? (
 						<TableRow>
 							<TableCell colSpan={7} className="text-center py-8 text-sm text-typo-secondary">
