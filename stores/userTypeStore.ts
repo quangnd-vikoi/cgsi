@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
 import type { UserType } from "@/constants/userTypes";
 
 interface UserTypeState {
@@ -8,16 +7,8 @@ interface UserTypeState {
 	clearUserType: () => void;
 }
 
-export const useUserTypeStore = create<UserTypeState>()(
-	persist(
-		(set) => ({
-			userType: null,
-			setUserType: (type) => set({ userType: type }),
-			clearUserType: () => set({ userType: null }),
-		}),
-		{
-			name: "user-type-storage",
-			storage: createJSONStorage(() => localStorage),
-		}
-	)
-);
+export const useUserTypeStore = create<UserTypeState>()((set) => ({
+	userType: null,
+	setUserType: (type) => set({ userType: type }),
+	clearUserType: () => set({ userType: null }),
+}));
