@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 
@@ -21,7 +21,8 @@ const DevelopmentBanner = () => {
 				<div className="flex items-center gap-2">
 					<AlertCircle className="flex-shrink-0 w-4 h-4 text-cgs-blue" />
 					<p className="font-normal text-typo-primary text-sm">
-						Information herein is updated only up to the last business day and should not be relied upon in any way.
+						Information herein is updated only up to the last business day and should not be
+						relied upon in any way.
 					</p>
 				</div>
 
@@ -40,12 +41,18 @@ const DevelopmentBanner = () => {
 								variant="ghost"
 								className="flex-1 md:flex-none p-0 h-auto font-normal text-cgs-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent hover:text-cgs-blue/75"
 							>
-								<Image src={"/icons/portfolio/dollar-sign.svg"} className="hidden md:block" alt="FX Rate" width={20} height={20} />
+								<Image
+									src={"/icons/portfolio/dollar-sign.svg"}
+									className="hidden md:block"
+									alt="FX Rate"
+									width={20}
+									height={20}
+								/>
 								View FX Rate
 							</Button>
 						}
 						title="Exchange Rate"
-						className="max-h-[90%]"
+						className="sm:max-w-3xl"
 						description={<ExchangeRateTable />}
 						cancelText=""
 						actionText="Close"
@@ -65,14 +72,27 @@ const DevelopmentBanner = () => {
 						description={
 							<div className="text-sm md:text-base text-typo-secondary">
 								<p>
-									Information herein should only serve as a guide and should not be relied upon in any way. Please refer to your eStatements for more information.
+									Information herein should only serve as a guide and should not be relied
+									upon in any way. Please refer to your eStatements for more information.
 								</p>
 
 								<ul className="list-disc font-normal mt-6 pl-6">
-									<li>For interest-bearing trust account, month-end interest adjustment will be reflected on second business day of the month.</li>
-									<li>US trades will be reflected two market days after the trade date. All other markets will be reflected as of the previous market day.</li>
-									<li>Please note that your share holdings will be updated one market day after due date.</li>
-									<li>Please note that only foreign shares will be displayed in your Custody Holdings Balance Statement in CGS iTrade.</li>
+									<li>
+										For interest-bearing trust account, month-end interest adjustment will
+										be reflected on second business day of the month.
+									</li>
+									<li>
+										US trades will be reflected two market days after the trade date. All
+										other markets will be reflected as of the previous market day.
+									</li>
+									<li>
+										Please note that your share holdings will be updated one market day
+										after due date.
+									</li>
+									<li>
+										Please note that only foreign shares will be displayed in your Custody
+										Holdings Balance Statement in CGS iTrade.
+									</li>
 								</ul>
 							</div>
 						}
@@ -80,7 +100,6 @@ const DevelopmentBanner = () => {
 						actionText="Close"
 					/>
 				</div>
-
 			</div>
 		</div>
 	);

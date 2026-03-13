@@ -599,6 +599,7 @@ export interface IExchangeRate {
 	toCurrency: string;
 	bid: number;
 	offer: number;
+	lastUpdatedOn?: string;
 }
 
 export interface ITrustBalance {

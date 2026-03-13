@@ -9,12 +9,13 @@ interface ExchangeRateTableProps {
 	lastUpdated?: string;
 }
 
-export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
-	lastUpdated: lastUpdatedProp,
-}) => {
+const formatSGT = (isoDate: string): string => {
+	return new Date(isoDate).toLocaleString("en-SG", { timeZone: "Asia/Singapore" }) + " SGT";
+};
+
+export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 	const [rates, setRates] = useState<IExchangeRate[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [lastUpdated, setLastUpdated] = useState(lastUpdatedProp || "");
 	const [sortColumn, setSortColumn] = useState<keyof IExchangeRate | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -37,12 +38,18 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
 		return String(aVal).localeCompare(String(bVal)) * dir;
 	});
 
-	const SortIcon = ({ col }: { col: keyof IExchangeRate }) =>
-		sortColumn === col ? (
-			sortDirection === "asc" ? <ArrowUp className="size-3 inline-block ml-1" /> : <ArrowDown className="size-3 inline-block ml-1" />
+	const SortIcon = ({ col, side = "right" }: { col: keyof IExchangeRate; side?: "left" | "right" }) => {
+		const margin = side === "left" ? "mr-1" : "ml-1";
+		return sortColumn === col ? (
+			sortDirection === "asc" ? (
+				<ArrowUp className={`size-3 shrink-0 ${margin}`} />
+			) : (
+				<ArrowDown className={`size-3 shrink-0 ${margin}`} />
+			)
 		) : (
-			<ArrowUp className="size-3 inline-block ml-1 invisible" />
+			<ArrowUp className={`size-3 shrink-0 ${margin} invisible`} />
 		);
+	};
 
 	useEffect(() => {
 		const fetchRates = async () => {
@@ -50,51 +57,84 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = ({
 			const response = await getFxRates();
 			if (response.success && response.data) {
 				setRates(response.data);
-				if (!lastUpdatedProp) {
-					setLastUpdated(new Date().toLocaleString("en-SG", { timeZone: "Asia/Singapore" }) + " SGT");
-				}
 			}
 			setLoading(false);
 		};
 		fetchRates();
-	}, [lastUpdatedProp]);
+	}, []);
 
 	return (
 		<div className="space-y-4">
 			{/* Info text */}
 			<p className="text-sm text-typo-secondary">
 				Rates used are updated at the start of the last business day.
-				<br />
-				Last Updated: {lastUpdated}
 			</p>
 
 			{/* Exchange Rate Table */}
 			<div className="rounded-t-lg overflow-x-auto">
-				<div className="min-w-[420px]">
+				<div className="min-w-[680px]">
 					{/* Table Header */}
-					<div className="grid grid-cols-[1.2fr_1fr_1.2fr_1.2fr] gap-4 px-4 py-3 bg-background-section border-b border-stroke-secondary text-sm font-semibold text-typo-primary">
-						<button className="whitespace-nowrap text-left inline-flex items-center cursor-pointer select-none" onClick={() => handleSort("fromCurrency")}>Ccy Code From<SortIcon col="fromCurrency" /></button>
-						<button className="whitespace-nowrap text-left inline-flex items-center cursor-pointer select-none" onClick={() => handleSort("toCurrency")}>Ccy Code To<SortIcon col="toCurrency" /></button>
-						<button className="whitespace-nowrap text-right inline-flex items-center justify-end cursor-pointer select-none" onClick={() => handleSort("bid")}><SortIcon col="bid" />Buy FX Rate</button>
-						<button className="whitespace-nowrap text-right inline-flex items-center justify-end cursor-pointer select-none" onClick={() => handleSort("offer")}><SortIcon col="offer" />Sell FX Rate</button>
+					<div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 bg-background-section border-b border-stroke-secondary text-sm font-semibold text-typo-primary">
+						<button
+							className="whitespace-nowrap w-full flex items-center cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
+							onClick={() => handleSort("fromCurrency")}
+						>
+							Ccy Code From
+							<SortIcon col="fromCurrency" />
+						</button>
+						<button
+							className="whitespace-nowrap w-full flex items-center cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
+							onClick={() => handleSort("toCurrency")}
+						>
+							Ccy Code To
+							<SortIcon col="toCurrency" />
+						</button>
+						<button
+							className="whitespace-nowrap w-full flex items-center justify-end cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
+							onClick={() => handleSort("bid")}
+						>
+							<SortIcon col="bid" side="left" />
+							Buy FX Rate
+						</button>
+						<button
+							className="whitespace-nowrap w-full flex items-center justify-end cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
+							onClick={() => handleSort("offer")}
+						>
+							<SortIcon col="offer" side="left" />
+							Sell FX Rate
+						</button>
+						<button
+							className="whitespace-nowrap w-full flex items-center justify-end cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
+							onClick={() => handleSort("lastUpdatedOn")}
+						>
+							<SortIcon col="lastUpdatedOn" side="left" />
+							Last Updated
+						</button>
 					</div>
 
 					{/* Table Body */}
 					<div className="divide-y divide-stroke-secondary bg-white">
 						{loading ? (
-							<div className="px-4 py-8 text-center text-sm text-typo-secondary">Loading exchange rates...</div>
+							<div className="px-4 py-8 text-center text-sm text-typo-secondary">
+								Loading exchange rates...
+							</div>
 						) : rates.length === 0 ? (
-							<div className="px-4 py-8 text-center text-sm text-typo-secondary">No exchange rates available</div>
+							<div className="px-4 py-8 text-center text-sm text-typo-secondary">
+								No exchange rates available
+							</div>
 						) : (
 							sortedRates.map((rate, index) => (
 								<div
 									key={index}
-									className="grid grid-cols-[1.2fr_1fr_1.2fr_1.2fr] gap-4 px-4 py-3 text-sm text-typo-primary"
+									className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 text-sm text-typo-primary"
 								>
 									<div>{rate.fromCurrency}</div>
 									<div>{rate.toCurrency}</div>
 									<div className="text-right">{rate.bid}</div>
 									<div className="text-right">{rate.offer}</div>
+									<div className="text-right">
+										{rate.lastUpdatedOn ? formatSGT(rate.lastUpdatedOn) : "—"}
+									</div>
 								</div>
 							))
 						)}
