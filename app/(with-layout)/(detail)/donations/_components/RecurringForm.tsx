@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/toaster";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import RecurringDonation from "@/public/icons/discover/RecurringDonation.svg";
 import { CirclePlusIcon, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -22,9 +22,16 @@ import { cn } from "@/lib/utils";
 import Alert from "@/components/Alert";
 import { useFormErrors } from "@/hooks/form/useFormErrors";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
-import { submitDonation, cancelDonation, getDonationPlans } from "@/lib/services/profileService";
+import { submitDonation, cancelDonation } from "@/lib/services/profileService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import type { DonationPlanResponse } from "@/types";
+
+interface RecurringFormProps {
+	plans: DonationPlanResponse[];
+	isLoadingPlans: boolean;
+	onPlansChange: (plans: DonationPlanResponse[]) => void;
+	onRefresh: () => Promise<void>;
+}
 
 const SELECT_FIELDS = [
 	{
@@ -49,7 +56,7 @@ const SELECT_FIELDS = [
 	},
 ];
 
-const RecurringForm = () => {
+const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChange: setRecurringDonations, onRefresh: fetchPlans }: RecurringFormProps) => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
 	const [formValues, setFormValues] = useState({ duration: "", amount: "" });
@@ -63,19 +70,7 @@ const RecurringForm = () => {
 		setShowValidationErrors,
 	} = useFormErrors();
 	const [open, setOpen] = useState(false);
-	const [recurringDonations, setRecurringDonations] = useState<DonationPlanResponse[]>([]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
-
-	const fetchPlans = useCallback(async () => {
-		const response = await getDonationPlans();
-		if (response.success && response.data) {
-			setRecurringDonations(response.data);
-		}
-	}, []);
-
-	useEffect(() => {
-		fetchPlans();
-	}, [fetchPlans]);
 
 	const updateFormValue = (field: string, value: string) => {
 		setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -126,7 +121,7 @@ const RecurringForm = () => {
 				months,
 			});
 
-			if (response.success && response.data?.isSuccess) {
+			if (response.success && response.data?.success !== false) {
 				await fetchPlans();
 				setOpen(false);
 				toast.success(
@@ -153,7 +148,7 @@ const RecurringForm = () => {
 		try {
 			const response = await cancelDonation(plan.id);
 
-			if (response.success && response.data?.isSuccess) {
+			if (response.success) {
 				setRecurringDonations((prev) => prev.filter((item) => item.id !== plan.id));
 				toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 			} else {
@@ -289,7 +284,11 @@ const RecurringForm = () => {
 				</p>
 				<p className="md:hidden text-base font-semibold text-typo-primary">Recurring Donation List</p>
 			</div>
-			{recurringDonations.length === 0 ? (
+			{isLoadingPlans ? (
+				<div className="mt-6 flex-1 flex justify-center items-center">
+					<Loader2 className="animate-spin text-cgs-blue" size={24} />
+				</div>
+			) : recurringDonations.length === 0 ? (
 				<div className="mt-6 flex-1 pad-x flex flex-col gap-6 justify-center items-center">
 					<RecurringDonation />
 					<p className="text-sm font-normal text-typo-tertiary text-center px-2">

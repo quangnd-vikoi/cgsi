@@ -17,11 +17,7 @@ import { depositPaynow } from "@/lib/services/portfolioService";
 import { submitDonation } from "@/lib/services/profileService";
 import { S2BPayButton } from "@/components/S2BPayButton";
 
-interface OneTimeFormProps {
-	onPaynowError?: () => void;
-}
-
-const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
+const OneTimeForm = () => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [paynowSubmitFn, setPaynowSubmitFn] = useState<(() => Promise<{
@@ -84,7 +80,7 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 				paymentMode: "DONATE",
 			});
 
-			if (!response.success || !response.data?.isSuccess) {
+			if (!response.success || response.data?.success === false) {
 				toast.error("Donation Payment Failed", response.error ?? "Please try again.");
 			} else {
 				toast.success(
@@ -258,7 +254,6 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
 						toast.error("Donation Payment Failed", "Please try again.");
-						onPaynowError?.();
 					}}
 				/>
 			)}

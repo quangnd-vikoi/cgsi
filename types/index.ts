@@ -169,7 +169,7 @@ export interface DonationSubmissionRequest {
 }
 
 export interface DonationSubmissionResponse {
-	isSuccess: boolean;
+	success: boolean;
 }
 
 export interface DonationCancelRequest {
