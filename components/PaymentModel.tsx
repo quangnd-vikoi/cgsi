@@ -251,6 +251,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 			{submitFn && (
 				<S2BPayButton
 					submitFn={submitFn}
+					onReady={() => setShowPayNow(false)}
 					onClose={handleS2BDone}
 					onError={handleS2BError}
 				/>

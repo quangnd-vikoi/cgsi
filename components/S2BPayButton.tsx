@@ -6,6 +6,7 @@ const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
 interface S2BPayButtonProps {
 	submitFn: () => Promise<{ s2bPayUrl: string; corpId: string; encStr: string } | null>;
+	onReady?: () => void;
 	onClose?: () => void;
 	onError?: () => void;
 }
@@ -15,7 +16,7 @@ function autoClick(el: HTMLElement) {
 	el.click();
 }
 
-export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) {
+export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 
 	React.useEffect(() => {
@@ -60,6 +61,9 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 					clearTimeout(timeout);
 					agreeObserver.disconnect();
 
+					// S2B button detected — notify caller to close any dialogs
+					if (!cancelled) onReady?.();
+
 					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
 					const lightboxObserver = new MutationObserver(() => {
@@ -96,7 +100,7 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 		})();
 
 		return () => { cancelled = true; };
-	}, [submitFn, onClose, onError]);
+	}, [submitFn, onReady, onClose, onError]);
 
 	return <div ref={containerRef} className="fixed z-[9999] opacity-0 pointer-events-none" />;
 }
