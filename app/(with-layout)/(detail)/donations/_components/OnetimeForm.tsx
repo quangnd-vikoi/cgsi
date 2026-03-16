@@ -24,11 +24,11 @@ interface OneTimeFormProps {
 const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [paynowData, setPaynowData] = useState<{
+	const [paynowSubmitFn, setPaynowSubmitFn] = useState<(() => Promise<{
 		s2bPayUrl: string;
 		corpId: string;
 		encStr: string;
-	} | null>(null);
+	} | null>) | null>(null);
 
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
@@ -62,19 +62,17 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 		setIsSubmitting(true);
 
 		if (paymentMethod === "now") {
-			const response = await depositPaynow({
-				accountNo,
-				mode: "DONATE",
-				amount: amount!,
-				currency: "SGD",
-				refNo: `DONATE-${Date.now()}`,
+			setPaynowSubmitFn(() => async () => {
+				const response = await depositPaynow({
+					accountNo,
+					mode: "DONATE",
+					amount: amount!,
+					currency: "SGD",
+					refNo: `DONATE-${Date.now()}`,
+				});
+				if (!response.success) return null;
+				return response.data;
 			});
-
-			if (!response.success) {
-				toast.error("Donation Payment Failed", response.error ?? "Please try again.");
-			} else {
-				setPaynowData(response.data);
-			}
 		} else {
 			const response = await submitDonation({
 				accountNo,
@@ -248,13 +246,12 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 				</div>
 			</div>
 
-			{paynowData && (
+			{paynowSubmitFn && (
 				<S2BPayButton
-					{...paynowData}
-					onError={() => {
-						setPaynowData(null);
+					submitFn={paynowSubmitFn}
+					onClose={() => {
+						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
-						onPaynowError?.();
 					}}
 				/>
 			)}

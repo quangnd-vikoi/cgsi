@@ -124,28 +124,27 @@ export default function SettlePage() {
 	const [summaryLoading, setSummaryLoading] = useState(true);
 
 	const [exporting, setExporting] = useState(false);
-	const [paynowData, setPaynowData] = useState<{
+	const [paynowSubmitFn, setPaynowSubmitFn] = useState<(() => Promise<{
 		s2bPayUrl: string;
 		corpId: string;
 		encStr: string;
-	} | null>(null);
+	} | null>) | null>(null);
 	const accountNo = selectedAccount?.accountNo;
 
-	const handlePayNow = async (contract: ContractDisplay) => {
+	const handlePayNow = (contract: ContractDisplay) => {
 		if (!accountNo) return;
 		const mode = activeTab === "contracts" ? "CONTRACT" : "CONTRA";
-		const response = await depositPaynow({
-			accountNo,
-			mode,
-			amount: Math.abs(contract.gainLoss),
-			currency: "SGD",
-			refNo: contract.id,
+		setPaynowSubmitFn(() => async () => {
+			const response = await depositPaynow({
+				accountNo,
+				mode,
+				amount: Math.abs(contract.gainLoss),
+				currency: "SGD",
+				refNo: contract.id,
+			});
+			if (!response.success) return null;
+			return response.data;
 		});
-		if (!response.success) {
-			toast.error("PayNow Failed", response.error ?? "Please try again.");
-		} else {
-			setPaynowData(response.data);
-		}
 	};
 
 	const handleExport = async () => {
@@ -391,13 +390,10 @@ export default function SettlePage() {
 					</div>
 
 					{/* PayNow S2B */}
-					{paynowData && (
+					{paynowSubmitFn && (
 						<S2BPayButton
-							{...paynowData}
-							onError={() => {
-								setPaynowData(null);
-								toast.error("PayNow Failed", "Unable to launch PayNow. Please try again.");
-							}}
+							submitFn={paynowSubmitFn}
+							onClose={() => setPaynowSubmitFn(null)}
 						/>
 					)}
 
