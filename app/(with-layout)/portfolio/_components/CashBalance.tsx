@@ -58,7 +58,7 @@ export const CashBalance = () => {
     const toSGD = (currency: string, balance: number) => {
         if (currency === "SGD") return balance;
         const rate = fxRates.find((r) => r.fromCurrency === currency && r.toCurrency === "SGD");
-        return rate ? balance * rate.bid : 0;
+        return rate ? balance * Number(rate.bid) : 0;
     };
 
     // Merge API data, then sort: nonzero first (desc by SGD equivalent), then zeros
