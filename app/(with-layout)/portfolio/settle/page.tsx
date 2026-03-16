@@ -393,6 +393,7 @@ export default function SettlePage() {
 					{paynowSubmitFn && (
 						<S2BPayButton
 							submitFn={paynowSubmitFn}
+							autoClick={false}
 							onClose={() => setPaynowSubmitFn(null)}
 							onError={() => {
 								setPaynowSubmitFn(null);
