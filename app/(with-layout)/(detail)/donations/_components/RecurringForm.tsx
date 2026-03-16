@@ -149,7 +149,7 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 			const response = await cancelDonation(plan.id);
 
 			if (response.success) {
-				setRecurringDonations((prev) => prev.filter((item) => item.id !== plan.id));
+				setRecurringDonations(recurringDonations.filter((item) => item.id !== plan.id));
 				toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 			} else {
 				toast.error("Cancellation Failed", response.error || "Please try again later.");

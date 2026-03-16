@@ -247,7 +247,7 @@ export function useDonationForm(
 
 				const response = await submitDonation(donationData);
 
-				if (!response.success || !response.data?.isSuccess) {
+				if (!response.success || !response.data?.success) {
 					throw new Error(response.error || "Donation submission failed");
 				}
 			}
