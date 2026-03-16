@@ -136,8 +136,8 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 								>
 									<div>{rate.fromCurrency}</div>
 									<div>{rate.toCurrency}</div>
-									<div className="text-right">{rate.bid}</div>
-									<div className="text-right">{rate.offer}</div>
+									<div className="text-right">{Number(rate.bid).toFixed(6)}</div>
+									<div className="text-right">{Number(rate.offer).toFixed(6)}</div>
 									<div className="text-right">
 										{rate.lastUpdatedOn ? (
 											<>

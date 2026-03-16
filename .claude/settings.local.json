@@ -61,7 +61,8 @@
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/settle/page.tsx\" | sed -n '393,403p')",
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/donations/_components/OnetimeForm.tsx\" | sed -n '251,264p')",
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/settle/page.tsx\" | sed -n '392,402p')",
-      "Bash(cat -A \"d:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\\\(detail\\)\\\\donations\\\\_components\\\\RecurringForm.tsx\")"
+      "Bash(cat -A \"d:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\\\(detail\\)\\\\donations\\\\_components\\\\RecurringForm.tsx\")",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/_components/ExchangeRateTable.tsx\" | sed -n '139,140p')"
     ],
     "deny": [],
     "ask": []

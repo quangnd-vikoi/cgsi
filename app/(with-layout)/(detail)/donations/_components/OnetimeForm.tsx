@@ -253,7 +253,7 @@ const OneTimeForm = () => {
 					onError={() => {
 						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
-						toast.error("Donation Payment Failed", "Please try again.");
+						toast.error("Error Encountered", "Something went wrong. Please try again later.");
 					}}
 				/>
 			)}
