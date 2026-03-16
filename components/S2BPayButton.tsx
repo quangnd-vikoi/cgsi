@@ -56,15 +56,12 @@ export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
 				}, BUTTON_WAIT_TIMEOUT_MS);
 
 				const observer = new MutationObserver(() => {
-					const btn = container.querySelector<HTMLElement>(
-						"button, a, input[type='button'], input[type='submit']"
-					);
+					const btn = container.querySelector<HTMLElement>("#s2bpay-button");
 					if (btn) {
 						clearTimeout(timeout);
 						observer.disconnect();
+						btn.click();
 						if (!cancelled) setStatus("ready");
-						// Auto-click disabled for debugging
-						// btn.click();
 					}
 				});
 
