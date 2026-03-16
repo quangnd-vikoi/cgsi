@@ -1,20 +1,17 @@
 "use client";
 
 import React from "react";
-import { Loader2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
 interface S2BPayButtonProps {
 	submitFn: () => Promise<{ s2bPayUrl: string; corpId: string; encStr: string } | null>;
 	onClose?: () => void;
+	onError?: () => void;
 }
 
-export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
+export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
-	const [status, setStatus] = React.useState<"loading" | "ready" | "error">("loading");
-	const [errorMsg, setErrorMsg] = React.useState("");
 
 	React.useEffect(() => {
 		let cancelled = false;
@@ -24,8 +21,7 @@ export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
 			if (cancelled) return;
 
 			if (!data) {
-				setStatus("error");
-				setErrorMsg("Failed to initiate PayNow deposit. Please try again.");
+				onError?.();
 				return;
 			}
 
@@ -49,10 +45,7 @@ export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
 
 				const timeout = setTimeout(() => {
 					observer.disconnect();
-					if (!cancelled) {
-						setStatus("error");
-						setErrorMsg("PayNow button did not load in time. Please try again.");
-					}
+					if (!cancelled) onError?.();
 				}, BUTTON_WAIT_TIMEOUT_MS);
 
 				const observer = new MutationObserver(() => {
@@ -61,7 +54,7 @@ export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
 						clearTimeout(timeout);
 						observer.disconnect();
 						btn.click();
-						if (!cancelled) setStatus("ready");
+						if (!cancelled) onClose?.();
 					}
 				});
 
@@ -69,39 +62,14 @@ export function S2BPayButton({ submitFn, onClose }: S2BPayButtonProps) {
 			};
 
 			script.onerror = () => {
-				if (!cancelled) {
-					setStatus("error");
-					setErrorMsg("Failed to load PayNow script. Please try again.");
-				}
+				if (!cancelled) onError?.();
 			};
 
 			container.appendChild(script);
 		})();
 
 		return () => { cancelled = true; };
-	}, [submitFn]);
+	}, [submitFn, onClose, onError]);
 
-	return (
-		<Dialog open onOpenChange={(open) => !open && onClose?.()}>
-			<DialogContent className="sm:max-w-[530px] p-0 gap-0">
-				<DialogHeader className="p-6 pb-4">
-					<DialogTitle className="text-base font-semibold text-typo-primary text-left">
-						PayNow
-					</DialogTitle>
-				</DialogHeader>
-				<div className="px-6 pb-6 w-full">
-					{status === "loading" && (
-						<div className="flex items-center justify-center gap-2 py-8 text-typo-secondary">
-							<Loader2 className="animate-spin size-5" />
-							<span className="text-sm">Processing...</span>
-						</div>
-					)}
-					{status === "error" && (
-						<div className="text-sm text-status-error py-4">{errorMsg}</div>
-					)}
-					<div ref={containerRef} className={status === "loading" ? "hidden" : "w-full"} />
-				</div>
-			</DialogContent>
-		</Dialog>
-	);
+	return <div ref={containerRef} className="overflow-hidden max-h-0" />;
 }

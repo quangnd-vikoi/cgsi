@@ -62,17 +62,19 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 		setIsSubmitting(true);
 
 		if (paymentMethod === "now") {
+			const donateAmount = amount!;
 			setPaynowSubmitFn(() => async () => {
 				const response = await depositPaynow({
 					accountNo,
 					mode: "DONATE",
-					amount: amount!,
+					amount: donateAmount,
 					currency: "SGD",
 					refNo: `DONATE-${Date.now()}`,
 				});
 				if (!response.success) return null;
 				return response.data;
 			});
+			return;
 		} else {
 			const response = await submitDonation({
 				accountNo,
@@ -126,10 +128,8 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 							error={errors.amount}
 							onChange={(e) => {
 								const value = e.target.value;
-								// Chỉ cho phép số và dấu chấm thập phân
 								if (value === "" || /^\d*\.?\d*$/.test(value)) {
 									setInputValue(value);
-									// Parse và convert sang number với 2 chữ số thập phân khi có giá trị hợp lệ
 									if (value && !isNaN(parseFloat(value))) {
 										const numValue = parseFloat(value);
 										setAmount(parseFloat(numValue.toFixed(2)));
@@ -140,7 +140,6 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 							}}
 							onBlur={(e) => {
 								const value = e.target.value;
-								// Format lại với 2 chữ số thập phân khi blur
 								if (value && !isNaN(parseFloat(value))) {
 									const numValue = parseFloat(value);
 									const formatted = numValue.toFixed(2);
@@ -148,6 +147,7 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 									setAmount(parseFloat(formatted));
 								}
 							}}
+							disabled={isSubmitting}
 							className={cn(
 								"focus-visible:bg-background-focus focus-visible:border-cgs-blue text-sm font-normal",
 							)}
@@ -163,6 +163,7 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 								setPaymentMethod(value as "now" | "trust");
 							}}
 							className="space-y-2 mt-1.5"
+							disabled={isSubmitting}
 						>
 							<Label
 								className={cn(
@@ -235,9 +236,7 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 							aria-busy={isSubmitting}
 						>
 							{isSubmitting ? (
-								<>
-									<Loader2 className="animate-spin" />
-								</>
+								<Loader2 className="animate-spin" />
 							) : (
 								<span>Donate</span>
 							)}
@@ -252,6 +251,14 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 					onClose={() => {
 						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
+						setInputValue("");
+						reset();
+					}}
+					onError={() => {
+						setPaynowSubmitFn(null);
+						setIsSubmitting(false);
+						toast.error("Donation Payment Failed", "Please try again.");
+						onPaynowError?.();
 					}}
 				/>
 			)}

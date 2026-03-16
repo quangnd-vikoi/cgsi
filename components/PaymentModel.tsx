@@ -13,6 +13,7 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useUserStore } from "@/stores/userStore";
 import { depositPaynow } from "@/lib/services/portfolioService";
 import { S2BPayButton } from "@/components/S2BPayButton";
+import { toast } from "@/components/ui/toaster";
 
 interface PaymentMethod {
 	id: string;
@@ -52,9 +53,10 @@ interface PayNowDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onProceed: (accountNo: string, amount: number, accountType: string) => void;
+	isProcessing: boolean;
 }
 
-function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
+function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDialogProps) {
 	const accounts = useTradingAccountStore((s) => s.accounts);
 	const getDefaultAccountNo = useTradingAccountStore((s) => s.getDefaultAccountNo);
 	const userName = useUserStore((s) => s.profile?.name ?? "");
@@ -81,12 +83,11 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 	const handleProceed = () => {
 		const acc = accounts.find((a) => a.accountNo === selectedAccount);
 		onProceed(selectedAccount, parseFloat(amount), acc?.accountType ?? "");
-		onOpenChange(false);
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-[530px] p-0 gap-0">
+		<Dialog open={open} onOpenChange={(v) => { if (!isProcessing) onOpenChange(v); }}>
+			<DialogContent className="sm:max-w-[530px] p-0 gap-0" showCloseButton={!isProcessing}>
 				<DialogHeader className="p-6 pb-4">
 					<DialogTitle className="text-base font-semibold text-typo-primary text-left">
 						Deposit via PayNow
@@ -96,7 +97,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 				<div className="pad-x pb-6 space-y-5">
 					<div className="space-y-1.5">
 						<p className="text-sm font-medium text-typo-primary">Account</p>
-						<Select value={selectedAccount} onValueChange={setSelectedAccount}>
+						<Select value={selectedAccount} onValueChange={setSelectedAccount} disabled={isProcessing}>
 							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Select account">
 									{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
@@ -121,6 +122,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 							placeholder="Enter an amount"
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
+							disabled={isProcessing}
 						/>
 					</div>
 
@@ -130,6 +132,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 							checked={confirmed}
 							onCheckedChange={(v) => setConfirmed(!!v)}
 							className="mt-0.5"
+							disabled={isProcessing}
 						/>
 						<label
 							htmlFor="paynow-confirm"
@@ -145,10 +148,10 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 					<div className="flex justify-end pt-1">
 						<Button
 							onClick={handleProceed}
-							disabled={!selectedAccount || !amount || !confirmed}
+							disabled={!selectedAccount || !amount || !confirmed || isProcessing}
 							className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
 						>
-							Proceed
+							{isProcessing ? <Loader2 className="animate-spin" /> : "Proceed"}
 						</Button>
 					</div>
 				</DialogFooter>
@@ -191,6 +194,16 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		});
 	};
 
+	const handleS2BDone = () => {
+		setSubmitFn(null);
+		setShowPayNow(false);
+	};
+
+	const handleS2BError = () => {
+		setSubmitFn(null);
+		toast.error("PayNow Failed", "Failed to initiate PayNow deposit. Please try again.");
+	};
+
 	return (
 		<>
 			<Dialog open={open} onOpenChange={onOpenChange}>
@@ -228,12 +241,18 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 				</DialogContent>
 			</Dialog>
 
-			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} onProceed={handleProceed} />
+			<PayNowDialog
+				open={showPayNow}
+				onOpenChange={setShowPayNow}
+				onProceed={handleProceed}
+				isProcessing={!!submitFn}
+			/>
 
 			{submitFn && (
 				<S2BPayButton
 					submitFn={submitFn}
-					onClose={() => setSubmitFn(null)}
+					onClose={handleS2BDone}
+					onError={handleS2BError}
 				/>
 			)}
 		</>
