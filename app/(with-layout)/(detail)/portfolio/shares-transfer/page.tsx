@@ -16,6 +16,12 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { ErrorState } from "@/components/ErrorState";
 import { getCdpTransfer, submitCdpTransfer } from "@/lib/services/portfolioService";
@@ -74,6 +80,7 @@ const SharesTransfer = () => {
     const [transferAccount, setTransferAccount] = useState<string>("");
     const [agreed, setAgreed] = useState(false);
     const [checkboxError, setCheckboxError] = useState("");
+    const [termsOpen, setTermsOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [cdpData, setCdpData] = useState<ICDPTransfer | null>(null);
     const [loading, setLoading] = useState(true);
@@ -126,6 +133,7 @@ const SharesTransfer = () => {
     const selectedAccountInfo = accountList.find(a => a.acctNo === transferAccount);
 
     return (
+        <>
         <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
             <div className="shrink-0">
                 <Title title="Shares Transfer" showBackButton={step === 1} />
@@ -212,7 +220,7 @@ const SharesTransfer = () => {
                                         <a
                                             href="#"
                                             className="text-cgs-blue font-medium underline underline-offset-2"
-                                            onClick={(e) => e.preventDefault()}
+                                            onClick={(e) => { e.preventDefault(); setTermsOpen(true); }}
                                         >
                                             Term & Conditions
                                         </a>{" "}
@@ -257,6 +265,24 @@ const SharesTransfer = () => {
                 )}
             </div>
         </div>
+
+        <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
+            <DialogContent className="max-w-[480px] max-h-[80vh] flex flex-col">
+                <DialogHeader>
+                    <DialogTitle>SGX Shares Transfer T&Cs</DialogTitle>
+                </DialogHeader>
+                <div className="overflow-y-auto flex-1 text-sm text-typo-primary space-y-4 pr-1">
+                    <p>
+                        &ldquo;I/We hereby confirm(s) that, without prejudice to The Central Depository (Pte) Limited (&ldquo;<strong>CDP</strong>&rdquo;) Operations of Securities Account with the Depository Terms and Conditions (&ldquo;<strong>CDP T&amp;Cs</strong>&rdquo;), the submission of this form and/or providing these instructions to CGSI shall constitute my/our instructions to CDP, including to transfer all Securities (save for Non-Eligible Securities) from the said Securities Account to CGSI&rsquo;s Sub Account on a no change in beneficial owner basis. Clause 12 of the CDP T&amp;Cs shall apply directly and equally hereto in favour of CDP.&rdquo;
+                    </p>
+                    <p>
+                        Defined terms used in this Section shall bear the meanings as ascribed to them below or in the CDP T&amp;Cs for Operation of Securities Account or unless otherwise defined in this Agreement. &ldquo;<strong>Non-Eligible Securities</strong>&rdquo; means any Security(ies) which are non-transferable and/or cannot be transferred under the CDP T&amp;Cs for Operation of Securities Accounts, the Trading Rules of the Singapore Exchange Securities Trading Limited, or under any applicable law and/or regulation, or such other Securities as may be notified by CDP from time to time. &ldquo;<strong>Sub-Account</strong>&rdquo; has the same meaning as &ldquo;<strong>Sub-Account</strong>&rdquo; as defined in the Depository Rules of The Central Depository (Pte) Limited as may be amended from time to time.
+                    </p>
+                </div>
+
+            </DialogContent>
+        </Dialog>
+        </>
     );
 };
 
