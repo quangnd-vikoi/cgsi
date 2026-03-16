@@ -10,14 +10,9 @@ interface S2BPayButtonProps {
 	onError?: () => void;
 }
 
-/** Simulate a full user click sequence on an element */
-function simulateClick(el: HTMLElement) {
-	const opts = { bubbles: true, cancelable: true, view: window };
-	el.dispatchEvent(new PointerEvent("pointerdown", opts));
-	el.dispatchEvent(new MouseEvent("mousedown", opts));
-	el.dispatchEvent(new PointerEvent("pointerup", opts));
-	el.dispatchEvent(new MouseEvent("mouseup", opts));
-	el.dispatchEvent(new MouseEvent("click", opts));
+/** Auto-click the S2B button using native .click() */
+function autoClick(el: HTMLElement) {
+	el.click();
 }
 
 export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) {
@@ -80,10 +75,14 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
 
-					// Delay click to let S2B script finish binding event handlers
-					setTimeout(() => {
-						if (!cancelled) simulateClick(btn);
-					}, 300);
+					// Delay click to let S2B script finish binding its handlers
+					let clicked = false;
+					const tryClick = () => {
+						if (cancelled || clicked) return;
+						clicked = true;
+						autoClick(btn);
+					};
+					setTimeout(tryClick, 500);
 				});
 
 				agreeObserver.observe(container, { childList: true, subtree: true });
