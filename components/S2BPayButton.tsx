@@ -10,6 +10,16 @@ interface S2BPayButtonProps {
 	onError?: () => void;
 }
 
+/** Simulate a full user click sequence on an element */
+function simulateClick(el: HTMLElement) {
+	const opts = { bubbles: true, cancelable: true, view: window };
+	el.dispatchEvent(new PointerEvent("pointerdown", opts));
+	el.dispatchEvent(new MouseEvent("mousedown", opts));
+	el.dispatchEvent(new PointerEvent("pointerup", opts));
+	el.dispatchEvent(new MouseEvent("mouseup", opts));
+	el.dispatchEvent(new MouseEvent("click", opts));
+}
+
 export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -50,28 +60,28 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 
 				const agreeObserver = new MutationObserver(() => {
 					const btn = container.querySelector<HTMLElement>("#s2bpay-button");
-					if (btn) {
-						clearTimeout(timeout);
-						agreeObserver.disconnect();
-						btn.click();
+					if (!btn) return;
 
-						// Watch for lightbox to appear then disappear (user closes/completes payment)
-						let lightboxAppeared = false;
-						const lightboxObserver = new MutationObserver(() => {
-							const lightbox = document.querySelector(
-								"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container"
-							);
-							if (lightbox) {
-								lightboxAppeared = true;
-							} else if (lightboxAppeared) {
-								// Lightbox was shown and now removed — payment completed or closed
-								lightboxObserver.disconnect();
-								if (!cancelled) onClose?.();
-							}
-						});
+					clearTimeout(timeout);
+					agreeObserver.disconnect();
 
-						lightboxObserver.observe(document.body, { childList: true, subtree: true });
-					}
+					// Simulate full click sequence for S2B v2 compatibility
+					simulateClick(btn);
+
+					// Watch for lightbox to appear then disappear
+					let lightboxAppeared = false;
+					const lightboxObserver = new MutationObserver(() => {
+						const lightbox = document.querySelector(
+							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container"
+						);
+						if (lightbox) {
+							lightboxAppeared = true;
+						} else if (lightboxAppeared) {
+							lightboxObserver.disconnect();
+							if (!cancelled) onClose?.();
+						}
+					});
+					lightboxObserver.observe(document.body, { childList: true, subtree: true });
 				});
 
 				agreeObserver.observe(container, { childList: true, subtree: true });
@@ -87,6 +97,5 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 		return () => { cancelled = true; };
 	}, [submitFn, onClose, onError]);
 
-	// Hidden container for the "Agree" button — lightbox renders at document.body level
 	return <div ref={containerRef} className="fixed z-[9999] opacity-0 pointer-events-none" />;
 }
