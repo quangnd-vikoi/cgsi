@@ -9,8 +9,12 @@ interface ExchangeRateTableProps {
 	lastUpdated?: string;
 }
 
-const formatSGT = (isoDate: string): string => {
-	return new Date(isoDate).toLocaleString("en-SG", { timeZone: "Asia/Singapore" }) + " SGT";
+const formatSGTDate = (isoDate: string): string => {
+	return new Date(isoDate).toLocaleDateString("en-SG", { timeZone: "Asia/Singapore" });
+};
+
+const formatSGTTime = (isoDate: string): string => {
+	return new Date(isoDate).toLocaleTimeString("en-SG", { timeZone: "Asia/Singapore" }) + " SGT";
 };
 
 export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
@@ -34,7 +38,9 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 		const aVal = a[sortColumn];
 		const bVal = b[sortColumn];
 		const dir = sortDirection === "asc" ? 1 : -1;
-		if (typeof aVal === "number" && typeof bVal === "number") return (aVal - bVal) * dir;
+		const aNum = Number(aVal);
+		const bNum = Number(bVal);
+		if (!isNaN(aNum) && !isNaN(bNum)) return (aNum - bNum) * dir;
 		return String(aVal).localeCompare(String(bVal)) * dir;
 	});
 
@@ -126,14 +132,19 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 							sortedRates.map((rate, index) => (
 								<div
 									key={index}
-									className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 text-sm text-typo-primary"
+									className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 text-sm text-typo-primary items-center"
 								>
 									<div>{rate.fromCurrency}</div>
 									<div>{rate.toCurrency}</div>
 									<div className="text-right">{rate.bid}</div>
 									<div className="text-right">{rate.offer}</div>
 									<div className="text-right">
-										{rate.lastUpdatedOn ? formatSGT(rate.lastUpdatedOn) : "—"}
+										{rate.lastUpdatedOn ? (
+											<>
+												<div>{formatSGTDate(rate.lastUpdatedOn)}</div>
+												<div>{formatSGTTime(rate.lastUpdatedOn)}</div>
+											</>
+										) : "—"}
 									</div>
 								</div>
 							))

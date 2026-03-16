@@ -108,6 +108,8 @@ const TradingAccountDetail = () => {
 		router.push(`/account-linkages?tab=${accountType}`);
 	};
 
+	const isSubCDP = useTradingAccountStore((s) => s.isSubCDP());
+
 	if (!selectedAccount) return null;
 
 	const accountType = selectedAccount.accountType;
@@ -116,7 +118,6 @@ const TradingAccountDetail = () => {
 	const isSBL = accountType === "SBL";
 	const showCpfSrs = isCTA || isCUT;
 	const accountTypeLabel = accountType ? (ACCOUNT_TYPE_LABELS[accountType] ?? accountType) : "";
-	const isSubCDP = selectedAccount.cdp?.startsWith("217 1");
 	return (
 		<div className="flex flex-col h-full">
 			<CustomSheetTitle backTo="trading_accounts" title="Account Details" />

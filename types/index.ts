@@ -597,8 +597,8 @@ export interface IAccountSummary {
 export interface IExchangeRate {
 	fromCurrency: string;
 	toCurrency: string;
-	bid: number;
-	offer: number;
+	bid: string;
+	offer: string;
 	lastUpdatedOn?: string;
 }
 

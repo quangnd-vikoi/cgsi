@@ -87,7 +87,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 	const [holdings, setHoldings] = useState<IPortfolioHolding[]>([]);
 	const [totalItems, setTotalItems] = useState(0);
 	const [loading, setLoading] = useState(true);
-	const { selectedAccount } = useTradingAccountStore();
+	const { selectedAccount, isInitialized } = useTradingAccountStore();
 	const [exporting, setExporting] = useState(false);
 	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -159,7 +159,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 		setCurrentPage(1);
 	};
 
-	const isSubCDP = selectedAccount?.cdp?.startsWith("217 1");
+	const isSubCDP = useTradingAccountStore((s) => s.isSubCDP());
 
 	const colDefs = getColDefs(selectedAccount?.accountType);
 	const colCount = colDefs.length;
@@ -191,7 +191,9 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 							)}
 							Export to Excel
 						</Button>
-						{type === "CTA" && !isSubCDP && (
+						{!isInitialized ? (
+							<Skeleton className="h-8 w-36 rounded" />
+						) : type === "CTA" && !isSubCDP ? (
 							<Link href={INTERNAL_ROUTES.SHARE_TRANSFER}>
 								<Button
 									size="sm"
@@ -201,7 +203,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 									SGX Shares Transfer
 								</Button>
 							</Link>
-						)}
+						) : null}
 					</div>
 
 					{/* Mobile: Show dropdown menu */}
@@ -224,12 +226,16 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 									)}
 									Export to Excel
 								</DropdownMenuItem>
-								{type === "CTA" && !isSubCDP && (
+								{!isInitialized ? (
+									<DropdownMenuItem disabled>
+										<Skeleton className="h-4 w-32 rounded" />
+									</DropdownMenuItem>
+								) : type === "CTA" && !isSubCDP ? (
 									<DropdownMenuItem>
 										<ArrowRightLeft size={16} />
 										SGX Shares Transfer
 									</DropdownMenuItem>
-								)}
+								) : null}
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>

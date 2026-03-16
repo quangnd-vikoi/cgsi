@@ -237,7 +237,13 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 
 			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} onProceed={handleProceed} />
 
-			{paynowData && <S2BPayButton {...paynowData} onAutoClick={() => setPaynowData(null)} />}
+			{paynowData && (
+				<S2BPayButton
+					{...paynowData}
+					onClose={() => setPaynowData(null)}
+					onError={() => setPaynowData(null)}
+				/>
+			)}
 		</>
 	);
 }

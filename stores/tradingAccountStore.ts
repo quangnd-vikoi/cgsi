@@ -12,6 +12,7 @@ interface TradingAccountStore {
 	getAccounts: () => TradingAccount[];
 	getAccountById: (accountNo: string) => TradingAccount | undefined;
 	getDefaultAccountNo: () => string | null;
+	isSubCDP: () => boolean;
 	setInitialized: (value: boolean) => void;
 	resetStore: () => void;
 }
@@ -64,6 +65,8 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 		// Fallback: return first account
 		return accounts[0].accountNo;
 	},
+
+	isSubCDP: () => get().selectedAccount?.cdp?.startsWith("217") ?? false,
 
 	setInitialized: (value) => set({ isInitialized: value }),
 	resetStore: () =>

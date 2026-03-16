@@ -251,7 +251,7 @@ const OneTimeForm = ({ onPaynowError }: OneTimeFormProps) => {
 			{paynowData && (
 				<S2BPayButton
 					{...paynowData}
-					onAutoClick={() => {
+					onClose={() => {
 						setPaynowData(null);
 						setIsSubmitting(false);
 					}}

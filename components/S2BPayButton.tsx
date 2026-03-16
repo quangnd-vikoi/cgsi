@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import { Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
@@ -11,7 +13,7 @@ interface S2BPayButtonProps {
 	buttonText?: string;
 	buttonHeight?: number;
 	buttonWidth?: number;
-	onAutoClick?: () => void;
+	onClose?: () => void;
 	onError?: () => void;
 }
 
@@ -22,10 +24,11 @@ export function S2BPayButton({
 	buttonText = "Agree",
 	buttonHeight = 30,
 	buttonWidth = 80,
-	onAutoClick,
+	onClose,
 	onError,
 }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
+	const [phase, setPhase] = React.useState<"loading" | "ready" | "error">("loading");
 
 	React.useEffect(() => {
 		if (!containerRef.current) return;
@@ -48,26 +51,67 @@ export function S2BPayButton({
 
 			const timeout = setTimeout(() => {
 				observer.disconnect();
+				setPhase("error");
 				onError?.();
 			}, BUTTON_WAIT_TIMEOUT_MS);
 
 			const observer = new MutationObserver(() => {
-				const btn = container.querySelector<HTMLElement>("button, a, input[type='button'], input[type='submit']");
+				const btn = container.querySelector<HTMLElement>(
+					"button, a, input[type='button'], input[type='submit']"
+				);
 				if (btn) {
 					clearTimeout(timeout);
 					observer.disconnect();
 					btn.click();
-					onAutoClick?.();
+					setPhase("ready");
 				}
 			});
 
 			observer.observe(container, { childList: true, subtree: true });
 		};
 
-		script.onerror = () => onError?.();
+		script.onerror = () => {
+			setPhase("error");
+			onError?.();
+		};
 
 		containerRef.current.appendChild(script);
-	}, [s2bPayUrl, corpId, encStr, buttonText, buttonHeight, buttonWidth, onAutoClick, onError]);
+	}, [s2bPayUrl, corpId, encStr, buttonText, buttonHeight, buttonWidth, onError]);
 
-	return <div ref={containerRef} className="hidden" />;
+	const handleClose = () => {
+		onClose?.();
+	};
+
+	return (
+		<Dialog open onOpenChange={(open) => !open && handleClose()}>
+			<DialogContent className="sm:max-w-[530px] p-0 gap-0">
+				<DialogHeader className="p-6 pb-4">
+					<DialogTitle className="text-base font-semibold text-typo-primary text-left">
+						PayNow
+					</DialogTitle>
+				</DialogHeader>
+
+				<div className="px-6 pb-6 min-h-[200px] flex flex-col items-center justify-center">
+					{phase === "loading" && (
+						<div className="flex flex-col items-center gap-3 text-typo-secondary">
+							<Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+							<p className="text-sm">Preparing payment...</p>
+						</div>
+					)}
+
+					{phase === "error" && (
+						<p className="text-sm text-status-error">
+							Unable to launch PayNow. Please close and try again.
+						</p>
+					)}
+
+					{/* S2B script renders QR code here after auto-click */}
+					<div
+						ref={containerRef}
+						className={phase === "ready" ? "w-full" : "absolute opacity-0 pointer-events-none"}
+					/>
+				</div>
+			</DialogContent>
+		</Dialog>
+	);
 }

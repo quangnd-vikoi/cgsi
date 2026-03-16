@@ -394,7 +394,7 @@ export default function SettlePage() {
 					{paynowData && (
 						<S2BPayButton
 							{...paynowData}
-							onAutoClick={() => setPaynowData(null)}
+							onClose={() => setPaynowData(null)}
 							onError={() => {
 								setPaynowData(null);
 								toast.error("PayNow Failed", "Unable to launch PayNow. Please try again.");
