@@ -87,6 +87,6 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 		return () => { cancelled = true; };
 	}, [submitFn, onClose, onError]);
 
-	// Container must stay visible so S2B v2 lightbox can render
-	return <div ref={containerRef} className="fixed z-[9999]" />;
+	// Hidden container for the "Agree" button — lightbox renders at document.body level
+	return <div ref={containerRef} className="fixed z-[9999] opacity-0 pointer-events-none" />;
 }
