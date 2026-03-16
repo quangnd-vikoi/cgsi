@@ -52,10 +52,9 @@ const paymentMethods: PaymentMethod[] = [
 interface PayNowDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	onProceed: (accountNo: string, amount: number, accountType: string) => Promise<void>;
 }
 
-function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
+function PayNowDialog({ open, onOpenChange }: PayNowDialogProps) {
 	const accounts = useTradingAccountStore((s) => s.accounts);
 	const getDefaultAccountNo = useTradingAccountStore((s) => s.getDefaultAccountNo);
 	const userName = useUserStore((s) => s.profile?.name ?? "");
@@ -64,6 +63,11 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 	const [amount, setAmount] = React.useState("");
 	const [confirmed, setConfirmed] = React.useState(false);
 	const [isLoading, setIsLoading] = React.useState(false);
+	const [paynowData, setPaynowData] = React.useState<{
+		s2bPayUrl: string;
+		corpId: string;
+		encStr: string;
+	} | null>(null);
 
 	React.useEffect(() => {
 		if (open) {
@@ -71,6 +75,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 			setSelectedAccount(defaultNo ?? accounts[0]?.accountNo ?? "");
 			setAmount("");
 			setConfirmed(false);
+			setPaynowData(null);
 		}
 	}, [open, accounts, getDefaultAccountNo]);
 
@@ -82,10 +87,25 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 
 	const handleProceed = async () => {
 		const acc = accounts.find((a) => a.accountNo === selectedAccount);
+		const mode = acc?.accountType === "iCash" ? "ICASH" : "DEPOSIT";
 		setIsLoading(true);
-		await onProceed(selectedAccount, parseFloat(amount), acc?.accountType ?? "");
+
+		const response = await depositPaynow({
+			accountNo: selectedAccount,
+			mode,
+			amount: parseFloat(amount),
+			currency: "SGD",
+			refNo: `PAYNOW-${Date.now()}`,
+		});
+
 		setIsLoading(false);
-		onOpenChange(false);
+
+		if (!response.success) {
+			toast.error(response.error ?? "Failed to initiate PayNow deposit. Please try again.");
+			return;
+		}
+
+		setPaynowData(response.data);
 	};
 
 	return (
@@ -100,7 +120,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 				<div className="pad-x pb-6 space-y-5">
 					<div className="space-y-1.5">
 						<p className="text-sm font-medium text-typo-primary">Account</p>
-						<Select value={selectedAccount} onValueChange={setSelectedAccount}>
+						<Select value={selectedAccount} onValueChange={setSelectedAccount} disabled={!!paynowData}>
 							<SelectTrigger className="w-full">
 								<SelectValue placeholder="Select account">
 									{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
@@ -125,6 +145,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 							placeholder="Enter an amount"
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
+							disabled={!!paynowData}
 						/>
 					</div>
 
@@ -134,6 +155,7 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 							checked={confirmed}
 							onCheckedChange={(v) => setConfirmed(!!v)}
 							className="mt-0.5"
+							disabled={!!paynowData}
 						/>
 						<label
 							htmlFor="paynow-confirm"
@@ -146,15 +168,25 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 				</div>
 
 				<DialogFooter>
-					<div className="flex justify-end pt-1">
-						<Button
-							onClick={handleProceed}
-							disabled={!selectedAccount || !amount || !confirmed || isLoading}
-							className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
-						>
-							{isLoading ? <Loader2 className="animate-spin" /> : "Proceed"}
-						</Button>
-					</div>
+					{paynowData ? (
+						<S2BPayButton
+							{...paynowData}
+							onError={() => {
+								toast.error("Failed to load PayNow. Please try again.");
+								setPaynowData(null);
+							}}
+						/>
+					) : (
+						<div className="flex justify-end pt-1">
+							<Button
+								onClick={handleProceed}
+								disabled={!selectedAccount || !amount || !confirmed || isLoading}
+								className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
+							>
+								{isLoading ? <Loader2 className="animate-spin" /> : "Proceed"}
+							</Button>
+						</div>
+					)}
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
@@ -163,11 +195,6 @@ function PayNowDialog({ open, onOpenChange, onProceed }: PayNowDialogProps) {
 
 export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 	const [showPayNow, setShowPayNow] = React.useState(false);
-	const [paynowData, setPaynowData] = React.useState<{
-		s2bPayUrl: string;
-		corpId: string;
-		encStr: string;
-	} | null>(null);
 
 	const handleSelectMethod = (id: string) => {
 		if (id === "paynow") {
@@ -178,24 +205,6 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		} else {
 			onOpenChange(false);
 		}
-	};
-
-	const handleProceed = async (accountNo: string, amount: number, accountType: string) => {
-		const mode = accountType === "iCash" ? "ICASH" : "DEPOSIT";
-		const response = await depositPaynow({
-			accountNo,
-			mode,
-			amount,
-			currency: "SGD",
-			refNo: `PAYNOW-${Date.now()}`,
-		});
-
-		if (!response.success) {
-			toast.error(response.error ?? "Failed to initiate PayNow deposit. Please try again.");
-			return;
-		}
-
-		setPaynowData(response.data);
 	};
 
 	return (
@@ -235,15 +244,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 				</DialogContent>
 			</Dialog>
 
-			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} onProceed={handleProceed} />
-
-			{paynowData && (
-				<S2BPayButton
-					{...paynowData}
-					onClose={() => setPaynowData(null)}
-					onError={() => setPaynowData(null)}
-				/>
-			)}
+			<PayNowDialog open={showPayNow} onOpenChange={setShowPayNow} />
 		</>
 	);
 }

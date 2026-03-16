@@ -57,7 +57,9 @@
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/cash-transaction/page.tsx\" | sed -n '86,116p')",
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/\\(home\\)/_component/Campaigns.tsx\" | sed -n '118,126p')",
       "Bash(cat -A \"D:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\portfolio\\\\settle\\\\_components\\\\ContractsTable.tsx\" | sed -n '160,171p')",
-      "Bash(cd \"D:\\\\cgsi\" && sed -n '160p' \"app/\\(with-layout\\)/portfolio/settle/_components/ContractsTable.tsx\" | xxd | head -3)"
+      "Bash(cd \"D:\\\\cgsi\" && sed -n '160p' \"app/\\(with-layout\\)/portfolio/settle/_components/ContractsTable.tsx\" | xxd | head -3)",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/settle/page.tsx\" | sed -n '393,403p')",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/donations/_components/OnetimeForm.tsx\" | sed -n '251,264p')"
     ],
     "deny": [],
     "ask": []

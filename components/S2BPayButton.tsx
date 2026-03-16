@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
@@ -12,7 +11,7 @@ interface S2BPayButtonProps {
 	buttonText?: string;
 	buttonHeight?: number;
 	buttonWidth?: number;
-	onClose?: () => void;
+	onReady?: () => void;
 	onError?: () => void;
 }
 
@@ -23,12 +22,11 @@ export function S2BPayButton({
 	buttonText = "Agree",
 	buttonHeight = 30,
 	buttonWidth = 80,
-	onClose,
+	onReady,
 	onError,
 }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
-	const dialogSlotRef = React.useRef<HTMLDivElement>(null);
-	const [showResponse, setShowResponse] = React.useState(false);
+	const [expanded, setExpanded] = React.useState(false);
 
 	React.useEffect(() => {
 		if (!containerRef.current) return;
@@ -62,7 +60,8 @@ export function S2BPayButton({
 					clearTimeout(timeout);
 					observer.disconnect();
 					btn.click();
-					setShowResponse(true);
+					setExpanded(true);
+					onReady?.();
 				}
 			});
 
@@ -72,38 +71,12 @@ export function S2BPayButton({
 		script.onerror = () => onError?.();
 
 		containerRef.current.appendChild(script);
-	}, [s2bPayUrl, corpId, encStr, buttonText, buttonHeight, buttonWidth, onError]);
-
-	// Move the S2B content into the dialog once it opens
-	React.useEffect(() => {
-		if (showResponse && containerRef.current && dialogSlotRef.current) {
-			const slot = dialogSlotRef.current;
-			const container = containerRef.current;
-			// Move all child nodes into the dialog slot
-			while (container.firstChild) {
-				slot.appendChild(container.firstChild);
-			}
-		}
-	}, [showResponse]);
+	}, [s2bPayUrl, corpId, encStr, buttonText, buttonHeight, buttonWidth, onError, onReady]);
 
 	return (
-		<>
-			{/* Hidden container where S2B script loads and button gets auto-clicked */}
-			<div ref={containerRef} className="overflow-hidden max-h-0" />
-
-			{/* Dialog opens only after auto-click, showing the S2B response */}
-			{showResponse && (
-				<Dialog open onOpenChange={(open) => !open && onClose?.()}>
-					<DialogContent className="sm:max-w-[530px] p-0 gap-0">
-						<DialogHeader className="p-6 pb-4">
-							<DialogTitle className="text-base font-semibold text-typo-primary text-left">
-								PayNow
-							</DialogTitle>
-						</DialogHeader>
-						<div ref={dialogSlotRef} className="px-6 pb-6 w-full" />
-					</DialogContent>
-				</Dialog>
-			)}
-		</>
+		<div
+			ref={containerRef}
+			className={expanded ? "w-full" : "overflow-hidden max-h-0"}
+		/>
 	);
 }
