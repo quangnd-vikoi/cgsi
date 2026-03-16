@@ -71,11 +71,6 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 
 	return (
 		<div className="space-y-4">
-			{/* Info text */}
-			<p className="text-sm text-typo-secondary">
-				Rates used are updated at the start of the last business day.
-			</p>
-
 			{/* Exchange Rate Table */}
 			<div className="rounded-t-lg overflow-x-auto">
 				<div className="min-w-[680px]">
@@ -144,7 +139,9 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 												<div>{formatSGTDate(rate.lastUpdatedOn)}</div>
 												<div>{formatSGTTime(rate.lastUpdatedOn)}</div>
 											</>
-										) : "—"}
+										) : (
+											"—"
+										)}
 									</div>
 								</div>
 							))
