@@ -129,11 +129,13 @@ export default function SettlePage() {
 		corpId: string;
 		encStr: string;
 	} | null>) | null>(null);
+	const [payingId, setPayingId] = useState<string | null>(null);
 	const accountNo = selectedAccount?.accountNo;
 
 	const handlePayNow = (contract: ContractDisplay) => {
 		if (!accountNo) return;
 		const mode = activeTab === "contracts" ? "CONTRACT" : "CONTRA";
+		setPayingId(contract.id);
 		setPaynowSubmitFn(() => async () => {
 			const response = await depositPaynow({
 				accountNo,
@@ -374,6 +376,7 @@ export default function SettlePage() {
 							onOpenContraDetails={handleOpenContraDetails}
 							onPayNow={handlePayNow}
 							loading={loading}
+							payingId={payingId}
 						/>
 
 						{/* Pagination Footer */}
@@ -393,8 +396,10 @@ export default function SettlePage() {
 					{paynowSubmitFn && (
 						<S2BPayButton
 							submitFn={paynowSubmitFn}
+							onReady={() => setPayingId(null)}
 							onClose={() => setPaynowSubmitFn(null)}
 							onError={() => {
+								setPayingId(null);
 								setPaynowSubmitFn(null);
 								toast.error("PayNow Failed", "Failed to initiate PayNow. Please try again.");
 							}}

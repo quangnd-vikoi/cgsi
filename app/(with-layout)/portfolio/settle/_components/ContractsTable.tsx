@@ -12,7 +12,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
 
 // Display type for the contracts/contra table (mapped from API IContract/IContra)
 export interface ContractDisplay {
@@ -40,6 +40,7 @@ interface ContractsTableProps {
 	onOpenContraDetails: (contract: ContractDisplay) => void;
 	onPayNow: (contract: ContractDisplay) => void;
 	loading?: boolean;
+	payingId?: string | null;
 }
 
 type SortCol = keyof Omit<ContractDisplay, "id" | "statementNo">;
@@ -80,7 +81,7 @@ const ACTION_W = "min-w-[120px]";
 const thBase = "text-xs md:text-sm font-semibold text-typo-primary whitespace-nowrap px-4 py-4";
 const tdBase = "text-xs md:text-sm text-typo-primary whitespace-nowrap px-4 py-3";
 
-export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPayNow, loading = false }: ContractsTableProps) {
+export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPayNow, loading = false, payingId }: ContractsTableProps) {
 	const COLS = activeTab === "contra" ? CONTRA_COLS : CONTRACT_COLS;
 	const [sortColumn, setSortColumn] = useState<SortCol | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -195,11 +196,11 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 								)}
 								<Button
 									size="sm"
-									disabled={!["BUY", "DR"].includes(contract.side) || contract.settlementCcy !== "SGD"}
+									disabled={!["BUY", "DR"].includes(contract.side) || contract.settlementCcy !== "SGD" || !!payingId}
 									className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
 									onClick={() => onPayNow(contract)}
 								>
-									PayNow
+									{payingId === contract.id ? <Loader2 className="size-4 animate-spin" /> : "PayNow"}
 								</Button>
 							</TableCell>
 						</TableRow>
