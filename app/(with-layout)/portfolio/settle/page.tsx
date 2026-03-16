@@ -394,6 +394,10 @@ export default function SettlePage() {
 						<S2BPayButton
 							submitFn={paynowSubmitFn}
 							onClose={() => setPaynowSubmitFn(null)}
+							onError={() => {
+								setPaynowSubmitFn(null);
+								toast.error("PayNow Failed", "Failed to initiate PayNow. Please try again.");
+							}}
 						/>
 					)}
 
