@@ -65,10 +65,7 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 					clearTimeout(timeout);
 					agreeObserver.disconnect();
 
-					// Simulate full click sequence for S2B v2 compatibility
-					simulateClick(btn);
-
-					// Watch for lightbox to appear then disappear
+					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
 					const lightboxObserver = new MutationObserver(() => {
 						const lightbox = document.querySelector(
@@ -82,6 +79,11 @@ export function S2BPayButton({ submitFn, onClose, onError }: S2BPayButtonProps) 
 						}
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
+
+					// Delay click to let S2B script finish binding event handlers
+					setTimeout(() => {
+						if (!cancelled) simulateClick(btn);
+					}, 300);
 				});
 
 				agreeObserver.observe(container, { childList: true, subtree: true });
