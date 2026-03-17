@@ -61,9 +61,6 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					clearTimeout(timeout);
 					agreeObserver.disconnect();
 
-					// S2B button detected — notify caller to close any dialogs
-					if (!cancelled) onReady?.();
-
 					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
 					const lightboxObserver = new MutationObserver(() => {
@@ -89,6 +86,8 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 						attempts++;
 						btn.style.pointerEvents = "none";
 						autoClick(btn);
+						// Notify caller after first click so loading state can clear
+						if (attempts === 1 && !cancelled) onReady?.();
 						setTimeout(tryClick, CLICK_RETRY_INTERVAL_MS);
 					};
 					setTimeout(tryClick, 200);
