@@ -577,7 +577,7 @@ export interface SignatureSubmitResponse {
 // ============================================================================
 
 export interface IAssetSummary {
-	currency: string;
+	assetClass: string;
 	value: number;
 }
 

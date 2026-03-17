@@ -8,93 +8,95 @@ import {
     ChartConfig,
     ChartContainer,
 } from "@/components/ui/chart"
-import { PortfolioType } from "@/types"
+import { IAssetSummary, PortfolioType } from "@/types"
+import { ASSET_CLASS_LABELS } from "@/constants/accounts"
+import { Skeleton } from "@/components/ui/skeleton"
 
-export const description = "A donut chart with asset distribution"
-
-// Default chart data for CTA, MTA, CUT, iCash
-const defaultChartData = [
-    { asset: "equities", value: 36000.03, percentage: 20.00, fill: "#003E86" },
-    { asset: "structured", value: 69606.06, percentage: 38.67, fill: "#005CC8" },
-    { asset: "bonds", value: 46800.04, percentage: 26.00, fill: "#3087EF" },
-    { asset: "cash", value: 21600.02, percentage: 12.00, fill: "#91C0F6" },
-    { asset: "others", value: 5994.01, percentage: 3.33, fill: "#D9E6FF" },
-]
-
-// SBL specific chart data - Different distribution for Shares Borrowing Account
-const sblChartData = [
-    { asset: "holdings", value: 45000.00, percentage: 25.00, fill: "#60A5FA" },
-    { asset: "borrowed", value: 81000.00, percentage: 45.00, fill: "#3B82F6" },
-    { asset: "lend", value: 36000.00, percentage: 20.00, fill: "#1D4ED8" },
-    { asset: "cash", value: 18000.00, percentage: 10.00, fill: "#10B981" },
-]
-
-const defaultChartConfig = {
-    value: {
-        label: "Market Value",
-    },
-    equities: {
-        label: "Equities",
-        color: "#003E86",
-    },
-    structured: {
-        label: "Warrants",
-        color: "#005CC8",
-    },
-    bonds: {
-        label: "Bonds",
-        color: "#3087EF",
-    },
-    cash: {
-        label: "Cash Balance",
-        color: "#91C0F6",
-    },
-    others: {
-        label: "Others",
-        color: "#D9E6FF",
-    },
-} satisfies ChartConfig
-
-const sblChartConfig = {
-    value: {
-        label: "Market Value",
-    },
-    holdings: {
-        label: "Holdings & Positions",
-        color: "#60A5FA",
-    },
-    borrowed: {
-        label: "Borrowed Shares",
-        color: "#3B82F6",
-    },
-    lend: {
-        label: "Lend Shares",
-        color: "#1D4ED8",
-    },
-    cash: {
-        label: "Cash Balance",
-        color: "#10B981",
-    },
-} satisfies ChartConfig
+const ASSET_CLASS_COLORS: Record<string, string> = {
+    E: "#003E86",
+    W: "#005CC8",
+    B: "#3087EF",
+    C: "#91C0F6",
+    O: "#D9E6FF",
+}
 
 type ChartPieProps = {
     type?: PortfolioType
+    assetList?: IAssetSummary[]
+    isLoading?: boolean
 }
 
-export function ChartPie({ type = "CTA" }: ChartPieProps) {
-    const chartData = type === "SBL" ? sblChartData : defaultChartData
-    const chartConfig = type === "SBL" ? sblChartConfig : defaultChartConfig
+export function ChartPie({ type = "CTA", assetList, isLoading = false }: ChartPieProps) {
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null)
+
+    const chartData = React.useMemo(() => {
+        if (!assetList || assetList.length === 0) return []
+        const total = assetList.reduce((sum, item) => sum + item.value, 0)
+        return assetList.map((item) => ({
+            asset: item.assetClass,
+            label: ASSET_CLASS_LABELS[item.assetClass] || item.assetClass,
+            value: item.value,
+            percentage: total > 0 ? (item.value / total) * 100 : 0,
+            fill: ASSET_CLASS_COLORS[item.assetClass] || "#D9E6FF",
+        }))
+    }, [assetList])
+
+    const chartConfig = React.useMemo(() => {
+        const config: ChartConfig = {
+            value: { label: "Market Value" },
+        }
+        chartData.forEach((item) => {
+            config[item.asset] = {
+                label: item.label,
+                color: item.fill,
+            }
+        })
+        return config
+    }, [chartData])
 
     const totalValue = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.value, 0)
     }, [chartData])
 
     const activeItem = activeIndex !== null ? chartData[activeIndex] : null
-    const activeConfig = activeItem ? chartConfig[activeItem.asset as keyof typeof chartConfig] : null
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col lg:flex-row gap-8 items-center">
+                <div className="flex-shrink-0 w-full md:w-1/2 flex justify-center">
+                    <Skeleton className="w-[290px] h-[290px] rounded-full" />
+                </div>
+                <div className="flex-1 w-full md:w-1/2 pl-2 space-y-4">
+                    <div className="grid gap-3 md:gap-4 py-2" style={{ gridTemplateColumns: '2fr 0.9fr 1.6fr' }}>
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-16 ml-auto" />
+                        <Skeleton className="h-4 w-24 ml-auto" />
+                    </div>
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="grid gap-3 md:gap-4 py-3" style={{ gridTemplateColumns: '2fr 0.9fr 1.6fr' }}>
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="w-4 h-4 rounded-full" />
+                                <Skeleton className="h-4 w-20" />
+                            </div>
+                            <Skeleton className="h-4 w-12 ml-auto" />
+                            <Skeleton className="h-4 w-20 ml-auto" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    if (chartData.length === 0) {
+        return (
+            <div className="flex items-center justify-center h-[290px] text-typo-secondary text-sm">
+                No asset data available
+            </div>
+        )
+    }
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 items-center">
+        <div className="flex flex-col lg:flex-row gap-8">
             {/* Chart Section */}
             <div className="relative flex-shrink-0 w-full md:w-1/2 flex flex-col items-center">
                 <ChartContainer
@@ -161,7 +163,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
                 </ChartContainer>
 
                 {/* Fixed Tooltip at bottom left corner */}
-                {activeItem && activeConfig && (
+                {activeItem && (
                     <div className="absolute bottom-0 left-0 z-10 flex items-center gap-2 rounded bg-white shadow-lg border border-stroke-secondary whitespace-nowrap">
                         <span
                             className="text-sm font-semibold text-white px-2 py-1 rounded"
@@ -170,7 +172,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
                             {activeItem.percentage.toFixed(2)}%
                         </span>
                         <span className="text-sm text-typo-primary font-semibold">
-                            {activeConfig.label}
+                            {activeItem.label}
                         </span>
                         <span className="text-sm text-typo-secondary pr-2">
                             ({activeItem.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} SGD)
@@ -190,7 +192,6 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
 
                 {/* Data Rows */}
                 {chartData.map((item, index) => {
-                    const config = chartConfig[item.asset as keyof typeof chartConfig]
                     const isActive = activeIndex === index
                     return (
                         <div
@@ -205,7 +206,7 @@ export function ChartPie({ type = "CTA" }: ChartPieProps) {
                                     className="w-4 h-4 rounded-full flex-shrink-0"
                                     style={{ backgroundColor: item.fill }}
                                 />
-                                <span className="font-medium truncate">{config.label}</span>
+                                <span className="font-medium truncate">{item.label}</span>
                             </div>
                             <div className="text-right font-medium">
                                 {item.percentage.toFixed(2)}%

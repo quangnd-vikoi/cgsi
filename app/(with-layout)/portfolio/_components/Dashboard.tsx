@@ -8,11 +8,12 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import React from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PortfolioType } from "@/types";
+import { PortfolioType, IAccountSummary } from "@/types";
 import { ChartPie } from "./ChartPie";
 import { PaymentModel } from "@/components/PaymentModel";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
+import { getAccountSummary } from "@/lib/services/portfolioService";
 
 const formatAmount = (value: number | undefined, currency = "SGD") => {
 	if (value === undefined || value === null) return `0.00 ${currency}`;
@@ -39,7 +40,8 @@ const DashboardBlock = ({
 	type = "normal",
 	showPayButton = false,
 	onPay,
-}: DashboardBlockProps) => {
+	isLoading = false,
+}: DashboardBlockProps & { isLoading?: boolean }) => {
 	const getTextColor = () => {
 		switch (type) {
 			case "success":
@@ -56,7 +58,11 @@ const DashboardBlock = ({
 			<div className="">
 				<p className="text-xs md:text-sm text-typo-secondary">{title}</p>
 				<div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
-					<p className={`font-semibold ${getTextColor()}`}>{amount}</p>
+					{isLoading ? (
+						<Skeleton className="h-5 w-28" />
+					) : (
+						<p className={`font-semibold ${getTextColor()}`}>{amount}</p>
+					)}
 				</div>
 			</div>
 
@@ -73,7 +79,7 @@ const DashboardBlock = ({
 	);
 };
 
-const TypeSelect = ({ totalAsset, fullWidth }: { totalAsset: number; fullWidth?: boolean }) => {
+const TypeSelect = ({ totalAsset, fullWidth, isLoading = false }: { totalAsset: number; fullWidth?: boolean; isLoading?: boolean }) => {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
 
 	const selectEl = (
@@ -123,13 +129,17 @@ const TypeSelect = ({ totalAsset, fullWidth }: { totalAsset: number; fullWidth?:
 
 				<div className="w-full">
 					<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
-					<p className="mt-2 text-lg md:text-2xl font-semibold">
-						{totalAsset.toLocaleString("en-US", {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}{" "}
-						SGD
-					</p>
+					{isLoading ? (
+						<Skeleton className="mt-2 h-8 w-40" />
+					) : (
+						<p className="mt-2 text-lg md:text-2xl font-semibold">
+							{totalAsset.toLocaleString("en-US", {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}{" "}
+							SGD
+						</p>
+					)}
 				</div>
 
 				<Separator
@@ -154,13 +164,17 @@ const TypeSelect = ({ totalAsset, fullWidth }: { totalAsset: number; fullWidth?:
 			<div className="mt-6 flex flex-col md:flex-row justify-between gap-4 md:gap-6 items-start">
 				<div className="w-full md:w-1/2">
 					<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
-					<p className="mt-2 text-lg  md:text-2xl font-semibold">
-						{totalAsset.toLocaleString("en-US", {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2,
-						})}{" "}
-						SGD
-					</p>
+					{isLoading ? (
+						<Skeleton className="mt-2 h-8 w-40" />
+					) : (
+						<p className="mt-2 text-lg md:text-2xl font-semibold">
+							{totalAsset.toLocaleString("en-US", {
+								minimumFractionDigits: 2,
+								maximumFractionDigits: 2,
+							})}{" "}
+							SGD
+						</p>
+					)}
 				</div>
 
 				<Separator
@@ -226,6 +240,8 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 	const type = propType || accountType;
 
 	const [showPaymentModel, setShowPaymentModel] = React.useState(false);
+	const [accountSummary, setAccountSummary] = React.useState<IAccountSummary | null>(null);
+	const [isLoading, setIsLoading] = React.useState(false);
 
 	React.useEffect(() => {
 		if (onTypeChange && accountType && accountType !== propType) {
@@ -233,16 +249,42 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 		}
 	}, [accountType, onTypeChange, propType]);
 
+	React.useEffect(() => {
+		if (!selectedAccount?.accountNo) {
+			setAccountSummary(null);
+			return;
+		}
+
+		let cancelled = false;
+		const fetchSummary = async () => {
+			setIsLoading(true);
+			const response = await getAccountSummary(selectedAccount.accountNo);
+			if (!cancelled) {
+				if (response.success && response.data) {
+					setAccountSummary(response.data);
+				}
+				setIsLoading(false);
+			}
+		};
+		fetchSummary();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [selectedAccount?.accountNo]);
+
+	const colorByValue = (value?: number): "success" | "error" | "normal" =>
+		value === undefined || value === null ? "normal" : value < 0 ? "error" : "success";
+
 	if (accounts.length === 0 || !type) return <DashboardSkeleton />;
 
-	// Layout configurations (account summary removed in v4 API)
 	const layoutConfig = {
 		CTA: [
 			{
 				id: 1,
 				gridArea: "1 / 1 / 2 / 2",
 				component: (
-					<DashboardBlock title="Sell Contracts" amount={formatAmount(undefined)} type="success" />
+					<DashboardBlock title="Sell Contracts" amount={formatAmount(accountSummary?.contractsSell)} type={colorByValue(accountSummary?.contractsSell)} isLoading={isLoading} />
 				),
 			},
 			{
@@ -251,8 +293,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Buy Contracts"
-						amount={formatAmount(undefined)}
-						type="error"
+						amount={formatAmount(accountSummary?.contractsBuy)}
+						type={colorByValue(accountSummary?.contractsBuy)}
+						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}
 					/>
@@ -262,7 +305,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				id: 3,
 				gridArea: "2 / 1 / 3 / 2",
 				component: (
-					<DashboardBlock title="Contra Gain" amount={formatAmount(undefined)} type="success" />
+					<DashboardBlock title="Contra Gain" amount={formatAmount(accountSummary?.contraGain)} type={colorByValue(accountSummary?.contraGain)} isLoading={isLoading} />
 				),
 			},
 			{
@@ -271,8 +314,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Contra Loss"
-						amount={formatAmount(undefined)}
-						type="error"
+						amount={formatAmount(accountSummary?.contraLoss)}
+						type={colorByValue(accountSummary?.contraLoss)}
+						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}
 					/>
@@ -286,15 +330,16 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Avail Trade Limit"
-						amount={formatAmountNoSign(undefined)}
+						amount={formatAmountNoSign(accountSummary?.tradeLimit)}
 						type="normal"
+						isLoading={isLoading}
 					/>
 				),
 			},
 			{
 				id: 2,
 				gridArea: "2 / 1 / 3 / 2",
-				component: <DashboardBlock title="Margin Ratio" amount="0%" type="normal" />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type="normal" isLoading={isLoading} />,
 			},
 			{
 				id: 3,
@@ -302,8 +347,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Collateral Value"
-						amount={formatAmountNoSign(undefined)}
+						amount={formatAmountNoSign(accountSummary?.collateralValue)}
 						type="normal"
+						isLoading={isLoading}
 					/>
 				),
 			},
@@ -313,8 +359,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatAmount(undefined)}
-						type="error"
+						amount={formatAmount(accountSummary?.cashCall)}
+						type={colorByValue(accountSummary?.cashCall)}
+						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}
 					/>
@@ -325,7 +372,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			{
 				id: 2,
 				gridArea: "1 / 1 / 2 / 3",
-				component: <DashboardBlock title="Margin Ratio" amount="0%" type="normal" />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type="normal" isLoading={isLoading} />,
 			},
 			{
 				id: 3,
@@ -333,8 +380,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatAmount(undefined)}
-						type="error"
+						amount={formatAmount(accountSummary?.cashCall)}
+						type={colorByValue(accountSummary?.cashCall)}
+						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}
 					/>
@@ -351,7 +399,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 		<div className="bg-white pad-x py-6 rounded border border-stroke-secondary">
 			<div className="flex flex-col md:flex-row gap-4">
 				<div className={cn("w-full", type == "iCash" || type == "CUT" ? "" : "md:w-1/2")}>
-					<TypeSelect totalAsset={0} fullWidth={type === "iCash" || type === "CUT"} />
+					<TypeSelect totalAsset={accountSummary?.totalAsset ?? 0} fullWidth={type === "iCash" || type === "CUT"} isLoading={isLoading} />
 				</div>
 
 				{type != "iCash" && type != "CUT" && (
@@ -391,7 +439,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			<PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
 
 			<div className="mt-6">
-				<ChartPie type={type} />
+				<ChartPie type={type} assetList={accountSummary?.assetList} isLoading={isLoading} />
 			</div>
 		</div>
 	);
