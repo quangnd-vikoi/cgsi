@@ -100,7 +100,6 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					// Watch for lightbox appearance (onReady) and disappearance (fallback onClose)
 					const lightboxObserver = new MutationObserver(() => {
 						const lightbox = hasS2BLightbox();
-						const isV2 = !!document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
 
 						if (lightbox) {
 							lightboxAppeared = true;
@@ -109,7 +108,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 								clearTimeout(closeDebounce);
 								closeDebounce = null;
 							}
-							if (isV2 && !readyFired && !cancelled) {
+							if (!readyFired && !cancelled) {
 								readyFired = true;
 								onReadyRef.current?.();
 							}
