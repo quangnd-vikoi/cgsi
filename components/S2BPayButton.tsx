@@ -90,7 +90,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 						if (attempts === 1 && !cancelled) onReady?.();
 						setTimeout(tryClick, CLICK_RETRY_INTERVAL_MS);
 					};
-					setTimeout(tryClick, 200);
+					setTimeout(tryClick, 500);
 				});
 
 				agreeObserver.observe(container, { childList: true, subtree: true });
