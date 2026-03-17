@@ -197,7 +197,7 @@ export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPa
 								<Button
 									size="sm"
 									disabled={!["BUY", "DR"].includes(contract.side) || contract.settlementCcy !== "SGD" || !!payingId}
-									className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 disabled:bg-status-disable-primary"
+									className="bg-cgs-blue font-medium hover:bg-cgs-blue/90 text-white rounded px-3 min-w-[76px] disabled:bg-status-disable-primary"
 									onClick={() => onPayNow(contract)}
 								>
 									{payingId === contract.id ? <Loader2 className="size-4 animate-spin" /> : "PayNow"}
