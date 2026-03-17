@@ -25,6 +25,14 @@ function autoClick(el: HTMLElement) {
 export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 
+	// Stable refs so the effect doesn't re-run when callbacks change
+	const onReadyRef = React.useRef(onReady);
+	const onCloseRef = React.useRef(onClose);
+	const onErrorRef = React.useRef(onError);
+	onReadyRef.current = onReady;
+	onCloseRef.current = onClose;
+	onErrorRef.current = onError;
+
 	React.useEffect(() => {
 		let cancelled = false;
 
@@ -34,7 +42,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 		const fireClose = () => {
 			if (closeFired || cancelled) return;
 			closeFired = true;
-			onClose?.();
+			onCloseRef.current?.();
 		};
 		window.s2bPayClose = (status) => {
 			if (status.status === "closed") fireClose();
@@ -45,7 +53,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 			if (cancelled) return;
 
 			if (!data) {
-				onError?.();
+				onErrorRef.current?.();
 				return;
 			}
 
@@ -69,7 +77,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 
 				const timeout = setTimeout(() => {
 					agreeObserver.disconnect();
-					if (!cancelled) onError?.();
+					if (!cancelled) onErrorRef.current?.();
 				}, BUTTON_WAIT_TIMEOUT_MS);
 
 				const agreeObserver = new MutationObserver(() => {
@@ -103,7 +111,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 							}
 							if (isV2 && !readyFired && !cancelled) {
 								readyFired = true;
-								onReady?.();
+								onReadyRef.current?.();
 							}
 						} else if (lightboxAppeared) {
 							// Debounce: v1 briefly removes lightbox between steps
@@ -139,7 +147,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 			};
 
 			script.onerror = () => {
-				if (!cancelled) onError?.();
+				if (!cancelled) onErrorRef.current?.();
 			};
 
 			container.appendChild(script);
@@ -149,7 +157,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 			cancelled = true;
 			delete window.s2bPayClose;
 		};
-	}, [submitFn, onReady, onClose, onError]);
+	}, [submitFn]);
 
 	return <div ref={containerRef} className="fixed z-[9999] opacity-0 pointer-events-none" />;
 }
