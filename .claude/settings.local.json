@@ -64,7 +64,8 @@
       "Bash(cat -A \"d:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\\\(detail\\)\\\\donations\\\\_components\\\\RecurringForm.tsx\")",
       "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/portfolio/_components/ExchangeRateTable.tsx\" | sed -n '139,140p')",
       "Bash(find /d/cgsi/lib /d/cgsi/components -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) 2>/dev/null | grep -v \".next\")",
-      "Bash(find /d/cgsi/types -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) 2>/dev/null | grep -v \".next\")"
+      "Bash(find /d/cgsi/types -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\) 2>/dev/null | grep -v \".next\")",
+      "Bash(ls -la /D/cgsi/app/\\\\\\(with-layout\\\\\\)/)"
     ],
     "deny": [],
     "ask": []

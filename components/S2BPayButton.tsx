@@ -79,14 +79,18 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
 
-					// Delay click to let S2B script finish binding its handlers
-					let clicked = false;
+					// Retry clicking until the lightbox appears or max attempts reached
+					const MAX_CLICK_ATTEMPTS = 10;
+					const CLICK_RETRY_INTERVAL_MS = 300;
+					let attempts = 0;
+
 					const tryClick = () => {
-						if (cancelled || clicked) return;
-						clicked = true;
+						if (cancelled || lightboxAppeared || attempts >= MAX_CLICK_ATTEMPTS) return;
+						attempts++;
 						autoClick(btn);
+						setTimeout(tryClick, CLICK_RETRY_INTERVAL_MS);
 					};
-					setTimeout(tryClick, 500);
+					setTimeout(tryClick, 200);
 				});
 
 				agreeObserver.observe(container, { childList: true, subtree: true });
