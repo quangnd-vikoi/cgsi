@@ -4,6 +4,12 @@ import React from "react";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
+declare global {
+	interface Window {
+		s2bPayClose?: (status: { status: string; corpref: string }) => void;
+	}
+}
+
 interface S2BPayButtonProps {
 	submitFn: () => Promise<{ s2bPayUrl: string; corpId: string; encStr: string } | null>;
 	onReady?: () => void;
@@ -21,6 +27,11 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 
 	React.useEffect(() => {
 		let cancelled = false;
+
+		// Register s2bPayClose before script loads so S2B can call it when user closes lightbox
+		window.s2bPayClose = (status) => {
+			if (!cancelled && status.status === "closed") onClose?.();
+		};
 
 		(async () => {
 			const data = await submitFn();
@@ -61,44 +72,28 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					clearTimeout(timeout);
 					agreeObserver.disconnect();
 
-					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
 					let readyFired = false;
-					let closeDebounce: ReturnType<typeof setTimeout> | null = null;
 
 					const hasS2BLightbox = () =>
 						document.querySelector(
 							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox"
 						);
 
+					// Watch for lightbox appearance to fire onReady
 					const lightboxObserver = new MutationObserver(() => {
 						const lightbox = hasS2BLightbox();
 						const isV2 = !!document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
 
 						if (lightbox) {
 							lightboxAppeared = true;
-							// Cancel any pending close — lightbox reappeared (v1 step transition)
-							if (closeDebounce) {
-								clearTimeout(closeDebounce);
-								closeDebounce = null;
-							}
-							// Only fire onReady for v2 lightbox
 							if (isV2 && !readyFired && !cancelled) {
 								readyFired = true;
 								onReady?.();
 							}
 						} else if (lightboxAppeared) {
-							// Debounce close: v1 briefly removes lightbox between steps
-							if (!closeDebounce) {
-								closeDebounce = setTimeout(() => {
-									// Re-check — if still gone, it's a real close
-									if (!hasS2BLightbox()) {
-										lightboxObserver.disconnect();
-										if (!cancelled) onClose?.();
-									}
-									closeDebounce = null;
-								}, 500);
-							}
+							// Lightbox gone and s2bPayClose was not called — payment proceeded
+							lightboxObserver.disconnect();
 						}
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
@@ -128,7 +123,10 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 			container.appendChild(script);
 		})();
 
-		return () => { cancelled = true; };
+		return () => {
+			cancelled = true;
+			delete window.s2bPayClose;
+		};
 	}, [submitFn, onReady, onClose, onError]);
 
 	return <div ref={containerRef} className="fixed z-[9999] opacity-0 pointer-events-none" />;
