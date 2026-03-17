@@ -28,9 +28,16 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 	React.useEffect(() => {
 		let cancelled = false;
 
-		// Register s2bPayClose before script loads so S2B can call it when user closes lightbox
+		// Official S2B callback — called when user closes lightbox without selecting payment method
+		// Used as primary close signal; MutationObserver below is the fallback
+		let closeFired = false;
+		const fireClose = () => {
+			if (closeFired || cancelled) return;
+			closeFired = true;
+			onClose?.();
+		};
 		window.s2bPayClose = (status) => {
-			if (!cancelled && status.status === "closed") onClose?.();
+			if (status.status === "closed") fireClose();
 		};
 
 		(async () => {
@@ -80,20 +87,35 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox"
 						);
 
-					// Watch for lightbox appearance to fire onReady
+					let closeDebounce: ReturnType<typeof setTimeout> | null = null;
+
+					// Watch for lightbox appearance (onReady) and disappearance (fallback onClose)
 					const lightboxObserver = new MutationObserver(() => {
 						const lightbox = hasS2BLightbox();
 						const isV2 = !!document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
 
 						if (lightbox) {
 							lightboxAppeared = true;
+							// Cancel any pending close — lightbox reappeared (v1 step transition)
+							if (closeDebounce) {
+								clearTimeout(closeDebounce);
+								closeDebounce = null;
+							}
 							if (isV2 && !readyFired && !cancelled) {
 								readyFired = true;
 								onReady?.();
 							}
 						} else if (lightboxAppeared) {
-							// Lightbox gone and s2bPayClose was not called — payment proceeded
-							lightboxObserver.disconnect();
+							// Debounce: v1 briefly removes lightbox between steps
+							if (!closeDebounce) {
+								closeDebounce = setTimeout(() => {
+									if (!hasS2BLightbox()) {
+										lightboxObserver.disconnect();
+										fireClose();
+									}
+									closeDebounce = null;
+								}, 500);
+							}
 						}
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
