@@ -64,20 +64,41 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
 					let readyFired = false;
+					let closeDebounce: ReturnType<typeof setTimeout> | null = null;
+
+					const hasS2BLightbox = () =>
+						document.querySelector(
+							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox"
+						);
+
 					const lightboxObserver = new MutationObserver(() => {
-						const v2 = document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
-						const v1 = document.querySelector("#s2bpay-lightbox-container");
-						const lightbox = v2 || v1;
+						const lightbox = hasS2BLightbox();
+						const isV2 = !!document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
+
 						if (lightbox) {
 							lightboxAppeared = true;
+							// Cancel any pending close — lightbox reappeared (v1 step transition)
+							if (closeDebounce) {
+								clearTimeout(closeDebounce);
+								closeDebounce = null;
+							}
 							// Only fire onReady for v2 lightbox
-							if (v2 && !readyFired && !cancelled) {
+							if (isV2 && !readyFired && !cancelled) {
 								readyFired = true;
 								onReady?.();
 							}
 						} else if (lightboxAppeared) {
-							lightboxObserver.disconnect();
-							if (!cancelled) onClose?.();
+							// Debounce close: v1 briefly removes lightbox between steps
+							if (!closeDebounce) {
+								closeDebounce = setTimeout(() => {
+									// Re-check — if still gone, it's a real close
+									if (!hasS2BLightbox()) {
+										lightboxObserver.disconnect();
+										if (!cancelled) onClose?.();
+									}
+									closeDebounce = null;
+								}, 500);
+							}
 						}
 					});
 					lightboxObserver.observe(document.body, { childList: true, subtree: true });
