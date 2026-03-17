@@ -63,12 +63,18 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 
 					// Set up lightbox observer before clicking so we don't miss the event
 					let lightboxAppeared = false;
+					let readyFired = false;
 					const lightboxObserver = new MutationObserver(() => {
-						const lightbox = document.querySelector(
-							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container"
-						);
+						const v2 = document.querySelector("#s2bpayv2-s2bpay-lightbox-container");
+						const v1 = document.querySelector("#s2bpay-lightbox-container");
+						const lightbox = v2 || v1;
 						if (lightbox) {
 							lightboxAppeared = true;
+							// Only fire onReady for v2 lightbox
+							if (v2 && !readyFired && !cancelled) {
+								readyFired = true;
+								onReady?.();
+							}
 						} else if (lightboxAppeared) {
 							lightboxObserver.disconnect();
 							if (!cancelled) onClose?.();
@@ -86,8 +92,6 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 						attempts++;
 						btn.style.pointerEvents = "none";
 						autoClick(btn);
-						// Notify caller after first click so loading state can clear
-						if (attempts === 1 && !cancelled) onReady?.();
 						setTimeout(tryClick, CLICK_RETRY_INTERVAL_MS);
 					};
 					setTimeout(tryClick, 500);

@@ -244,6 +244,7 @@ const OneTimeForm = () => {
 			{paynowSubmitFn && (
 				<S2BPayButton
 					submitFn={paynowSubmitFn}
+					onReady={() => setIsSubmitting(false)}
 					onClose={() => {
 						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
