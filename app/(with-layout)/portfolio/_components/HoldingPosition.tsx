@@ -25,11 +25,13 @@ import Link from "next/link";
 import { PortfolioType } from "@/types";
 import type { IPortfolioHolding } from "@/types";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { getHoldings } from "@/lib/services/portfolioService";
+import { getHoldings, getCdpTransferStatus } from "@/lib/services/portfolioService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
 import { holdingsColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
+import type { ICDPTransferStatus } from "@/types";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
 const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
@@ -91,6 +93,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 	const [exporting, setExporting] = useState(false);
 	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+	const [showTransferDetails, setShowTransferDetails] = useState(false);
 
 	const handleSort = (column: keyof IPortfolioHolding) => {
 		if (column === sortColumn) {
@@ -161,6 +164,32 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 
 	const isSubCDP = useTradingAccountStore((s) => s.isSubCDP());
 
+	const [cdpTransfer, setCdpTransfer] = useState<ICDPTransferStatus | null>(null);
+	const [cdpStatusLoading, setCdpStatusLoading] = useState(false);
+
+	useEffect(() => {
+		if (type !== "CTA") return;
+		let cancelled = false;
+		const fetchStatus = async () => {
+			setCdpStatusLoading(true);
+			const response = await getCdpTransferStatus();
+			if (!cancelled && response.success && response.data) {
+				// Use the latest status entry
+				const latest = response.data[response.data.length - 1] ?? null;
+				setCdpTransfer(latest);
+			}
+			if (!cancelled) setCdpStatusLoading(false);
+		};
+		fetchStatus();
+		return () => {
+			cancelled = true;
+		};
+	}, [type]);
+
+	const cdpStatus = cdpTransfer?.status ?? null;
+	const isCdpPending = cdpStatus === "2";
+	const isCdpSuccessful = cdpStatus === "3";
+
 	const colDefs = getColDefs(selectedAccount?.accountType);
 	const colCount = colDefs.length;
 
@@ -169,11 +198,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 			<div className="pad-x py-6">
 				{/* Header */}
 				<div className="flex justify-between items-center mb-4 md:mb-6">
-					<div className="flex items-center gap-2">
-						<h2 className="text-base font-semibold text-typo-primary">
-							Holdings &amp; Positions
-						</h2>
-					</div>
+					<h2 className="text-base font-semibold text-typo-primary">Holdings &amp; Positions</h2>
 
 					{/* Desktop: Show buttons */}
 					<div className="hidden md:flex gap-2">
@@ -191,18 +216,58 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 							)}
 							Export to Excel
 						</Button>
-						{!isInitialized ? (
+						{!isInitialized || cdpStatusLoading ? (
 							<Skeleton className="h-8 w-36 rounded" />
 						) : type === "CTA" && !isSubCDP ? (
-							<Link href={INTERNAL_ROUTES.SHARE_TRANSFER}>
-								<Button
-									size="sm"
-									className="text-sm rounded gap-2 bg-cgs-blue hover:bg-cgs-blue/90"
-								>
-									<ArrowRightLeft className="size-4" />
-									SGX Shares Transfer
-								</Button>
-							</Link>
+							<>
+								{isCdpPending ? (
+									<Button
+										size="sm"
+										className="text-sm rounded gap-2 bg-status-disable-primary text-white cursor-not-allowed"
+										disabled
+									>
+										<ArrowRightLeft className="size-4" />
+										Transfer Pending
+									</Button>
+								) : isCdpSuccessful ? (
+									<Button
+										size="sm"
+										className="text-sm rounded gap-2 bg-status-disable-primary text-white cursor-not-allowed"
+										disabled
+									>
+										<ArrowRightLeft className="size-4" />
+										Transfer Successful
+									</Button>
+								) : (
+									<Link href={INTERNAL_ROUTES.SHARE_TRANSFER}>
+										<Button
+											size="sm"
+											className="text-sm rounded gap-2 bg-cgs-blue hover:bg-cgs-blue/90"
+										>
+											<ArrowRightLeft className="size-4" />
+											SGX Shares Transfer
+										</Button>
+									</Link>
+								)}
+								{cdpTransfer && cdpStatus !== "1" && (
+									<div className="flex flex-col items-end text-xs text-typo-secondary">
+										<span>
+											Transfer Requested on:{" "}
+											{new Date(cdpTransfer.requestedOn).toLocaleDateString("en-GB", {
+												day: "2-digit",
+												month: "short",
+												year: "numeric",
+											})}
+										</span>
+										<button
+											onClick={() => setShowTransferDetails(true)}
+											className="text-cgs-blue hover:text-cgs-blue/75 font-medium cursor-pointer"
+										>
+											View Details
+										</button>
+									</div>
+								)}
+							</>
 						) : null}
 					</div>
 
@@ -226,26 +291,44 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 									)}
 									Export to Excel
 								</DropdownMenuItem>
-								{!isInitialized ? (
+								{!isInitialized || cdpStatusLoading ? (
 									<DropdownMenuItem disabled>
 										<Skeleton className="h-4 w-32 rounded" />
 									</DropdownMenuItem>
-								) : type === "CTA" && !isSubCDP ? (
-									<DropdownMenuItem>
+								) : type === "CTA" && !isSubCDP && isCdpPending ? (
+									<DropdownMenuItem disabled>
 										<ArrowRightLeft size={16} />
-										SGX Shares Transfer
+										Transfer Pending
+									</DropdownMenuItem>
+								) : type === "CTA" && !isSubCDP && isCdpSuccessful ? (
+									<DropdownMenuItem disabled>
+										<ArrowRightLeft size={16} />
+										Transfer Successful
+									</DropdownMenuItem>
+								) : type === "CTA" && !isSubCDP ? (
+									<DropdownMenuItem asChild>
+										<Link href={INTERNAL_ROUTES.SHARE_TRANSFER}>
+											<ArrowRightLeft size={16} />
+											SGX Shares Transfer
+										</Link>
 									</DropdownMenuItem>
 								) : null}
+								{type === "CTA" && cdpTransfer && cdpStatus !== "1" && (
+									<DropdownMenuItem onClick={() => setShowTransferDetails(true)}>
+										<FileOutput size={16} />
+										Transfer Request Details
+									</DropdownMenuItem>
+								)}
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
 				</div>
 
 				{/* Table */}
-				<div className="overflow-x-auto  rounded">
+				<div className="overflow-x-auto lg:overflow-visible rounded">
 					<Table>
 						<TableHeader>
-							<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs md:[&>th]:text-sm [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 md:[&>th]:px-2">
+							<TableRow className="bg-background-section border-b border-stroke-secondary [&>th]:text-xs md:[&>th]:text-sm [&>th]:font-semibold [&>th]:text-typo-primary [&>th]:whitespace-nowrap [&>th]:!px-4 [&>th]:py-3 lg:[&>th]:px-2">
 								{colDefs.map(({ label, col, right }) => (
 									<TableHead
 										key={col}
@@ -294,7 +377,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 								sortedHoldings.map((item, index) => (
 									<TableRow
 										key={`${item.securityCode}-${index}`}
-										className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 md:[&>td]:px-2"
+										className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:!px-4 [&>td]:py-3 lg:[&>td]:px-2"
 									>
 										{colDefs.map(({ col, right }) => {
 											const raw = item[col];
@@ -333,6 +416,56 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 					loading={loading}
 				/>
 			</div>
+
+			{/* Transfer Request Details Dialog */}
+			{cdpTransfer && (
+				<Dialog open={showTransferDetails} onOpenChange={setShowTransferDetails}>
+					<DialogContent className="sm:max-w-md">
+						<DialogHeader>
+							<DialogTitle className="text-base font-semibold">
+								Transfer Request Details
+							</DialogTitle>
+						</DialogHeader>
+						<div className="space-y-3 text-sm">
+							<div className="flex justify-between">
+								<span className="text-typo-secondary">Transfer Request on</span>
+								<span className="font-medium text-right">
+									{new Date(cdpTransfer.requestedOn).toLocaleDateString("en-GB", {
+										day: "2-digit",
+										month: "short",
+										year: "numeric",
+									})}
+									,{" "}
+									{new Date(cdpTransfer.requestedOn).toLocaleTimeString("en-GB", {
+										hour: "2-digit",
+										minute: "2-digit",
+									})}{" "}
+									SGT
+								</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-typo-secondary">CDP Account</span>
+								<span className="font-medium">{cdpTransfer.cdpNo}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-typo-secondary">Trading Account</span>
+								<span className="font-medium">{cdpTransfer.acctNo}</span>
+							</div>
+							<div className="flex justify-between">
+								<span className="text-typo-secondary">Status</span>
+								<span className="font-medium">{cdpTransfer.statusDesc}</span>
+							</div>
+						</div>
+						<div className="flex justify-end mt-4">
+							<DialogClose asChild>
+								<Button size="sm" className="bg-cgs-blue hover:bg-cgs-blue/90 rounded px-6">
+									Close
+								</Button>
+							</DialogClose>
+						</div>
+					</DialogContent>
+				</Dialog>
+			)}
 		</div>
 	);
 };
