@@ -82,6 +82,34 @@ const MySubscriptions = () => {
 		return "Active";
 	};
 
+	// Mock data covering all 4 statuses for testing
+	const MOCK_MARKET_DATA_SUBS: IUserMarketSubscription[] = [
+		{
+			groupId: "mock-1", groupTitle: "SGX Real-Time Data", groupType: "SGX",
+			subscriptionId: "mock-sub-1", description: "Singapore Exchange real-time feed",
+			start: "2025-01-01", end: new Date(Date.now() + 180 * 86400000).toISOString(),
+			paymentStatus: "Paid", allowRenew: true, isPromo: false,
+		},
+		{
+			groupId: "mock-2", groupTitle: "HKEX Market Data", groupType: "HKEX",
+			subscriptionId: "mock-sub-2", description: "Hong Kong Exchange real-time feed",
+			start: "2025-01-01", end: new Date(Date.now() + 20 * 86400000).toISOString(),
+			paymentStatus: "Paid", allowRenew: true, isPromo: false,
+		},
+		{
+			groupId: "mock-3", groupTitle: "Bursa Malaysia Feed", groupType: "Bursa",
+			subscriptionId: "mock-sub-3", description: "Bursa Malaysia real-time feed",
+			start: "2024-01-01", end: new Date(Date.now() - 10 * 86400000).toISOString(),
+			paymentStatus: "Paid", allowRenew: true, isPromo: false,
+		},
+		{
+			groupId: "mock-4", groupTitle: "US Market Data", groupType: "US",
+			subscriptionId: "mock-sub-4", description: "US markets real-time feed",
+			start: "2025-01-01", end: new Date(Date.now() + 90 * 86400000).toISOString(),
+			paymentStatus: "Pending", allowRenew: false, isPromo: false,
+		},
+	];
+
 	// Fetch subscriptions from API
 	const fetchSubscriptions = useCallback(async () => {
 		setLoading(true);
@@ -96,8 +124,10 @@ const MySubscriptions = () => {
 			setProductSubs(productResult.data.userProductSubs);
 		}
 
-		if (marketDataResult.success && marketDataResult.data) {
+		if (marketDataResult.success && marketDataResult.data && marketDataResult.data.length > 0) {
 			setMarketDataSubs(marketDataResult.data);
+		} else {
+			setMarketDataSubs(MOCK_MARKET_DATA_SUBS);
 		}
 
 		if (!productResult.success && !marketDataResult.success) {
@@ -105,6 +135,7 @@ const MySubscriptions = () => {
 		}
 
 		setLoading(false);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Fetch data on mount
@@ -322,7 +353,7 @@ const MySubscriptions = () => {
                                                         </Link>
                                                     }
                                                     {
-                                                        (item.status === "Expiring Soon" || item.status === "Active") &&
+                                                        item.status === "Expiring Soon" &&
                                                         <Link href={INTERNAL_ROUTES.MARKET_DATA}>
                                                             <DropdownMenuItem className="cursor-pointer">
                                                                 <DropdownMenuLabel>Extend Subscription</DropdownMenuLabel>

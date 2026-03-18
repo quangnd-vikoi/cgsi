@@ -52,7 +52,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
                     actionText="Confirm"
                     onAction={handleRemoveAllItems}
                 />
-                <Button onClick={onCheckout} className="px-3 rounded">
+                <Button onClick={onCheckout} disabled={selectedItems.length === 0} className="px-3 rounded">
                     Continue ({selectedItems.length})
                 </Button>
             </div>

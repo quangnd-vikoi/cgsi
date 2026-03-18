@@ -87,6 +87,9 @@ const MarketData = () => {
     const [agreementContents, setAgreementContents] = useState<Record<string, ISubscriptionAgreementContent>>({});
     const [extendedData, setExtendedData] = useState<IMarketSubscriptionExtendedData>({
         name: "", address: "", occupation: "",
+        value_01: true,
+        value_02: false, value_03: false, value_04: false, value_05: false, value_06: false,
+        value_07: false, value_08: false, value_09: false, value_10: false, value_11: false,
     });
     const { setOpenSheet } = useSheetStore();
 
