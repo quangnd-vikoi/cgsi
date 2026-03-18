@@ -13,6 +13,7 @@ import { ChartPie } from "./ChartPie";
 import { PaymentModel } from "@/components/PaymentModel";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getAccountSummary } from "@/lib/services/portfolioService";
 
 const formatAmount = (value: number | undefined, currency = "SGD") => {
@@ -238,6 +239,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 	const { selectedAccount, accounts } = useTradingAccountStore();
 	const accountType = selectedAccount?.accountType as PortfolioType | undefined;
 	const type = propType || accountType;
+	const router = useRouter();
 
 	const [showPaymentModel, setShowPaymentModel] = React.useState(false);
 	const [accountSummary, setAccountSummary] = React.useState<IAccountSummary | null>(null);
@@ -296,8 +298,8 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatAmount(accountSummary?.contractsBuy)}
 						type={colorByValue(accountSummary?.contractsBuy)}
 						isLoading={isLoading}
-						showPayButton
-						onPay={() => setShowPaymentModel(true)}
+						showPayButton={!!accountSummary?.contractsBuy && accountSummary.contractsBuy !== 0}
+						onPay={() => router.push(`${INTERNAL_ROUTES.SETTLE}?tab=contracts`)}
 					/>
 				),
 			},
@@ -317,8 +319,8 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatAmount(accountSummary?.contraLoss)}
 						type={colorByValue(accountSummary?.contraLoss)}
 						isLoading={isLoading}
-						showPayButton
-						onPay={() => setShowPaymentModel(true)}
+						showPayButton={!!accountSummary?.contraLoss && accountSummary.contraLoss !== 0}
+						onPay={() => router.push(`${INTERNAL_ROUTES.SETTLE}?tab=contra`)}
 					/>
 				),
 			},

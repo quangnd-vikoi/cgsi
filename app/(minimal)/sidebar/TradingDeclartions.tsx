@@ -297,7 +297,7 @@ const TradingDeclartions = () => {
 			status: crsStatus,
 			exp: formatDate(tradingInfo?.crs.validationDate ?? null),
 			tooltipContent:
-				"Financial institutions are required to collect and report account information to support international tax transparency and prevent tax evasion by foreign tax residents.",
+				"Required for Financial institutions to collect and report account information between countries to prevent tax evasion by foreign residents.",
 			button: { label: "Declare Now", onClick: handleECRSClick },
 		},
 		{

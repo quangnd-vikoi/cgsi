@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -95,7 +96,9 @@ const mapContra = (c: IContra): ContractDisplay => {
 
 export default function SettlePage() {
 	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
-	const [activeTab, setActiveTab] = useState<TabType>("contracts");
+	const searchParams = useSearchParams();
+	const initialTab = searchParams.get("tab") === "contra" ? "contra" : "contracts";
+	const [activeTab, setActiveTab] = useState<TabType>(initialTab);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10);
 	const [contraDialogOpen, setContraDialogOpen] = useState(false);
