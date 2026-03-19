@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
-import type { UserProductSubscriptionDto, IUserMarketSubscription } from '@/types';
+import type { /* UserProductSubscriptionDto, */ IUserMarketSubscription } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
 type SubcriptionItem = {
@@ -62,25 +62,25 @@ const getSubscriptionImage = (category: string): string => {
 
 const MySubscriptions = () => {
 	// State management
-	const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
+	// const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
 	const [marketDataSubs, setMarketDataSubs] = useState<IUserMarketSubscription[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	// Helper function to determine subscription status
-	const determineProductStatus = (sub: UserProductSubscriptionDto): SubscriptionStatus => {
-		if (!sub.endTime) return "Active";
-
-		const endDate = new Date(sub.endTime);
-		const now = new Date();
-		const daysUntilExpiry = Math.ceil(
-			(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-		);
-
-		if (endDate < now) return "Expired";
-		if (daysUntilExpiry <= 30) return "Expiring Soon";
-		return "Active";
-	};
+	// const determineProductStatus = (sub: UserProductSubscriptionDto): SubscriptionStatus => {
+	// 	if (!sub.endTime) return "Active";
+	//
+	// 	const endDate = new Date(sub.endTime);
+	// 	const now = new Date();
+	// 	const daysUntilExpiry = Math.ceil(
+	// 		(endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+	// 	);
+	//
+	// 	if (endDate < now) return "Expired";
+	// 	if (daysUntilExpiry <= 30) return "Expiring Soon";
+	// 	return "Active";
+	// };
 
 	// Mock data covering all 4 statuses for testing
 	const MOCK_MARKET_DATA_SUBS: IUserMarketSubscription[] = [
@@ -115,14 +115,14 @@ const MySubscriptions = () => {
 		setLoading(true);
 		setError(null);
 
-		const [productResult, marketDataResult] = await Promise.all([
-			subscriptionService.getUserProductSubscriptions(),
+		const [marketDataResult] = await Promise.all([
+			// subscriptionService.getUserProductSubscriptions(),
 			subscriptionService.getMyMarketDataSubscriptions(),
 		]);
 
-		if (productResult.success && productResult.data) {
-			setProductSubs(productResult.data.userProductSubs);
-		}
+		// if (productResult.success && productResult.data) {
+		// 	setProductSubs(productResult.data.userProductSubs);
+		// }
 
 		if (marketDataResult.success && marketDataResult.data && marketDataResult.data.length > 0) {
 			setMarketDataSubs(marketDataResult.data);
@@ -130,7 +130,7 @@ const MySubscriptions = () => {
 			setMarketDataSubs(MOCK_MARKET_DATA_SUBS);
 		}
 
-		if (!productResult.success && !marketDataResult.success) {
+		if (!marketDataResult.success) {
 			setError("Failed to load subscriptions. Please try again later.");
 		}
 
@@ -175,20 +175,20 @@ const MySubscriptions = () => {
 				})),
 			}]
 			: []),
-		...(productSubs.length > 0
-			? [{
-				category: "Product Subscriptions",
-				items: productSubs.map((sub) => ({
-					title: sub.productName,
-					description: sub.productType || "",
-					endDate: formatDate(sub.endTime, "N/A"),
-					image: getSubscriptionImage(sub.productType || ""),
-					status: determineProductStatus(sub),
-					subscriptionId: sub.subscriptionId,
-					type: "product" as const,
-				})),
-			}]
-			: []),
+		// ...(productSubs.length > 0
+		// 	? [{
+		// 		category: "Product Subscriptions",
+		// 		items: productSubs.map((sub) => ({
+		// 			title: sub.productName,
+		// 			description: sub.productType || "",
+		// 			endDate: formatDate(sub.endTime, "N/A"),
+		// 			image: getSubscriptionImage(sub.productType || ""),
+		// 			status: determineProductStatus(sub),
+		// 			subscriptionId: sub.subscriptionId,
+		// 			type: "product" as const,
+		// 		})),
+		// 	}]
+		// 	: []),
 	];
 
 	function statusClass(status: SubscriptionStatus): {

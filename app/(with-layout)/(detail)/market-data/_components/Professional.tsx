@@ -23,19 +23,24 @@ function formatDuration(months: number): string {
 }
 
 function groupToDropdownItems(group: IMarketSubscriptionGroup) {
-    return group.subscriptions.map((sub) => ({
-        id: sub.id,
-        label: formatDuration(sub.duration),
-        value: `${sub.amount.toFixed(2)} SGD`,
-    }));
+    return [...group.subscriptions]
+        .sort((a, b) => a.duration - b.duration)
+        .map((sub) => ({
+            id: sub.id,
+            label: sub.subscriptionModel === "1" ? "One Time" : formatDuration(sub.duration),
+            value: sub.paymentType === "1" ? "Free" : `${sub.amount.toFixed(2)} SGD`,
+        }));
+}
+
+function isFreeOnlyGroup(group: IMarketSubscriptionGroup): boolean {
+    return group.subscriptions.every(s => s.paymentType === "1");
 }
 
 function groupDescription(group: IMarketSubscriptionGroup): string {
-    const paidSubs = group.subscriptions.filter((s) => s.paymentType !== "1");
-    if (paidSubs.length === 0) return "Free";
-    const longest = paidSubs.reduce((a, b) => (b.duration > a.duration ? b : a));
+    const hasFree = group.subscriptions.some((s) => s.paymentType === "1");
+    if (hasFree) return "Free";
+    const longest = group.subscriptions.reduce((a, b) => (b.duration > a.duration ? b : a));
     const monthly = longest.amount / (longest.duration || 1);
-    if (monthly === 0) return "Free";
     return `From SGD ${monthly.toFixed(2)}/month`;
 }
 
@@ -131,30 +136,37 @@ const Professional = ({
                         <Separator className="flex-1 border border-stroke-secondary" />
                     </div>
                     <div className="mt-2 space-y-3">
-                        {researchGroups.map((group, idx) => (
-                            <MarketItem
-                                onSelectItem={(item) => {
-                                    setSelectedItems((prev) => [
-                                        ...prev.filter((i) => i.title !== item.title),
-                                        {
-                                            image: item.image,
-                                            title: item.title,
-                                            subscriptionId: item.subscriptionId,
-                                            selectedOption: {
-                                                value: item.selectedOption.value,
-                                                label: item.selectedOption.label
+                        {researchGroups.map((group, idx) => {
+                            const freeOnly = isFreeOnlyGroup(group);
+                            return (
+                                <MarketItem
+                                    onSelectItem={(item) => {
+                                        const sub = group.subscriptions.find(s => s.id === item.subscriptionId);
+                                        setSelectedItems((prev) => {
+                                            if (freeOnly && prev.find(i => i.title === item.title)) {
+                                                return prev.filter(i => i.title !== item.title);
                                             }
-                                        }
-                                    ]);
-                                }}
-                                key={group.groupId}
-                                title={group.groupTitle}
-                                description={groupDescription(group)}
-                                image={GROUP_IMAGES[idx % GROUP_IMAGES.length]}
-                                dropDownItems={groupToDropdownItems(group)}
-                                defaultSelected={findDefaultSelected(group, selectedItems)}
-                            />
-                        ))}
+                                            return [
+                                                ...prev.filter((i) => i.title !== item.title),
+                                                {
+                                                    ...item,
+                                                    gstIndicator: sub?.gstIndicator,
+                                                    usMarketDeclaration: sub?.usMarketDeclaration,
+                                                }
+                                            ];
+                                        });
+                                    }}
+                                    key={group.groupId}
+                                    title={group.groupTitle}
+                                    description={groupDescription(group)}
+                                    image={GROUP_IMAGES[idx % GROUP_IMAGES.length]}
+                                    dropDownItems={freeOnly ? undefined : groupToDropdownItems(group)}
+                                    defaultSelected={findDefaultSelected(group, selectedItems)}
+                                    freeOnly={freeOnly}
+                                    freeSubscriptionId={freeOnly ? [...group.subscriptions].sort((a, b) => b.duration - a.duration)[0]?.id : undefined}
+                                />
+                            );
+                        })}
                     </div>
                 </>
             )}
@@ -166,30 +178,37 @@ const Professional = ({
                         <Separator className="flex-1 border border-stroke-secondary" />
                     </div>
                     <div className="mt-2 space-y-3">
-                        {marketDataGroups.map((group, idx) => (
-                            <MarketItem
-                                onSelectItem={(item) => {
-                                    setSelectedItems((prev) => [
-                                        ...prev.filter((i) => i.title !== item.title),
-                                        {
-                                            image: item.image,
-                                            title: item.title,
-                                            subscriptionId: item.subscriptionId,
-                                            selectedOption: {
-                                                value: item.selectedOption.value,
-                                                label: item.selectedOption.label
+                        {marketDataGroups.map((group, idx) => {
+                            const freeOnly = isFreeOnlyGroup(group);
+                            return (
+                                <MarketItem
+                                    onSelectItem={(item) => {
+                                        const sub = group.subscriptions.find(s => s.id === item.subscriptionId);
+                                        setSelectedItems((prev) => {
+                                            if (freeOnly && prev.find(i => i.title === item.title)) {
+                                                return prev.filter(i => i.title !== item.title);
                                             }
-                                        }
-                                    ]);
-                                }}
-                                key={group.groupId}
-                                title={group.groupTitle}
-                                description={groupDescription(group)}
-                                image={GROUP_IMAGES[(researchGroups.length + idx) % GROUP_IMAGES.length]}
-                                dropDownItems={groupToDropdownItems(group)}
-                                defaultSelected={findDefaultSelected(group, selectedItems)}
-                            />
-                        ))}
+                                            return [
+                                                ...prev.filter((i) => i.title !== item.title),
+                                                {
+                                                    ...item,
+                                                    gstIndicator: sub?.gstIndicator,
+                                                    usMarketDeclaration: sub?.usMarketDeclaration,
+                                                }
+                                            ];
+                                        });
+                                    }}
+                                    key={group.groupId}
+                                    title={group.groupTitle}
+                                    description={groupDescription(group)}
+                                    image={GROUP_IMAGES[(researchGroups.length + idx) % GROUP_IMAGES.length]}
+                                    dropDownItems={freeOnly ? undefined : groupToDropdownItems(group)}
+                                    defaultSelected={findDefaultSelected(group, selectedItems)}
+                                    freeOnly={freeOnly}
+                                    freeSubscriptionId={freeOnly ? [...group.subscriptions].sort((a, b) => b.duration - a.duration)[0]?.id : undefined}
+                                />
+                            );
+                        })}
                     </div>
                 </>
             )}

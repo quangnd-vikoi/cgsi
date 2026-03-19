@@ -27,6 +27,8 @@ export interface IMarketDataItem {
         value: string;
         label: string;
     };
+    gstIndicator?: string;
+    usMarketDeclaration?: boolean;
 }
 
 /**
@@ -125,13 +127,17 @@ const MarketData = () => {
         }
     };
 
+    const needsDeclaration = selectedItems.some(item => item.usMarketDeclaration);
+
     const handleBack = () => {
         if (currentStep === "cart") {
             setCurrentStep("select");
-        } else if (currentStep === "declaration" || currentStep === "non-pro-declaration") {
+        } else if (currentStep === "declaration") {
             setCurrentStep("cart");
-        } else if (currentStep === "terms-and-conditions") {
+        } else if (currentStep === "non-pro-declaration") {
             setCurrentStep("declaration");
+        } else if (currentStep === "terms-and-conditions") {
+            setCurrentStep(needsDeclaration ? "non-pro-declaration" : "cart");
         }
     };
 
@@ -211,7 +217,7 @@ const MarketData = () => {
                     </Tabs>
                     <div className="px-6 py-4 border-t w-full flex justify-between relative gap-2">
                         <div>
-                            <p className="text-base font-semibold">{calculateAmount()} SGD</p>
+                            <p className="text-base font-semibold">{calculateAmount().toFixed(2)} SGD</p>
                             <p className="text-xs text-typo-tertiary">Excluding GST</p>
                         </div>
                         <Button className="text-base font-normal px-3 rounded" onClick={handleGoToCart}>
@@ -226,7 +232,7 @@ const MarketData = () => {
                 <CartStep
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}
-                    onCheckout={() => setCurrentStep("declaration")}
+                    onCheckout={() => setCurrentStep(needsDeclaration ? "declaration" : "terms-and-conditions")}
                 />
             )}
 
@@ -278,7 +284,17 @@ const MarketData = () => {
                                 <p className="text-sm font-semibold md:hidden">Total Price</p>
                                 <p className="text-xs">Inclusive of GST</p>
                             </div>
-                            <p className="text-base font-semibold">54.50 SGD</p>
+                            <p className="text-base font-semibold">
+                                {(() => {
+                                    const subTotal = calculateAmount();
+                                    const gst = selectedItems.reduce((total, item) => {
+                                        if (item.gstIndicator !== "3") return total;
+                                        const value = parseFloat(item.selectedOption.value);
+                                        return total + (isNaN(value) ? 0 : value * 0.09);
+                                    }, 0);
+                                    return (subTotal + gst).toFixed(2);
+                                })()} SGD
+                            </p>
                         </div>
                     </div>
                     <div className="border-t px-6 py-4">

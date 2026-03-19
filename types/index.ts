@@ -205,13 +205,14 @@ export type ContactUsCentralDealingDeskResponse = IContactUsCentralDealingDesk;
 // Market Data Subscription Catalog Types (v4)
 export interface IMarketSubscriptionItem {
 	id: string;
-	subscriptionModel: string; // "1"=one-time, "2"=time-based, "3"=variable
+	subscriptionModel: string; // "1"=One Time, "2"=Time Based
 	duration: number;
-	paymentType: string; // "1"=free, "2"=paid
+	paymentType: string; // "1"=Free, "2"=Paid
 	amount: number;
-	gstIndicator: string; // "0"=NA, "1"=inclusive, "2"=no GST, "3"=apply
-	professionalFlag: string | null; // "1"=Professional, "2"=Non-Professional, null=NA
-	hasAgreement: string | null; // "Y" | "N" | null
+	gstIndicator: string; // "0"=NA, "1"=GST Inclusive, "2"=No GST Apply, "3"=GST Apply
+	professionalFlag: string | null; // "1"=Professional, "2"=Non-Professional, null/blank=NA
+	hasAgreement: string | null; // "Y" | "N" | null/blank=NA
+	usMarketDeclaration: boolean; // true=requires US market declaration form
 }
 
 export interface IMarketSubscriptionGroup {

@@ -288,6 +288,67 @@ export async function putAPI<T, B = unknown>(
 }
 
 /**
+ * Helper for downloading binary files (e.g. Excel exports)
+ * Returns a Blob on success, triggers browser download with given filename.
+ */
+export async function fetchBlobAndDownload(
+	url: string,
+	filename: string,
+	options: FetchOptions = {}
+): Promise<{ success: boolean; error: string | null }> {
+	try {
+		const { useAuth = false, _isRetry = false, ...restOptions } = options;
+
+		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+
+		const headers: Record<string, string> = {
+			...(restOptions.headers as Record<string, string>),
+		};
+
+		if (useAuth) {
+			await ensureValidToken();
+			const token = getAccessToken();
+			if (token) {
+				headers["Authorization"] = `Bearer ${token}`;
+			}
+		}
+
+		const res = await fetch(fullUrl, { ...restOptions, headers });
+
+		// Handle 401 retry
+		if (res.status === 401 && useAuth && !_isRetry) {
+			try {
+				await ensureValidToken(true);
+				return fetchBlobAndDownload(url, filename, { ...options, _isRetry: true });
+			} catch {
+				return { success: false, error: "Authentication failed" };
+			}
+		}
+
+		if (!res.ok) {
+			return { success: false, error: `HTTP Error: ${res.status}` };
+		}
+
+		const blob = await res.blob();
+		const blobUrl = window.URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = blobUrl;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		window.URL.revokeObjectURL(blobUrl);
+
+		return { success: true, error: null };
+	} catch (error) {
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : "Download failed",
+		};
+	}
+}
+
+/**
  * Helper for DELETE requests
  */
 export async function deleteAPI<T>(url: string, options: FetchOptions = {}): Promise<APIResponse<T>> {

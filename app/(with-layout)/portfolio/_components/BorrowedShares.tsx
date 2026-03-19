@@ -19,11 +19,9 @@ import {
 import { ArrowDown, ArrowUp, EllipsisVertical, Expand, FileOutput, Loader2 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { getSblBorrowed } from "@/lib/services/portfolioService";
+// import { getSblBorrowed } from "@/lib/services/portfolioService"; // API disabled
 import type { IBorrowedShare } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
-import { borrowedSharesColumns } from "@/lib/exportConfigs";
 import { ASSET_CLASS_LABELS } from "@/constants/accounts";
 import { toast } from "@/components/ui/toaster";
 
@@ -67,39 +65,12 @@ export const BorrowedShares = () => {
     });
 
     const handleExport = async () => {
-        if (exporting || !selectedAccount?.accountNo) return;
-        setExporting(true);
-        try {
-            const allData = await fetchAllForExport(
-                (pageSize, pageIndex) => getSblBorrowed(selectedAccount.accountNo, undefined, pageSize, pageIndex),
-                (data) => data.borrowedShares,
-            );
-            if (allData.length === 0) {
-                toast.warning("No Data", "There is no data to export.");
-                return;
-            }
-            exportToExcel({ filename: `BorrowedShares_${selectedAccount.accountNo}`, columns: borrowedSharesColumns, data: allData });
-            toast.success("Export Complete", `${allData.length} rows exported.`);
-        } catch {
-            toast.error("Export Failed", "Unable to export. Please try again.");
-        } finally {
-            setExporting(false);
-        }
+        toast.warning("Not Available", "Export is not available at this time.");
     };
 
+    // API disabled — using empty data
     useEffect(() => {
-        const fetchBorrowedShares = async () => {
-            if (!selectedAccount?.accountNo) return;
-            setLoading(true);
-            const pageIndex = currentPage - 1;
-            const response = await getSblBorrowed(selectedAccount.accountNo, undefined, itemsPerPage, pageIndex);
-            if (response.success && response.data) {
-                setBorrowedShares(response.data.borrowedShares);
-                setTotalItems(response.data.total);
-            }
-            setLoading(false);
-        };
-        fetchBorrowedShares();
+        setLoading(false);
     }, [selectedAccount?.accountNo, currentPage, itemsPerPage]);
 
     const handleItemsPerPageChange = (value: number) => {

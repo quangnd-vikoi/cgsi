@@ -27,6 +27,24 @@ const formatAmountNoSign = (value: number | undefined, currency = "SGD") => {
 	return `${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
 };
 
+const formatCashCall = (value: number | undefined, currency = "SGD") => {
+	if (value === undefined || value === null) return `0.00 ${currency}`;
+	if (value < 0) {
+		return `- ${Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+	}
+	return `${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+};
+
+const marginRatioColor = (ratio?: number): "success" | "error" | "normal" => {
+	if (ratio === undefined || ratio === null) return "normal";
+	return ratio < 125 ? "error" : "success";
+};
+
+const cashCallColor = (tradeLimit?: number, cashCall?: number): "error" | "normal" => {
+	if (cashCall !== undefined && cashCall < 0) return "error";
+	return "normal";
+};
+
 type DashboardBlockProps = {
 	title: string;
 	amount: string;
@@ -276,7 +294,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 	}, [selectedAccount?.accountNo]);
 
 	const colorByValue = (value?: number): "success" | "error" | "normal" =>
-		value === undefined || value === null ? "normal" : value < 0 ? "error" : "success";
+		value === undefined || value === null ? "normal" : value < 0 ? "error" : value > 0 ? "success" : "normal";
 
 	if (accounts.length === 0 || !type) return <DashboardSkeleton />;
 
@@ -341,7 +359,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			{
 				id: 2,
 				gridArea: "2 / 1 / 3 / 2",
-				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type="normal" isLoading={isLoading} />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
 			},
 			{
 				id: 3,
@@ -361,8 +379,8 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatAmount(accountSummary?.cashCall)}
-						type={colorByValue(accountSummary?.cashCall)}
+						amount={formatCashCall(accountSummary?.cashCall)}
+						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}
@@ -374,7 +392,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			{
 				id: 2,
 				gridArea: "1 / 1 / 2 / 3",
-				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type="normal" isLoading={isLoading} />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
 			},
 			{
 				id: 3,
@@ -382,8 +400,8 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatAmount(accountSummary?.cashCall)}
-						type={colorByValue(accountSummary?.cashCall)}
+						amount={formatCashCall(accountSummary?.cashCall)}
+						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
 						showPayButton
 						onPay={() => setShowPaymentModel(true)}

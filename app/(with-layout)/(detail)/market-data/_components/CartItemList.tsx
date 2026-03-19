@@ -20,13 +20,14 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
     };
 
     const subTotal = selectedItems.reduce((total, item) => {
-        const value = parseFloat(item.selectedOption.value.replace("SGD ", ""));
-        return total + value;
+        const value = parseFloat(item.selectedOption.value);
+        return total + (isNaN(value) ? 0 : value);
     }, 0).toFixed(2);
 
     const gst = selectedItems.reduce((total, item) => {
-        const value = parseFloat(item.selectedOption.value.replace("SGD ", ""));
-        return total + value * 0.09;
+        if (item.gstIndicator !== "3") return total;
+        const value = parseFloat(item.selectedOption.value);
+        return total + (isNaN(value) ? 0 : value * 0.09);
     }, 0).toFixed(2);
 
     if (selectedItems.length === 0) {

@@ -26,22 +26,61 @@ interface MarketItemProps {
     dropDownItems?: DropDownItem[];
     defaultSelected?: DropDownItem | null;
     onSelectItem?: (selectedItem: IMarketDataItem) => void;
+    freeOnly?: boolean;
+    freeSubscriptionId?: string; // subscription ID for free-only groups
 }
 
-const MarketItem = ({ title, image, description, dropDownItems, defaultSelected, onSelectItem }: MarketItemProps) => {
+const MarketItem = ({ title, image, description, dropDownItems, defaultSelected, onSelectItem, freeOnly, freeSubscriptionId }: MarketItemProps) => {
     const [selectedItem, setSelectedItem] = useState<DropDownItem | null>(defaultSelected ?? null);
     const [tempItem, setTempItem] = useState<DropDownItem | null>(null);
     const [open, setOpen] = useState(false);
 
+    // Free-only mode: card is directly clickable, no dropdown
+    if (freeOnly) {
+        const isSelected = !!defaultSelected;
 
+        const handleToggle = () => {
+            if (!onSelectItem) return;
+            onSelectItem({
+                image,
+                title,
+                subscriptionId: freeSubscriptionId,
+                selectedOption: {
+                    value: "Free",
+                    label: "Free",
+                },
+            });
+        };
+
+        return (
+            <button
+                type="button"
+                onClick={handleToggle}
+                className={cn(
+                    'w-full flex justify-between items-center border p-4 rounded cursor-pointer py-4',
+                    isSelected ? 'bg-background-selected border-cgs-blue' : 'border-stroke-secondary'
+                )}
+            >
+                <div className="flex gap-4 w-full overflow-hidden">
+                    <div className="shrink-0">
+                        <Image src={image} alt={title} width={44} height={44} />
+                    </div>
+                    <div className="text-left min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-typo-primary truncate">{title}</p>
+                        <p className={cn('text-xs mt-1', isSelected ? 'text-cgs-blue' : 'text-status-success')}>
+                            {isSelected ? description : 'Free'}
+                        </p>
+                    </div>
+                </div>
+            </button>
+        );
+    }
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
         if (isOpen) {
-            // Khi mở dropdown, set temp item bằng selected item hiện tại
             setTempItem(selectedItem);
         } else {
-            // Khi đóng mà không add to cart, reset temp item
             setTempItem(null);
         }
     };

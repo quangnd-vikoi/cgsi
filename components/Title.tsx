@@ -2,6 +2,7 @@
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
+import { INTERNAL_ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 
 interface TitleProps {
@@ -23,7 +24,7 @@ export default function Title({
 
 	const handleBack = () => {
 		if (onBack) onBack();
-		else router.back();
+		else router.push(INTERNAL_ROUTES.PORFOLIO);
 	};
 
 	return (

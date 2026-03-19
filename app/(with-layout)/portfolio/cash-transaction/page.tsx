@@ -8,12 +8,10 @@ import Title from "@/components/Title";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { CashTransactionsTable } from "./_components/CashTransactionsTable";
-import { getTrustBalanceDetails } from "@/lib/services/portfolioService";
+import { getTrustBalanceDetails, exportTrustBalanceDetails } from "@/lib/services/portfolioService";
 import type { ITrustBalanceDetail } from "@/types";
-import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
-import { cashTransactionColumns } from "@/lib/exportConfigs";
-import { toast } from "@/components/ui/toaster";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useExport } from "@/hooks/useExport";
 
 export default function CashTransactionPage() {
 	const { accounts, selectedAccount, setSelectedAccount, isInitialized } = useTradingAccountStore();
@@ -23,32 +21,11 @@ export default function CashTransactionPage() {
 	const [transactions, setTransactions] = useState<ITrustBalanceDetail[]>([]);
 	const [totalItems, setTotalItems] = useState(0);
 	const [loading, setLoading] = useState(true);
-	const [exporting, setExporting] = useState(false);
+	const { exporting, handleExport: runExport } = useExport();
 
-	const handleExport = async () => {
-		if (exporting || !selectedAccount?.accountNo) return;
-		setExporting(true);
-		try {
-			const allData = await fetchAllForExport(
-				(pageSize, pageIndex) =>
-					getTrustBalanceDetails(selectedAccount.accountNo, pageSize, pageIndex),
-				(data) => data.trustBalanceDetails,
-			);
-			if (allData.length === 0) {
-				toast.warning("No Data", "There is no data to export.");
-				return;
-			}
-			exportToExcel({
-				filename: `CashTransactions_${selectedAccount.accountNo}`,
-				columns: cashTransactionColumns,
-				data: allData,
-			});
-			toast.success("Export Complete", `${allData.length} rows exported.`);
-		} catch {
-			toast.error("Export Failed", "Unable to export. Please try again.");
-		} finally {
-			setExporting(false);
-		}
+	const handleExport = () => {
+		if (!selectedAccount?.accountNo) return;
+		runExport(() => exportTrustBalanceDetails(selectedAccount.accountNo));
 	};
 
 	useEffect(() => {

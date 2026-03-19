@@ -15,12 +15,11 @@ import { SummarySection } from "./_components/SummarySection";
 import { ContractsTable } from "./_components/ContractsTable";
 import type { ContractDisplay } from "./_components/ContractsTable";
 import { LEGACY_CURRENCY_TO_ISO } from "@/constants/accounts";
-import { getContracts, getContra, depositPaynow, getAccountSummary } from "@/lib/services/portfolioService";
+import { getContracts, getContra, depositPaynow, getAccountSummary, exportContracts, exportContra } from "@/lib/services/portfolioService";
 import type { IContract, IContra, IAccountSummary } from "@/types";
-import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
-import { contractsColumns } from "@/lib/exportConfigs";
 import { toast } from "@/components/ui/toaster";
 import { S2BPayButton } from "@/components/S2BPayButton";
+import { useExport } from "@/hooks/useExport";
 
 type TabType = "contracts" | "contra";
 
@@ -126,7 +125,7 @@ export default function SettlePage() {
 	const [accountSummary, setAccountSummary] = useState<IAccountSummary | null>(null);
 	const [summaryLoading, setSummaryLoading] = useState(true);
 
-	const [exporting, setExporting] = useState(false);
+	const { exporting, handleExport: runExport } = useExport();
 	const [paynowSubmitFn, setPaynowSubmitFn] = useState<(() => Promise<{
 		s2bPayUrl: string;
 		corpId: string;
@@ -152,36 +151,11 @@ export default function SettlePage() {
 		});
 	};
 
-	const handleExport = async () => {
-		if (exporting || !accountNo) return;
-		setExporting(true);
-		try {
-			let allData: ContractDisplay[];
-			if (activeTab === "contracts") {
-				const items = await fetchAllForExport(
-					(pageSize, pageIndex) => getContracts(accountNo, undefined, pageSize, pageIndex),
-					(data) => data.contracts,
-				);
-				allData = sortByDueDate(items.map(mapContract));
-			} else {
-				const items = await fetchAllForExport(
-					(pageSize, pageIndex) => getContra(accountNo, undefined, pageSize, pageIndex),
-					(data) => data.contra,
-				);
-				allData = items.map(mapContra);
-			}
-			if (allData.length === 0) {
-				toast.warning("No Data", "There is no data to export.");
-				return;
-			}
-			const label = activeTab === "contracts" ? "Contracts" : "Contra";
-			exportToExcel({ filename: `${label}_${accountNo}`, columns: contractsColumns, data: allData });
-			toast.success("Export Complete", `${allData.length} rows exported.`);
-		} catch {
-			toast.error("Export Failed", "Unable to export. Please try again.");
-		} finally {
-			setExporting(false);
-		}
+	const handleExport = () => {
+		if (!accountNo) return;
+		runExport(() =>
+			activeTab === "contracts" ? exportContracts(accountNo) : exportContra(accountNo)
+		);
 	};
 
 	// Fetch contracts (outstanding)

@@ -10,7 +10,8 @@ import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
 import { getEW8SSO, getECRSSSO, redirectToSSO, redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
-import { formatDate } from "@/lib/utils";
+import { formatDate, handleEmail } from "@/lib/utils";
+import { CGSI } from "@/constants/routes";
 import { getTradingInfo, createBcanRequest } from "@/lib/services/profileService";
 import type { TradingInfoResponse } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -163,14 +164,28 @@ const TradingDeclartions = () => {
 			description: (
 				<p>
 					<span className="inline-block">
-						Visit the <span className="text-cgs-blue font-medium underline underline-offset-2">iTrade Application Forms</span> website and
-						download the &quot;AI Declaration&quot; form.
+						Visit the{" "}
+						<a
+							href={CGSI.ITRADE_APPLICATION_FORMS}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-cgs-blue font-medium underline underline-offset-2"
+						>
+							iTrade Application Forms
+						</a>{" "}
+						website and download the &quot;AI Declaration&quot; form.
 					</span>
 					<br />
 					<span className="mt-6 inline-block">
-						Complete and email the form to our Client Services team at
-						<span className="text-cgs-blue font-medium underline underline-offset-2 ml-1">sg.clientservices@cgsi.com</span>. You will receive
-						an email notification once your request has been processed.
+						Complete and email the form to our Client Services team at{" "}
+						<button
+							type="button"
+							onClick={() => handleEmail("sg.clientservices@cgsi.com")}
+							className="text-cgs-blue font-medium underline underline-offset-2"
+						>
+							sg.clientservices@cgsi.com
+						</button>
+						. You will receive an email notification once your request has been processed.
 					</span>
 				</p>
 			),
@@ -246,8 +261,8 @@ const TradingDeclartions = () => {
 			exp: "-",
 			tooltipContent: (
 				<p>
-					Specified Investment Products (SIP) declaration is required to trade SIPs. Clients must
-					complete a declaration to assess their investment knowledge and experience.
+					Required to trade Listed/ Unlisted Specified Investment Products (SIPs), clients must
+					complete a declaration to assess their investment knowledge or experience.
 				</p>
 			),
 			button: sipStatus === "inactive" && tradingInfo?.sip.toDisplay
@@ -255,9 +270,8 @@ const TradingDeclartions = () => {
 					label: "Declare Now",
 					onClick: () => {
 						window.open(
-							"/images/declaration/CKA.png",
-							"TradeNow",
-							`width=${975},height=${700},screenX=${500},screenY=${400},resizable=yes,scrollbars=yes`
+							"https://stgitrade.cgsi.com.sg/app/common.home.sip.z",
+							"_blank"
 						);
 					},
 				}

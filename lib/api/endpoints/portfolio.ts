@@ -58,6 +58,19 @@ export const portfolioEndpoints = {
 		return `/portfolio/api/v1/sbl/${accountNo}/loaned?${params}`;
 	},
 
+	/** GET /portfolio/api/v1/trustBalance/{accountNo}/details/export */
+	exportTrustBalanceDetails: (accountNo: string) =>
+		`/portfolio/api/v1/trustBalance/${accountNo}/details/export`,
+
+	/** GET /portfolio/api/v1/holdings/{accountNo}/export */
+	exportHoldings: (accountNo: string) => `/portfolio/api/v1/holdings/${accountNo}/export`,
+
+	/** GET /portfolio/api/v1/contracts/{accountNo}/export */
+	exportContracts: (accountNo: string) => `/portfolio/api/v1/contracts/${accountNo}/export`,
+
+	/** GET /portfolio/api/v1/contra/{accountNo}/export */
+	exportContra: (accountNo: string) => `/portfolio/api/v1/contra/${accountNo}/export`,
+
 	/** POST /portfolio/api/v1/deposit/paynow */
 	depositPaynow: () => `/portfolio/api/v1/deposit/paynow`,
 

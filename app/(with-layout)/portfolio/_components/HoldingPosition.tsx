@@ -25,11 +25,9 @@ import Link from "next/link";
 import { PortfolioType } from "@/types";
 import type { IPortfolioHolding } from "@/types";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { getHoldings, getCdpTransferStatus } from "@/lib/services/portfolioService";
+import { getHoldings, getCdpTransferStatus, exportHoldings } from "@/lib/services/portfolioService";
 import { Skeleton } from "@/components/ui/skeleton";
-import { exportToExcel, fetchAllForExport } from "@/lib/exportToExcel";
-import { holdingsColumns } from "@/lib/exportConfigs";
-import { toast } from "@/components/ui/toaster";
+import { useExport } from "@/hooks/useExport";
 import type { ICDPTransferStatus } from "@/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
@@ -90,7 +88,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 	const [totalItems, setTotalItems] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const { selectedAccount, isInitialized } = useTradingAccountStore();
-	const [exporting, setExporting] = useState(false);
+	const { exporting, handleExport: runExport } = useExport();
 	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 	const [showTransferDetails, setShowTransferDetails] = useState(false);
@@ -117,29 +115,9 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 		return String(aVal).localeCompare(String(bVal)) * dir;
 	});
 
-	const handleExport = async () => {
-		if (exporting || !selectedAccount?.accountNo) return;
-		setExporting(true);
-		try {
-			const allData = await fetchAllForExport(
-				(pageSize, pageIndex) => getHoldings(selectedAccount.accountNo, pageSize, pageIndex),
-				(data) => data.portfolio,
-			);
-			if (allData.length === 0) {
-				toast.warning("No Data", "There is no data to export.");
-				return;
-			}
-			exportToExcel({
-				filename: `Holdings_${selectedAccount.accountNo}`,
-				columns: holdingsColumns,
-				data: allData,
-			});
-			toast.success("Export Complete", `${allData.length} rows exported.`);
-		} catch {
-			toast.error("Export Failed", "Unable to export. Please try again.");
-		} finally {
-			setExporting(false);
-		}
+	const handleExport = () => {
+		if (!selectedAccount?.accountNo) return;
+		runExport(() => exportHoldings(selectedAccount.accountNo));
 	};
 
 	useEffect(() => {

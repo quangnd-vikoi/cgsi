@@ -1,8 +1,9 @@
 "use client";
 import { Dispatch, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronDown, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { IMarketDataItem } from "../page";
 import CartItemsList from "./CartItemList";
 import { Step } from "../page";
@@ -23,7 +24,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
 
     // Flatten all agreements from all subscriptions
     const allAgreements = agreements.flatMap((s) =>
@@ -32,10 +33,6 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
             subscriptionId: s.subscriptionId,
         }))
     );
-
-    const toggleAgreement = (agreementId: string) => {
-        setExpandedId((prev) => (prev === agreementId ? null : agreementId));
-    };
 
     const handleTermConfirm = async () => {
         if (!agreed) {
@@ -101,40 +98,11 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                                 <button
                                     type="button"
                                     className="w-full flex justify-between items-center p-4 cursor-pointer"
-                                    onClick={() => toggleAgreement(agreement.agreementId)}
+                                    onClick={() => setDialogAgreement(agreement)}
                                 >
                                     <p className="text-sm text-left">{agreement.subject}</p>
-                                    {expandedId === agreement.agreementId ? (
-                                        <ChevronDown size={16} className="text-cgs-blue shrink-0" />
-                                    ) : (
-                                        <ChevronRight size={16} className="text-cgs-blue shrink-0" />
-                                    )}
+                                    <ChevronRight size={16} className="text-cgs-blue shrink-0" />
                                 </button>
-                                {expandedId === agreement.agreementId && (
-                                    <div className="px-4 pb-4">
-                                        {agreementContents[agreement.agreementId]?.htmlContent ? (
-                                            <div
-                                                className="text-sm text-typo-secondary prose prose-sm max-w-none border-t pt-4"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: agreementContents[agreement.agreementId].htmlContent,
-                                                }}
-                                            />
-                                        ) : agreementContents[agreement.agreementId]?.url ? (
-                                            <a
-                                                href={agreementContents[agreement.agreementId].url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-sm text-cgs-blue underline border-t pt-4 block"
-                                            >
-                                                View Agreement
-                                            </a>
-                                        ) : (
-                                            <p className="text-sm text-typo-tertiary border-t pt-4">
-                                                No content available
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -177,6 +145,40 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                     </Button>
                 </div>
             </div>
+
+            {/* Agreement Content Dialog */}
+            <Dialog open={!!dialogAgreement} onOpenChange={(open) => !open && setDialogAgreement(null)}>
+                <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0 gap-0">
+                    <DialogHeader className="flex-shrink-0 p-4 md:p-6 pb-3 md:pb-3">
+                        <DialogTitle className="text-base md:text-lg font-semibold text-typo-primary pr-8">
+                            {dialogAgreement?.subject}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-0 md:pt-0">
+                        {dialogAgreement && agreementContents[dialogAgreement.agreementId]?.htmlContent ? (
+                            <div
+                                className="text-sm text-typo-secondary prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{
+                                    __html: agreementContents[dialogAgreement.agreementId].htmlContent,
+                                }}
+                            />
+                        ) : dialogAgreement && agreementContents[dialogAgreement.agreementId]?.url ? (
+                            <a
+                                href={agreementContents[dialogAgreement.agreementId].url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-cgs-blue underline"
+                            >
+                                View Agreement
+                            </a>
+                        ) : (
+                            <p className="text-sm text-typo-tertiary">
+                                No content available
+                            </p>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

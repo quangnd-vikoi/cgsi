@@ -1,4 +1,4 @@
-import { fetchAPI, postAPI } from "@/lib/api/client";
+import { fetchAPI, postAPI, fetchBlobAndDownload } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 import type { APIResponse } from "@/lib/api/types";
 import type {
@@ -114,6 +114,38 @@ export const getSblLoaned = async (
 	);
 };
 
+export const exportTrustBalanceDetails = async (accountNo: string) => {
+	return await fetchBlobAndDownload(
+		ENDPOINTS.exportTrustBalanceDetails(accountNo),
+		`CashTransactions_${accountNo}.xlsx`,
+		{ useAuth: true }
+	);
+};
+
+export const exportHoldings = async (accountNo: string) => {
+	return await fetchBlobAndDownload(
+		ENDPOINTS.exportHoldings(accountNo),
+		`Holdings_${accountNo}.xlsx`,
+		{ useAuth: true }
+	);
+};
+
+export const exportContracts = async (accountNo: string) => {
+	return await fetchBlobAndDownload(
+		ENDPOINTS.exportContracts(accountNo),
+		`Contracts_${accountNo}.xlsx`,
+		{ useAuth: true }
+	);
+};
+
+export const exportContra = async (accountNo: string) => {
+	return await fetchBlobAndDownload(
+		ENDPOINTS.exportContra(accountNo),
+		`Contra_${accountNo}.xlsx`,
+		{ useAuth: true }
+	);
+};
+
 export const depositPaynow = async (
 	body: IPaynowTopUp
 ): Promise<APIResponse<IPaynowTopUpResponse>> => {
@@ -153,6 +185,10 @@ export const portfolioService = {
 	getContraDetails,
 	getSblBorrowed,
 	getSblLoaned,
+	exportTrustBalanceDetails,
+	exportHoldings,
+	exportContracts,
+	exportContra,
 	depositPaynow,
 	getCdpTransfer,
 	submitCdpTransfer,
