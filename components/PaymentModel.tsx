@@ -58,7 +58,7 @@ interface PayNowDialogProps {
 
 function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDialogProps) {
 	const accounts = useTradingAccountStore((s) => s.accounts);
-	const getDefaultAccountNo = useTradingAccountStore((s) => s.getDefaultAccountNo);
+	const storeSelectedAccount = useTradingAccountStore((s) => s.selectedAccount);
 	const userName = useUserStore((s) => s.profile?.name ?? "");
 
 	const [selectedAccount, setSelectedAccount] = React.useState<string>("");
@@ -67,12 +67,11 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 
 	React.useEffect(() => {
 		if (open) {
-			const defaultNo = getDefaultAccountNo();
-			setSelectedAccount(defaultNo ?? accounts[0]?.accountNo ?? "");
+			setSelectedAccount(storeSelectedAccount?.accountNo ?? accounts[0]?.accountNo ?? "");
 			setAmount("");
 			setConfirmed(false);
 		}
-	}, [open, accounts, getDefaultAccountNo]);
+	}, [open, accounts, storeSelectedAccount]);
 
 	const accountLabel = (accountNo: string) => {
 		const acc = accounts.find((a) => a.accountNo === accountNo);

@@ -5,13 +5,12 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import Image from '@/components/Image';
 import { Badge } from '@/components/ui/badge';
-import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass } from 'lucide-react';
+import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass, Loader2 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Alert from '@/components/Alert';
@@ -228,24 +227,30 @@ const MySubscriptions = () => {
 	}
 
 	const [unsubAlert, setUnsubAlert] = useState<{ open: boolean; item: SubcriptionItem | null }>({ open: false, item: null });
+	const [unsubscribing, setUnsubscribing] = useState(false);
 
 	const handleUnsubcribe = async (item: SubcriptionItem) => {
-		if (item.type === "marketData" && item.subscriptionId) {
-			const res = await subscriptionService.unsubscribeMarketData(item.subscriptionId);
-			if (res.success) {
-				setMarketDataSubs((prev) => prev.filter((s) => s.subscriptionId !== item.subscriptionId));
+		setUnsubscribing(true);
+		try {
+			if (item.type === "marketData" && item.subscriptionId) {
+				const res = await subscriptionService.unsubscribeMarketData(item.subscriptionId);
+				if (res.success) {
+					setMarketDataSubs((prev) => prev.filter((s) => s.subscriptionId !== item.subscriptionId));
+					toast.success(
+						"Unsubscribed",
+						`You have successfully unsubscribed from "${item.title}".`
+					);
+				} else {
+					toast.error("Failed", res.error || "Unable to unsubscribe. Please try again.");
+				}
+			} else {
 				toast.success(
 					"Unsubscribed",
 					`You have successfully unsubscribed from "${item.title}".`
 				);
-			} else {
-				toast.error("Failed", res.error || "Unable to unsubscribe. Please try again.");
 			}
-		} else {
-			toast.success(
-				"Unsubscribed",
-				`You have successfully unsubscribed from "${item.title}".`
-			);
+		} finally {
+			setUnsubscribing(false);
 		}
 	};
 
@@ -302,7 +307,12 @@ const MySubscriptions = () => {
 	}
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col relative">
+            {unsubscribing && (
+                <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+                </div>
+            )}
             <CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
             <div className="flex-1 overflow-y-auto">
                 {subscriptions.map((group) => (
@@ -343,30 +353,30 @@ const MySubscriptions = () => {
                                                     </button>
                                                 </DropdownMenuTrigger>
 
-                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200]'>
+                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200] px-0 py-1'>
                                                     {
                                                         item.status === "Expired" &&
-                                                        <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                            <DropdownMenuItem className="cursor-pointer">
-                                                                <DropdownMenuLabel>Resubcribe</DropdownMenuLabel>
-                                                            </DropdownMenuItem>
-                                                        </Link>
+                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
+                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
+                                                                Resubscribe
+                                                            </Link>
+                                                        </DropdownMenuItem>
                                                     }
                                                     {
                                                         item.status === "Expiring Soon" &&
-                                                        <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                            <DropdownMenuItem className="cursor-pointer">
-                                                                <DropdownMenuLabel>Extend Subscription</DropdownMenuLabel>
-                                                            </DropdownMenuItem>
-                                                        </Link>
+                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
+                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
+                                                                Extend Subscription
+                                                            </Link>
+                                                        </DropdownMenuItem>
                                                     }
                                                     {
                                                         (item.status === "Pending Payment" || item.status === "Active" || item.status === "Expiring Soon") &&
                                                         <DropdownMenuItem
-                                                            className="cursor-pointer"
+                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
                                                             onSelect={() => setUnsubAlert({ open: true, item })}
                                                         >
-                                                            <DropdownMenuLabel>Unsubscribe</DropdownMenuLabel>
+                                                            Unsubscribe
                                                         </DropdownMenuItem>
                                                     }
                                                 </DropdownMenuContent>

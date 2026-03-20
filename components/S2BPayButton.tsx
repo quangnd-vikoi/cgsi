@@ -44,8 +44,8 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 			closeFired = true;
 			onCloseRef.current?.();
 		};
-		window.s2bPayClose = (status) => {
-			if (status.status === "closed") fireClose();
+		window.s2bPayClose = () => {
+			fireClose();
 		};
 
 		(async () => {
