@@ -446,3 +446,11 @@
 		box-shadow: 0px 2px 16px -1px rgba(33, 64, 154, 0.1);
 	}
 }
+
+/* S2B PayNow lightbox — force on top of all other layers */
+#s2bpayv2-s2bpay-lightbox-container,
+#s2bpay-lightbox-container,
+#s2bpay-lightbox,
+.s2bpay-container-center {
+	z-index: 2147483647 !important;
+}
