@@ -386,7 +386,7 @@ function SettlePageContent() {
 							onError={() => {
 								setPayingId(null);
 								setPaynowSubmitFn(null);
-								toast.error("PayNow Failed", "Failed to initiate PayNow. Please try again.");
+								toast.error("PayNow Unavailable", "We were unable to initiate PayNow. Please try again later.");
 							}}
 						/>
 					)}

@@ -230,7 +230,7 @@ const MarketData = () => {
                             <p className="text-base font-semibold">{calculateAmount().toFixed(2)} SGD</p>
                             <p className="text-xs text-typo-tertiary">Excluding GST</p>
                         </div>
-                        <Button className="text-base font-normal px-3 rounded" onClick={handleGoToCart}>
+                        <Button className="text-base font-normal px-3 rounded" onClick={handleGoToCart} disabled={selectedItems.length === 0}>
                             Go to Cart ({selectedItems.length})
                         </Button>
                     </div>
@@ -271,6 +271,7 @@ const MarketData = () => {
                     agreements={agreements}
                     agreementContents={agreementContents}
                     extendedData={extendedData}
+                    needsDeclaration={needsDeclaration}
                 />
             )}
 

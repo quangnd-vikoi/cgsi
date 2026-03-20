@@ -62,7 +62,7 @@ export const markAllAsRead = async (): Promise<APIResponse<NotificationMarkAsRea
 		return {
 			success: false,
 			data: null,
-			error: listResponse.error || "Failed to fetch notifications",
+			error: listResponse.error || "Unable to load notifications at this time",
 			statusCode: listResponse.statusCode,
 		};
 	}

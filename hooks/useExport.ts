@@ -22,10 +22,10 @@ export function useExport() {
 			if (result.success) {
 				toast.success("Export Complete", "File downloaded successfully.");
 			} else {
-				toast.error("Export Failed", result.error || "Unable to export. Please try again.");
+				toast.error("Export Unsuccessful", result.error || "We were unable to export your file. Please try again later.");
 			}
 		} catch {
-			toast.error("Export Failed", "Unable to export. Please try again.");
+			toast.error("Export Unsuccessful", "We were unable to export your file. Please try again later.");
 		} finally {
 			setExporting(false);
 		}

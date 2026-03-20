@@ -241,7 +241,7 @@ const MySubscriptions = () => {
 						`You have successfully unsubscribed from "${item.title}".`
 					);
 				} else {
-					toast.error("Failed", res.error || "Unable to unsubscribe. Please try again.");
+					toast.error("Unable to Unsubscribe", res.error || "We could not process your request at this time. Please try again later.");
 				}
 			} else {
 				toast.success(

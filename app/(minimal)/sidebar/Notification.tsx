@@ -122,10 +122,10 @@ const Notification = () => {
 			console.error("Failed to fetch notifications:", response.error);
 			if (!append) {
 				// Only set error state for initial load failures
-				setError(response.error || "Failed to load notifications");
+				setError(response.error || "Unable to load notifications");
 			} else {
 				// For pagination failures, just show a toast
-				toast.error("Error", response.error || "Failed to load more notifications");
+				toast.error("Unable to Load", response.error || "We could not load more notifications. Please try again later.");
 			}
 		}
 
@@ -197,7 +197,7 @@ const Notification = () => {
 			toast.success("All Caught Up", "All messages have been marked as read.");
 		} else {
 			console.error("Failed to mark as read:", response.error);
-			toast.error("Error", response.error || "Failed to mark notifications as read.");
+			toast.error("Unable to Update", response.error || "We could not mark your notifications as read. Please try again later.");
 		}
 	};
 

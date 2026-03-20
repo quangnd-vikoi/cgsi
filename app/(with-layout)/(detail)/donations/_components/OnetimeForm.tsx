@@ -81,7 +81,7 @@ const OneTimeForm = () => {
 			});
 
 			if (!response.success || response.data?.success === false) {
-				toast.error("Donation Payment Failed", response.error ?? "Please try again.");
+				toast.error("Payment Unsuccessful", response.error ?? "We were unable to process your donation. Please try again later.");
 			} else {
 				toast.success(
 					"Thank you!",

@@ -200,7 +200,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 
 	const handleS2BError = () => {
 		setSubmitFn(null);
-		toast.error("PayNow Failed", "Failed to initiate PayNow deposit. Please try again.");
+		toast.error("PayNow Unavailable", "We were unable to initiate your PayNow deposit. Please try again later.");
 	};
 
 	return (

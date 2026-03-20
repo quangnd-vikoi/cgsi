@@ -19,9 +19,10 @@ interface TermsStepProps {
     agreements: ISubscriptionAgreement[];
     agreementContents: Record<string, ISubscriptionAgreementContent>;
     extendedData: IMarketSubscriptionExtendedData;
+    needsDeclaration: boolean;
 }
 
-const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents, extendedData }: TermsStepProps) => {
+const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents, extendedData, needsDeclaration }: TermsStepProps) => {
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -40,6 +41,18 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
         if (!agreed) {
             setShowTermsError(true);
             return;
+        }
+
+        if (needsDeclaration) {
+            const { name, address, occupation, employer, employerAddress } = extendedData;
+            const missingDeclaration = !name?.trim() || !address?.trim() || !occupation?.trim() ||
+                !employer?.trim() || !employerAddress?.trim();
+            if (missingDeclaration) {
+                toast.error("Declaration Incomplete",
+                    "Please complete the declaration form before submitting.",
+                );
+                return;
+            }
         }
 
         setSubmitting(true);

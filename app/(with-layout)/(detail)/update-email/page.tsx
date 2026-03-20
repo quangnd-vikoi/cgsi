@@ -222,7 +222,7 @@ const UpdateEmail = () => {
 			setStep(2);
 			setShowOtpBanner(true);
 		} else {
-			toast.error("Failed to send OTP", response.error || "Please try again later.");
+			toast.error("Unable to Send OTP", response.error || "Please try again later.");
 		}
 	};
 
@@ -236,7 +236,7 @@ const UpdateEmail = () => {
 			setShowOtpBanner(true);
 			toast.success("OTP Resent", "A new OTP code has been sent to your email.");
 		} else {
-			toast.error("Failed to resend OTP", response.error || "Please try again later.");
+			toast.error("Unable to Resend OTP", response.error || "Please try again later.");
 		}
 	};
 

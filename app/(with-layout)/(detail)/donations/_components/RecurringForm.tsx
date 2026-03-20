@@ -135,10 +135,10 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 				setShowValidationErrors(false);
 				clearAllErrors();
 			} else {
-				toast.error("Donation Payment Failed");
+				toast.error("Payment Unsuccessful", "We were unable to process your donation. Please try again later.");
 			}
 		} catch {
-			toast.error("Donation Payment Failed");
+			toast.error("Payment Unsuccessful", "We were unable to process your donation. Please try again later.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -152,7 +152,7 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 				setRecurringDonations(recurringDonations.filter((item) => item.id !== plan.id));
 				toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 			} else {
-				toast.error("Cancellation Failed", response.error || "Please try again later.");
+				toast.error("Unable to Cancel", response.error || "We could not cancel your donation at this time. Please try again later.");
 			}
 		} catch {
 			toast.error("Error Encountered", "Something went wrong. Please try again later.");

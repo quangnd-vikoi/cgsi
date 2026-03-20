@@ -160,10 +160,10 @@ const TradingDeclartions = () => {
 							setTradingInfo(updatedInfo.data);
 						}
 					} else {
-						toast.error(response.error || "Failed to submit BCAN request");
+						toast.error(response.error || "We were unable to submit your BCAN request. Please try again later.");
 					}
 				} catch {
-					toast.error("Failed to submit BCAN request");
+					toast.error("Unable to Submit", "We were unable to submit your BCAN request. Please try again later.");
 				}
 				setAlertOpen(false);
 			},
