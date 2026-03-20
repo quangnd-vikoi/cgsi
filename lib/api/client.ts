@@ -101,6 +101,74 @@ async function ensureValidToken(force: boolean = false): Promise<void> {
 	return refreshPromise;
 }
 
+// ============================================
+// SHARED HELPERS
+// ============================================
+
+/** Resolve full URL from a potentially relative endpoint */
+function resolveUrl(url: string): string {
+	return url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+}
+
+/** Attach Bearer token to headers if useAuth is true */
+async function applyAuth(headers: Record<string, string>, useAuth: boolean): Promise<void> {
+	if (!useAuth) return;
+
+	await ensureValidToken();
+	const token = getAccessToken();
+	if (token) {
+		delete headers["Authorization"];
+		headers["Authorization"] = `Bearer ${token}`;
+	}
+}
+
+/** Parse a JSON response into a normalized APIResponse */
+function parseJsonResponse<T>(
+	json: StandardAPIResponse<T> | DirectAPIResponse<T>,
+	httpStatus: number,
+	httpOk: boolean
+): APIResponse<T> {
+	if (!httpOk) {
+		let errorMsg = `HTTP Error: ${httpStatus}`;
+		if ("message" in json && typeof json.message === "string") {
+			errorMsg = json.message;
+		} else if ("error" in json && typeof json.error === "string") {
+			errorMsg = json.error;
+		}
+		return { success: false, error: errorMsg, statusCode: httpStatus, data: null };
+	}
+
+	const isStandardResponse = "status" in json && "statuscode" in json;
+
+	if (isStandardResponse) {
+		const standardJson = json as StandardAPIResponse<T>;
+
+		if (standardJson.status !== "SUCCESS" || standardJson.statuscode !== "200") {
+			return {
+				success: false,
+				error: standardJson.message || "API returned error status",
+				statusCode: parseInt(standardJson.statuscode) || httpStatus,
+				data: null,
+			};
+		}
+
+		const data = (standardJson.article || standardJson.data || json) as T;
+		return { success: true, data, statusCode: parseInt(standardJson.statuscode), error: null };
+	}
+
+	// Direct response format (like auth endpoints)
+	const directJson = json as DirectAPIResponse<T>;
+	if ("error" in directJson && directJson.error) {
+		return { success: false, error: directJson.error as string, statusCode: httpStatus, data: null };
+	}
+
+	return { success: true, data: json as T, statusCode: httpStatus, error: null };
+}
+
+// ============================================
+// CORE FETCH
+// ============================================
+
 /**
  * Fetch wrapper for API with standardized response format
  * @param url - API endpoint
@@ -112,125 +180,36 @@ export async function fetchAPI<T>(url: string, options: FetchOptions = {}): Prom
 	try {
 		const { useAuth = false, _isRetry = false, ...restOptions } = options;
 
-		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+		const fullUrl = resolveUrl(url);
 
 		const headers: Record<string, string> = {
 			"Content-Type": "application/json",
 			...(restOptions.headers as Record<string, string>),
 		};
 
-		// Ensure token is valid before making authenticated requests
-		if (useAuth) {
-			await ensureValidToken();
+		await applyAuth(headers, useAuth);
 
-			const token = getAccessToken();
-			if (token) {
-				// Explicitly remove any old Authorization header and set the new one
-				delete headers["Authorization"];
-				headers["Authorization"] = `Bearer ${token}`;
-			}
-		}
-
-		const res = await fetch(fullUrl, {
-			...restOptions,
-			headers,
-		});
+		const res = await fetch(fullUrl, { ...restOptions, headers });
 		resStatus = res.status;
 
 		// Handle empty responses (204 No Content, etc.)
 		if (res.status === 204 || res.headers.get("content-length") === "0") {
-			return {
-				success: true,
-				data: null,
-				statusCode: res.status,
-				error: null,
-			};
+			return { success: true, data: null, statusCode: res.status, error: null };
 		}
 
 		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
 		// IMPORTANT: Check this BEFORE parsing JSON to avoid consuming the response body
 		if (res.status === 401 && useAuth && !_isRetry) {
-			// Force refresh on 401 (token might be invalidated server-side before time-based expiry)
 			try {
 				await ensureValidToken(true);
-				// Retry the request once with the new token
 				return fetchAPI<T>(url, { ...options, _isRetry: true });
 			} catch {
-				// Refresh failed - redirect to login will be handled by authService
-				return {
-					success: false,
-					error: "Authentication failed - unable to refresh token",
-					statusCode: 401,
-					data: null,
-				};
+				return { success: false, error: "Authentication failed - unable to refresh token", statusCode: 401, data: null };
 			}
 		}
 
 		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();
-
-		// Check HTTP status
-		if (!res.ok) {
-			let errorMsg = `HTTP Error: ${res.status}`;
-			if ("message" in json && typeof json.message === "string") {
-				errorMsg = json.message;
-			} else if ("error" in json && typeof json.error === "string") {
-				errorMsg = json.error;
-			}
-			return {
-				success: false,
-				error: errorMsg,
-				statusCode: res.status,
-				data: null,
-			};
-		}
-
-		// Check if this is a StandardAPIResponse (has status/statuscode fields)
-		const isStandardResponse = "status" in json && "statuscode" in json;
-
-		if (isStandardResponse) {
-			// Standard API response format
-			const standardJson = json as StandardAPIResponse<T>;
-
-			if (standardJson.status !== "SUCCESS" || standardJson.statuscode !== "200") {
-				return {
-					success: false,
-					error: standardJson.message || "API returned error status",
-					statusCode: parseInt(standardJson.statuscode) || res.status,
-					data: null,
-				};
-			}
-
-			// Success case - flexible data extraction
-			const data = (standardJson.article || standardJson.data || json) as T;
-
-			return {
-				success: true,
-				data,
-				statusCode: parseInt(standardJson.statuscode),
-				error: null,
-			};
-		} else {
-			// Direct response format (like auth endpoints)
-			const directJson = json as DirectAPIResponse<T>;
-
-			// If there's an explicit error field, it's an error
-			if ("error" in directJson && directJson.error) {
-				return {
-					success: false,
-					error: directJson.error as string,
-					statusCode: res.status,
-					data: null,
-				};
-			}
-
-			// HTTP OK + no error field = success with direct data
-			return {
-				success: true,
-				data: json as T,
-				statusCode: res.status,
-				error: null,
-			};
-		}
+		return parseJsonResponse<T>(json, res.status, res.ok);
 	} catch (error) {
 		// Network or parsing errors — use actual HTTP status if fetch succeeded but body parsing failed
 		return {
@@ -299,19 +278,13 @@ export async function fetchBlobAndDownload(
 	try {
 		const { useAuth = false, _isRetry = false, ...restOptions } = options;
 
-		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+		const fullUrl = resolveUrl(url);
 
 		const headers: Record<string, string> = {
 			...(restOptions.headers as Record<string, string>),
 		};
 
-		if (useAuth) {
-			await ensureValidToken();
-			const token = getAccessToken();
-			if (token) {
-				headers["Authorization"] = `Bearer ${token}`;
-			}
-		}
+		await applyAuth(headers, useAuth);
 
 		const res = await fetch(fullUrl, { ...restOptions, headers });
 
@@ -361,6 +334,10 @@ export async function deleteAPI<T>(url: string, options: FetchOptions = {}): Pro
 /**
  * Helper for POST requests with FormData (multipart/form-data)
  * Used for file uploads like signature upload
+ *
+ * Note: Cannot reuse fetchAPI because FormData requires:
+ * 1. No Content-Type header (browser sets it with boundary)
+ * 2. FormData body instead of JSON string
  */
 export async function postFormData<T>(
 	url: string,
@@ -370,23 +347,14 @@ export async function postFormData<T>(
 	try {
 		const { useAuth = false, _isRetry = false, ...restOptions } = options;
 
-		const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
+		const fullUrl = resolveUrl(url);
 
 		const headers: Record<string, string> = {
 			// Note: Do NOT set Content-Type for FormData - browser will set it with boundary
 			...(restOptions.headers as Record<string, string>),
 		};
 
-		// Ensure token is valid before making authenticated requests
-		if (useAuth) {
-			await ensureValidToken();
-
-			const token = getAccessToken();
-			if (token) {
-				delete headers["Authorization"];
-				headers["Authorization"] = `Bearer ${token}`;
-			}
-		}
+		await applyAuth(headers, useAuth);
 
 		const res = await fetch(fullUrl, {
 			method: "POST",
@@ -397,88 +365,21 @@ export async function postFormData<T>(
 
 		// Handle empty responses
 		if (res.status === 204 || res.headers.get("content-length") === "0") {
-			return {
-				success: true,
-				data: null,
-				statusCode: res.status,
-				error: null,
-			};
+			return { success: true, data: null, statusCode: res.status, error: null };
 		}
 
 		// Handle 401 Unauthorized - attempt token refresh and retry ONCE
 		if (res.status === 401 && useAuth && !_isRetry) {
-			// Force refresh on 401 (token might be invalidated server-side before time-based expiry)
 			try {
 				await ensureValidToken(true);
 				return postFormData<T>(url, formData, { ...options, _isRetry: true });
 			} catch {
-				return {
-					success: false,
-					error: "Authentication failed - unable to refresh token",
-					statusCode: 401,
-					data: null,
-				};
+				return { success: false, error: "Authentication failed - unable to refresh token", statusCode: 401, data: null };
 			}
 		}
 
 		const json: StandardAPIResponse<T> | DirectAPIResponse<T> = await res.json();
-
-		if (!res.ok) {
-			let errorMsg = `HTTP Error: ${res.status}`;
-			if ("message" in json && typeof json.message === "string") {
-				errorMsg = json.message;
-			} else if ("error" in json && typeof json.error === "string") {
-				errorMsg = json.error;
-			}
-			return {
-				success: false,
-				error: errorMsg,
-				statusCode: res.status,
-				data: null,
-			};
-		}
-
-		const isStandardResponse = "status" in json && "statuscode" in json;
-
-		if (isStandardResponse) {
-			const standardJson = json as StandardAPIResponse<T>;
-
-			if (standardJson.status !== "SUCCESS" || standardJson.statuscode !== "200") {
-				return {
-					success: false,
-					error: standardJson.message || "API returned error status",
-					statusCode: parseInt(standardJson.statuscode) || res.status,
-					data: null,
-				};
-			}
-
-			const data = (standardJson.article || standardJson.data || json) as T;
-
-			return {
-				success: true,
-				data,
-				statusCode: parseInt(standardJson.statuscode),
-				error: null,
-			};
-		} else {
-			const directJson = json as DirectAPIResponse<T>;
-
-			if ("error" in directJson && directJson.error) {
-				return {
-					success: false,
-					error: directJson.error as string,
-					statusCode: res.status,
-					data: null,
-				};
-			}
-
-			return {
-				success: true,
-				data: json as T,
-				statusCode: res.status,
-				error: null,
-			};
-		}
+		return parseJsonResponse<T>(json, res.status, res.ok);
 	} catch (error) {
 		return {
 			success: false,

@@ -16,23 +16,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAccountSummary } from "@/lib/services/portfolioService";
 
-const formatAmount = (value: number | undefined, currency = "SGD") => {
-	if (value === undefined || value === null) return `0.00 ${currency}`;
-	const prefix = value >= 0 ? "+ " : "- ";
-	return `${prefix}${Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
-};
+type SignMode = "signed" | "unsigned" | "negative-only";
 
-const formatAmountNoSign = (value: number | undefined, currency = "SGD") => {
+const formatCurrency = (value: number | undefined, currency = "SGD", mode: SignMode = "signed") => {
 	if (value === undefined || value === null) return `0.00 ${currency}`;
-	return `${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
-};
-
-const formatCashCall = (value: number | undefined, currency = "SGD") => {
-	if (value === undefined || value === null) return `0.00 ${currency}`;
-	if (value < 0) {
-		return `- ${Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+	const formatted = Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+	if (mode === "unsigned") return `${formatted} ${currency}`;
+	if (mode === "negative-only") {
+		return value < 0 ? `- ${formatted} ${currency}` : `${formatted} ${currency}`;
 	}
-	return `${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+	const prefix = value >= 0 ? "+ " : "- ";
+	return `${prefix}${formatted} ${currency}`;
 };
 
 const marginRatioColor = (ratio?: number): "success" | "error" | "normal" => {
@@ -136,42 +130,47 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false }: { totalAsset: 
 		</Select>
 	);
 
+	const totalAssetBlock = (
+		<div className="w-full">
+			<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
+			{isLoading ? (
+				<Skeleton className="mt-2 h-8 w-40" />
+			) : (
+				<p className="mt-2 text-lg md:text-2xl font-semibold">
+					{totalAsset.toLocaleString("en-US", {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					})}{" "}
+					SGD
+				</p>
+			)}
+		</div>
+	);
+
+	const trRepBlock = (
+		<div className="w-full">
+			<p className="text-xs md:text-sm text-typo-secondary">Trading Representative</p>
+			<p className="mt-2 text-base leading-6 font-semibold">
+				{selectedAccount?.trName || "N/A"}
+			</p>
+		</div>
+	);
+
+	const verticalSep = (
+		<Separator
+			orientation="vertical"
+			className="hidden md:block! h-14 bg-tone-blue-02 !w-[1px]"
+		/>
+	);
+
 	if (fullWidth) {
 		return (
 			<div className="bg-background-section p-4 md:p-6 rounded h-full flex flex-col md:flex-row  items-center gap-4 md:gap-6">
 				<div className="w-full ">{selectEl}</div>
-
-				<Separator
-					orientation="vertical"
-					className="hidden md:block! h-14 bg-tone-blue-02 !w-[1px]"
-				/>
-
-				<div className="w-full">
-					<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
-					{isLoading ? (
-						<Skeleton className="mt-2 h-8 w-40" />
-					) : (
-						<p className="mt-2 text-lg md:text-2xl font-semibold">
-							{totalAsset.toLocaleString("en-US", {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							})}{" "}
-							SGD
-						</p>
-					)}
-				</div>
-
-				<Separator
-					orientation="vertical"
-					className="hidden md:block! h-14 bg-tone-blue-02 !w-[1px]"
-				/>
-
-				<div className="w-full">
-					<p className="text-xs md:text-sm text-typo-secondary">Trading Representative</p>
-					<p className="mt-2 text-base leading-6 font-semibold">
-						{selectedAccount?.trName || "N/A"}
-					</p>
-				</div>
+				{verticalSep}
+				{totalAssetBlock}
+				{verticalSep}
+				{trRepBlock}
 			</div>
 		);
 	}
@@ -181,32 +180,9 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false }: { totalAsset: 
 			{selectEl}
 
 			<div className="mt-6 flex flex-col md:flex-row justify-between gap-4 md:gap-6 items-start">
-				<div className="w-full md:w-1/2">
-					<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
-					{isLoading ? (
-						<Skeleton className="mt-2 h-8 w-40" />
-					) : (
-						<p className="mt-2 text-lg md:text-2xl font-semibold">
-							{totalAsset.toLocaleString("en-US", {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2,
-							})}{" "}
-							SGD
-						</p>
-					)}
-				</div>
-
-				<Separator
-					orientation="vertical"
-					className="hidden md:block! h-14 bg-tone-blue-02 !w-[1px]"
-				/>
-
-				<div className="w-full md:w-1/2">
-					<p className="text-xs md:text-sm text-typo-secondary">Trading Representative</p>
-					<p className="mt-2 text-base leading-6 font-semibold">
-						{selectedAccount?.trName || "N/A"}
-					</p>
-				</div>
+				<div className="w-full md:w-1/2">{totalAssetBlock}</div>
+				{verticalSep}
+				<div className="w-full md:w-1/2">{trRepBlock}</div>
 			</div>
 		</div>
 	);
@@ -304,7 +280,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				id: 1,
 				gridArea: "1 / 1 / 2 / 2",
 				component: (
-					<DashboardBlock title="Sell Contracts" amount={formatAmount(accountSummary?.contractsSell)} type={colorByValue(accountSummary?.contractsSell)} isLoading={isLoading} />
+					<DashboardBlock title="Sell Contracts" amount={formatCurrency(accountSummary?.contractsSell)} type={colorByValue(accountSummary?.contractsSell)} isLoading={isLoading} />
 				),
 			},
 			{
@@ -313,7 +289,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Buy Contracts"
-						amount={formatAmount(accountSummary?.contractsBuy)}
+						amount={formatCurrency(accountSummary?.contractsBuy)}
 						type={colorByValue(accountSummary?.contractsBuy)}
 						isLoading={isLoading}
 						showPayButton={!!accountSummary?.contractsBuy && accountSummary.contractsBuy !== 0}
@@ -325,7 +301,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				id: 3,
 				gridArea: "2 / 1 / 3 / 2",
 				component: (
-					<DashboardBlock title="Contra Gain" amount={formatAmount(accountSummary?.contraGain)} type={colorByValue(accountSummary?.contraGain)} isLoading={isLoading} />
+					<DashboardBlock title="Contra Gain" amount={formatCurrency(accountSummary?.contraGain)} type={colorByValue(accountSummary?.contraGain)} isLoading={isLoading} />
 				),
 			},
 			{
@@ -334,7 +310,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Contra Loss"
-						amount={formatAmount(accountSummary?.contraLoss)}
+						amount={formatCurrency(accountSummary?.contraLoss)}
 						type={colorByValue(accountSummary?.contraLoss)}
 						isLoading={isLoading}
 						showPayButton={!!accountSummary?.contraLoss && accountSummary.contraLoss !== 0}
@@ -350,7 +326,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Avail Trade Limit"
-						amount={formatAmountNoSign(accountSummary?.tradeLimit)}
+						amount={formatCurrency(accountSummary?.tradeLimit, "SGD", "unsigned")}
 						type="normal"
 						isLoading={isLoading}
 					/>
@@ -367,7 +343,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Collateral Value"
-						amount={formatAmountNoSign(accountSummary?.collateralValue)}
+						amount={formatCurrency(accountSummary?.collateralValue, "SGD", "unsigned")}
 						type="normal"
 						isLoading={isLoading}
 					/>
@@ -379,7 +355,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatCashCall(accountSummary?.cashCall)}
+						amount={formatCurrency(accountSummary?.cashCall, "SGD", "negative-only")}
 						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
 						showPayButton
@@ -400,7 +376,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				component: (
 					<DashboardBlock
 						title="Cash Call"
-						amount={formatCashCall(accountSummary?.cashCall)}
+						amount={formatCurrency(accountSummary?.cashCall, "SGD", "negative-only")}
 						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
 						showPayButton

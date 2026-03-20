@@ -35,11 +35,15 @@ const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 
 type ColDef = { label: string; col: keyof IPortfolioHolding; right?: boolean };
 
-const CTA_COLS: ColDef[] = [
+const BASE_COLS: ColDef[] = [
 	{ label: "Asset Class", col: "assetClass" },
 	{ label: "Market", col: "marketCode" },
 	{ label: "Code", col: "securityCode" },
 	{ label: "Name", col: "securityName" },
+];
+
+const CTA_COLS: ColDef[] = [
+	...BASE_COLS,
 	{ label: "Total Qty", col: "totalQty", right: true },
 	{ label: "Earmarked", col: "earmarkQty", right: true },
 	{ label: "Avail Qty", col: "availQty", right: true },
@@ -49,10 +53,7 @@ const CTA_COLS: ColDef[] = [
 ];
 
 const MTA_COLS: ColDef[] = [
-	{ label: "Asset Class", col: "assetClass" },
-	{ label: "Market", col: "marketCode" },
-	{ label: "Code", col: "securityCode" },
-	{ label: "Name", col: "securityName" },
+	...BASE_COLS,
 	{ label: "Total Qty", col: "totalQty", right: true },
 	{ label: "Currency", col: "currency", right: true },
 	{ label: "Closing Price", col: "closingPrice", right: true },
@@ -65,10 +66,7 @@ const MTA_COLS: ColDef[] = [
 ];
 
 const CUT_COLS: ColDef[] = [
-	{ label: "Asset Class", col: "assetClass" },
-	{ label: "Market", col: "marketCode" },
-	{ label: "Code", col: "securityCode" },
-	{ label: "Name", col: "securityName" },
+	...BASE_COLS,
 	{ label: "Total Qty", col: "totalQty", right: true },
 	{ label: "Currency", col: "currency", right: true },
 	{ label: "Closing Price", col: "closingPrice", right: true },
