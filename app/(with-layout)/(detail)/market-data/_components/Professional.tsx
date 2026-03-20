@@ -152,6 +152,7 @@ const Professional = ({
                                                     ...item,
                                                     gstIndicator: sub?.gstIndicator,
                                                     usMarketDeclaration: sub?.usMarketDeclaration,
+                                                    professionalFlag: sub?.professionalFlag,
                                                 }
                                             ];
                                         });
@@ -194,6 +195,7 @@ const Professional = ({
                                                     ...item,
                                                     gstIndicator: sub?.gstIndicator,
                                                     usMarketDeclaration: sub?.usMarketDeclaration,
+                                                    professionalFlag: sub?.professionalFlag,
                                                 }
                                             ];
                                         });

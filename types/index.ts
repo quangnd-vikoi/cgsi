@@ -145,7 +145,7 @@ export interface CreateBcanRequest {
 }
 
 export interface CreateBcanResponse {
-	isSuccess: boolean;
+	success: boolean;
 }
 
 // Donation Types
@@ -464,9 +464,21 @@ export interface ECRSSSOResponse {
 // SIP (Sophisticated Investor Program) Info
 export interface ITradingInfoSIP {
 	toDisplay: boolean;
-	passed: boolean;
-	dueForSubmission: boolean;
+	isPassed: boolean;
+	expireDate: string | null;
 	lastSubmissionID: string | null;
+}
+
+// SIP Submission Data (GET /profile/api/v1/tradingInfo/sip/submission/{id})
+export interface SIPSubmissionData {
+	twoFAData: string;
+	isCAR: boolean;
+	carProduct: number[];
+	isCKA: boolean;
+	ckaCFD: boolean;
+	ckaFX: boolean;
+	ckaSP: boolean;
+	ckaUT: boolean;
 }
 
 // W8-BEN Info
@@ -478,7 +490,6 @@ export interface ITradingInfoW8BEN {
 
 // CRS Info
 export interface ITradingInfoCRS {
-	toDisplay: boolean;
 	certified: boolean;
 	isJointAcct: boolean;
 	validationDate: string | null;

@@ -149,6 +149,7 @@ const NonProfessional = ({
                                                     ...item,
                                                     gstIndicator: sub?.gstIndicator,
                                                     usMarketDeclaration: sub?.usMarketDeclaration,
+                                                    professionalFlag: sub?.professionalFlag,
                                                 }
                                             ];
                                         });
@@ -191,6 +192,7 @@ const NonProfessional = ({
                                                     ...item,
                                                     gstIndicator: sub?.gstIndicator,
                                                     usMarketDeclaration: sub?.usMarketDeclaration,
+                                                    professionalFlag: sub?.professionalFlag,
                                                 }
                                             ];
                                         });

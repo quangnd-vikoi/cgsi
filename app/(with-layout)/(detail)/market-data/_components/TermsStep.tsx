@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toaster";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 import { submitMarketDataSubscription } from "@/lib/services/subscriptionService";
 import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
+import { useSheetStore } from "@/stores/sheetStore";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -25,6 +26,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
+    const { setOpenSheet } = useSheetStore();
 
     // Flatten all agreements from all subscriptions
     const allAgreements = agreements.flatMap((s) =>
@@ -69,14 +71,14 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                     "Your market data subscription has been submitted successfully.",
                 );
             } else {
-                toast.error("Submission Failed",
-                    res.error || "Failed to submit subscription. Please try again.",
+                toast.error("Submission Unsuccessful",
+                    res.error || "We were unable to process your subscription at this time. Please try again later.",
                 );
             }
         } catch (error) {
             console.error("Market data subscription error:", error);
-            toast.error("Error",
-                "Failed to submit subscription. Please try again.",
+            toast.error("Something Went Wrong",
+                "We encountered an unexpected issue while processing your request. Please try again later.",
             );
         } finally {
             setSubmitting(false);

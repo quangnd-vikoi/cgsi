@@ -11,10 +11,11 @@ interface DeclarationStepProps {
 }
 
 const FORM_FIELDS = [
-    { id: "name" as const, label: "Name" },
-    { id: "address" as const, label: "Address" },
-    { id: "occupation" as const, label: "Occupation" },
-    { id: "employer" as const, label: "Employer Name" },
+    { id: "name" as const, label: "Name", required: true, readOnly: true },
+    { id: "address" as const, label: "Address", required: true },
+    { id: "occupation" as const, label: "Occupation", required: true },
+    { id: "employer" as const, label: "Employer Name", required: true },
+    { id: "employerAddress" as const, label: "Employer Address", required: true },
     { id: "employmentTitle" as const, label: "Title or Position" },
     { id: "employmentFunction" as const, label: "Employment Functions" },
 ] as const;
@@ -26,7 +27,9 @@ const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Declarati
 
     const isValid = extendedData.name.trim() !== "" &&
         extendedData.address.trim() !== "" &&
-        extendedData.occupation.trim() !== "";
+        extendedData.occupation.trim() !== "" &&
+        (extendedData.employer?.trim() ?? "") !== "" &&
+        (extendedData.employerAddress?.trim() ?? "") !== "";
 
     return (
         <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
@@ -46,7 +49,7 @@ const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Declarati
                         <div key={field.id}>
                             <Label htmlFor={field.id}>
                                 {field.label}
-                                {(field.id === "name" || field.id === "address" || field.id === "occupation") && (
+                                {"required" in field && field.required && (
                                     <span className="text-status-error ml-0.5">*</span>
                                 )}
                             </Label>
@@ -58,6 +61,8 @@ const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Declarati
                                 placeholder="Type Here"
                                 value={(extendedData[field.id] as string) ?? ""}
                                 onChange={(e) => handleChange(field.id, e.target.value)}
+                                readOnly={"readOnly" in field && field.readOnly}
+                                disabled={"readOnly" in field && field.readOnly}
                             />
                         </div>
                     ))}

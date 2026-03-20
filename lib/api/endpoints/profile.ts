@@ -121,6 +121,17 @@ export const profileEndpoints = {
 	createBcanRequest: () => `/profile/api/v1/tradingInfo/bcan/request`,
 
 	/**
+	 * Get SIP Submission Data
+	 *
+	 * GET /profile/api/v1/tradingInfo/sip/submission/{id}
+	 *
+	 * @param id - SIP submission ID
+	 * @returns SIPSubmissionData - SIP submission details (CKA/CAR flags)
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 */
+	sipSubmission: (id: string) => `/profile/api/v1/tradingInfo/sip/submission/${id}`,
+
+	/**
 	 * Get Donation Plans
 	 *
 	 * GET /profile/api/v1/donation/plan

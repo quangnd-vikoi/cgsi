@@ -15,6 +15,7 @@ import SuccessState from "@/public/icons/success-state.svg";
 import { getMarketDataCatalog, getMarketDataAgreements, getMarketDataAgreementContent } from "@/lib/services/subscriptionService";
 import type { IMarketSubscriptionCatalog, IMarketSubscriptionGroup, ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
+import { useUserStore } from "@/stores/userStore";
 
 export type Step = "select" | "cart" | "declaration" | "non-pro-declaration" | "terms-and-conditions" | "success";
 
@@ -29,6 +30,7 @@ export interface IMarketDataItem {
     };
     gstIndicator?: string;
     usMarketDeclaration?: boolean;
+    professionalFlag?: string | null;
 }
 
 /**
@@ -94,6 +96,14 @@ const MarketData = () => {
         value_07: false, value_08: false, value_09: false, value_10: false, value_11: false,
     });
     const { setOpenSheet } = useSheetStore();
+    const profile = useUserStore((s) => s.profile);
+
+    // Pre-populate name from profile
+    useEffect(() => {
+        if (profile?.name) {
+            setExtendedData((prev) => ({ ...prev, name: profile.name! }));
+        }
+    }, [profile?.name]);
 
     const handleGoToCart = async () => {
         setCurrentStep("cart");
@@ -127,7 +137,7 @@ const MarketData = () => {
         }
     };
 
-    const needsDeclaration = selectedItems.some(item => item.usMarketDeclaration);
+    const needsDeclaration = selectedItems.some(item => item.usMarketDeclaration && item.professionalFlag === "2");
 
     const handleBack = () => {
         if (currentStep === "cart") {
@@ -298,7 +308,7 @@ const MarketData = () => {
                         </div>
                     </div>
                     <div className="border-t px-6 py-4">
-                        <Button onClick={() => setCurrentStep("select")} className="w-full rounded">
+                        <Button onClick={() => setOpenSheet("my_subscriptions")} className="w-full rounded">
                             View My Subscriptions
                         </Button>
                     </div>

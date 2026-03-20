@@ -1,10 +1,10 @@
 "use client";
 
-import React, { ReactNode, useState, useEffect } from "react";
+import React, { ReactNode, useState, useEffect, useRef } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlarmClock, ChevronRight, CircleCheck, Clock, XCircle } from "lucide-react";
+import { AlarmClock, ChevronRight, CircleCheck, Clock, EyeOff, XCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
@@ -12,8 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { getEW8SSO, getECRSSSO, redirectToSSO, redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
 import { formatDate, handleEmail } from "@/lib/utils";
 import { CGSI } from "@/constants/routes";
-import { getTradingInfo, createBcanRequest } from "@/lib/services/profileService";
-import type { TradingInfoResponse } from "@/types";
+import { getTradingInfo, createBcanRequest, getSipSubmission } from "@/lib/services/profileService";
+import type { TradingInfoResponse, SIPSubmissionData } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
@@ -80,6 +80,7 @@ const TradingDeclartions = () => {
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [tradingInfo, setTradingInfo] = useState<TradingInfoResponse | null>(null);
+	const [sipSubmission, setSipSubmission] = useState<SIPSubmissionData | null>(null);
 	const [ew8Url, setEw8Url] = useState<string | null>(null);
 	const [ecrsUrl, setEcrsUrl] = useState<string | null>(null);
 	const [alertContent, setAlertContent] = useState({
@@ -91,13 +92,25 @@ const TradingDeclartions = () => {
 		cancelText: "Cancel",
 	});
 
+	const hasFetched = useRef(false);
+
 	useEffect(() => {
+		if (hasFetched.current) return;
+		hasFetched.current = true;
+
 		const fetchAll = async () => {
 			setLoading(true);
 			try {
 				const response = await getTradingInfo();
 				if (response.success && response.data) {
 					setTradingInfo(response.data);
+
+					// Fetch SIP submission data if available
+					if (response.data.sip.lastSubmissionID) {
+						getSipSubmission(response.data.sip.lastSubmissionID).then((res) => {
+							if (res.success && res.data) setSipSubmission(res.data);
+						});
+					}
 
 					// Prefetch EW8 and ECRS SSO URLs concurrently in the background
 					getEW8SSO().then((res) => {
@@ -140,7 +153,7 @@ const TradingDeclartions = () => {
 						return;
 					}
 					const response = await createBcanRequest(accountNo);
-					if (response.data?.isSuccess === true) {
+					if (response.data?.success === true) {
 						toast.success("BCAN Application Successful", "You can now trade in the Stock Exchange of Hong Kong (HKEX).");
 						const updatedInfo = await getTradingInfo();
 						if (updatedInfo.success && updatedInfo.data) {
@@ -201,11 +214,14 @@ const TradingDeclartions = () => {
 		setAlertOpen(true);
 	};
 
-	// SIP: toDisplay=false => inactive; toDisplay=true + passed=true => success; else => inactive
+	// SIP: !toDisplay || !isPassed => inactive; expireDate past => expired; within 90d => expiring; else => success
 	const getSipStatus = (): DeclarationStatus => {
-		if (!tradingInfo?.sip.toDisplay) return "inactive";
-		if (tradingInfo.sip.passed) return "success";
-		return "inactive";
+		if (!tradingInfo?.sip.toDisplay || !tradingInfo.sip.isPassed) return "inactive";
+		const days = getDaysUntilExpiry(tradingInfo.sip.expireDate);
+		if (days === null) return "inactive";
+		if (days <= 0) return "expired";
+		if (days <= 90) return "expiring";
+		return "success";
 	};
 
 	// W8BEN: toDisplay=false => inactive; else by expireDate: >90d => success, 1-90d => expiring, <=0d => expired
@@ -218,18 +234,16 @@ const TradingDeclartions = () => {
 		return "expired";
 	};
 
-	// CRS: toDisplay=false => inactive; toDisplay=true => success
+	// CRS: certified => success; else => inactive
 	const getCrsStatus = (): DeclarationStatus => {
-		if (!tradingInfo?.crs.toDisplay) return "inactive";
-		return "success";
+		if (tradingInfo?.crs.certified) return "success";
+		return "inactive";
 	};
 
-	// BCAN: toDisplay=false => inactive; "Enabled" => success; "Requested on ..." => processing; null => not-eligible
+	// BCAN: toDisplay=true => active; toDisplay=false => inactive
 	const getBcanStatus = (): DeclarationStatus => {
-		if (!tradingInfo?.bcan.toDisplay) return "inactive";
-		if (tradingInfo.bcan.requestStatus === "Enabled") return "success";
-		if (tradingInfo.bcan.requestStatus?.startsWith("Requested on")) return "processing";
-		return "not-eligible";
+		if (tradingInfo?.bcan.toDisplay) return "success";
+		return "inactive";
 	};
 
 	const sipStatus = getSipStatus();
@@ -237,20 +251,41 @@ const TradingDeclartions = () => {
 	const crsStatus = getCrsStatus();
 	const bcanStatus = getBcanStatus();
 
+	const getSipExpDisplay = (): string => {
+		if (sipStatus === "inactive") return "-";
+		const dateStr = formatDate(tradingInfo?.sip.expireDate ?? null);
+		if (!sipSubmission) return dateStr;
+		const { isCKA, isCAR } = sipSubmission;
+		if (isCKA && isCAR) return `${dateStr} (CKA, CAR)`;
+		if (isCKA) return `${dateStr} (CKA Only)`;
+		if (isCAR) return `${dateStr} (CAR Only)`;
+		return dateStr;
+	};
+
 	const handleEW8Click = () => {
 		if (ew8Url) {
 			redirectToSSO(ew8Url);
+			setEw8Url(null);
 		} else {
 			redirectToEW8();
 		}
+		// Prefetch fresh URL for next click
+		getEW8SSO().then((res) => {
+			if (res.success && res.data) setEw8Url(res.data.redirectUrl);
+		});
 	};
 
 	const handleECRSClick = () => {
 		if (ecrsUrl) {
 			redirectToSSO(ecrsUrl);
+			setEcrsUrl(null);
 		} else {
 			redirectToECRS();
 		}
+		// Prefetch fresh URL for next click
+		getECRSSSO().then((res) => {
+			if (res.success && res.data) setEcrsUrl(res.data.redirectUrl);
+		});
 	};
 
 	const items: DeclarationItem[] = [
@@ -258,24 +293,22 @@ const TradingDeclartions = () => {
 			id: "sip",
 			title: "SIP",
 			status: sipStatus,
-			exp: "-",
+			exp: getSipExpDisplay(),
 			tooltipContent: (
 				<p>
 					Required to trade Listed/ Unlisted Specified Investment Products (SIPs), clients must
 					complete a declaration to assess their investment knowledge or experience.
 				</p>
 			),
-			button: sipStatus === "inactive" && tradingInfo?.sip.toDisplay
-				? {
-					label: "Declare Now",
-					onClick: () => {
-						window.open(
-							"https://stgitrade.cgsi.com.sg/app/common.home.sip.z",
-							"_blank"
-						);
-					},
-				}
-				: null,
+			button: {
+				label: sipStatus === "inactive" ? "Declare Now" : "Renew",
+				onClick: () => {
+					window.open(
+						"https://stgitrade.cgsi.com.sg/app/common.home.sip.z",
+						"_blank"
+					);
+				},
+			},
 		},
 		{
 			id: "w8ben",
@@ -296,14 +329,15 @@ const TradingDeclartions = () => {
 			id: "bcan",
 			title: "BCAN",
 			status: bcanStatus,
-			exp: "-",
+			exp: "NIL",
 			tooltipContent:
 				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
-			button: {
-				label: "Declare Now",
-				onClick: bcanStatus === "inactive" || bcanStatus === "not-eligible" || bcanStatus === "processing" ? undefined : handleBcanDeclare,
-				disabled: bcanStatus === "processing" || bcanStatus === "not-eligible",
-			},
+			button: bcanStatus === "success"
+				? null
+				: {
+					label: "Declare Now",
+					onClick: handleBcanDeclare,
+				},
 		},
 		{
 			id: "crs",
@@ -380,17 +414,23 @@ const TradingDeclartions = () => {
 									<TooltipContent side="bottom" className="z-[110]">{item.tooltipContent}</TooltipContent>
 								</Tooltip>
 							</div>
-							{item.button && (
+							{item.button ? (
 								<Button
 									onClick={item.button.onClick}
 									disabled={item.button.disabled}
 									variant={"outline"}
-									className="text-cgs-blue border-cgs-blue text-sm h-8 px-3 hover:bg-white hover:text-cgs-blue/75 hover:border-cgs-blue/75 disabled:cursor-not-allowed disabled:opacity-50"
+									className="text-cgs-blue !border-cgs-blue text-sm h-8 px-3 hover:bg-white hover:text-cgs-blue/75 hover:!border-cgs-blue/75 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									{item.button.label}
 									<ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />
 								</Button>
-							)}
+							) : item.id === "bcan" && item.status === "success" ? (
+								<span className="flex items-center gap-1 text-sm text-gray-400">
+									<EyeOff className="size-4" />
+									Declare Now
+									<ChevronRight className="size-4 -ml-0.5" />
+								</span>
+							) : null}
 						</div>
 
 						<div className="flex items-center justify-between gap-2 mt-4">
