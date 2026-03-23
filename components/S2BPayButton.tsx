@@ -91,7 +91,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					let readyFired = false;
 
 					const S2B_LIGHTBOX_SELECTORS =
-						"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox";
+						"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox, #s2bpayv2-s2bpay-lightbox-background";
 
 					const hasS2BLightbox = () => document.querySelector(S2B_LIGHTBOX_SELECTORS);
 
