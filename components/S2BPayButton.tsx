@@ -90,15 +90,32 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					let lightboxAppeared = false;
 					let readyFired = false;
 
-					const hasS2BLightbox = () =>
-						document.querySelector(
-							"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox"
-						);
+					const S2B_LIGHTBOX_SELECTORS =
+						"#s2bpayv2-s2bpay-lightbox-container, #s2bpay-lightbox-container, #s2bpay-lightbox";
+
+					const hasS2BLightbox = () => document.querySelector(S2B_LIGHTBOX_SELECTORS);
+
+					const forceCloseLightbox = () => {
+						document.querySelectorAll(S2B_LIGHTBOX_SELECTORS).forEach((el) => el.remove());
+						document.querySelectorAll(".s2bpay-container-center").forEach((el) => el.remove());
+						fireClose();
+					};
+
+					// Attach manual close handler to S2B's close button when it appears
+					const attachCloseHandler = () => {
+						const closeBtn = document.getElementById("s2bpay-lightbox-close-button");
+						if (closeBtn && !closeBtn.dataset.manualClose) {
+							closeBtn.dataset.manualClose = "true";
+							closeBtn.style.cursor = "pointer";
+							closeBtn.addEventListener("click", forceCloseLightbox);
+						}
+					};
 
 					let closeDebounce: ReturnType<typeof setTimeout> | null = null;
 
 					// Watch for lightbox appearance (onReady) and disappearance (fallback onClose)
 					const lightboxObserver = new MutationObserver(() => {
+						attachCloseHandler();
 						const lightbox = hasS2BLightbox();
 
 						if (lightbox) {
