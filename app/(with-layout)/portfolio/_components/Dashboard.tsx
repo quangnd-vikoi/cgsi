@@ -358,7 +358,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatCurrency(accountSummary?.cashCall, "SGD", "negative-only")}
 						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
-						showPayButton
+						showPayButton={!!accountSummary?.cashCall && accountSummary.cashCall !== 0}
 						onPay={() => setShowPaymentModel(true)}
 					/>
 				),
@@ -379,7 +379,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatCurrency(accountSummary?.cashCall, "SGD", "negative-only")}
 						type={cashCallColor(accountSummary?.tradeLimit, accountSummary?.cashCall)}
 						isLoading={isLoading}
-						showPayButton
+						showPayButton={!!accountSummary?.cashCall && accountSummary.cashCall !== 0}
 						onPay={() => setShowPaymentModel(true)}
 					/>
 				),
@@ -419,19 +419,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 					</Link>
 				</div>
 			)}
-			{["SBL", "MTA"].includes(type) && (
-				<div className="flex w-full justify-end">
-					<Button
-						variant={"ghost"}
-						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75 hover:bg-transparent p-0 h-fit"
-						onClick={() => setShowPaymentModel(true)}
-					>
-						<p>Fund Account</p>
-						<ChevronRight className="inline-block ml-0.5" size={16} />
-					</Button>
-				</div>
-			)}
-
+	
 			<PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
 
 			<div className="mt-6">
