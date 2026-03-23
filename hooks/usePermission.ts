@@ -40,7 +40,9 @@ export function usePermission(allowedTypes: readonly USER_TYPE[] | null): Permis
  * Routes not in ROUTE_ACCESS default to null (all authenticated allowed).
  */
 export function useRoutePermission(pathname: string): PermissionResult {
-	const allowedTypes = pathname in ROUTE_ACCESS ? ROUTE_ACCESS[pathname] : null;
+	// Normalize: strip trailing slash for lookup (trailingSlash: true in next.config)
+	const normalized = pathname !== "/" && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+	const allowedTypes = normalized in ROUTE_ACCESS ? ROUTE_ACCESS[normalized] : null;
 	return usePermission(allowedTypes);
 }
 

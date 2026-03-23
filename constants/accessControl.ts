@@ -117,6 +117,9 @@ export type Feature =
 	| "sidebar_my_subscriptions"
 	| "sidebar_corporate_action"
 	| "sidebar_estatement"
+	| "sidebar_update_mobile"
+	| "sidebar_update_email"
+	| "sidebar_update_signature"
 	| "trading_decl_sip"
 	| "trading_decl_w8ben"
 	| "trading_decl_bcan"
@@ -124,25 +127,30 @@ export type Feature =
 	| "trading_decl_ai"
 	| "discover_stock_research"
 	| "discover_research_articles"
-	| "discover_donations";
+	| "discover_donations"
+	| "portfolio_contracts_contra";
 
 export const FEATURE_ACCESS: Record<Feature, readonly USER_TYPE[] | null> = {
 	notification_bell: RETAIL_CORP,
 	header_portfolio_link: ALL_EXCEPT_DEMO,
 	sidebar_market_data: RETAIL_CORP,
 	sidebar_donations: RETAIL_CORP,
-	sidebar_trading_accounts: RETAIL_CORP,
+	sidebar_trading_accounts: ALL_EXCEPT_DEMO,
 	sidebar_trading_declarations: RETAIL_CORP,
-	sidebar_acknowledgements: RETAIL_CORP,
+	sidebar_acknowledgements: ALL_EXCEPT_DEMO,
 	sidebar_my_subscriptions: RETAIL_CORP,
 	sidebar_corporate_action: RETAIL_CORP,
 	sidebar_estatement: RETAIL_CORP,
+	sidebar_update_mobile: RETAIL_CORP,
+	sidebar_update_email: RETAIL_CORP,
+	sidebar_update_signature: RETAIL_CORP,
 	trading_decl_sip: RETAIL_CORP,
 	trading_decl_w8ben: RETAIL,
 	trading_decl_bcan: RETAIL,
 	trading_decl_crs: RETAIL,
 	trading_decl_ai: RETAIL,
-	discover_stock_research: RETAIL_CORP,
-	discover_research_articles: RETAIL_CORP,
+	discover_stock_research: ALL_EXCEPT_DEMO,
+	discover_research_articles: ALL_EXCEPT_DEMO,
 	discover_donations: RETAIL_CORP,
+	portfolio_contracts_contra: RETAIL_CORP,
 };

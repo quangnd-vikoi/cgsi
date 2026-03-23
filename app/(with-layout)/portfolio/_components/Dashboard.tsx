@@ -15,6 +15,8 @@ import { INTERNAL_ROUTES } from "@/constants/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAccountSummary } from "@/lib/services/portfolioService";
+import { usePermission } from "@/hooks/usePermission";
+import { FEATURE_ACCESS } from "@/constants/accessControl";
 
 type SignMode = "signed" | "unsigned" | "negative-only";
 
@@ -234,6 +236,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 	const accountType = selectedAccount?.accountType as PortfolioType | undefined;
 	const type = propType || accountType;
 	const router = useRouter();
+	const { isAllowed: showContractsContra } = usePermission(FEATURE_ACCESS.portfolio_contracts_contra);
 
 	const [showPaymentModel, setShowPaymentModel] = React.useState(false);
 	const [accountSummary, setAccountSummary] = React.useState<IAccountSummary | null>(null);
@@ -292,7 +295,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatCurrency(accountSummary?.contractsBuy)}
 						type={colorByValue(accountSummary?.contractsBuy)}
 						isLoading={isLoading}
-						showPayButton={!!accountSummary?.contractsBuy && accountSummary.contractsBuy !== 0}
+						showPayButton={showContractsContra && !!accountSummary?.contractsBuy && accountSummary.contractsBuy !== 0}
 						onPay={() => router.push(`${INTERNAL_ROUTES.SETTLE}?tab=contracts`)}
 					/>
 				),
@@ -313,7 +316,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 						amount={formatCurrency(accountSummary?.contraLoss)}
 						type={colorByValue(accountSummary?.contraLoss)}
 						isLoading={isLoading}
-						showPayButton={!!accountSummary?.contraLoss && accountSummary.contraLoss !== 0}
+						showPayButton={showContractsContra && !!accountSummary?.contraLoss && accountSummary.contraLoss !== 0}
 						onPay={() => router.push(`${INTERNAL_ROUTES.SETTLE}?tab=contra`)}
 					/>
 				),
@@ -408,7 +411,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 					</div>
 				)}
 			</div>
-			{type === "CTA" && (
+			{type === "CTA" && showContractsContra && (
 				<div className="flex w-full justify-end">
 					<Link
 						href={INTERNAL_ROUTES.SETTLE}
