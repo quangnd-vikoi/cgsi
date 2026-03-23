@@ -43,6 +43,7 @@ export const getUserProfile = async (): Promise<APIResponse<UserInfoResponse>> =
 			name: response.data.userName,
 			email: response.data.userEmail,
 			mobileNo: response.data.userMobile?.replace("|", ""),
+			userCategoryId: response.data.userCategory,
 		});
 	}
 

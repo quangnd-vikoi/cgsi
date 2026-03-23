@@ -17,6 +17,8 @@ import type { TradingInfoResponse, SIPSubmissionData } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { usePermissions } from "@/hooks/usePermission";
+import { FEATURE_ACCESS } from "@/constants/accessControl";
 
 type DeclarationStatus = "inactive" | "success" | "expiring" | "expired" | "processing" | "not-eligible";
 
@@ -33,6 +35,7 @@ interface DeclarationItem {
 	exp?: string;
 	tooltipContent: ReactNode;
 	button: DeclarationButton | null;
+	feature?: string;
 }
 
 const STATUS_LABEL: Record<DeclarationStatus, string> = {
@@ -77,6 +80,13 @@ const getDaysUntilExpiry = (dateString: string | null): number | null => {
 const TradingDeclartions = () => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
+	const { permissions: declPerms } = usePermissions({
+		trading_decl_sip: FEATURE_ACCESS.trading_decl_sip,
+		trading_decl_w8ben: FEATURE_ACCESS.trading_decl_w8ben,
+		trading_decl_bcan: FEATURE_ACCESS.trading_decl_bcan,
+		trading_decl_crs: FEATURE_ACCESS.trading_decl_crs,
+		trading_decl_ai: FEATURE_ACCESS.trading_decl_ai,
+	});
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [tradingInfo, setTradingInfo] = useState<TradingInfoResponse | null>(null);
@@ -292,6 +302,7 @@ const TradingDeclartions = () => {
 		{
 			id: "sip",
 			title: "SIP",
+			feature: "trading_decl_sip",
 			status: sipStatus,
 			exp: getSipExpDisplay(),
 			tooltipContent: (
@@ -313,6 +324,7 @@ const TradingDeclartions = () => {
 		{
 			id: "w8ben",
 			title: "W8-BEN",
+			feature: "trading_decl_w8ben",
 			status: w8benStatus,
 			exp: formatDate(tradingInfo?.w8ben.expireDate ?? null),
 			tooltipContent: (
@@ -328,6 +340,7 @@ const TradingDeclartions = () => {
 		{
 			id: "bcan",
 			title: "BCAN",
+			feature: "trading_decl_bcan",
 			status: bcanStatus,
 			exp: "NIL",
 			tooltipContent:
@@ -342,6 +355,7 @@ const TradingDeclartions = () => {
 		{
 			id: "crs",
 			title: "CRS",
+			feature: "trading_decl_crs",
 			status: crsStatus,
 			exp: formatDate(tradingInfo?.crs.validationDate ?? null),
 			tooltipContent:
@@ -351,6 +365,7 @@ const TradingDeclartions = () => {
 		{
 			id: "accredited",
 			title: "Accredited Investor",
+			feature: "trading_decl_ai",
 			status: selectedAccount?.accreditedInvestor === "Yes" ? "success" : "inactive",
 			exp: "-",
 			tooltipContent: (
@@ -400,7 +415,7 @@ const TradingDeclartions = () => {
 			<CustomSheetTitle backTo={"profile"} title="Trading Declarations" />
 
 			<div className="w-full max-w-md space-y-4 mt-6">
-				{items.map((item, index) => (
+				{items.filter((item) => !item.feature || declPerms[item.feature as keyof typeof declPerms]).map((item, index, filtered) => (
 					<div key={item.id}>
 						<div className="flex items-center justify-between mb-2">
 							<div className="flex items-center gap-2 font-normal text-sm">
@@ -441,7 +456,7 @@ const TradingDeclartions = () => {
 							<span className="text-xs text-gray-400">Exp: {item.exp}</span>
 						</div>
 
-						{index < items.length - 1 && (
+						{index < filtered.length - 1 && (
 							<Separator className="my-4 bg-stroke-secondary" />
 						)}
 					</div>

@@ -447,6 +447,12 @@
 	}
 }
 
+/* Three-dot breathing loader */
+@keyframes dot-breathing {
+	0%, 100% { opacity: 0.2; transform: scale(0.8); }
+	50% { opacity: 1; transform: scale(1.2); }
+}
+
 /* S2B PayNow lightbox — force on top of all other layers */
 #s2bpayv2-s2bpay-lightbox-container,
 #s2bpay-lightbox-container,

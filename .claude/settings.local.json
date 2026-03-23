@@ -77,7 +77,13 @@
       "Bash(ls -la /D/cgsi/app/\\\\\\(with-layout\\\\\\)/\\\\\\(detail\\\\\\)/)",
       "Bash(cat -A \"D:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\portfolio\\\\_components\\\\Dashboard.tsx\")",
       "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/TradingDeclartions.tsx\")",
-      "Bash(ls -la /d/cgsi/app/\\\\\\(minimal\\\\\\)/sidebar/)"
+      "Bash(ls -la /d/cgsi/app/\\\\\\(minimal\\\\\\)/sidebar/)",
+      "Bash(ls -la \"/d/cgsi/app/\\(with-layout\\)/portfolio/\")",
+      "Bash(ls -la \"/d/cgsi/app/\\(with-layout\\)/portfolio/_components/\")",
+      "Bash(find /d/cgsi -type f \\\\\\(-name *middleware* -o -name *route* -o -name *guard* \\\\\\) ! -path */node_modules/*)",
+      "Bash(find /d/cgsi -type f \\\\\\(-name *guard* -o -name *middleware* -o -name *protected* \\\\\\))",
+      "Bash(ls \"D:/cgsi/app/\\(with-layout\\)/\\(home\\)/\")",
+      "Bash(ls \"D:/cgsi/app/\\(with-layout\\)/\")"
     ],
     "deny": [],
     "ask": []
