@@ -277,6 +277,7 @@ export interface IUserMarketSubscription {
 	groupId: string;
 	groupTitle: string;
 	groupType: string;
+	groupImageUrl?: string;
 	subscriptionId: string;
 	description: string;
 	start: string; // ISO date

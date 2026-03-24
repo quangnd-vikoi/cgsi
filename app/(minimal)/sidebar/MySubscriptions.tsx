@@ -143,7 +143,7 @@ const MySubscriptions = () => {
 					title: sub.groupTitle,
 					description: sub.description || sub.groupType || "",
 					endDate: formatDate(sub.end, "N/A"),
-					image: getSubscriptionImage(sub.groupTitle || ""),
+					image: sub.groupImageUrl || getSubscriptionImage(sub.groupTitle || ""),
 					status: determineMarketDataStatus(sub),
 					subscriptionId: sub.subscriptionId,
 					type: "marketData" as const,
