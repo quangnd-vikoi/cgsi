@@ -19,9 +19,10 @@ import {
 } from "lucide-react";
 import { JSX, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
-import { CGSI } from "@/constants/routes";
+import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
 import Group from "./_components/Group"; // Import component Group
 import { getBgImageClass } from "@/lib/utils";
 import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/ssoService";
@@ -119,6 +120,19 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 };
 
 const Profile = () => {
+	const pathname = usePathname();
+	const router = useRouter();
+	const closeSheet = useSheetStore((state) => state.closeSheet);
+
+	const handleNavigateToMarketData = () => {
+		closeSheet();
+		if (pathname === INTERNAL_ROUTES.MARKET_DATA) {
+			window.dispatchEvent(new Event("market-data:reset"));
+		} else {
+			router.push(INTERNAL_ROUTES.MARKET_DATA);
+		}
+	};
+
 	const handleLogout = () => {
 		authService.logout();
 	};
@@ -160,7 +174,7 @@ const Profile = () => {
 			{
 				icon: <Box strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Market Data & Add-Ons",
-				href: "/market-data",
+				onClick: handleNavigateToMarketData,
 			},
 			{
 				icon: <Boxes strokeWidth={ICON_STROKE_WIDTH} />,

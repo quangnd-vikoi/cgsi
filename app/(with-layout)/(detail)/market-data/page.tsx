@@ -73,15 +73,6 @@ const MarketData = () => {
 	const [currentStep, setCurrentStep] = useState<Step>("select");
 	const [selectedItems, setSelectedItems] = useState<IMarketDataItem[]>([]);
 
-	// Reset to catalog when triggered from MySubscriptions sheet
-	useEffect(() => {
-		const handleReset = () => {
-			setCurrentStep("select");
-			setSelectedItems([]);
-		};
-		window.addEventListener("market-data:reset", handleReset);
-		return () => window.removeEventListener("market-data:reset", handleReset);
-	}, []);
 	const [catalog, setCatalog] = useState<IMarketSubscriptionCatalog | null>(null);
 	const [catalogLoading, setCatalogLoading] = useState(true);
 	const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -105,6 +96,17 @@ const MarketData = () => {
 
 	useEffect(() => {
 		loadCatalog();
+	}, [loadCatalog]);
+
+	// Reset to catalog when triggered from MySubscriptions sheet
+	useEffect(() => {
+		const handleReset = () => {
+			setCurrentStep("select");
+			setSelectedItems([]);
+			loadCatalog();
+		};
+		window.addEventListener("market-data:reset", handleReset);
+		return () => window.removeEventListener("market-data:reset", handleReset);
 	}, [loadCatalog]);
 
 	// Pre-filter groups for each tab
@@ -190,6 +192,7 @@ const MarketData = () => {
 	const handleBackToCatalog = () => {
 		setSelectedItems([]);
 		setCurrentStep("select");
+		loadCatalog();
 	};
 
 	const calculateAmount = () => {
