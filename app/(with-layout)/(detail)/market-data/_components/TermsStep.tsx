@@ -11,8 +11,8 @@ import { toast } from "@/components/ui/toaster";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 import { submitMarketDataSubscription } from "@/lib/services/subscriptionService";
 import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
-import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI } from "@/constants/routes";
+import { injectAgreementFormValues } from "@/lib/injectAgreementFormValues";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -23,82 +23,12 @@ interface TermsStepProps {
     needsDeclaration: boolean;
 }
 
-const TEXT_FIELD_MAP: Record<string, keyof IMarketSubscriptionExtendedData> = {
-    SUBSCRIBER_NAME: "name",
-    SUBSCRIBER_ADDRESS: "address",
-    SUBSCRIBER_OCCUPATION: "occupation",
-    EMPLOYER_NAME: "employer",
-    EMPLOYER_ADDRESS: "employerAddress",
-    EMPLOYMENT_TITLE: "employmentTitle",
-    EMPLOYMENT_FUNCTION: "employmentFunction",
-};
-
-/**
- * Inject extendedData values into agreement HTML form fields:
- * - Text inputs (SUBSCRIBER_NAME, SUBSCRIBER_ADDRESS, etc.)
- * - Radio buttons (ANSWER_VALUE_01 through ANSWER_VALUE_11)
- * - Checkboxes (SECTION_CHECK_01, SECTION_CHECK_02)
- */
-function injectFormValues(html: string, data: IMarketSubscriptionExtendedData): string {
-    let result = html;
-
-    // Inject text input values
-    for (const [inputName, dataKey] of Object.entries(TEXT_FIELD_MAP)) {
-        const value = (data[dataKey] as string) ?? "";
-        // Match <INPUT ... name=FIELD_NAME ...> (with or without quotes/closing slash)
-        const regex = new RegExp(
-            `(<INPUT\\b[^>]*\\bname=["']?${inputName}["']?[^>]*?)(/?>)`,
-            "gi"
-        );
-        result = result.replace(regex, (_match, before, close) => {
-            // Remove any existing value attribute
-            const cleaned = before.replace(/\s+value=["'][^"']*["']/gi, "");
-            return `${cleaned} value="${value.replace(/"/g, "&quot;")}"${close}`;
-        });
-    }
-
-    // Inject radio button selections (ANSWER_VALUE_01 through ANSWER_VALUE_11)
-    for (let i = 1; i <= 11; i++) {
-        const num = String(i).padStart(2, "0");
-        const key = `value_${num}` as keyof IMarketSubscriptionExtendedData;
-        const selected = data[key] as boolean | undefined;
-
-        // Match both radio buttons for this question (value=true and value=false)
-        const radioRegex = new RegExp(
-            `(<INPUT\\b[^>]*\\bname=["']?ANSWER_VALUE_${num}["']?[^>]*?)(/?>)`,
-            "gi"
-        );
-        result = result.replace(radioRegex, (_match, before, close) => {
-            // Remove existing CHECKED attribute
-            let cleaned = before.replace(/\s+CHECKED\b/gi, "");
-            // Check if this radio's value matches the selected value
-            const valueMatch = before.match(/\bvalue=["']?(true|false)["']?/i);
-            if (valueMatch) {
-                const radioValue = valueMatch[1].toLowerCase() === "true";
-                if (radioValue === selected) {
-                    cleaned += " CHECKED";
-                }
-            }
-            return `${cleaned}${close}`;
-        });
-    }
-
-    // Check the section checkboxes (SECTION_CHECK_01, SECTION_CHECK_02)
-    const checkboxRegex = /(<INPUT\b[^>]*\bname=["']?SECTION_CHECK_\d+["']?[^>]*?)(\/?>)/gi;
-    result = result.replace(checkboxRegex, (_match, before, close) => {
-        let cleaned = before.replace(/\s+checked\b/gi, "");
-        return `${cleaned} checked${close}`;
-    });
-
-    return result;
-}
 
 const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents, extendedData, needsDeclaration }: TermsStepProps) => {
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
-    const { setOpenSheet } = useSheetStore();
 
     // Flatten all agreements from all subscriptions
     const allAgreements = agreements.flatMap((s) =>
@@ -251,7 +181,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                                 className="text-sm text-typo-secondary prose prose-sm max-w-none"
                                 dangerouslySetInnerHTML={{
                                     __html: needsDeclaration
-                                        ? injectFormValues(agreementContents[dialogAgreement.agreementId].htmlContent, extendedData)
+                                        ? injectAgreementFormValues(agreementContents[dialogAgreement.agreementId].htmlContent, extendedData)
                                         : agreementContents[dialogAgreement.agreementId].htmlContent,
                                 }}
                             />
