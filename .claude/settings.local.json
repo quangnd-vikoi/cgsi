@@ -77,7 +77,9 @@
       "Bash(ls -la /D/cgsi/app/\\\\\\(with-layout\\\\\\)/\\\\\\(detail\\\\\\)/)",
       "Bash(cat -A \"D:\\\\cgsi\\\\app\\\\\\(with-layout\\)\\\\portfolio\\\\_components\\\\Dashboard.tsx\")",
       "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/TradingDeclartions.tsx\")",
-      "Bash(ls -la /d/cgsi/app/\\\\\\(minimal\\\\\\)/sidebar/)"
+      "Bash(ls -la /d/cgsi/app/\\\\\\(minimal\\\\\\)/sidebar/)",
+      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/\")",
+      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/_components/\")"
     ],
     "deny": [],
     "ask": []
