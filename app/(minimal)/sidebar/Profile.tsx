@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { JSX, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { SheetType } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { CGSI, INTERNAL_ROUTES } from "@/constants/routes";
@@ -120,17 +120,13 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 };
 
 const Profile = () => {
-	const pathname = usePathname();
 	const router = useRouter();
 	const closeSheet = useSheetStore((state) => state.closeSheet);
 
 	const handleNavigateToMarketData = () => {
 		closeSheet();
-		if (pathname === INTERNAL_ROUTES.MARKET_DATA) {
-			window.dispatchEvent(new Event("market-data:reset"));
-		} else {
-			router.push(INTERNAL_ROUTES.MARKET_DATA);
-		}
+		window.dispatchEvent(new Event("market-data:reset"));
+		router.push(INTERNAL_ROUTES.MARKET_DATA);
 	};
 
 	const handleLogout = () => {
