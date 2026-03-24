@@ -77,7 +77,7 @@ const MySubscriptions = () => {
 	// 	);
 	//
 	// 	if (endDate < now) return "Expired";
-	// 	if (daysUntilExpiry <= 30) return "Expiring Soon";
+	// 	if (daysUntilExpiry <= 90) return "Expiring Soon";
 	// 	return "Active";
 	// };
 
@@ -116,7 +116,7 @@ const MySubscriptions = () => {
 		);
 
 		if (endDate < now) return "Expired";
-		if (daysUntilExpiry <= 30) return "Expiring Soon";
+		if (daysUntilExpiry <= 90) return "Expiring Soon";
 		return "Active";
 	};
 
