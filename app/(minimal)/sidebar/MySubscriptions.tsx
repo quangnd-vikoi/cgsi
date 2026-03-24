@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Alert from '@/components/Alert';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
@@ -64,6 +65,17 @@ const MySubscriptions = () => {
 	// State management
 	// const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
 	const { closeSheet } = useSheetStore();
+	const router = useRouter();
+	const pathname = usePathname();
+
+	const handleNavigateToMarketData = () => {
+		closeSheet();
+		if (pathname === INTERNAL_ROUTES.MARKET_DATA) {
+			window.dispatchEvent(new Event("market-data:reset"));
+		} else {
+			router.push(INTERNAL_ROUTES.MARKET_DATA);
+		}
+	};
 	const [marketDataSubs, setMarketDataSubs] = useState<IUserMarketSubscription[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -320,18 +332,20 @@ const MySubscriptions = () => {
                                                 <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200] px-0 py-1'>
                                                     {
                                                         item.status === "Expired" &&
-                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA} onClick={closeSheet}>
-                                                                Resubscribe
-                                                            </Link>
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
+                                                            onSelect={handleNavigateToMarketData}
+                                                        >
+                                                            Resubscribe
                                                         </DropdownMenuItem>
                                                     }
                                                     {
                                                         item.status === "Expiring Soon" &&
-                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA} onClick={closeSheet}>
-                                                                Extend Subscription
-                                                            </Link>
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
+                                                            onSelect={handleNavigateToMarketData}
+                                                        >
+                                                            Extend Subscription
                                                         </DropdownMenuItem>
                                                     }
                                                     {
