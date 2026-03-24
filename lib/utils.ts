@@ -25,9 +25,9 @@ export const handleCall = (phone: string) => {
 	window.location.href = `tel:${phone}`;
 };
 
-export const handleEmail = (email: string) => {
-	const subject = encodeURIComponent("iTrade Client Enquiry");
-	window.location.href = `mailto:${email}?subject=${subject}`;
+export const handleEmail = (email: string, subject?: string) => {
+	const encodedSubject = encodeURIComponent(subject ?? "iTrade Client Enquiry");
+	window.location.href = `mailto:${email}?subject=${encodedSubject}`;
 };
 
 export const handleOpenMap = (address: string) => {

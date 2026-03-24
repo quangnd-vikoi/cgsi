@@ -193,7 +193,7 @@ const TradingDeclartions = () => {
 						Complete and email the form to our Client Services team at{" "}
 						<button
 							type="button"
-							onClick={() => handleEmail("sg.clientservices@cgsi.com")}
+							onClick={() => handleEmail("sg.clientservices@cgsi.com", "Accredited Investor Declaration")}
 							className="text-cgs-blue font-medium underline underline-offset-2"
 						>
 							sg.clientservices@cgsi.com
@@ -240,9 +240,10 @@ const TradingDeclartions = () => {
 		return "inactive";
 	};
 
-	// BCAN: toDisplay=true => active; toDisplay=false => inactive
+	// BCAN: toDisplay=false => not-eligible; Enabled => success; else => inactive
 	const getBcanStatus = (): DeclarationStatus => {
-		if (tradingInfo?.bcan.toDisplay) return "success";
+		if (!tradingInfo?.bcan.toDisplay) return "not-eligible";
+		if (tradingInfo.bcan.requestStatus === "Enabled") return "success";
 		return "inactive";
 	};
 
@@ -329,15 +330,14 @@ const TradingDeclartions = () => {
 			id: "bcan",
 			title: "BCAN",
 			status: bcanStatus,
-			exp: "NIL",
+			exp: bcanStatus === "not-eligible" ? "-"
+				: tradingInfo?.bcan.requestStatus === "Enabled" ? "NIL"
+				: tradingInfo?.bcan.requestStatus ?? "-",
 			tooltipContent:
 				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
-			button: bcanStatus === "success"
-				? null
-				: {
-					label: "Declare Now",
-					onClick: handleBcanDeclare,
-				},
+			button: bcanStatus === "inactive" && !tradingInfo?.bcan.requestStatus
+				? { label: "Declare Now", onClick: handleBcanDeclare }
+				: null,
 		},
 		{
 			id: "crs",
@@ -424,10 +424,10 @@ const TradingDeclartions = () => {
 									{item.button.label}
 									<ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />
 								</Button>
-							) : item.id === "bcan" && item.status === "success" ? (
+							) : item.id === "bcan" && !item.button ? (
 								<span className="flex items-center gap-1 text-sm text-gray-400">
 									<EyeOff className="size-4" />
-									Declare Now
+									{item.status === "not-eligible" ? "Not Applicable" : "Declare Now"}
 									<ChevronRight className="size-4 -ml-0.5" />
 								</span>
 							) : null}

@@ -12,6 +12,8 @@ import { IAssetSummary, PortfolioType } from "@/types"
 import { ASSET_CLASS_LABELS } from "@/constants/accounts"
 import { Skeleton } from "@/components/ui/skeleton"
 
+const ASSET_CLASS_ORDER = ["E", "W", "B", "C", "O"]
+
 const ASSET_CLASS_COLORS: Record<string, string> = {
     E: "#003E86",
     W: "#005CC8",
@@ -31,14 +33,18 @@ export function ChartPie({ type = "CTA", assetList, isLoading = false }: ChartPi
 
     const chartData = React.useMemo(() => {
         if (!assetList || assetList.length === 0) return []
-        const total = assetList.reduce((sum, item) => sum + item.value, 0)
-        return assetList.map((item) => ({
-            asset: item.assetClass,
-            label: ASSET_CLASS_LABELS[item.assetClass] || item.assetClass,
-            value: item.value,
-            percentage: total > 0 ? (item.value / total) * 100 : 0,
-            fill: ASSET_CLASS_COLORS[item.assetClass] || "#D9E6FF",
-        }))
+        const nonZero = assetList.filter((item) => item.value !== 0)
+        if (nonZero.length === 0) return []
+        const total = nonZero.reduce((sum, item) => sum + item.value, 0)
+        return nonZero
+            .sort((a, b) => ASSET_CLASS_ORDER.indexOf(a.assetClass) - ASSET_CLASS_ORDER.indexOf(b.assetClass))
+            .map((item) => ({
+                asset: item.assetClass,
+                label: ASSET_CLASS_LABELS[item.assetClass] || item.assetClass,
+                value: item.value,
+                percentage: total > 0 ? (item.value / total) * 100 : 0,
+                fill: ASSET_CLASS_COLORS[item.assetClass] || "#D9E6FF",
+            }))
     }, [assetList])
 
     const chartConfig = React.useMemo(() => {

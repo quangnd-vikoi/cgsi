@@ -29,9 +29,12 @@ const formatCurrency = (value: number | undefined, currency = "SGD", mode: SignM
 	return `${prefix}${formatted} ${currency}`;
 };
 
+const toMarginPercent = (ratio?: number): number =>
+	ratio !== undefined && ratio !== null ? ratio * 100 : 0;
+
 const marginRatioColor = (ratio?: number): "success" | "error" | "normal" => {
 	if (ratio === undefined || ratio === null) return "normal";
-	return ratio < 125 ? "error" : "success";
+	return toMarginPercent(ratio) < 125 ? "error" : "success";
 };
 
 const cashCallColor = (tradeLimit?: number, cashCall?: number): "error" | "normal" => {
@@ -335,7 +338,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			{
 				id: 2,
 				gridArea: "2 / 1 / 3 / 2",
-				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${toMarginPercent(accountSummary?.marginRatio)}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
 			},
 			{
 				id: 3,
@@ -368,7 +371,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			{
 				id: 2,
 				gridArea: "1 / 1 / 2 / 3",
-				component: <DashboardBlock title="Margin Ratio" amount={`${accountSummary?.marginRatio ?? 0}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
+				component: <DashboardBlock title="Margin Ratio" amount={`${toMarginPercent(accountSummary?.marginRatio)}%`} type={marginRatioColor(accountSummary?.marginRatio)} isLoading={isLoading} />,
 			},
 			{
 				id: 3,
