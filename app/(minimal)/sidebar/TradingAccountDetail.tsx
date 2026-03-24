@@ -102,13 +102,18 @@ const TradingAccountDetail = () => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const [trInfo, setTrInfo] = useState<ITrInfo | null>(null);
 	const [isTrLoading, setIsTrLoading] = useState(false);
+	const fetchedAccountNo = React.useRef<string | null>(null);
 
 	useEffect(() => {
-		if (!selectedAccount?.accountNo) return;
+		const accountNo = selectedAccount?.accountNo;
+		if (!accountNo || accountNo === fetchedAccountNo.current) return;
+		fetchedAccountNo.current = accountNo;
+
 		const fetchTrInfo = async () => {
 			try {
 				setIsTrLoading(true);
-				const res = await getTradingRepInfoByAccount(selectedAccount.accountNo);
+				setTrInfo(null);
+				const res = await getTradingRepInfoByAccount(accountNo);
 				if (res.success && res.data && res.data.length > 0) {
 					setTrInfo(res.data[0]);
 				}

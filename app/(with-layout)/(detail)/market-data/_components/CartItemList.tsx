@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import Image from "@/components/Image";
+import SubscriptionThumbnail from "@/components/SubscriptionThumbnail";
 import { Separator } from "@/components/ui/separator";
 import { ErrorState } from "@/components/ErrorState";
 import Alert from "@/components/Alert";
@@ -49,15 +50,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                 {selectedItems.map((item, index) => (
                     <div key={index}>
                         <div className="flex gap-4 py-3">
-                            <div className="w-[44px] h-[44px] shrink-0">
-                                <Image
-                                    src={item.image}
-                                    alt={item.title}
-                                    width={44}
-                                    height={44}
-                                    className="w-full h-full object-cover rounded-md"
-                                />
-                            </div>
+                            <SubscriptionThumbnail src={item.image} alt={item.title} />
 
                             <div className="flex-1 space-y-1">
                                 <div className="flex justify-between items-start">

@@ -41,7 +41,7 @@ export const profileEndpoints = {
 	 * );
 	 */
 	trInfoByAccount: (accountNo?: string) =>
-		`/profile/api/v1/internal/trInfo${accountNo ? `?accountNo=${accountNo}` : ""}`,
+		`/profile/api/v1/trInfo${accountNo ? `?accountNo=${accountNo}` : ""}`,
 
 	/**
 	 * Get User Profile (Internal)

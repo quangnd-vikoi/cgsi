@@ -1,6 +1,6 @@
 "use client"
-import Image from '@/components/Image'
 import React, { useState } from 'react'
+import SubscriptionThumbnail from '@/components/SubscriptionThumbnail'
 
 import {
     Select,
@@ -62,9 +62,7 @@ const MarketItem = ({ title, image, description, dropDownItems, defaultSelected,
                 )}
             >
                 <div className="flex gap-4 w-full overflow-hidden">
-                    <div className="shrink-0 bg-background-section rounded w-[44px] h-[44px] flex items-center justify-center overflow-hidden">
-                        <Image src={image} alt={title} width={44} height={44} className="object-contain" />
-                    </div>
+                    <SubscriptionThumbnail src={image} alt={title} />
                     <div className="text-left min-w-0 flex-1">
                         <p className="text-sm font-semibold text-typo-primary truncate">{title}</p>
                         <p className={cn('text-xs mt-1', isSelected ? 'text-cgs-blue' : 'text-status-success')}>
@@ -114,9 +112,7 @@ const MarketItem = ({ title, image, description, dropDownItems, defaultSelected,
         <Select open={open} onOpenChange={handleOpenChange}>
             <SelectTrigger className={cn('w-full flex justify-between items-center border border-stroke-secondary p-4 rounded group cursor-pointer py-4 !h-auto', selectedItem ? 'bg-background-selected hover:bg-background-selected border-cgs-blue' : '')}>
                 <div className="flex gap-4 w-full overflow-hidden">
-                    <div className="shrink-0 bg-background-section rounded w-[44px] h-[44px] flex items-center justify-center overflow-hidden">
-                        <Image src={image} alt={title} width={44} height={44} className="object-contain" />
-                    </div>
+                    <SubscriptionThumbnail src={image} alt={title} />
 
                     <div className="text-left min-w-0 flex-1">
                         <p className="text-sm font-semibold text-typo-primary truncate">{title}</p>

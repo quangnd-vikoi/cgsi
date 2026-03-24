@@ -110,7 +110,7 @@ const UserProfile = () => {
 					<Button
 						onClick={() => handleUpdateClick("signature")}
 						variant="outline"
-						className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit"
+						className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit hover:bg-cgs-blue/10 hover:text-cgs-blue"
 					>
 						Upload Document
 						<FileUp className="w-4 h-4" />

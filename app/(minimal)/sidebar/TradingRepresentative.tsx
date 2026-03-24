@@ -106,8 +106,12 @@ const TradingList = ({ representatives }: TradingListProps) => {
 const TradingRepresentative = () => {
 	const [representatives, setRepresentatives] = useState<ITrInfo[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const hasFetched = React.useRef(false);
 
 	useEffect(() => {
+		if (hasFetched.current) return;
+		hasFetched.current = true;
+
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);

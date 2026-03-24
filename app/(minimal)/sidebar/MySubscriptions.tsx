@@ -3,7 +3,7 @@ import CustomSheetTitle from './_components/CustomSheetTitle'
 import { ErrorState } from '@/components/ErrorState'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import Image from '@/components/Image';
+import SubscriptionThumbnail from '@/components/SubscriptionThumbnail';
 import { Badge } from '@/components/ui/badge';
 import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass, Loader2 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
@@ -308,13 +308,7 @@ const MySubscriptions = () => {
                                     key={index}
                                     className="flex gap-3 py-4"
                                 >
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        height={44}
-                                        width={44}
-                                        className="w-11 h-11 rounded"
-                                    />
+                                    <SubscriptionThumbnail src={item.image} alt={item.title} />
 
                                     <div className="flex-1 text-left">
                                         <div className="flex justify-between items-start">

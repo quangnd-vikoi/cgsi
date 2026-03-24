@@ -63,7 +63,15 @@ interface IProfileMenuItem {
 	isLoading?: boolean;
 }
 
-const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
+const MenuItem = ({
+	item,
+	isFirst,
+	isLast,
+}: {
+	item: IProfileMenuItem;
+	isFirst?: boolean;
+	isLast?: boolean;
+}) => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const [isProcessing, setIsProcessing] = useState(false);
 
@@ -82,6 +90,14 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 
 	const isLoading = isProcessing || item.isLoading;
 
+	const roundedClass = isFirst && isLast
+		? "rounded rounded-tl-none"
+		: isFirst
+			? "rounded-t rounded-tl-none"
+			: isLast
+				? "rounded-b"
+				: "";
+
 	const content = (
 		<>
 			<div className="flex gap-4 items-center text-typo-secondary">
@@ -97,7 +113,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	// Render Link for href items (without onClick)
 	if (item.href && !item.onClick) {
 		return (
-			<Link href={item.href} target={item.target || "_self"} onClick={() => setOpenSheet(null)} className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">
+			<Link href={item.href} target={item.target || "_self"} onClick={() => setOpenSheet(null)} className={`flex justify-between hover:bg-status-selected ${roundedClass} p-4 transition-colors`}>
 				{content}
 			</Link>
 		);
@@ -107,7 +123,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	if (item.onClick || item.sheet !== undefined) {
 		return (
 			<div
-				className={`flex justify-between cursor-pointer hover:bg-status-selected rounded p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
+				className={`flex justify-between cursor-pointer hover:bg-status-selected ${roundedClass} p-4 transition-colors ${isLoading ? "opacity-50 pointer-events-none cursor-wait" : ""}`}
 				onClick={handleClick}
 			>
 				{content}
@@ -116,7 +132,7 @@ const MenuItem = ({ item }: { item: IProfileMenuItem }) => {
 	}
 
 	// Fallback for items without actions
-	return <div className="flex justify-between hover:bg-status-selected rounded p-4 transition-colors">{content}</div>;
+	return <div className={`flex justify-between hover:bg-status-selected ${roundedClass} p-4 transition-colors`}>{content}</div>;
 };
 
 const Profile = () => {
@@ -239,7 +255,12 @@ const Profile = () => {
 				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => (
 					<Group key={title} title={title}>
 						{items.map((item, index) => (
-							<MenuItem key={index} item={item} />
+							<MenuItem
+								key={index}
+								item={item}
+								isFirst={index === 0}
+								isLast={index === items.length - 1}
+							/>
 						))}
 					</Group>
 				))}
