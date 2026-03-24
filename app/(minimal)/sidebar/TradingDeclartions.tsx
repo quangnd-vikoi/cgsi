@@ -244,6 +244,7 @@ const TradingDeclartions = () => {
 	const getBcanStatus = (): DeclarationStatus => {
 		if (!tradingInfo?.bcan.toDisplay) return "not-eligible";
 		if (tradingInfo.bcan.requestStatus === "Enabled") return "success";
+		if (tradingInfo.bcan.requestStatus?.startsWith("Requested")) return "processing";
 		return "inactive";
 	};
 
@@ -332,12 +333,16 @@ const TradingDeclartions = () => {
 			status: bcanStatus,
 			exp: bcanStatus === "not-eligible" ? "-"
 				: tradingInfo?.bcan.requestStatus === "Enabled" ? "NIL"
-				: tradingInfo?.bcan.requestStatus ?? "-",
+				: tradingInfo?.bcan.requestStatus?.startsWith("Requested")
+					? tradingInfo.bcan.requestStatus.replace("Requested on", "Requested on:")
+					: "-",
 			tooltipContent:
 				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
-			button: bcanStatus === "inactive" && !tradingInfo?.bcan.requestStatus
+			button: bcanStatus === "inactive"
 				? { label: "Declare Now", onClick: handleBcanDeclare }
-				: null,
+				: bcanStatus === "processing"
+					? { label: "Declare Now", onClick: handleBcanDeclare, disabled: true }
+					: null,
 		},
 		{
 			id: "crs",
