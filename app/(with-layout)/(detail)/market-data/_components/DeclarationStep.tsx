@@ -72,7 +72,7 @@ const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Declarati
             {/* Action Buttons */}
             <div className="border-t px-6 py-4">
                 <Button onClick={onConfirm} className="w-full rounded" disabled={!isValid}>
-                    Continue
+                    Checkout
                 </Button>
             </div>
         </div>

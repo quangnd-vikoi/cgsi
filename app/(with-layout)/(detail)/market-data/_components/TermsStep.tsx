@@ -12,6 +12,7 @@ import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox"
 import { submitMarketDataSubscription } from "@/lib/services/subscriptionService";
 import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
+import { CGSI } from "@/constants/routes";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -105,25 +106,30 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                     Terms & Conditions
                 </h2>
 
-                {allAgreements.length > 0 ? (
-                    <div className="border border-stroke-secondary rounded">
-                        {allAgreements.map((agreement, idx) => (
-                            <div key={agreement.agreementId}>
-                                {idx > 0 && <Separator />}
-                                <button
-                                    type="button"
-                                    className="w-full flex justify-between items-center p-4 cursor-pointer"
-                                    onClick={() => setDialogAgreement(agreement)}
-                                >
-                                    <p className="text-sm text-left">{agreement.subject}</p>
-                                    <ChevronRight size={16} className="text-cgs-blue shrink-0" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-typo-tertiary">No agreements required.</p>
-                )}
+                <div className="border border-stroke-secondary rounded">
+                    <a
+                        href={CGSI.GENERAL_TNC}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex justify-between items-center p-4 cursor-pointer"
+                    >
+                        <p className="text-sm text-left">General Terms & Conditions</p>
+                        <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                    </a>
+                    {allAgreements.map((agreement) => (
+                        <div key={agreement.agreementId}>
+                            <Separator />
+                            <button
+                                type="button"
+                                className="w-full flex justify-between items-center p-4 cursor-pointer"
+                                onClick={() => setDialogAgreement(agreement)}
+                            >
+                                <p className="text-sm text-left">{agreement.subject}</p>
+                                <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
 
                 <Separator className="my-6" />
 
@@ -156,7 +162,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                         className="w-full rounded"
                         disabled={submitting}
                     >
-                        {submitting ? <Loader2 className="animate-spin" /> : "Continue"}
+                        {submitting ? <Loader2 className="animate-spin" /> : "Subscribe"}
                     </Button>
                 </div>
             </div>

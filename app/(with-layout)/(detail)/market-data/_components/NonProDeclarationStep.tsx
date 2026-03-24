@@ -81,7 +81,7 @@ const NonProDeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Non
 
             <div className="border-t px-6 py-4">
                 <Button onClick={onConfirm} className="w-full rounded">
-                    Continue
+                    Checkout
                 </Button>
             </div>
         </div>

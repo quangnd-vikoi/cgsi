@@ -53,7 +53,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
                     onAction={handleRemoveAllItems}
                 />
                 <Button onClick={onCheckout} disabled={selectedItems.length === 0} className="px-3 rounded">
-                    Continue ({selectedItems.length})
+                    Checkout ({selectedItems.length})
                 </Button>
             </div>
         </div>
