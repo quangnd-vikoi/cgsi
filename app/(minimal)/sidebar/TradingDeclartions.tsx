@@ -154,7 +154,7 @@ const TradingDeclartions = () => {
 					}
 					const response = await createBcanRequest(accountNo);
 					if (response.data?.success === true) {
-						toast.success("BCAN Application Successful", "You can now trade in the Stock Exchange of Hong Kong (HKEX).");
+						toast.success("BCAN Application Submitted", "You can trade on the Hong Kong Stock Exchange (HKEX) once your application is approved.");
 						const updatedInfo = await getTradingInfo();
 						if (updatedInfo.success && updatedInfo.data) {
 							setTradingInfo(updatedInfo.data);
@@ -443,7 +443,9 @@ const TradingDeclartions = () => {
 								<StatusIcon status={item.status} />
 								{STATUS_LABEL[item.status]}
 							</Badge>
-							<span className="text-xs text-gray-400">Exp: {item.exp}</span>
+							<span className="text-xs text-gray-400">
+								{item.id === "bcan" && item.status === "processing" ? item.exp : `Exp: ${item.exp}`}
+							</span>
 						</div>
 
 						{index < items.length - 1 && (
