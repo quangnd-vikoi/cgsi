@@ -218,6 +218,7 @@ export interface IMarketSubscriptionItem {
 export interface IMarketSubscriptionGroup {
 	groupId: string;
 	groupTitle: string;
+	groupImageUrl?: string;
 	subscriptions: IMarketSubscriptionItem[];
 }
 

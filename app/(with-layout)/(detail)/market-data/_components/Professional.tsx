@@ -8,8 +8,8 @@ import { IMarketDataItem } from '../page';
 import type { IMarketSubscriptionGroup } from '@/types';
 import { Loader2 } from 'lucide-react';
 
-/** Static images cycled per group index */
-const GROUP_IMAGES = [
+/** Fallback images cycled per group index when API doesn't provide one */
+const FALLBACK_IMAGES = [
     "/images/market-data/item-1.png",
     "/images/market-data/item-2.png",
     "/images/market-data/item-3.png",
@@ -160,7 +160,7 @@ const Professional = ({
                                     key={group.groupId}
                                     title={group.groupTitle}
                                     description={groupDescription(group)}
-                                    image={GROUP_IMAGES[idx % GROUP_IMAGES.length]}
+                                    image={group.groupImageUrl || FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length]}
                                     dropDownItems={freeOnly ? undefined : groupToDropdownItems(group)}
                                     defaultSelected={findDefaultSelected(group, selectedItems)}
                                     freeOnly={freeOnly}
@@ -203,7 +203,7 @@ const Professional = ({
                                     key={group.groupId}
                                     title={group.groupTitle}
                                     description={groupDescription(group)}
-                                    image={GROUP_IMAGES[(researchGroups.length + idx) % GROUP_IMAGES.length]}
+                                    image={group.groupImageUrl || FALLBACK_IMAGES[(researchGroups.length + idx) % FALLBACK_IMAGES.length]}
                                     dropDownItems={freeOnly ? undefined : groupToDropdownItems(group)}
                                     defaultSelected={findDefaultSelected(group, selectedItems)}
                                     freeOnly={freeOnly}
