@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
+import { useSheetStore } from '@/stores/sheetStore';
 import type { /* UserProductSubscriptionDto, */ IUserMarketSubscription } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
@@ -62,6 +63,7 @@ const getSubscriptionImage = (category: string): string => {
 const MySubscriptions = () => {
 	// State management
 	// const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
+	const { closeSheet } = useSheetStore();
 	const [marketDataSubs, setMarketDataSubs] = useState<IUserMarketSubscription[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -319,7 +321,7 @@ const MySubscriptions = () => {
                                                     {
                                                         item.status === "Expired" &&
                                                         <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
+                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA} onClick={closeSheet}>
                                                                 Resubscribe
                                                             </Link>
                                                         </DropdownMenuItem>
@@ -327,7 +329,7 @@ const MySubscriptions = () => {
                                                     {
                                                         item.status === "Expiring Soon" &&
                                                         <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
+                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA} onClick={closeSheet}>
                                                                 Extend Subscription
                                                             </Link>
                                                         </DropdownMenuItem>
