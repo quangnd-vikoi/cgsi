@@ -2,11 +2,13 @@ import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { IMarketSubscriptionExtendedData } from "@/types";
 
 interface DeclarationStepProps {
     extendedData: IMarketSubscriptionExtendedData;
     setExtendedData: Dispatch<SetStateAction<IMarketSubscriptionExtendedData>>;
+    loading?: boolean;
     onConfirm: () => void;
 }
 
@@ -20,12 +22,13 @@ const FORM_FIELDS = [
     { id: "employmentFunction" as const, label: "Employment Functions" },
 ] as const;
 
-const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: DeclarationStepProps) => {
+const DeclarationStep = ({ extendedData, setExtendedData, loading, onConfirm }: DeclarationStepProps) => {
     const handleChange = (field: (typeof FORM_FIELDS)[number]["id"], value: string) => {
         setExtendedData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const isValid = extendedData.name.trim() !== "" &&
+    const isValid = !loading &&
+        extendedData.name.trim() !== "" &&
         extendedData.address.trim() !== "" &&
         extendedData.occupation.trim() !== "" &&
         (extendedData.employer?.trim() ?? "") !== "" &&
@@ -53,17 +56,21 @@ const DeclarationStep = ({ extendedData, setExtendedData, onConfirm }: Declarati
                                     <span className="text-status-error ml-0.5">*</span>
                                 )}
                             </Label>
-                            <Textarea
-                                id={field.id}
-                                name={field.id}
-                                className="mt-2 h-auto min-h-9 resize-none"
-                                rows={1}
-                                placeholder="Type Here"
-                                value={(extendedData[field.id] as string) ?? ""}
-                                onChange={(e) => handleChange(field.id, e.target.value)}
-                                readOnly={"readOnly" in field && field.readOnly}
-                                disabled={"readOnly" in field && field.readOnly}
-                            />
+                            {loading ? (
+                                <Skeleton className="mt-2 h-9 w-full" />
+                            ) : (
+                                <Textarea
+                                    id={field.id}
+                                    name={field.id}
+                                    className="mt-2 h-auto min-h-9 resize-none"
+                                    rows={1}
+                                    placeholder="Type Here"
+                                    value={(extendedData[field.id] as string) ?? ""}
+                                    onChange={(e) => handleChange(field.id, e.target.value)}
+                                    readOnly={"readOnly" in field && field.readOnly}
+                                    disabled={"readOnly" in field && field.readOnly}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>

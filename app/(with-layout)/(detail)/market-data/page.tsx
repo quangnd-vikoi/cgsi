@@ -23,9 +23,12 @@ import type {
 	ISubscriptionAgreement,
 	ISubscriptionAgreementContent,
 	IMarketSubscriptionExtendedData,
+	IDeclarationInfoResponse,
 } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useUserStore } from "@/stores/userStore";
+import { fetchAPI } from "@/lib/api/client";
+import { ENDPOINTS } from "@/lib/api/endpoints";
 
 export type Step =
 	| "select"
@@ -135,6 +138,7 @@ const MarketData = () => {
 		value_10: false,
 		value_11: false,
 	});
+	const [declarationLoading, setDeclarationLoading] = useState(false);
 	const { setOpenSheet } = useSheetStore();
 	const profile = useUserStore((s) => s.profile);
 
@@ -144,6 +148,25 @@ const MarketData = () => {
 			setExtendedData((prev) => ({ ...prev, name: profile.name! }));
 		}
 	}, [profile?.name]);
+
+	// Fetch declaration info to pre-populate declaration form
+	const fetchDeclarationInfo = useCallback(async () => {
+		setDeclarationLoading(true);
+		try {
+			const res = await fetchAPI<IDeclarationInfoResponse>(ENDPOINTS.declarationInfo(), { useAuth: true });
+			if (res.success && res.data) {
+				setExtendedData((prev) => ({
+					...prev,
+					address: res.data!.address ?? prev.address,
+					occupation: res.data!.occupation ?? prev.occupation,
+					employer: res.data!.employerName ?? prev.employer,
+					employerAddress: res.data!.employerAddress ?? prev.employerAddress,
+				}));
+			}
+		} finally {
+			setDeclarationLoading(false);
+		}
+	}, []);
 
 	const handleGoToCart = async () => {
 		setCurrentStep("cart");
@@ -293,9 +316,12 @@ const MarketData = () => {
 				<CartStep
 					selectedItems={selectedItems}
 					setSelectedItems={setSelectedItems}
-					onCheckout={() =>
-						setCurrentStep(needsDeclaration ? "declaration" : "terms-and-conditions")
-					}
+					onCheckout={() => {
+						if (needsDeclaration) {
+							fetchDeclarationInfo();
+						}
+						setCurrentStep(needsDeclaration ? "declaration" : "terms-and-conditions");
+					}}
 				/>
 			)}
 
@@ -304,6 +330,7 @@ const MarketData = () => {
 				<DeclarationStep
 					extendedData={extendedData}
 					setExtendedData={setExtendedData}
+					loading={declarationLoading}
 					onConfirm={() => setCurrentStep("non-pro-declaration")}
 				/>
 			)}

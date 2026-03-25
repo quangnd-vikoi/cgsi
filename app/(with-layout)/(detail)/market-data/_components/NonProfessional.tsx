@@ -6,7 +6,7 @@ import MarketItem from "./MarketItem";
 import { ErrorState } from '@/components/ErrorState';
 import { IMarketDataItem } from '../page';
 import type { IMarketSubscriptionGroup } from '@/types';
-import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /** Fallback images cycled per group index when API doesn't provide one */
 const FALLBACK_IMAGES = [
@@ -75,8 +75,16 @@ const NonProfessional = ({
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+            <div className="py-6 pad-x max-w-4xl mx-auto space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
+                        <Skeleton className="h-16 w-16 rounded-lg shrink-0" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-3/4" />
+                            <Skeleton className="h-3 w-1/3" />
+                        </div>
+                    </div>
+                ))}
             </div>
         );
     }

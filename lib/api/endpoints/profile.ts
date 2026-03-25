@@ -368,4 +368,20 @@ export const profileEndpoints = {
 	 * );
 	 */
 	updateSignatureSubmit: () => `/profile/api/v1/update/singnature/submit`,
+
+	/**
+	 * Get Declaration Info for Market Data Subscription
+	 *
+	 * GET /profile/api/v1/accounts/declarationInfo
+	 *
+	 * @returns DeclarationInfoResponse - Address, occupation, employer details
+	 * @requires Authentication - Bearer token (useAuth: true)
+	 *
+	 * @example
+	 * const response = await fetchAPI<DeclarationInfoResponse>(
+	 *   ENDPOINTS.declarationInfo(),
+	 *   { useAuth: true }
+	 * );
+	 */
+	declarationInfo: () => `/profile/api/v1/accounts/declarationInfo`,
 } as const;

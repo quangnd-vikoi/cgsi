@@ -238,6 +238,14 @@ export interface ISubscriptionAgreementContent {
 	url: string;
 }
 
+// Declaration Info API Response
+export interface IDeclarationInfoResponse {
+	address: string;
+	occupation: string;
+	employerName: string;
+	employerAddress: string;
+}
+
 // Market Data Subscription Submission Types (v4)
 export interface IMarketSubscriptionExtendedData {
 	name: string;
