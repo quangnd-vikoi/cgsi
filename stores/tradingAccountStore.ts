@@ -6,9 +6,12 @@ interface TradingAccountStore {
 	accounts: TradingAccount[];
 	selectedAccount: TradingAccount | null;
 	isInitialized: boolean;
+	isTRClientAccount: boolean;
 	setAccounts: (accounts: TradingAccount[]) => void;
 	setSelectedAccount: (account: TradingAccount | null) => void;
 	updateSelectedAccount: (updates: Partial<TradingAccount>) => void;
+	setTRClientAccount: (account: TradingAccount) => void;
+	clearTRClientAccount: () => void;
 	getAccounts: () => TradingAccount[];
 	getAccountById: (accountNo: string) => TradingAccount | undefined;
 	getDefaultAccountNo: () => string | null;
@@ -21,8 +24,15 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 	accounts: [],
 	selectedAccount: null,
 	isInitialized: false,
+	isTRClientAccount: false,
 	setAccounts: (accounts) => set({ accounts, isInitialized: true }),
-	setSelectedAccount: (account) => set({ selectedAccount: account }),
+	setSelectedAccount: (account) => set({ selectedAccount: account, isTRClientAccount: false }),
+	setTRClientAccount: (account) => set({ selectedAccount: account, isTRClientAccount: true }),
+	clearTRClientAccount: () => {
+		const defaultNo = get().getDefaultAccountNo();
+		const defaultAccount = defaultNo ? get().getAccountById(defaultNo) : null;
+		set({ selectedAccount: defaultAccount ?? null, isTRClientAccount: false });
+	},
 	updateSelectedAccount: (updates) => {
 		const { selectedAccount } = get();
 		if (selectedAccount) {
@@ -74,5 +84,6 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 			accounts: [],
 			selectedAccount: null,
 			isInitialized: false,
+			isTRClientAccount: false,
 		}),
 }));

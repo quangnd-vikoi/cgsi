@@ -14,6 +14,9 @@ import { BorrowedShares } from "./_components/BorrowedShares";
 import { LoanedShares } from "./_components/LoanedShares";
 import { ExchangeRateTable } from "./_components/ExchangeRateTable";
 import { PortfolioType } from "@/types";
+import { usePermission } from "@/hooks/usePermission";
+import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { USER_TYPE } from "@/constants/accessControl";
 const DevelopmentBanner = () => {
 	return (
 		<div className="bg-white shadow-light-blue px-4 py-3 border-b rounded w-full">
@@ -107,6 +110,9 @@ const DevelopmentBanner = () => {
 
 const Portfolio = () => {
 	const [type, setType] = React.useState<PortfolioType>("CTA");
+	const { userType } = usePermission(null);
+	const isTRClientAccount = useTradingAccountStore((s) => s.isTRClientAccount);
+	const showFullPortfolio = userType !== USER_TYPE.TR || isTRClientAccount;
 
 	return (
 		<div className="bg-background-section py-6">
@@ -117,14 +123,18 @@ const Portfolio = () => {
 				<div className="flex flex-col gap-6 mt-6">
 					<Dashboard type={type} onTypeChange={setType} />
 
-					<CashBalance />
-
-					<HoldingPosition type={type} />
-
-					{type === "SBL" && (
+					{showFullPortfolio && (
 						<>
-							<BorrowedShares />
-							<LoanedShares />
+							<CashBalance />
+
+							<HoldingPosition type={type} />
+
+							{type === "SBL" && (
+								<>
+									<BorrowedShares />
+									<LoanedShares />
+								</>
+							)}
 						</>
 					)}
 				</div>

@@ -16,7 +16,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAccountSummary } from "@/lib/services/portfolioService";
 import { usePermission } from "@/hooks/usePermission";
-import { FEATURE_ACCESS } from "@/constants/accessControl";
+import { FEATURE_ACCESS, USER_TYPE } from "@/constants/accessControl";
+import TRAccountSearchDialog from "./TRAccountSearchDialog";
 
 type SignMode = "signed" | "unsigned" | "negative-only";
 
@@ -97,10 +98,17 @@ const DashboardBlock = ({
 	);
 };
 
-const TypeSelect = ({ totalAsset, fullWidth, isLoading = false }: { totalAsset: number; fullWidth?: boolean; isLoading?: boolean }) => {
-	const { accounts, selectedAccount, setSelectedAccount } = useTradingAccountStore();
+const TypeSelect = ({ totalAsset, fullWidth, isLoading = false, isTR = false }: { totalAsset: number; fullWidth?: boolean; isLoading?: boolean; isTR?: boolean }) => {
+	const { accounts, selectedAccount, setSelectedAccount, setTRClientAccount, isTRClientAccount } = useTradingAccountStore();
 
-	const selectEl = (
+	const selectEl = isTR ? (
+		<TRAccountSearchDialog
+			onSelectAccount={setTRClientAccount}
+			selectedAccount={selectedAccount}
+			isTRClientAccount={isTRClientAccount}
+			fullWidth={fullWidth}
+		/>
+	) : (
 		<Select
 			value={selectedAccount?.accountNo}
 			onValueChange={(value) => {
@@ -235,11 +243,12 @@ const DashboardSkeleton = () => (
 );
 
 const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
-	const { selectedAccount, accounts } = useTradingAccountStore();
+	const { selectedAccount, accounts, isTRClientAccount } = useTradingAccountStore();
 	const accountType = selectedAccount?.accountType as PortfolioType | undefined;
 	const type = propType || accountType;
 	const router = useRouter();
-	const { isAllowed: showContractsContra } = usePermission(FEATURE_ACCESS.portfolio_contracts_contra);
+	const { isAllowed: showContractsContra, userType } = usePermission(FEATURE_ACCESS.portfolio_contracts_contra);
+	const isTR = userType === USER_TYPE.TR;
 
 	const [showPaymentModel, setShowPaymentModel] = React.useState(false);
 	const [accountSummary, setAccountSummary] = React.useState<IAccountSummary | null>(null);
@@ -278,7 +287,9 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 	const colorByValue = (value?: number): "success" | "error" | "normal" =>
 		value === undefined || value === null ? "normal" : value < 0 ? "error" : value > 0 ? "success" : "normal";
 
-	if (accounts.length === 0 || !type) return <DashboardSkeleton />;
+	if (!isTR && (accounts.length === 0 || !type)) return <DashboardSkeleton />;
+
+	const trNoClient = isTR && !isTRClientAccount;
 
 	const layoutConfig = {
 		CTA: [
@@ -395,16 +406,17 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 		iCash: [],
 	};
 
-	const currentLayout = layoutConfig[type] ?? [];
+	const currentLayout = trNoClient ? [] : (layoutConfig[type!] ?? []);
+	const isFullWidth = trNoClient || type === "iCash" || type === "CUT";
 
 	return (
 		<div className="bg-white pad-x py-6 rounded border border-stroke-secondary">
 			<div className="flex flex-col md:flex-row gap-4">
-				<div className={cn("w-full", type == "iCash" || type == "CUT" ? "" : "md:w-1/2")}>
-					<TypeSelect totalAsset={accountSummary?.totalAsset ?? 0} fullWidth={type === "iCash" || type === "CUT"} isLoading={isLoading} />
+				<div className={cn("w-full", !isFullWidth && "md:w-1/2")}>
+					<TypeSelect totalAsset={accountSummary?.totalAsset ?? 0} fullWidth={isFullWidth} isLoading={isLoading} isTR={isTR} />
 				</div>
 
-				{type != "iCash" && type != "CUT" && (
+				{!isFullWidth && (
 					<div className="grid gap-4 grid-cols-2 grid-rows-2 w-full md:w-1/2">
 						{currentLayout.map((item) => (
 							<div key={item.id} style={{ gridArea: item.gridArea }}>
@@ -414,7 +426,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 					</div>
 				)}
 			</div>
-			{type === "CTA" && showContractsContra && (
+			{!trNoClient && type === "CTA" && showContractsContra && (
 				<div className="flex w-full justify-end">
 					<Link
 						href={INTERNAL_ROUTES.SETTLE}
@@ -425,12 +437,14 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 					</Link>
 				</div>
 			)}
-	
+
 			<PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
 
-			<div className="mt-6">
-				<ChartPie type={type} assetList={accountSummary?.assetList} isLoading={isLoading} />
-			</div>
+			{!trNoClient && (
+				<div className="mt-6">
+					<ChartPie type={type} assetList={accountSummary?.assetList} isLoading={isLoading} />
+				</div>
+			)}
 		</div>
 	);
 };
