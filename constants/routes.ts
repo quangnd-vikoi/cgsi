@@ -15,6 +15,7 @@ export const CGSI = {
 	PRODUCT_SHARES_BORROWING: "https://www.cgsi.com.sg/our-offerings/products/stock-borrowing-and-lending?lang=EN",
 	PRODUCT_SHARIAH: "https://www.cgsi.com.sg/our-offerings/products/shariah-compliant-investments?lang=EN",
 	ITRADE_APPLICATION_FORMS: "https://www.cgsi.com.sg/info/itrade_application_forms?lang=EN",
+	GENERAL_TNC: "https://www.cgsi.com.sg/uploads/General_Terms_And_Conditions_Tn_C001_130725_bec2054368.pdf",
 
 	EVENT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/events/${id}&lang=EN`,
 	INSIGHT_BY_ID: (id: string): string => `https://www.cgsi.com.sg/insights/${id}&lang=EN`,

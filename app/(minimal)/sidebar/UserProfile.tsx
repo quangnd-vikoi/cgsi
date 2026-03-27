@@ -117,14 +117,15 @@ const UserProfile = () => {
 					<div className="space-y-3">
 						<Label>Signature</Label>
 						<p className="text-xs text-muted-foreground leading-relaxed pr-1">
-							Updating your signature will replace the existing one, or create a new record if none
-							exists. The signature will be stored securely but won&apos;t be visible after upload.
+							Updating your signature will replace the existing one, or create a new record if
+							none exists. The signature will be stored securely but won&apos;t be visible after
+							upload.
 						</p>
 
 						<Button
 							onClick={() => handleUpdateClick("signature")}
 							variant="outline"
-							className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit"
+							className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit hover:bg-cgs-blue/10 hover:text-cgs-blue"
 						>
 							Upload Document
 							<FileUp className="w-4 h-4" />

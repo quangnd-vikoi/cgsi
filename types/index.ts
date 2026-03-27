@@ -220,6 +220,7 @@ export interface IMarketSubscriptionItem {
 export interface IMarketSubscriptionGroup {
 	groupId: string;
 	groupTitle: string;
+	groupImageUrl?: string;
 	subscriptions: IMarketSubscriptionItem[];
 }
 
@@ -237,6 +238,14 @@ export interface ISubscriptionAgreement {
 export interface ISubscriptionAgreementContent {
 	htmlContent: string;
 	url: string;
+}
+
+// Declaration Info API Response
+export interface IDeclarationInfoResponse {
+	address: string;
+	occupation: string;
+	employerName: string;
+	employerAddress: string;
 }
 
 // Market Data Subscription Submission Types (v4)
@@ -278,6 +287,7 @@ export interface IUserMarketSubscription {
 	groupId: string;
 	groupTitle: string;
 	groupType: string;
+	groupImageUrl?: string;
 	subscriptionId: string;
 	description: string;
 	start: string; // ISO date

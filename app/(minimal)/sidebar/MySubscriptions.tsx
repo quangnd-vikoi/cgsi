@@ -3,7 +3,7 @@ import CustomSheetTitle from './_components/CustomSheetTitle'
 import { ErrorState } from '@/components/ErrorState'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import Image from '@/components/Image';
+import SubscriptionThumbnail from '@/components/SubscriptionThumbnail';
 import { Badge } from '@/components/ui/badge';
 import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass, Loader2 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Alert from '@/components/Alert';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
+import { useSheetStore } from '@/stores/sheetStore';
 import type { /* UserProductSubscriptionDto, */ IUserMarketSubscription } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
@@ -62,6 +64,18 @@ const getSubscriptionImage = (category: string): string => {
 const MySubscriptions = () => {
 	// State management
 	// const [productSubs, setProductSubs] = useState<UserProductSubscriptionDto[]>([]);
+	const { closeSheet } = useSheetStore();
+	const router = useRouter();
+	const pathname = usePathname();
+
+	const handleNavigateToMarketData = () => {
+		closeSheet();
+		if (pathname === INTERNAL_ROUTES.MARKET_DATA) {
+			window.dispatchEvent(new Event("market-data:reset"));
+		} else {
+			router.push(INTERNAL_ROUTES.MARKET_DATA);
+		}
+	};
 	const [marketDataSubs, setMarketDataSubs] = useState<IUserMarketSubscription[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -77,56 +91,19 @@ const MySubscriptions = () => {
 	// 	);
 	//
 	// 	if (endDate < now) return "Expired";
-	// 	if (daysUntilExpiry <= 30) return "Expiring Soon";
+	// 	if (daysUntilExpiry <= 90) return "Expiring Soon";
 	// 	return "Active";
 	// };
-
-	// Mock data covering all 4 statuses for testing
-	const MOCK_MARKET_DATA_SUBS: IUserMarketSubscription[] = [
-		{
-			groupId: "mock-1", groupTitle: "SGX Real-Time Data", groupType: "SGX",
-			subscriptionId: "mock-sub-1", description: "Singapore Exchange real-time feed",
-			start: "2025-01-01", end: new Date(Date.now() + 180 * 86400000).toISOString(),
-			paymentStatus: "Paid", allowRenew: true, isPromo: false,
-		},
-		{
-			groupId: "mock-2", groupTitle: "HKEX Market Data", groupType: "HKEX",
-			subscriptionId: "mock-sub-2", description: "Hong Kong Exchange real-time feed",
-			start: "2025-01-01", end: new Date(Date.now() + 20 * 86400000).toISOString(),
-			paymentStatus: "Paid", allowRenew: true, isPromo: false,
-		},
-		{
-			groupId: "mock-3", groupTitle: "Bursa Malaysia Feed", groupType: "Bursa",
-			subscriptionId: "mock-sub-3", description: "Bursa Malaysia real-time feed",
-			start: "2024-01-01", end: new Date(Date.now() - 10 * 86400000).toISOString(),
-			paymentStatus: "Paid", allowRenew: true, isPromo: false,
-		},
-		{
-			groupId: "mock-4", groupTitle: "US Market Data", groupType: "US",
-			subscriptionId: "mock-sub-4", description: "US markets real-time feed",
-			start: "2025-01-01", end: new Date(Date.now() + 90 * 86400000).toISOString(),
-			paymentStatus: "Pending", allowRenew: false, isPromo: false,
-		},
-	];
 
 	// Fetch subscriptions from API
 	const fetchSubscriptions = useCallback(async () => {
 		setLoading(true);
 		setError(null);
 
-		const [marketDataResult] = await Promise.all([
-			// subscriptionService.getUserProductSubscriptions(),
-			subscriptionService.getMyMarketDataSubscriptions(),
-		]);
+		const marketDataResult = await subscriptionService.getMyMarketDataSubscriptions();
 
-		// if (productResult.success && productResult.data) {
-		// 	setProductSubs(productResult.data.userProductSubs);
-		// }
-
-		if (marketDataResult.success && marketDataResult.data && marketDataResult.data.length > 0) {
+		if (marketDataResult.success && marketDataResult.data) {
 			setMarketDataSubs(marketDataResult.data);
-		} else {
-			setMarketDataSubs(MOCK_MARKET_DATA_SUBS);
 		}
 
 		if (!marketDataResult.success) {
@@ -134,7 +111,6 @@ const MySubscriptions = () => {
 		}
 
 		setLoading(false);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	// Fetch data on mount
@@ -144,7 +120,7 @@ const MySubscriptions = () => {
 
 	// Helper to determine market data subscription status
 	const determineMarketDataStatus = (sub: IUserMarketSubscription): SubscriptionStatus => {
-		if (sub.paymentStatus === "Pending") return "Pending Payment";
+		if (sub.paymentStatus === "PENDING") return "Pending Payment";
 		if (!sub.end) return "Active";
 
 		const endDate = new Date(sub.end);
@@ -154,7 +130,7 @@ const MySubscriptions = () => {
 		);
 
 		if (endDate < now) return "Expired";
-		if (daysUntilExpiry <= 30) return "Expiring Soon";
+		if (daysUntilExpiry <= 90) return "Expiring Soon";
 		return "Active";
 	};
 
@@ -167,7 +143,7 @@ const MySubscriptions = () => {
 					title: sub.groupTitle,
 					description: sub.description || sub.groupType || "",
 					endDate: formatDate(sub.end, "N/A"),
-					image: getSubscriptionImage(sub.groupTitle || ""),
+					image: sub.groupImageUrl || getSubscriptionImage(sub.groupTitle || ""),
 					status: determineMarketDataStatus(sub),
 					subscriptionId: sub.subscriptionId,
 					type: "marketData" as const,
@@ -332,13 +308,7 @@ const MySubscriptions = () => {
                                     key={index}
                                     className="flex gap-3 py-4"
                                 >
-                                    <Image
-                                        src={item.image}
-                                        alt={item.title}
-                                        height={44}
-                                        width={44}
-                                        className="w-11 h-11 rounded"
-                                    />
+                                    <SubscriptionThumbnail src={item.image} alt={item.title} />
 
                                     <div className="flex-1 text-left">
                                         <div className="flex justify-between items-start">
@@ -356,18 +326,20 @@ const MySubscriptions = () => {
                                                 <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200] px-0 py-1'>
                                                     {
                                                         item.status === "Expired" &&
-                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                                Resubscribe
-                                                            </Link>
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
+                                                            onSelect={handleNavigateToMarketData}
+                                                        >
+                                                            Resubscribe
                                                         </DropdownMenuItem>
                                                     }
                                                     {
                                                         item.status === "Expiring Soon" &&
-                                                        <DropdownMenuItem asChild className="cursor-pointer px-3 py-[10px] rounded-none">
-                                                            <Link href={INTERNAL_ROUTES.MARKET_DATA}>
-                                                                Extend Subscription
-                                                            </Link>
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
+                                                            onSelect={handleNavigateToMarketData}
+                                                        >
+                                                            Extend Subscription
                                                         </DropdownMenuItem>
                                                     }
                                                     {

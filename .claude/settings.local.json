@@ -84,7 +84,9 @@
       "Bash(find /d/cgsi -type f \\\\\\(-name *guard* -o -name *middleware* -o -name *protected* \\\\\\))",
       "Bash(ls \"D:/cgsi/app/\\(with-layout\\)/\\(home\\)/\")",
       "Bash(ls \"D:/cgsi/app/\\(with-layout\\)/\")",
-      "Bash(ls \"D:/cgsi/app/\\(minimal\\)/\")"
+      "Bash(ls \"D:/cgsi/app/\\(minimal\\)/\")",
+      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/\")",
+      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/_components/\")"
     ],
     "deny": [],
     "ask": []

@@ -11,7 +11,8 @@ import { toast } from "@/components/ui/toaster";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 import { submitMarketDataSubscription } from "@/lib/services/subscriptionService";
 import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
-import { useSheetStore } from "@/stores/sheetStore";
+import { CGSI } from "@/constants/routes";
+import { injectAgreementFormValues } from "@/lib/injectAgreementFormValues";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -22,12 +23,12 @@ interface TermsStepProps {
     needsDeclaration: boolean;
 }
 
+
 const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents, extendedData, needsDeclaration }: TermsStepProps) => {
     const [agreed, setAgreed] = useState(false);
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
-    const { setOpenSheet } = useSheetStore();
 
     // Flatten all agreements from all subscriptions
     const allAgreements = agreements.flatMap((s) =>
@@ -105,25 +106,30 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                     Terms & Conditions
                 </h2>
 
-                {allAgreements.length > 0 ? (
-                    <div className="border border-stroke-secondary rounded">
-                        {allAgreements.map((agreement, idx) => (
-                            <div key={agreement.agreementId}>
-                                {idx > 0 && <Separator />}
-                                <button
-                                    type="button"
-                                    className="w-full flex justify-between items-center p-4 cursor-pointer"
-                                    onClick={() => setDialogAgreement(agreement)}
-                                >
-                                    <p className="text-sm text-left">{agreement.subject}</p>
-                                    <ChevronRight size={16} className="text-cgs-blue shrink-0" />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-sm text-typo-tertiary">No agreements required.</p>
-                )}
+                <div className="border border-stroke-secondary rounded">
+                    <a
+                        href={CGSI.GENERAL_TNC}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex justify-between items-center p-4 cursor-pointer"
+                    >
+                        <p className="text-sm text-left">General Terms & Conditions</p>
+                        <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                    </a>
+                    {allAgreements.map((agreement) => (
+                        <div key={agreement.agreementId}>
+                            <Separator />
+                            <button
+                                type="button"
+                                className="w-full flex justify-between items-center p-4 cursor-pointer"
+                                onClick={() => setDialogAgreement(agreement)}
+                            >
+                                <p className="text-sm text-left">{agreement.subject}</p>
+                                <ChevronRight size={16} className="text-cgs-blue shrink-0" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
 
                 <Separator className="my-6" />
 
@@ -150,13 +156,13 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                     showLink={false}
                     className="pad-x py-6 border-y border-stroke-secondary"
                 />
-                <div className="pad-x py-6">
+                <div className="pad-x py-4">
                     <Button
                         onClick={handleTermConfirm}
-                        className="w-full rounded"
+                        className="w-full rounded text-sm md:text-base"
                         disabled={submitting}
                     >
-                        {submitting ? <Loader2 className="animate-spin" /> : "Continue"}
+                        {submitting ? <Loader2 className="animate-spin" /> : "Subscribe"}
                     </Button>
                 </div>
             </div>
@@ -174,7 +180,9 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                             <div
                                 className="text-sm text-typo-secondary prose prose-sm max-w-none"
                                 dangerouslySetInnerHTML={{
-                                    __html: agreementContents[dialogAgreement.agreementId].htmlContent,
+                                    __html: needsDeclaration
+                                        ? injectAgreementFormValues(agreementContents[dialogAgreement.agreementId].htmlContent, extendedData)
+                                        : agreementContents[dialogAgreement.agreementId].htmlContent,
                                 }}
                             />
                         ) : dialogAgreement && agreementContents[dialogAgreement.agreementId]?.url ? (

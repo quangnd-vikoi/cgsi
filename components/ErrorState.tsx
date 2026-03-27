@@ -47,7 +47,6 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 	// Use custom text if provided, otherwise use default
 	const displayTitle = title || defaultTexts[type].title;
 	const displayDescription = description || defaultTexts[type].description;
-
 	return (
 		<div className={`flex flex-col justify-center items-center py-5 md:py-7 h-full ${className}`}>
 			<IconComponent width={iconWidth} height={iconHeight} className="text-status-disable-primary" />

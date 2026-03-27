@@ -164,7 +164,7 @@ const TradingDeclartions = () => {
 					}
 					const response = await createBcanRequest(accountNo);
 					if (response.data?.success === true) {
-						toast.success("BCAN Application Successful", "You can now trade in the Stock Exchange of Hong Kong (HKEX).");
+						toast.success("BCAN Application Submitted", "You can trade on the Hong Kong Stock Exchange (HKEX) once your application is approved.");
 						const updatedInfo = await getTradingInfo();
 						if (updatedInfo.success && updatedInfo.data) {
 							setTradingInfo(updatedInfo.data);
@@ -203,7 +203,7 @@ const TradingDeclartions = () => {
 						Complete and email the form to our Client Services team at{" "}
 						<button
 							type="button"
-							onClick={() => handleEmail("sg.clientservices@cgsi.com")}
+							onClick={() => handleEmail("sg.clientservices@cgsi.com", "Accredited Investor Declaration")}
 							className="text-cgs-blue font-medium underline underline-offset-2"
 						>
 							sg.clientservices@cgsi.com
@@ -250,9 +250,11 @@ const TradingDeclartions = () => {
 		return "inactive";
 	};
 
-	// BCAN: toDisplay=true => active; toDisplay=false => inactive
+	// BCAN: toDisplay=false => not-eligible; Enabled => success; else => inactive
 	const getBcanStatus = (): DeclarationStatus => {
-		if (tradingInfo?.bcan.toDisplay) return "success";
+		if (!tradingInfo?.bcan.toDisplay) return "not-eligible";
+		if (tradingInfo.bcan.requestStatus === "Enabled") return "success";
+		if (tradingInfo.bcan.requestStatus?.startsWith("Requested")) return "processing";
 		return "inactive";
 	};
 
@@ -342,15 +344,18 @@ const TradingDeclartions = () => {
 			title: "BCAN",
 			feature: "trading_decl_bcan",
 			status: bcanStatus,
-			exp: "NIL",
+			exp: bcanStatus === "not-eligible" ? "-"
+				: tradingInfo?.bcan.requestStatus === "Enabled" ? "NIL"
+				: tradingInfo?.bcan.requestStatus?.startsWith("Requested")
+					? tradingInfo.bcan.requestStatus.replace("Requested on", "Requested on:")
+					: "-",
 			tooltipContent:
 				"Required to trade on the Stock Exchange of Hong Kong (HKEX). Not applicable for Mainland Chinese nationals.",
-			button: bcanStatus === "success"
-				? null
-				: {
-					label: "Declare Now",
-					onClick: handleBcanDeclare,
-				},
+			button: bcanStatus === "inactive"
+				? { label: "Declare Now", onClick: handleBcanDeclare }
+				: bcanStatus === "processing"
+					? { label: "Declare Now", onClick: handleBcanDeclare, disabled: true }
+					: null,
 		},
 		{
 			id: "crs",
@@ -439,10 +444,10 @@ const TradingDeclartions = () => {
 									{item.button.label}
 									<ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />
 								</Button>
-							) : item.id === "bcan" && item.status === "success" ? (
+							) : item.id === "bcan" && !item.button ? (
 								<span className="flex items-center gap-1 text-sm text-gray-400">
 									<EyeOff className="size-4" />
-									Declare Now
+									{item.status === "not-eligible" ? "Not Applicable" : "Declare Now"}
 									<ChevronRight className="size-4 -ml-0.5" />
 								</span>
 							) : null}
@@ -453,7 +458,9 @@ const TradingDeclartions = () => {
 								<StatusIcon status={item.status} />
 								{STATUS_LABEL[item.status]}
 							</Badge>
-							<span className="text-xs text-gray-400">Exp: {item.exp}</span>
+							<span className="text-xs text-gray-400">
+								{item.id === "bcan" && item.status === "processing" ? item.exp : `Exp: ${item.exp}`}
+							</span>
 						</div>
 
 						{index < filtered.length - 1 && (

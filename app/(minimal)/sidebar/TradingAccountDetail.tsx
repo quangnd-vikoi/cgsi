@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Group from "./_components/Group";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
@@ -6,7 +6,7 @@ import { ArrowRightCircle, ChevronDown, ChevronRight, CircleCheck, Copy } from "
 import WaringIcon from "@/public/icons/Warning.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { handleCopy } from "@/lib/utils";
+import { handleCopy, handleCall, handleEmail } from "@/lib/utils";
 import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSheetStore } from "@/stores/sheetStore";
 import { Separator } from "@radix-ui/react-separator";
+import { getTradingRepInfoByAccount } from "@/lib/services/profileService";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { ITrInfo } from "@/types";
 
 interface LinkageItemProps {
 	label: string;
@@ -97,6 +100,31 @@ const TradingAccountDetail = () => {
 	const selectedAccount = useTradingAccountStore((state) => state.selectedAccount);
 	const router = useRouter();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+	const [trInfo, setTrInfo] = useState<ITrInfo | null>(null);
+	const [isTrLoading, setIsTrLoading] = useState(false);
+	const fetchedAccountNo = React.useRef<string | null>(null);
+
+	useEffect(() => {
+		const accountNo = selectedAccount?.accountNo;
+		if (!accountNo || accountNo === fetchedAccountNo.current) return;
+		fetchedAccountNo.current = accountNo;
+
+		const fetchTrInfo = async () => {
+			try {
+				setIsTrLoading(true);
+				setTrInfo(null);
+				const res = await getTradingRepInfoByAccount(accountNo);
+				if (res.success && res.data && res.data.length > 0) {
+					setTrInfo(res.data[0]);
+				}
+			} catch (error) {
+				console.error("Failed to fetch TR info:", error);
+			} finally {
+				setIsTrLoading(false);
+			}
+		};
+		fetchTrInfo();
+	}, [selectedAccount?.accountNo]);
 
 	const handleUnlink = (accountType: "sub-cdp" | "cpf" | "srs" | "giro" | "eps") => {
 		setOpenSheet(null);
@@ -245,48 +273,67 @@ const TradingAccountDetail = () => {
 
 				<div className="mt-9">
 					<Group title="Trading Representative" showSeparator={false}>
-						<div className="flex flex-col gap-4 p-4">
-							{[
-								{ label: "TR Name", value: selectedAccount.trName },
-								{
-									label: "Department",
-									value: "Wealth Solutions",
-								},
-								{ label: "Rep. No.", value: selectedAccount.trCode },
-								{
-									label: "Phone Number",
-									value: "",
-									hasCopy: true,
-									hasArrow: true,
-								},
-								{
-									label: "Email Add.",
-									value: "",
-									hasCopy: true,
-									hasArrow: true,
-								},
-							].map((item, index) => (
-								<div
-									key={index}
-									className="flex justify-between items-center text-sm md:text-base"
-								>
-									<p className="text-typo-secondary">{item.label}</p>
-									<div className="flex items-center gap-2 min-w-0">
-										<p className="font-medium text-typo-primary truncate">{item.value}</p>
-										{item.hasCopy && (
+						{isTrLoading ? (
+							<div className="flex flex-col gap-4 p-4">
+								{[...Array(4)].map((_, i) => (
+									<div key={i} className="flex justify-between items-center">
+										<Skeleton className="h-4 w-1/4" />
+										<Skeleton className="h-4 w-1/3" />
+									</div>
+								))}
+							</div>
+						) : trInfo ? (
+							<div className="flex flex-col gap-4 p-4">
+								<div className="flex justify-between items-center text-sm md:text-base">
+									<p className="text-typo-secondary">TR Name</p>
+									<p className="font-medium text-typo-primary truncate">{trInfo.trName}</p>
+								</div>
+								<div className="flex justify-between items-center text-sm md:text-base">
+									<p className="text-typo-secondary">Rep. No.</p>
+									<p className="font-medium text-typo-primary truncate">{trInfo.trCode}</p>
+								</div>
+								{trInfo.trContact && (
+									<div className="flex justify-between items-center text-sm md:text-base">
+										<p className="text-typo-secondary">Phone Number</p>
+										<div className="flex items-center gap-2 min-w-0">
+											<p className="font-medium text-typo-primary truncate">{trInfo.trContact}</p>
 											<Copy
-												onClick={() => handleCopy(item.value)}
+												onClick={() => handleCopy(trInfo.trContact)}
 												className="text-cgs-blue cursor-pointer shrink-0"
 												size={16}
 											/>
-										)}
-										{item.hasArrow && (
-											<ArrowRightCircle className="text-cgs-blue shrink-0" size={16} />
-										)}
+											<ArrowRightCircle
+												onClick={() => handleCall(trInfo.trContact)}
+												className="text-cgs-blue cursor-pointer shrink-0"
+												size={16}
+											/>
+										</div>
 									</div>
-								</div>
-							))}
-						</div>
+								)}
+								{trInfo.trEmail && (
+									<div className="flex justify-between items-center text-sm md:text-base">
+										<p className="text-typo-secondary">Email Add.</p>
+										<div className="flex items-center gap-2 min-w-0">
+											<p className="font-medium text-typo-primary truncate">{trInfo.trEmail}</p>
+											<Copy
+												onClick={() => handleCopy(trInfo.trEmail)}
+												className="text-cgs-blue cursor-pointer shrink-0"
+												size={16}
+											/>
+											<ArrowRightCircle
+												onClick={() => handleEmail(trInfo.trEmail)}
+												className="text-cgs-blue cursor-pointer shrink-0"
+												size={16}
+											/>
+										</div>
+									</div>
+								)}
+							</div>
+						) : (
+							<p className="text-sm text-typo-secondary p-4">
+								No trading representative information available.
+							</p>
+						)}
 					</Group>
 				</div>
 			</div>

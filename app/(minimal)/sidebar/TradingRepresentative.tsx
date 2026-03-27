@@ -1,63 +1,36 @@
 // components/sidebar/TradingRepresentative.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { CircleArrowRight, CircleQuestionMark, Copy, Mail, Phone } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
-
-interface TradingRepresentativeData {
-	id: string;
-	name: string;
-	managedAccounts: string;
-	accountType: string;
-	repNo: string;
-	phone: string;
-	email: string;
-}
+import { handleCopy, handleCall, handleEmail } from "@/lib/utils";
+import { getTradingRepInfo } from "@/lib/services/profileService";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { ITrInfo } from "@/types";
 
 interface TradingListProps {
-	representatives: TradingRepresentativeData[];
+	representatives: ITrInfo[];
 }
 
 const TradingList = ({ representatives }: TradingListProps) => {
-	const handleCopy = (text: string, type: "phone" | "email") => {
-		navigator.clipboard.writeText(text);
-		toast.success(`${type === "phone" ? "Phone number" : "Email"} copied to clipboard`);
-	};
-
-	const handleCall = (phone: string) => {
-		window.location.href = `tel:${phone}`;
-	};
-
-	const handleEmail = (email: string) => {
-		const subject = encodeURIComponent("iTrade Client Enquiry");
-		window.location.href = `mailto:${email}?subject=${subject}`;
-	};
-
 	return (
 		<div className="space-y-4">
-			{representatives.map((rep) => (
+			{representatives.map((rep, index) => (
 				<div
-					key={rep.id}
+					key={index}
 					className="p-4 rounded border border-stroke-secondary bg-background-primary"
 				>
 					{/* Header */}
 					<div className="flex justify-between items-start mb-4">
-						<h3 className="text-base font-semibold text-typo-primary">{rep.name}</h3>
+						<h3 className="text-base font-semibold text-typo-primary">{rep.trName}</h3>
 					</div>
 
-					{/* Account Info */}
+					{/* Rep Info */}
 					<div className="space-y-2 mb-4">
 						<div className="flex justify-between text-xs md:text-sm">
-							<span className="text-typo-secondary">Managed Account(s)</span>
-							<span className="text-typo-primary font-medium">
-								({rep.accountType}) {rep.managedAccounts}
-							</span>
-						</div>
-						<div className="flex justify-between text-xs md:text-sm">
 							<span className="text-typo-secondary">Rep. No.</span>
-							<span className="text-typo-primary font-medium">{rep.repNo}</span>
+							<span className="text-typo-primary font-medium">{rep.trCode}</span>
 						</div>
 					</div>
 
@@ -65,56 +38,64 @@ const TradingList = ({ representatives }: TradingListProps) => {
 					{/* Contact Info */}
 					<div className="space-y-4">
 						{/* Phone */}
-						<div className="flex items-center justify-between px-1.5 py-2.5">
-							<div className="flex items-center gap-2 min-w-0 flex-1">
-								<Phone size={16} className="text-icon-light flex-shrink-0" />
-								<span className="text-sm md:text-base text-typo-primary truncate">{rep.phone}</span>
+						{rep.trContact && (
+							<div className="flex items-center justify-between px-1.5 py-2.5">
+								<div className="flex items-center gap-2 min-w-0 flex-1">
+									<Phone size={16} className="text-icon-light flex-shrink-0" />
+									<span className="text-sm md:text-base text-typo-primary truncate">
+										{rep.trContact}
+									</span>
+								</div>
+								<div className="flex gap-5 flex-shrink-0 ml-2">
+									<Button
+										variant="ghost"
+										size="icon"
+										className="h-5 w-5 hover:bg-transparent"
+										onClick={() => handleCopy(rep.trContact)}
+									>
+										<Copy size={16} className="text-cgs-blue" />
+									</Button>
+									<Button
+										variant="ghost"
+										size="icon"
+										className="h-5 w-5 hover:bg-transparent"
+										onClick={() => handleCall(rep.trContact)}
+									>
+										<CircleArrowRight size={16} className="text-cgs-blue" />
+									</Button>
+								</div>
 							</div>
-							<div className="flex gap-5 flex-shrink-0 ml-2">
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-5 w-5 hover:bg-transparent"
-									onClick={() => handleCopy(rep.phone, "phone")}
-								>
-									<Copy size={16} className="text-cgs-blue" />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-5 w-5 hover:bg-transparent"
-									onClick={() => handleCall(rep.phone)}
-								>
-									<CircleArrowRight size={16} className="text-cgs-blue" />
-								</Button>
-							</div>
-						</div>
+						)}
 
 						{/* Email */}
-						<div className="flex items-center justify-between px-1.5 py-2.5">
-							<div className="flex items-center gap-2 min-w-0 flex-1">
-								<Mail size={16} className="text-icon-light flex-shrink-0" />
-								<span className="text-sm md:text-base text-typo-primary truncate">{rep.email}</span>
+						{rep.trEmail && (
+							<div className="flex items-center justify-between px-1.5 py-2.5">
+								<div className="flex items-center gap-2 min-w-0 flex-1">
+									<Mail size={16} className="text-icon-light flex-shrink-0" />
+									<span className="text-sm md:text-base text-typo-primary truncate">
+										{rep.trEmail}
+									</span>
+								</div>
+								<div className="flex gap-5 flex-shrink-0 ml-2">
+									<Button
+										variant="ghost"
+										size="icon"
+										className="h-5 w-5 hover:bg-transparent"
+										onClick={() => handleCopy(rep.trEmail)}
+									>
+										<Copy size={16} className="text-cgs-blue" />
+									</Button>
+									<Button
+										variant="ghost"
+										size="icon"
+										className="h-5 w-5 hover:bg-transparent"
+										onClick={() => handleEmail(rep.trEmail)}
+									>
+										<CircleArrowRight size={16} className="text-cgs-blue" />
+									</Button>
+								</div>
 							</div>
-							<div className="flex gap-5 flex-shrink-0 ml-2">
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-5 w-5 hover:bg-transparent"
-									onClick={() => handleCopy(rep.email, "email")}
-								>
-									<Copy size={16} className="text-cgs-blue" />
-								</Button>
-								<Button
-									variant="ghost"
-									size="icon"
-									className="h-5 w-5 hover:bg-transparent"
-									onClick={() => handleEmail(rep.email)}
-								>
-									<CircleArrowRight size={16} className="text-cgs-blue" />
-								</Button>
-							</div>
-						</div>
+						)}
 					</div>
 				</div>
 			))}
@@ -123,36 +104,50 @@ const TradingList = ({ representatives }: TradingListProps) => {
 };
 
 const TradingRepresentative = () => {
-	// Mock data - thay bằng data thật từ API
-	const representatives = [
-		{
-			id: "1",
-			name: "Lim Yi Bin",
-			managedAccounts: "6412345",
-			accountType: "Cash",
-			repNo: "TTK100025745",
-			phone: "+65 6538 9889",
-			email: "yibin.lim@cgsi.com",
-		},
-		{
-			id: "2",
-			name: "Dlynn Tan",
-			managedAccounts: "6412346",
-			accountType: "Margin",
-			repNo: "TTK100025746",
-			phone: "+65 6538 9890",
-			email: "dlynn.tan@cgsi.com",
-		},
-		{
-			id: "3",
-			name: "Rayhan Abhirama",
-			managedAccounts: "6412347",
-			accountType: "iCash",
-			repNo: "TTK100025747",
-			phone: "+65 6538 9891",
-			email: "rayhan.abhiramasjah@cgsi.com",
-		},
-	];
+	const [representatives, setRepresentatives] = useState<ITrInfo[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const hasFetched = React.useRef(false);
+
+	useEffect(() => {
+		if (hasFetched.current) return;
+		hasFetched.current = true;
+
+		const fetchData = async () => {
+			try {
+				setIsLoading(true);
+				const res = await getTradingRepInfo();
+				if (res.success && res.data) {
+					setRepresentatives(res.data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch trading representative info:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchData();
+	}, []);
+
+	if (isLoading) {
+		return (
+			<div className="flex flex-col h-full">
+				<div className="flex-shrink-0">
+					<CustomSheetTitle title="Trading Representative(s)" backTo={"contact"} />
+				</div>
+				<div className="flex-1 pt-6 px-4">
+					<div className="space-y-4">
+						{[...Array(3)].map((_, i) => (
+							<div key={i} className="p-4 rounded border border-stroke-secondary">
+								<Skeleton className="h-5 w-1/3 mb-4" />
+								<Skeleton className="h-4 w-full mb-2" />
+								<Skeleton className="h-4 w-2/3" />
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col h-full ">
@@ -175,7 +170,13 @@ const TradingRepresentative = () => {
 				</div>
 
 				<div className="mt-6 pb-6">
-					<TradingList representatives={representatives} />
+					{representatives.length > 0 ? (
+						<TradingList representatives={representatives} />
+					) : (
+						<p className="text-sm text-typo-secondary text-center py-4">
+							No trading representative information available.
+						</p>
+					)}
 				</div>
 			</div>
 		</div>
