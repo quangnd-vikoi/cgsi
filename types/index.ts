@@ -118,12 +118,14 @@ export interface UserInfoResponse {
 	userName: string;
 	userEmail: string;
 	userMobile: string;
+	userCategory?: string;
 }
 
 // Trading Account Types
 export interface TradingAccount {
 	accountNo: string;
 	accountType?: PortfolioType;
+	accountTypeCodeNova?: string;
 	trName?: string;
 	trCode?: string;
 	eps?: string;

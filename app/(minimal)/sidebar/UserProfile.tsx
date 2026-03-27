@@ -8,11 +8,20 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { useUserStore } from "@/stores/userStore";
 import { CircleFlag } from "react-circle-flags";
 import { parsePhoneNumber } from "@/lib/utils/phoneHelper";
+import { usePermissions } from "@/hooks/usePermission";
+import { FEATURE_ACCESS } from "@/constants/accessControl";
+
+const UPDATE_FEATURES = {
+	sidebar_update_mobile: FEATURE_ACCESS.sidebar_update_mobile,
+	sidebar_update_email: FEATURE_ACCESS.sidebar_update_email,
+	sidebar_update_signature: FEATURE_ACCESS.sidebar_update_signature,
+} as const;
 
 const UserProfile = () => {
 	const router = useRouter();
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const profile = useUserStore((state) => state.profile);
+	const { permissions: updatePerms } = usePermissions(UPDATE_FEATURES);
 
 	// Fallback values when API returns null/undefined
 	const displayUsername = profile?.userId || profile?.name || "guestuser";
@@ -68,13 +77,15 @@ const UserProfile = () => {
 							readOnly
 							className="bg-theme-neutral-095 pl-24 pr-20 text-typo-tertiary"
 						/>
-						<Button
-							onClick={() => handleUpdateClick("mobile")}
-							variant="link"
-							className="text-cgs-blue underline underline-offset-2 text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
-						>
-							Update
-						</Button>
+						{updatePerms.sidebar_update_mobile && (
+							<Button
+								onClick={() => handleUpdateClick("mobile")}
+								variant="link"
+								className="text-cgs-blue underline underline-offset-2 text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
+							>
+								Update
+							</Button>
+						)}
 					</div>
 				</div>
 
@@ -89,33 +100,38 @@ const UserProfile = () => {
 							value={displayEmail}
 							readOnly
 						/>
-						<Button
-							onClick={() => handleUpdateClick("email")}
-							variant="link"
-							className="text-cgs-blue underline underline-offset-2 text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
-						>
-							Update
-						</Button>
+						{updatePerms.sidebar_update_email && (
+							<Button
+								onClick={() => handleUpdateClick("email")}
+								variant="link"
+								className="text-cgs-blue underline underline-offset-2 text-sm font-medium absolute right-0 top-1/2 -translate-y-1/2 h-auto py-0 px-3"
+							>
+								Update
+							</Button>
+						)}
 					</div>
 				</div>
 
 				{/* Signature Section */}
-				<div className="space-y-3">
-					<Label>Signature</Label>
-					<p className="text-xs text-muted-foreground leading-relaxed pr-1">
-						Updating your signature will replace the existing one, or create a new record if none
-						exists. The signature will be stored securely but won&apos;t be visible after upload.
-					</p>
+				{updatePerms.sidebar_update_signature && (
+					<div className="space-y-3">
+						<Label>Signature</Label>
+						<p className="text-xs text-muted-foreground leading-relaxed pr-1">
+							Updating your signature will replace the existing one, or create a new record if
+							none exists. The signature will be stored securely but won&apos;t be visible after
+							upload.
+						</p>
 
-					<Button
-						onClick={() => handleUpdateClick("signature")}
-						variant="outline"
-						className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit hover:bg-cgs-blue/10 hover:text-cgs-blue"
-					>
-						Upload Document
-						<FileUp className="w-4 h-4" />
-					</Button>
-				</div>
+						<Button
+							onClick={() => handleUpdateClick("signature")}
+							variant="outline"
+							className="w-full border-dashed border-cgs-blue bg-background-section justify-between py-3 !px-4 text-cgs-blue h-fit hover:bg-cgs-blue/10 hover:text-cgs-blue"
+						>
+							Upload Document
+							<FileUp className="w-4 h-4" />
+						</Button>
+					</div>
+				)}
 			</div>
 		</div>
 	);

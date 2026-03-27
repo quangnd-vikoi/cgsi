@@ -29,6 +29,19 @@ import { redirectToCorporateAction, redirectToEStatement } from "@/lib/services/
 import { useUserStore } from "@/stores/userStore";
 import { authService } from "@/lib/services/authService";
 import { parsePhoneNumber } from "@/lib/utils/phoneHelper";
+import { usePermissions } from "@/hooks/usePermission";
+import { FEATURE_ACCESS, type Feature } from "@/constants/accessControl";
+
+const SIDEBAR_FEATURES = {
+	sidebar_donations: FEATURE_ACCESS.sidebar_donations,
+	sidebar_trading_accounts: FEATURE_ACCESS.sidebar_trading_accounts,
+	sidebar_trading_declarations: FEATURE_ACCESS.sidebar_trading_declarations,
+	sidebar_corporate_action: FEATURE_ACCESS.sidebar_corporate_action,
+	sidebar_market_data: FEATURE_ACCESS.sidebar_market_data,
+	sidebar_my_subscriptions: FEATURE_ACCESS.sidebar_my_subscriptions,
+	sidebar_estatement: FEATURE_ACCESS.sidebar_estatement,
+	sidebar_acknowledgements: FEATURE_ACCESS.sidebar_acknowledgements,
+} as const;
 
 // Centralized icon stroke width - easy to change
 const ICON_STROKE_WIDTH = 1.5;
@@ -61,6 +74,7 @@ interface IProfileMenuItem {
 	target?: "_blank" | "_self";
 	onClick?: () => void | Promise<void>;
 	isLoading?: boolean;
+	feature?: Feature;
 }
 
 const MenuItem = ({
@@ -149,7 +163,9 @@ const Profile = () => {
 		authService.logout();
 	};
 
-	const PROFILE_MENU_ITEM = {
+	const { permissions } = usePermissions(SIDEBAR_FEATURES);
+
+	const PROFILE_MENU_ITEM: Record<string, IProfileMenuItem[]> = {
 		"Account Centre": [
 			{
 				icon: <CircleUserRound strokeWidth={ICON_STROKE_WIDTH} />,
@@ -165,6 +181,7 @@ const Profile = () => {
 				icon: <HeartHandshake strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Donations",
 				href: "/donations",
+				feature: "sidebar_donations",
 			},
 		],
 		"Trading Centre": [
@@ -172,16 +189,19 @@ const Profile = () => {
 				icon: <BookOpen strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Trading Accounts",
 				sheet: "trading_accounts" as SheetType,
+				feature: "sidebar_trading_accounts",
 			},
 			{
 				icon: <FileCheck strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Trading Declarations",
 				sheet: "trading_declarations" as SheetType,
+				feature: "sidebar_trading_declarations",
 			},
 			{
 				icon: <Building2 strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Corporate Actions",
 				onClick: redirectToCorporateAction,
+				feature: "sidebar_corporate_action",
 			},
 			{
 				icon: <Box strokeWidth={ICON_STROKE_WIDTH} />,
@@ -192,6 +212,7 @@ const Profile = () => {
 				icon: <Boxes strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "My Subscriptions",
 				sheet: "my_subscriptions" as SheetType,
+				feature: "sidebar_my_subscriptions",
 			},
 		],
 		Reports: [
@@ -199,11 +220,13 @@ const Profile = () => {
 				icon: <FileText strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "eStatements",
 				onClick: redirectToEStatement,
+				feature: "sidebar_estatement",
 			},
 			{
 				icon: <FileCheck strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Acknowledgements",
 				sheet: "acknowledgements" as SheetType,
+				feature: "sidebar_acknowledgements",
 			},
 		],
 		"Help & Support": [
@@ -252,18 +275,19 @@ const Profile = () => {
 				</div>
 			</SheetHeader>
 			<div className="pad pt-6 flex flex-col gap-6 overflow-y-auto flex-1">
-				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => (
-					<Group key={title} title={title}>
-						{items.map((item, index) => (
-							<MenuItem
-								key={index}
-								item={item}
-								isFirst={index === 0}
-								isLast={index === items.length - 1}
-							/>
-						))}
-					</Group>
-				))}
+				{Object.entries(PROFILE_MENU_ITEM).map(([title, items]) => {
+					const visibleItems = items.filter(
+						(item) => !item.feature || permissions[item.feature as keyof typeof permissions]
+					);
+					if (visibleItems.length === 0) return null;
+					return (
+						<Group key={title} title={title}>
+							{visibleItems.map((item, index) => (
+								<MenuItem key={index} item={item} />
+							))}
+						</Group>
+					);
+				})}
 
 				<div className="flex justify-center gap-2 cursor-pointer" onClick={handleLogout}>
 					{/* <LogOut className="text-status-error" size={18} md:size={20} /> */}
