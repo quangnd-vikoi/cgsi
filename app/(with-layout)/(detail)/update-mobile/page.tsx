@@ -278,7 +278,8 @@ const UpdateMobile = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
+			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
+				<div className="flex-1 overflow-y-auto pt-6">
 				{step === 1 && (
 					<MobileInputStep
 						phoneNumber={phoneNumber}
@@ -307,8 +308,9 @@ const UpdateMobile = () => {
 				)}
 
 				{step === 3 && <ConfirmStep />}
+				</div>
 
-				<div className="">
+				<div className="shrink-0">
 					{showOtpBanner && (
 						<div className="rounded-full bg-theme-blue-085 text-xs w-fit mx-auto mb-4 px-4 py-2 shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] text-theme-blue-03">
 							{`SMS OTP has been sent to ${selectedCountry.dialCode + phoneNumber}`}

@@ -357,7 +357,7 @@ const MarketData = () => {
 
 			{/* Success */}
 			{currentStep === "success" && (
-				<div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
+				<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
 					<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full">
 						<SuccessState width={100} height={100} className="text-cgs-blue" />
 

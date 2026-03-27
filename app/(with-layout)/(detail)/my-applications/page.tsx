@@ -53,43 +53,42 @@ export default function MyApplication() {
 
 		if (response.success && response.data) {
 			// Map API data to Application structure
-			const mappedApplications: Application[] =
-				response.data.userProductSubs.map((sub) => {
-					// Normalize product type - match exactly or default based on known alternatives
-					const normalizedType = sub.productType?.toLowerCase().trim();
-					let type: "securities" | "alternatives";
+			const mappedApplications: Application[] = response.data.userProductSubs.map((sub) => {
+				// Normalize product type - match exactly or default based on known alternatives
+				const normalizedType = sub.productType?.toLowerCase().trim();
+				let type: "securities" | "alternatives";
 
-					if (
-						normalizedType === "securities" ||
-						normalizedType === "security" ||
-						normalizedType === "iop"
-					) {
-						type = "securities";
-					} else if (
-						normalizedType === "alternatives" ||
-						normalizedType === "alternative" ||
-						normalizedType === "structured products" ||
-						normalizedType === "funds" ||
-						normalizedType === "bonds" ||
-						normalizedType === "ai"
-					) {
-						type = "alternatives";
-					} else {
-						// Default to securities for unknown types
-						console.warn(`Unknown product type: ${sub.productType}, defaulting to securities`);
-						type = "securities";
-					}
+				if (
+					normalizedType === "securities" ||
+					normalizedType === "security" ||
+					normalizedType === "iop"
+				) {
+					type = "securities";
+				} else if (
+					normalizedType === "alternatives" ||
+					normalizedType === "alternative" ||
+					normalizedType === "structured products" ||
+					normalizedType === "funds" ||
+					normalizedType === "bonds" ||
+					normalizedType === "ai"
+				) {
+					type = "alternatives";
+				} else {
+					// Default to securities for unknown types
+					console.warn(`Unknown product type: ${sub.productType}, defaulting to securities`);
+					type = "securities";
+				}
 
-					return {
-						subscriptionId: sub.subscriptionId,
-						productName: sub.productName,
-						productCode: sub.productCode,
-						stockCode: sub.stockCode,
-						issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
-						applied: sub.appliedQty || 0,
-						allocated: sub.allocatedQty || 0,
-						closingDate: sub.endTime
-							? new Date(sub.endTime).toLocaleString("en-GB", {
+				return {
+					subscriptionId: sub.subscriptionId,
+					productName: sub.productName,
+					productCode: sub.productCode,
+					stockCode: sub.stockCode,
+					issuePrice: `${sub.issuePrice.toFixed(2)} ${sub.currency}`,
+					applied: sub.appliedQty || 0,
+					allocated: sub.allocatedQty || 0,
+					closingDate: sub.endTime
+						? new Date(sub.endTime).toLocaleString("en-GB", {
 								day: "2-digit",
 								month: "short",
 								year: "numeric",
@@ -97,10 +96,10 @@ export default function MyApplication() {
 								minute: "2-digit",
 								timeZoneName: "short",
 							})
-							: "N/A",
-						type,
-					};
-				});
+						: "N/A",
+					type,
+				};
+			});
 
 			setApplications(mappedApplications);
 		} else {
@@ -116,9 +115,7 @@ export default function MyApplication() {
 	}, [fetchApplications]);
 
 	const filteredApplications =
-		activeTab === "all"
-			? applications
-			: applications.filter((app) => app.type === activeTab);
+		activeTab === "all" ? applications : applications.filter((app) => app.type === activeTab);
 
 	const handleViewClick = (application: Application) => {
 		router.push(`${INTERNAL_ROUTES.APPLICATION_NOTE}?subscriptionId=${application.subscriptionId}`);
@@ -137,23 +134,23 @@ export default function MyApplication() {
 		});
 
 		// Navigate to securities or alternatives page based on type
-		const route = application.type === "securities"
-			? INTERNAL_ROUTES.SECURITIES
-			: INTERNAL_ROUTES.ALTERNATIVE;
+		const route =
+			application.type === "securities" ? INTERNAL_ROUTES.SECURITIES : INTERNAL_ROUTES.ALTERNATIVE;
 		router.push(route);
 	};
 
 	return (
 		<div className="flex-1 flex flex-col h-full">
 			{/* Header */}
-			<Title showBackButton title="My Applications" />
+			<Title
+				showBackButton
+				onBack={() => router.push(INTERNAL_ROUTES.SECURITIES)}
+				title="My Applications"
+			/>
 			{/* Content Box */}
 			<div className="bg-white pad rounded flex-1 flex flex-col overflow-hidden min-h-0">
 				{/* Tabs */}
-				<Tabs
-					value={activeTab}
-					onValueChange={(v) => setActiveTab(v as ApplicationType)}
-				>
+				<Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as ApplicationType)}>
 					<TabsList className="mb-6 bg-transparent !gap-2 border-b-0">
 						<TabsTrigger
 							value="all"
@@ -218,7 +215,10 @@ export default function MyApplication() {
 											<h3 className="font-medium text-typo-primary line-clamp-2">
 												{app.productName}
 											</h3>
-											<Badge variant="outline" className="mt-1 text-xs font-normal rounded-full">
+											<Badge
+												variant="outline"
+												className="mt-1 text-xs font-normal rounded-full"
+											>
 												{app.stockCode}
 											</Badge>
 										</div>
@@ -237,15 +237,21 @@ export default function MyApplication() {
 									<div className="space-y-2 text-sm">
 										<div className="flex justify-between">
 											<span className="text-typo-secondary">Issue Price</span>
-											<span className="font-medium text-typo-primary">{app.issuePrice}</span>
+											<span className="font-medium text-typo-primary">
+												{app.issuePrice}
+											</span>
 										</div>
 										<div className="flex justify-between">
 											<span className="text-typo-secondary">Applied</span>
-											<span className="text-typo-primary">{app.applied.toLocaleString()}</span>
+											<span className="text-typo-primary">
+												{app.applied.toLocaleString()}
+											</span>
 										</div>
 										<div className="flex justify-between">
 											<span className="text-typo-secondary">Allocated</span>
-											<span className="text-typo-primary">{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}</span>
+											<span className="text-typo-primary">
+												{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}
+											</span>
 										</div>
 										<div className="flex justify-between">
 											<span className="text-typo-secondary">Closing Date</span>
@@ -295,7 +301,7 @@ export default function MyApplication() {
 													onClick={() => handleProductNameClick(app)}
 													className={cn(
 														"font-medium text-cgs-blue cursor-pointer",
-														"hover:underline text-left"
+														"hover:underline text-left",
 													)}
 												>
 													{app.productName}
@@ -303,8 +309,12 @@ export default function MyApplication() {
 											</TableCell>
 											<TableCell className="px-3">{app.stockCode}</TableCell>
 											<TableCell className="px-3">{app.issuePrice}</TableCell>
-											<TableCell className="px-3">{app.applied.toLocaleString()}</TableCell>
-											<TableCell className="px-3">{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}</TableCell>
+											<TableCell className="px-3">
+												{app.applied.toLocaleString()}
+											</TableCell>
+											<TableCell className="px-3">
+												{app.allocated > 0 ? app.allocated.toLocaleString() : "-"}
+											</TableCell>
 											<TableCell className="px-3">{app.closingDate}</TableCell>
 											<TableCell className="px-3 text-center">
 												<Button

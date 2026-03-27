@@ -79,7 +79,9 @@
       "Bash(cat -A \"D:/cgsi/app/\\(minimal\\)/sidebar/TradingDeclartions.tsx\")",
       "Bash(ls -la /d/cgsi/app/\\\\\\(minimal\\\\\\)/sidebar/)",
       "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/\")",
-      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/_components/\")"
+      "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/_components/\")",
+      "Bash(find \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)\" -type f -name \"*.tsx\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name \"*.js\")",
+      "Bash(ls -la \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/\")"
     ],
     "deny": [],
     "ask": []

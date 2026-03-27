@@ -201,7 +201,8 @@ const UpdateSignature = () => {
 				/>
 			</div>
 
-			<div className="bg-white rounded-xl flex-1 flex flex-col justify-between pt-6 overflow-hidden min-h-0">
+			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
+				<div className="flex-1 overflow-y-auto pt-6">
 				{status === "update" ? (
 					<Tabs defaultValue={tab} className="pad-x gap-0">
 						<TabsList className="">
@@ -401,9 +402,10 @@ const UpdateSignature = () => {
 						className="m-auto px-4"
 					/>
 				)}
+				</div>
 
 				{status === "update" ? (
-					<div className="">
+					<div className="shrink-0">
 						{/* Toast */}
 						{showToast != "" && (
 							<div className="rounded-full bg-theme-blue-085 text-xs w-fit mx-auto mb-4 px-4 py-2 shadow-[0px_2px_16.299999237060547px_-1px_rgba(33,64,154,0.10)] text-theme-blue-03">
@@ -428,7 +430,7 @@ const UpdateSignature = () => {
 						</div>
 					</div>
 				) : status === "failed" ? (
-					<div className="px-6 py-4 border-t w-full relative flex gap-2">
+					<div className="shrink-0 pad-x py-4 border-t w-full relative flex gap-2">
 						<Button
 							className="w-full text-base font-normal"
 							onClick={() => setStatus("update")}
@@ -437,7 +439,7 @@ const UpdateSignature = () => {
 						</Button>
 					</div>
 				) : (
-					<div className="px-6 py-4 border-t w-full relative flex gap-2">
+					<div className="shrink-0 pad-x py-4 border-t w-full relative flex gap-2">
 						<Button
 							className="w-full text-base font-normal"
 							onClick={() => router.push(INTERNAL_ROUTES.HOME)}
