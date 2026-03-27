@@ -20,6 +20,8 @@ import { useNotificationStore } from "@/stores/notificationStore";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { redirectToNTP } from "@/lib/services/externalSSOService";
 import HeaderPerson from "@/public/icons/CustomPerson.svg";
+import { usePermission } from "@/hooks/usePermission";
+import { FEATURE_ACCESS } from "@/constants/accessControl";
 
 const MenuItem = ({ title, link }: { title: string; link: string }) => {
 	const pathname = usePathname();
@@ -122,6 +124,8 @@ const Header = () => {
 	const openSheet = useSheetStore((state) => state.openSheet);
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const unreadCount = useNotificationStore((state) => state.unreadCount);
+	const { isAllowed: showNotificationBell } = usePermission(FEATURE_ACCESS.notification_bell);
+	const { isAllowed: showPortfolioLink } = usePermission(FEATURE_ACCESS.header_portfolio_link);
 	const pathName = usePathname();
 
 	const [isTradeLoading, setIsTradeLoading] = useState(false);
@@ -159,25 +163,27 @@ const Header = () => {
 					<div className="hidden md:flex gap-6">
 						<MenuItem title="Home" link={INTERNAL_ROUTES.HOME} />
 						<MenuItem title="Discover" link={INTERNAL_ROUTES.DISCOVER} />
-						<MenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />
+						{showPortfolioLink && <MenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />}
 					</div>
 				</div>
 
 				<div className="flex items-center my-auto gap-4 md:gap-6">
 					<div className="flex gap-4 md:gap-6">
-						<div onClick={() => handleSheetOpen("notification")} className="relative">
-							<Image
-								className="cursor-pointer w-6 md:w-8"
-								src={
-									unreadCount > 0
-										? "/icons/header/Notif-Light-Red.svg"
-										: "/icons/header/Notif-Light.svg"
-								}
-								alt="Notification"
-								width={32}
-								height={32}
-							/>
-						</div>
+						{showNotificationBell && (
+							<div onClick={() => handleSheetOpen("notification")} className="relative">
+								<Image
+									className="cursor-pointer w-6 md:w-8"
+									src={
+										unreadCount > 0
+											? "/icons/header/Notif-Light-Red.svg"
+											: "/icons/header/Notif-Light.svg"
+									}
+									alt="Notification"
+									width={32}
+									height={32}
+								/>
+							</div>
+						)}
 						<div onClick={() => handleSheetOpen("profile")}>
 							<HeaderPerson
 								className={cn(
@@ -222,7 +228,7 @@ const Header = () => {
 							<DropdownMenuContent className="w-64 px-0" align="end">
 								<MobileMenuItem title="Home" link={INTERNAL_ROUTES.HOME} />
 								<MobileMenuItem title="Discover" link={INTERNAL_ROUTES.DISCOVER} />
-								<MobileMenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />
+								{showPortfolioLink && <MobileMenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />}
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>

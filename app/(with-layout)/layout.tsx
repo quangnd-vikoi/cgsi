@@ -4,27 +4,30 @@ import { Toaster } from "@/components/ui/toaster";
 import { SheetManager } from "@/app/(minimal)/sidebar/SheetManager";
 import { NotificationPolling } from "@/components/NotificationPolling";
 import { DataInitializer } from "@/components/DataInitializer";
+import { RouteGuard } from "@/components/RouteGuard";
 
 export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<div className="flex flex-col min-h-screen">
-			<NotificationPolling />
-			<DataInitializer />
+		<RouteGuard>
+			<div className="flex flex-col min-h-screen">
+				<NotificationPolling />
+				<DataInitializer />
 
-			<header className="bg-white z-[100] sticky top-0 shadow-sm">
-				<Header />
-			</header>
+				<header className="bg-white z-[100] sticky top-0 shadow-sm">
+					<Header />
+				</header>
 
-			<AnnouncementBar />
+				<AnnouncementBar />
 
-			<main className="flex-1 flex flex-col min-h-0">{children}</main>
+				<main className="flex-1 flex flex-col min-h-0">{children}</main>
 
-			<footer>
-				<Footer />
-			</footer>
+				<footer>
+					<Footer />
+				</footer>
 
-			<SheetManager />
-			<Toaster position="bottom-right" />
-		</div>
+				<SheetManager />
+				<Toaster position="bottom-right" />
+			</div>
+		</RouteGuard>
 	);
 }
