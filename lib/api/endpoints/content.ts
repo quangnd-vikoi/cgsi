@@ -12,7 +12,7 @@ export const contentEndpoints = {
 	 * @param lang - Language ID (1 = EN, 2 = CN)
 	 * Reference: https://www.cgsi.com.sg/notices?lang=EN
 	 */
-	announcements: (lang: Language = LANG.EN) => `/GetAnnouncement?lang=${lang}`,
+	announcements: (lang: Language = LANG.EN) => `/getiTradeAnnouncement?lang=${lang}`,
 
 	/**
 	 * Get Notices

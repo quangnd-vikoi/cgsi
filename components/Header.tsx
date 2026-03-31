@@ -32,7 +32,9 @@ const MenuItem = ({ title, link }: { title: string; link: string }) => {
 			aria-current={isActive ? "page" : undefined}
 			className={cn(
 				"cursor-pointer text-typo-primary text-[18px] relative inline-block after:content-[''] after:absolute after:w-full after:h-[2px] after:-bottom-1 after:left-0 after:bg-cgs-blue after-origin-left after:transition-transform after:duration-300 after:ease-out",
-				isActive ? "text-cgs-blue font-semibold after:scale-x-100" : "font-normal hover:after:scale-x-100 after:scale-x-0"
+				isActive
+					? "text-cgs-blue font-semibold after:scale-x-100"
+					: "font-normal hover:after:scale-x-100 after:scale-x-0",
 			)}
 		>
 			{title}
@@ -48,7 +50,7 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 			<DropdownMenuItem
 				className={cn(
 					"cursor-pointer px-3 py-[10px]",
-					isActive && "text-cgs-blue bg-status-selected"
+					isActive && "text-cgs-blue bg-status-selected",
 				)}
 			>
 				<div className="flex justify-between items-center w-full">
@@ -63,8 +65,12 @@ const MobileMenuItem = ({ title, link }: { title: string; link: string }) => {
 const DISMISSED_KEY = "announcement-dismissed";
 
 interface AnnouncementItem {
-	Announcement_Desc: string;
-	Anchor_Link: string;
+	Announcement_Type: string;
+	Announcement_Type_Label: string;
+	Announcement_Title: string;
+	Announcement_Content: string;
+	Announcement_Start_Date: string;
+	Announcement_End_Date: string;
 }
 
 export const AnnouncementBar = () => {
@@ -101,20 +107,25 @@ export const AnnouncementBar = () => {
 
 	return (
 		<div className="bg-status-warning w-full px-4 py-2 relative">
-			<div className="flex justify-center items-center gap-4 max-w-[1320px] mx-auto">
-				<TriangleAlert size={16} className="shrink-0" />
-				<p className="text-xs text-typo-primary line-clamp-2 md:line-clamp-1 flex-1 min-w-0">
-					{announcement.Announcement_Desc}
-				</p>
-				<div className="flex gap-4 shrink-0">
+			<div className="flex justify-between items-center gap-0 max-w-[1320px] mx-auto">
+				<div></div>
+				<div className="flex gap-4 min-w-0">
+					<TriangleAlert size={16} className="shrink-0" />
+					<p className="text-xs text-typo-primary truncate min-w-0 flex-1">
+						{announcement.Announcement_Title}
+						{announcement.Announcement_Title}
+						{announcement.Announcement_Title}
+					</p>
 					<div
 						className="text-xs font-semibold underline cursor-pointer"
-						onClick={() => setOpenSheet("announcement", { anchor_link: announcement.Anchor_Link })}
+						onClick={() => setOpenSheet("announcement", { announcement })}
 					>
 						Learn More
 					</div>
-					<X size={16} className="block cursor-pointer" onClick={handleClose} />
 				</div>
+				{/* <div className="flex gap-4 shrink-0"> */}
+				<X size={16} className="block cursor-pointer shrink-0 ml-4" onClick={handleClose} />
+				{/* </div> */}
 			</div>
 		</div>
 	);
@@ -142,11 +153,7 @@ const Header = () => {
 
 	const isIconFill = openSheet
 		? !["notification", "detail_notification"].includes(openSheet)
-		: !(
-			pathName === "/" ||
-			pathName.startsWith("/discover") ||
-			pathName.startsWith("/portfolio")
-		);
+		: !(pathName === "/" || pathName.startsWith("/discover") || pathName.startsWith("/portfolio"));
 
 	const handleSheetOpen = (type: "profile" | "notification") => {
 		if (type == "profile") setOpenSheet("profile");
@@ -188,9 +195,7 @@ const Header = () => {
 							<HeaderPerson
 								className={cn(
 									"cursor-pointer w-6 md:w-8",
-									isIconFill
-										? "text-cgs-blue [&_path]:fill-cgs-blue"
-										: "text-icon-light"
+									isIconFill ? "text-cgs-blue [&_path]:fill-cgs-blue" : "text-icon-light",
 								)}
 							/>
 						</div>
@@ -202,7 +207,7 @@ const Header = () => {
 						variant={"default"}
 						className={cn(
 							"h-8 rounded bg-cgs-blue px-2 md:px-3 font-medium hover:bg-cgs-blue/70 text-sm",
-							isTradeLoading && "cursor-wait opacity-70"
+							isTradeLoading && "cursor-wait opacity-70",
 						)}
 					>
 						<Image
@@ -228,7 +233,9 @@ const Header = () => {
 							<DropdownMenuContent className="w-64 px-0" align="end">
 								<MobileMenuItem title="Home" link={INTERNAL_ROUTES.HOME} />
 								<MobileMenuItem title="Discover" link={INTERNAL_ROUTES.DISCOVER} />
-								{showPortfolioLink && <MobileMenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />}
+								{showPortfolioLink && (
+									<MobileMenuItem title="Portfolio" link={INTERNAL_ROUTES.PORFOLIO} />
+								)}
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>
