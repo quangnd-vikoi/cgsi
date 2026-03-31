@@ -79,7 +79,7 @@ export const PaginationFooter = ({
         <div className={`flex flex-col gap-3 md:gap-4 ${className}`}>
             <div className="flex justify-between items-center">
                 {/* Items count */}
-                <div className="text-xs md:text-sm text-typo-secondary shrink-0 w-[200px]">
+                <div className="text-rsp-xs text-typo-secondary shrink-0 w-[200px]">
                     {loading ? (
                         <Skeleton className="h-4 w-36" />
                     ) : totalItems === 0 ? (

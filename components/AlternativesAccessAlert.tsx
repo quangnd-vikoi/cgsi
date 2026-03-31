@@ -19,7 +19,7 @@ export function AlternativesAccessAlert({ open, onOpenChange, onCancel, onAction
 			onOpenChange={onOpenChange}
 			title="Access to Alternative Investments"
 			description={
-				<span className="text-sm md:text-base">
+				<span className="text-rsp-sm">
 					Alternative Investments are available only to Accredited Investors. Please download
 					and fill the{" "}
 					<span

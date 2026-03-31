@@ -73,9 +73,9 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 		<div className="space-y-4">
 			{/* Exchange Rate Table */}
 			<div className="rounded-t-lg overflow-x-auto">
-				<div className="min-w-[680px]">
+				<div className="min-w-[580px]">
 					{/* Table Header */}
-					<div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 bg-background-section border-b border-stroke-secondary text-sm font-semibold text-typo-primary">
+					<div className="grid grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)] gap-x-3 px-3 py-2.5 bg-background-section border-b border-stroke-secondary text-sm font-semibold text-typo-primary">
 						<button
 							className="whitespace-nowrap w-full flex items-center cursor-pointer select-none p-0 m-0 border-0 bg-transparent font-semibold text-sm text-typo-primary"
 							onClick={() => handleSort("fromCurrency")}
@@ -127,7 +127,7 @@ export const ExchangeRateTable: React.FC<ExchangeRateTableProps> = () => {
 							sortedRates.map((rate, index) => (
 								<div
 									key={index}
-									className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,2fr)] gap-x-6 px-4 py-3 text-sm text-typo-primary items-center"
+									className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,1.3fr)] gap-x-6 px-4 py-3 text-sm text-typo-primary items-center"
 								>
 									<div>{rate.fromCurrency}</div>
 									<div>{rate.toCurrency}</div>

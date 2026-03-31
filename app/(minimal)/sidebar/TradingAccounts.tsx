@@ -71,20 +71,20 @@ const TradingAccounts = () => {
 						className="p-4 border border-stroke-secondary rounded mt-6 cursor-pointer hover:border-cgs-blue hover:bg-theme-blue-100/50 transition-colors group"
 						onClick={() => handleDetailsClick(acc.accountNo)}
 					>
-						<div className="flex justify-between items-start">
+						<div className="flex justify-between items-center">
 							<div>
-								<p className="text-xs font-normal">
+								<p className="text-rsp-xs font-normal">
 									{(acc.accountType ? ACCOUNT_TYPE_LABELS[acc.accountType] : null) ??
 										acc.accountType ??
 										"Trading Account"}
 								</p>
-								<div className="flex gap-2 items-center mt-1">
+								<div className="flex gap-2 items-center mt-2">
 									<p className="text-lg font-semibold">{acc.accountNo}</p>
 								</div>
 							</div>
 							<ChevronRight
-								className="text-cgs-blue group-hover:translate-x-0.5 transition-transform"
-								size={14}
+								className="text-cgs-blue"
+								size={20}
 							/>
 						</div>
 						<Separator className="h-[1px] bg-stroke-secondary my-4" />

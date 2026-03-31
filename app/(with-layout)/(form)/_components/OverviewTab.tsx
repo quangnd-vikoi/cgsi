@@ -254,7 +254,7 @@ const OverviewTab = () => {
 				</div>
 			)}
 			<div className="mb-4 md:mb-6">
-				<h4 className="text-base md:text-lg font-semibold text-typo-primary mb-2 md:mb-3">
+				<h4 className="text-rsp-base font-semibold text-typo-primary mb-2 md:mb-3">
 					{productDetails.productName}
 				</h4>
 				{productDetails.content1 && (

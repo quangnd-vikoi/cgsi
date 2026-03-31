@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, EyeClosed, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Alert from "@/components/Alert";
@@ -44,13 +44,7 @@ const DevelopmentBanner = () => {
 								variant="ghost"
 								className="flex-1 md:flex-none p-0 h-auto font-normal text-cgs-blue text-sm whitespace-nowrap gap-1 hover:bg-transparent hover:text-cgs-blue/75"
 							>
-								<Image
-									src={"/icons/portfolio/dollar-sign.svg"}
-									className="hidden md:block"
-									alt="FX Rate"
-									width={20}
-									height={20}
-								/>
+								<EyeOff />
 								View FX Rate
 							</Button>
 						}
@@ -66,14 +60,14 @@ const DevelopmentBanner = () => {
 							<Button
 								variant="outline"
 								size="sm"
-								className="flex-1 md:flex-none bg-white hover:bg-cgs-blue/5 border-cgs-blue hover:border-cgs-blue/80 h-7 text-cgs-blue hover:text-cgs-blue/75 whitespace-nowrap"
+								className="flex-1 md:flex-none bg-white hover:bg-cgs-blue/5 border-cgs-blue hover:border-cgs-blue/80 h-7 text-cgs-blue hover:text-cgs-blue/75 whitespace-nowrap rounded"
 							>
 								Learn More
 							</Button>
 						}
 						title="Disclaimer"
 						description={
-							<div className="text-sm md:text-base text-typo-secondary">
+							<div className="text-rsp-sm text-typo-secondary">
 								<p>
 									Information herein should only serve as a guide and should not be relied
 									upon in any way. Please refer to your eStatements for more information.
@@ -115,7 +109,7 @@ const Portfolio = () => {
 	const showFullPortfolio = userType !== USER_TYPE.TR || isTRClientAccount;
 
 	return (
-		<div className="bg-background-section py-6">
+		<div className="bg-background-section py-6 min-h-[calc(100vh-102px)]">
 			<div className="container-default">
 				<DevelopmentBanner />
 

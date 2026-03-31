@@ -40,7 +40,7 @@ const AgreementItem = ({
 			className="w-full text-left hover:opacity-80 transition-opacity cursor-pointer p-4 disabled:opacity-60"
 		>
 			<div className="flex justify-between items-start mb-3">
-				<div className="text-sm md:text-base font-normal text-typo-primary">{displayTitle}</div>
+				<div className="text-rsp-sm font-normal text-typo-primary">{displayTitle}</div>
 				{loading ? (
 					<Loader2 className="w-5 h-5 text-cgs-blue flex-shrink-0 mt-0.5 animate-spin" />
 				) : (
@@ -48,7 +48,7 @@ const AgreementItem = ({
 				)}
 			</div>
 
-			<div className="flex justify-between text-xs md:text-sm text-typo-tertiary font-normal">
+			<div className="flex justify-between text-rsp-xs text-typo-tertiary font-normal">
 				<span>Version No. {record.versionNo}</span>
 				<span>Accepted: {formatDate(record.acceptedOn)}</span>
 			</div>
@@ -132,12 +132,12 @@ const Acknowledgements = () => {
 				<CustomSheetTitle backTo={"profile"} title="Acknowledgements" />
 			</div>
 
-			<div className="text-base md:text-lg text-typo-primary font-semibold">Agreements List</div>
-			<div className="mt-2 text-sm md:text-base text-typo-secondary">
+			<div className="text-rsp-base text-typo-primary font-semibold">Agreements List</div>
+			<div className="mt-2 text-rsp-sm text-typo-secondary">
 				Details of agreements and declarations you have acknowledged are displayed here for your
 				reference.
 			</div>
-			<div className="pb-6 pt-3 flex flex-col gap-10 overflow-y-auto flex-1">
+			<div className="pb-6 pt-6 flex flex-col gap-10 overflow-y-auto flex-1">
 				{categories.map((categoryData, index) => (
 					<Group key={index} title={categoryData.category}>
 						{categoryData.records.length > 0 ? (
@@ -161,11 +161,11 @@ const Acknowledgements = () => {
 			<Dialog open={!!dialogData} onOpenChange={(open) => !open && setDialogData(null)}>
 				<DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0 gap-0">
 					<DialogHeader className="flex-shrink-0 p-4 md:p-6 pb-3 md:pb-3">
-						<DialogTitle className="text-base md:text-lg font-semibold text-typo-primary pr-8">
+						<DialogTitle className="text-rsp-base font-semibold text-typo-primary pr-8">
 							{dialogData && stripHtmlTags(dialogData.title)}
 						</DialogTitle>
 						{dialogData && (
-							<div className="flex gap-4 text-xs md:text-sm text-typo-tertiary">
+							<div className="flex gap-4 text-rsp-xs text-typo-tertiary">
 								<span>Version No. {dialogData.versionNo}</span>
 								<span>Accepted: {formatDate(dialogData.acceptedOn)}</span>
 							</div>

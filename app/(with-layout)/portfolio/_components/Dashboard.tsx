@@ -75,8 +75,8 @@ const DashboardBlock = ({
 	return (
 		<div className="bg-background-selected p-3 md:p-4 rounded border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer flex justify-between items-center">
 			<div className="">
-				<p className="text-xs md:text-sm text-typo-secondary">{title}</p>
-				<div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
+				<p className="text-rsp-xs text-typo-secondary">{title}</p>
+				<div className="text-rsp-sm flex justify-between items-end mt-2 flex-wrap gap-2">
 					{isLoading ? (
 						<Skeleton className="h-5 w-28" />
 					) : (
@@ -145,7 +145,7 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false, isTR = false }: 
 
 	const totalAssetBlock = (
 		<div className="w-full">
-			<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
+			<p className="text-rsp-xs text-typo-secondary">Total Asset Value</p>
 			{isLoading ? (
 				<Skeleton className="mt-2 h-8 w-40" />
 			) : (
@@ -162,7 +162,7 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false, isTR = false }: 
 
 	const trRepBlock = (
 		<div className="w-full">
-			<p className="text-xs md:text-sm text-typo-secondary">Trading Representative</p>
+			<p className="text-rsp-xs text-typo-secondary">Trading Representative</p>
 			<p className="mt-2 text-base leading-6 font-semibold">
 				{selectedAccount?.trName || "N/A"}
 			</p>
@@ -430,7 +430,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				<div className="flex w-full justify-end">
 					<Link
 						href={INTERNAL_ROUTES.SETTLE}
-						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75"
+						className="flex text-cgs-blue text-rsp-xs font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75"
 					>
 						<p>View Contracts & Contra</p>
 						<ChevronRight className="inline-block ml-0.5" size={16} />

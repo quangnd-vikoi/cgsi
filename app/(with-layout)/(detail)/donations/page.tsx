@@ -53,7 +53,7 @@ const Donations = () => {
 										Support Change for Charity
 									</DialogTitle>
 								</DialogHeader>
-								<div className="flex flex-col gap-4 pad-x text-sm md:text-base font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto">
+								<div className="flex flex-col gap-4 pad-x text-rsp-sm font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto">
 									<p>Making a positive impact on someone’s life need not be complicated.</p>
 									<p>
 										The COVID-19 pandemic, while devastating in its impact both

@@ -78,8 +78,8 @@ const CONTRA_COLS: { label: string; col: SortCol; right?: boolean; w: string; sk
 
 const ACTION_W = "min-w-[120px]";
 
-const thBase = "text-xs md:text-sm font-semibold text-typo-primary whitespace-nowrap px-4 py-4";
-const tdBase = "text-xs md:text-sm text-typo-primary whitespace-nowrap px-4 py-3";
+const thBase = "text-rsp-xs font-semibold text-typo-primary whitespace-nowrap px-4 py-4";
+const tdBase = "text-rsp-xs text-typo-primary whitespace-nowrap px-4 py-3";
 
 export function ContractsTable({ contracts, activeTab, onOpenContraDetails, onPayNow, loading = false, payingId }: ContractsTableProps) {
 	const COLS = activeTab === "contra" ? CONTRA_COLS : CONTRACT_COLS;

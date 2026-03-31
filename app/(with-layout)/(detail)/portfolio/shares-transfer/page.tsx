@@ -34,8 +34,8 @@ interface InfoRowProps {
 
 const InfoRow = ({ label, value }: InfoRowProps) => (
     <div className="grid grid-cols-2 gap-2">
-        <p className="text-sm md:text-base text-typo-secondary">{label}</p>
-        <p className="text-sm md:text-base text-typo-primary font-medium text-right">
+        <p className="text-rsp-sm text-typo-secondary">{label}</p>
+        <p className="text-rsp-sm text-typo-primary font-medium text-right">
             {value}
         </p>
     </div>
@@ -54,7 +54,7 @@ const SuccessStep = () => {
                 description={
                     <div className="text-sm text-typo-secondary text-center mb-4 space-y-4">
                         <p>It will be processed within 7 business days. </p>
-                        <p className="px-4">Please note that your request will be on hold until all outstanding contracts have been cleared.  </p>
+                        <p className="px-4">Please note that your request will be on hold until all outstanding contracts have been cleared. </p>
                         <p className="px-3">
                             You will be notified via email once the transfer has been completed.
                         </p>
@@ -154,7 +154,7 @@ const SharesTransfer = () => {
                                         <>
                                             {["Client Name", "NRIC/ Passport", "CDP Account No.", "Broker"].map((label) => (
                                                 <div key={label} className="grid grid-cols-2 gap-2">
-                                                    <p className="text-sm md:text-base text-typo-secondary">{label}</p>
+                                                    <p className="text-rsp-sm text-typo-secondary">{label}</p>
                                                     <div className="h-4 w-32 bg-stroke-secondary animate-pulse rounded ml-auto" />
                                                 </div>
                                             ))}
@@ -170,13 +170,13 @@ const SharesTransfer = () => {
                                 </div>
 
                                 {/* Transfer Statement */}
-                                <p className="text-sm md:text-base text-typo-primary mb-6">
+                                <p className="text-rsp-sm text-typo-primary mb-6">
                                     I would like to transfer my SGX holdings in my CDP Account to the following account:
                                 </p>
 
                                 {/* Account Selection - Disabled/Read-only */}
                                 <div className="mb-6">
-                                    <Label className="text-sm md:text-base text-typo-secondary mb-2 block">Account</Label>
+                                    <Label className="text-rsp-sm text-typo-secondary mb-2 block">Account</Label>
                                     <Select value={transferAccount} onValueChange={setTransferAccount} disabled>
                                         <SelectTrigger className="w-full opacity-100 cursor-not-allowed disabled:bg-status-disable-secondary disabled:text-typo-tertiary">
                                             <SelectValue placeholder="Select account" />
@@ -185,7 +185,7 @@ const SharesTransfer = () => {
                                             {accountList.map((account) => (
                                                 <SelectItem key={account.acctNo} value={account.acctNo}>
                                                     <div className="flex flex-col items-start">
-                                                        <span className="text-sm md:text-base font-medium text-typo-primary">
+                                                        <span className="text-rsp-sm font-medium text-typo-primary">
                                                             {account.acctType ? `(${account.acctType}) ` : ""}{account.acctNo}
                                                         </span>
                                                     </div>
@@ -193,7 +193,7 @@ const SharesTransfer = () => {
                                             ))}
                                         </SelectContent>
                                     </Select>
-                                    <p className="text-xs md:text-sm text-typo-secondary mt-2">
+                                    <p className="text-rsp-xs text-typo-secondary mt-2">
                                         Trading Representative: {selectedAccountInfo?.trName ?? ""}
                                     </p>
                                 </div>

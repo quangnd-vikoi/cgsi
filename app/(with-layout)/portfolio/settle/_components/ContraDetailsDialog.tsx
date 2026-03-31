@@ -66,7 +66,7 @@ export function ContraDetailsDialog({
 						{/* Contra ID */}
 						<div className="grid grid-cols-2 md:flex md:flex-col items-center md:items-start">
 							<p className="text-sm text-typo-secondary md:mb-1">Contra ID</p>
-							<p className="text-sm md:text-base font-medium text-typo-primary text-right md:text-left">
+							<p className="text-rsp-sm font-medium text-typo-primary text-right md:text-left">
 								{contraId}
 							</p>
 						</div>
@@ -74,7 +74,7 @@ export function ContraDetailsDialog({
 						{/* Contra Date */}
 						<div className="grid grid-cols-2 md:flex md:flex-col items-center md:items-start">
 							<p className="text-sm text-typo-secondary md:mb-1">Contra Date</p>
-							<p className="text-sm md:text-base font-medium text-typo-primary text-right md:text-left">
+							<p className="text-rsp-sm font-medium text-typo-primary text-right md:text-left">
 								{contraDate}
 							</p>
 						</div>
@@ -82,7 +82,7 @@ export function ContraDetailsDialog({
 						{/* Due Date */}
 						<div className="grid grid-cols-2 md:flex md:flex-col items-center md:items-start">
 							<p className="text-sm text-typo-secondary md:mb-1">Due Date</p>
-							<p className="text-sm md:text-base font-medium text-typo-primary text-right md:text-left">
+							<p className="text-rsp-sm font-medium text-typo-primary text-right md:text-left">
 								{dueDate}
 							</p>
 						</div>
@@ -91,7 +91,7 @@ export function ContraDetailsDialog({
 						<div className="grid grid-cols-2 md:flex md:flex-col items-center md:items-start">
 							<p className="text-sm text-typo-secondary md:mb-1">Net Gain/ Loss</p>
 							<p
-								className={`text-sm md:text-base font-medium text-right md:text-left ${netGainLoss >= 0 ? "text-status-success" : "text-status-error"
+								className={`text-rsp-sm font-medium text-right md:text-left ${netGainLoss >= 0 ? "text-status-success" : "text-status-error"
 									}`}
 							>
 								{netGainLoss >= 0 ? "+" : "-"}{" "}

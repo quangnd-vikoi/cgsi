@@ -15,7 +15,7 @@ const Group = ({ title, children, childrenClassName, showSeparator = true }: Gro
 
 	return (
 		<div className="w-full">
-			<div className="bg-theme-blue-09 px-2 py-1 rounded-t font-medium text-xs border border-b-0 border-theme-blue-09 w-fit text-typo-tertiary">
+			<div className="bg-theme-blue-09 px-2 py-1 rounded-t font-medium text-rsp-xs border border-b-0 border-theme-blue-09 w-fit text-typo-secondary">
 				{title}
 			</div>
 			<div className={cn("flex flex-col border rounded rounded-tl-none", childrenClassName)}>

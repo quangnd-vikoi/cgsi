@@ -82,7 +82,7 @@ const CampaignCard = memo(
 				{/* Content */}
 				<div className="flex flex-col flex-1 p-4 gap-4 md:gap-[18px]">
 					{/* Category Tag */}
-					<span className="text-xs md:text-sm text-typo-tertiary mb-1">
+					<span className="text-rsp-xs text-typo-tertiary mb-1">
 						{campaign.Tagging_Timing || "Campaign"}
 					</span>
 
@@ -92,7 +92,7 @@ const CampaignCard = memo(
 					</h3>
 
 					{/* Description - always 3 lines */}
-					<p className=" text-sm md:text-base text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 md:leading-6 font-normal pb-3">
+					<p className=" text-rsp-sm text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 md:leading-6 font-normal pb-3">
 						{campaign.MastheadBasic_Article_Short}
 					</p>
 				</div>

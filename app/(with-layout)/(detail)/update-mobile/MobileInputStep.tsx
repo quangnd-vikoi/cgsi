@@ -128,11 +128,11 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 
 	return (
 		<div className="pad-x">
-			<p className="text-base font-bold mb-6">Enter your new mobile number</p>
+			<p className="text-rsp-base font-semibold mb-6">Enter new mobile number</p>
 			<div className="flex w-full relative">
 				<Dialog open={open} onOpenChange={setOpen}>
 					<DialogTrigger className="absolute left-1 -top-0.5">
-						<div className="flex gap-2 items-center px-1 shrink-0 text-sm font-semibold">
+						<div className="flex gap-2 items-center px-1 shrink-0 text-rsp-sm font-normal text-typo-primary">
 							<CircleFlag
 								countryCode={selectedCountry.code.toLowerCase()}
 								className="h-5 w-5"
@@ -251,7 +251,7 @@ export const MobileInputStep = ({ phoneNumber, setPhoneNumber, error, setError, 
 					</DialogContent>
 				</Dialog>
 				<Input
-					className="flex-1 pl-24 text-sm focus:bg-background-section focus:!border-b-cgs-blue"
+					className="flex-1 pl-24 text-rsp-sm font-normal text-typo-primary focus:bg-background-section focus:!border-b-cgs-blue"
 					placeholder="Type Here"
 					value={phoneNumber}
 					onChange={handlePhoneChange}

@@ -1,13 +1,13 @@
 "use client";
 import Title from "@/components/Title";
 import { Loader2, X } from "lucide-react";
+import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
-import Alert from "@/components/Alert";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/toaster";
@@ -44,14 +44,14 @@ const InputStep = ({
 
 	return (
 		<div className="pad-x">
-			<h2 className="text-base font-semibold mb-6">Enter Your New Email Address</h2>
+			<h2 className="text-rsp-base font-semibold mb-6">Enter new email address</h2>
 
 			<Input
 				placeholder="E.g. user@gmail.com"
 				value={newEmail}
 				onChange={handleEmailChange}
 				onKeyPress={handleKeyPress}
-				className="focus-visible:!border-b-cgs-blue focus-visible:!border-b focus:bg-background-selected"
+				className="text-rsp-sm font-normal text-typo-primary focus-visible:!border-b-cgs-blue focus-visible:!border-b focus:bg-background-selected"
 				type="email"
 				error={error}
 				disabled={isSubmitting}
@@ -65,7 +65,6 @@ const OTPStep = ({
 	otp,
 	error,
 	setOtp,
-	setStep,
 	onResend,
 	isSubmitting,
 	setError,
@@ -76,7 +75,6 @@ const OTPStep = ({
 	otp: string;
 	error: string;
 	setOtp: (value: string) => void;
-	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	onResend: () => void;
 	isSubmitting: boolean;
 	setError: (value: string) => void;
@@ -103,20 +101,13 @@ const OTPStep = ({
 
 	return (
 		<div className="pad-x">
-			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
+			<h2 className="text-rsp-base font-semibold mb-2">Input OTP Code</h2>
 			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
 				<span className="ml-1">{email}</span>
 			</p>
 
-			<p
-				className="mb-6 text-cgs-blue cursor-pointer text-base font-normal mt-1 underline underline-offset-2"
-				onClick={() => setStep(1)}
-			>
-				Wrong Email Address?
-			</p>
-
-			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting}>
+			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting} containerClassName="overflow-hidden mt-4">
 				<InputOTPGroup className="justify-between w-full">
 					<InputOTPSlot index={0} error={error} />
 					<InputOTPSlot index={1} error={error} />
@@ -128,13 +119,13 @@ const OTPStep = ({
 			</InputOTP>
 
 			{error && (
-				<p className="text-status-error text-xs mt-1 flex items-center gap-1">
+				<p className="text-status-error text-rsp-xs font-medium mt-1 flex items-center gap-1">
 					<CustomCircleAlert size={15} />
 					{error}
 				</p>
 			)}
 
-			<div className="text-center w-full text-sm text-status-disable-primary font-semibold mt-6">
+			<div className="text-center w-full text-rsp-sm text-status-disable-primary font-semibold mt-6">
 				{countdown > 0 ? (
 					<>Resend in : {formatTime(countdown)}</>
 				) : (
@@ -292,14 +283,16 @@ const UpdateEmail = () => {
 			<div className="shrink-0">
 				<Title
 					title="Update Email"
+					showBackButton={step === 2}
+					onBack={() => setStep(1)}
 					rightContent={
 						step !== 3 ? (
 							<Alert
 								trigger={<X />}
-								title="Exit Update Email Address?"
+								title="Exit Update Email?"
 								description={<p>Any information previously entered will be discarded.</p>}
 								actionText="Back To Form"
-								cancelText="Quit Anyways"
+								cancelText="Exit without Saving"
 								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
 							/>
 						) : null
@@ -309,33 +302,32 @@ const UpdateEmail = () => {
 
 			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
 				<div className="flex-1 overflow-y-auto pt-6">
-				{step === 1 && (
-					<InputStep
-						newEmail={newEmail}
-						setNewEmail={setNewEmail}
-						error={error}
-						setError={setError}
-						onContinue={handleStep1Continue}
-						isSubmitting={isSubmitting}
-					/>
-				)}
+					{step === 1 && (
+						<InputStep
+							newEmail={newEmail}
+							setNewEmail={setNewEmail}
+							error={error}
+							setError={setError}
+							onContinue={handleStep1Continue}
+							isSubmitting={isSubmitting}
+						/>
+					)}
 
-				{step === 2 && (
-					<OTPStep
-						email={newEmail}
-						otp={otp}
-						setOtp={setOtp}
-						setStep={setStep}
-						error={error}
-						setError={setError}
-						onResend={handleResendOtp}
-						isSubmitting={isSubmitting}
-						countdown={countdown}
-						resetCountdown={resetCountdown}
-					/>
-				)}
+					{step === 2 && (
+						<OTPStep
+							email={newEmail}
+							otp={otp}
+							setOtp={setOtp}
+							error={error}
+							setError={setError}
+							onResend={handleResendOtp}
+							isSubmitting={isSubmitting}
+							countdown={countdown}
+							resetCountdown={resetCountdown}
+						/>
+					)}
 
-				{step === 3 && <ConfirmStep />}
+					{step === 3 && <ConfirmStep />}
 				</div>
 				<div className="shrink-0">
 					{showOtpBanner && (
@@ -345,11 +337,17 @@ const UpdateEmail = () => {
 					)}
 					<div className="pad-x py-4 border-t w-full relative">
 						<Button
-							className="w-full text-base font-normal"
+							className="w-full text-base font-medium"
 							onClick={handleContinue}
 							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
-							{isSubmitting ? <Loader2 className="animate-spin" /> : step === 3 ? "Back to Home" : "Continue"}
+							{isSubmitting ? (
+								<Loader2 className="animate-spin" />
+							) : step === 3 ? (
+								"Back to Home"
+							) : (
+								"Continue"
+							)}
 						</Button>
 					</div>
 				</div>

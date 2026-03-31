@@ -88,7 +88,9 @@
       "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/\")",
       "Bash(ls -la \"d:/cgsi/app/\\(with-layout\\)/\\(detail\\)/market-data/_components/\")",
       "Bash(find \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)\" -type f -name \"*.tsx\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name \"*.js\")",
-      "Bash(ls -la \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/\")"
+      "Bash(ls -la \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/\")",
+      "Bash(ls -la \"D:/cgsi/app/\\(minimal\\)/sidebar/\")",
+      "Bash(cat -A \"D:/cgsi/app/\\(with-layout\\)/\\(detail\\)/update-mobile/page.tsx\")"
     ],
     "deny": [],
     "ask": []

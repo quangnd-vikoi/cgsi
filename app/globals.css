@@ -284,6 +284,19 @@
 	.pad-x {
 		@apply px-4 md:px-6;
 	}
+
+	/* Responsive text size utilities */
+	.text-rsp-xs {
+		@apply text-xs md:text-sm;
+	}
+
+	.text-rsp-sm {
+		@apply text-sm md:text-base;
+	}
+
+	.text-rsp-base {
+		@apply text-base md:text-lg;
+	}
 }
 
 @utility investment-card {

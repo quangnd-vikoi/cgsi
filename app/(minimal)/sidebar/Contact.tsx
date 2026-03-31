@@ -44,10 +44,10 @@ const Contact = () => {
 								<div className="flex-1">
 									<div className="flex justify-between">
 										<div>
-											<h3 className="text-sm md:text-base font-semibold text-typo-primary mb-1">
+											<h3 className="text-rsp-sm font-semibold text-typo-primary mb-1">
 												{option.title}
 											</h3>
-											<p className="text-xs md:text-sm font-normal text-typo-secondary">
+											<p className="text-rsp-xs font-normal text-typo-secondary">
 												{option.description}
 											</p>
 										</div>
@@ -60,7 +60,7 @@ const Contact = () => {
 									{option.available && (
 										<div className="flex flex-col">
 											<Separator className="my-4" />
-											<div className="text-xs md:text-sm font-normal text-typo-secondary">
+											<div className="text-rsp-xs font-normal text-typo-secondary">
 												<span className="font-semibold mr-1">Available</span>
 												<span className="inline">{option.available}</span>
 											</div>

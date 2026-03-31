@@ -23,6 +23,7 @@ const UpdateSignature = () => {
 	const [error, setError] = useState<string>("");
 	const [showToast, setShowToast] = useState<string>("");
 	const sigCanvas = useRef<SignatureCanvas>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [tab, setTab] = useState<"draw" | "upload">("draw");
 	const { value, setTrue, toggle } = useToggle();
 	const [status, setStatus] = useState<"update" | "success" | "failed">("update");
@@ -88,6 +89,7 @@ const UpdateSignature = () => {
 		setSelectedFile(null);
 		setUploadProgress(0);
 		setPreviewUrl(null);
+		if (fileInputRef.current) fileInputRef.current.value = "";
 	};
 
 	const formatFileSize = (bytes: number) => {
@@ -112,6 +114,7 @@ const UpdateSignature = () => {
 			setSelectedFile(null);
 			setPreviewUrl(null);
 			setUploadProgress(0);
+			if (fileInputRef.current) fileInputRef.current.value = "";
 			setShowToast("Uploaded file has been cleared");
 		}
 	};
@@ -278,7 +281,7 @@ const UpdateSignature = () => {
 														: "border-cgs-blue text-cgs-blue bg-background-section shadow-light-blue cursor-pointer "
 											)}
 										>
-											<p className="text-sm font-normal">Upload Signature</p>
+											<p className="text-rsp-sm font-medium">Upload Signature</p>
 											<FileUp className="" size={24} strokeWidth={1.25} />
 										</div>
 										{error && (
@@ -288,6 +291,7 @@ const UpdateSignature = () => {
 											</p>
 										)}
 										<Input
+											ref={fileInputRef}
 											disabled={selectedFile !== null}
 											id="signature-upload"
 											type="file"
@@ -398,7 +402,9 @@ const UpdateSignature = () => {
 					<ErrorState
 						type="success"
 						title="Signature Updated"
+						titleClassName="text-rsp-base"
 						description="Your signature will be stored securely but won't be visible after upload."
+						descriptionClassName="text-rsp-sm"
 						className="m-auto px-4"
 					/>
 				)}
@@ -421,7 +427,7 @@ const UpdateSignature = () => {
 								Clear
 							</Button>
 							<Button
-								className="w-1/2 text-base font-normal"
+								className="w-1/2 text-base font-medium"
 								onClick={() => handleSubmit()}
 								disabled={isSubmitting}
 							>
@@ -432,7 +438,7 @@ const UpdateSignature = () => {
 				) : status === "failed" ? (
 					<div className="shrink-0 pad-x py-4 border-t w-full relative flex gap-2">
 						<Button
-							className="w-full text-base font-normal"
+							className="w-full text-base font-medium"
 							onClick={() => setStatus("update")}
 						>
 							Try Again
@@ -441,7 +447,7 @@ const UpdateSignature = () => {
 				) : (
 					<div className="shrink-0 pad-x py-4 border-t w-full relative flex gap-2">
 						<Button
-							className="w-full text-base font-normal"
+							className="w-full text-base font-medium"
 							onClick={() => router.push(INTERNAL_ROUTES.HOME)}
 						>
 							Back to Home

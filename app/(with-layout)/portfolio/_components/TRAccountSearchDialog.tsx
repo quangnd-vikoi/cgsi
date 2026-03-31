@@ -396,7 +396,7 @@ const TRAccountSearchDialog = ({
 												key={account.accountNo}
 												onClick={() => handleSelectAccount(account)}
 												className={cn(
-													"w-full h-fit cursor-pointer mt-1 justify-start transition-colors border hover:bg-background-selected bg-white py-3 px-4 text-sm md:text-base text-typo-primary font-normal",
+													"w-full h-fit cursor-pointer mt-1 justify-start transition-colors border hover:bg-background-selected bg-white py-3 px-4 text-rsp-sm text-typo-primary font-normal",
 													selectedAccount?.accountNo === account.accountNo &&
 														"bg-cgs-blue/5",
 												)}

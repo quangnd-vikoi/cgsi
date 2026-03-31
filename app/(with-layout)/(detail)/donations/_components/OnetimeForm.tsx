@@ -202,7 +202,7 @@ const OneTimeForm = () => {
 						</RadioGroup>
 
 						{!paymentMethod && errors.paymentMethod && (
-							<p className="text-status-error text-xs mt-1 flex items-center gap-1">
+							<p className="text-status-error text-rsp-xs mt-1 flex items-center gap-1">
 								<CustomCircleAlert />
 								Field cannot be empty
 							</p>

@@ -37,7 +37,7 @@ const Discover = () => {
 								Let your money grow & your kindness flow
 							</p>
 							<Link href={INTERNAL_ROUTES.DONATIONS} className="inline-block mt-6 md:mt-12">
-								<Button className="px-3 py-2 rounded-sm text-sm md:text-base font-normal">
+								<Button className="px-3 py-2 rounded-sm text-rsp-sm font-normal">
 									Donate Now
 								</Button>
 							</Link>

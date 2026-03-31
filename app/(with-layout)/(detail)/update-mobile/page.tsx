@@ -1,12 +1,12 @@
 "use client";
 import Title from "@/components/Title";
 import { Loader2, X } from "lucide-react";
+import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
-import Alert from "@/components/Alert";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "@/components/ui/toaster";
@@ -21,7 +21,6 @@ const OTPStep = ({
 	otp,
 	error,
 	setOtp,
-	setStep,
 	dialCode,
 	onResend,
 	isSubmitting,
@@ -33,7 +32,6 @@ const OTPStep = ({
 	otp: string;
 	error: string;
 	setOtp: (value: string) => void;
-	setStep: Dispatch<SetStateAction<1 | 2 | 3>>;
 	dialCode: string;
 	onResend: () => void;
 	isSubmitting: boolean;
@@ -61,20 +59,21 @@ const OTPStep = ({
 
 	return (
 		<div className="pad-x">
-			<h2 className="text-base font-semibold mb-2">Input OTP Code</h2>
+			<h2 className="text-rsp-base font-semibold mb-2">Input OTP Code</h2>
 			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
-				<span className="ml-1">{dialCode + phoneNumber}</span>
+				<span className="ml-1">
+					{dialCode} <span className="w-2"></span> {phoneNumber}
+				</span>
 			</p>
 
-			<p
-				className="mb-6 text-cgs-blue cursor-pointer text-base font-medium mt-1 underline underline-offset-2"
-				onClick={() => setStep(1)}
+			<InputOTP
+				maxLength={6}
+				value={otp}
+				onChange={handleChange}
+				disabled={isSubmitting}
+				containerClassName="overflow-hidden mt-4"
 			>
-				Change Number?
-			</p>
-
-			<InputOTP maxLength={6} value={otp} onChange={handleChange} disabled={isSubmitting}>
 				<InputOTPGroup className="justify-between w-full">
 					<InputOTPSlot index={0} error={error} />
 					<InputOTPSlot index={1} error={error} />
@@ -86,13 +85,13 @@ const OTPStep = ({
 			</InputOTP>
 
 			{error && (
-				<p className="text-status-error text-xs mt-1 flex items-center gap-1">
+				<p className="text-status-error text-rsp-xs font-medium mt-1 flex items-center gap-1">
 					<CustomCircleAlert size={15} />
 					{error}
 				</p>
 			)}
 
-			<div className="text-center w-full text-sm text-status-disable-primary font-medium mt-6">
+			<div className="text-center w-full text-rsp-sm text-status-disable-primary font-medium mt-6">
 				{countdown > 0 ? (
 					<>Resend in : {formatTime(countdown)}</>
 				) : (
@@ -130,7 +129,7 @@ const UpdateMobile = () => {
 	const [transactionId, setTransactionId] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [selectedCountry, setSelectedCountry] = useState<Country>(
-		createCountry(parsedCurrentMobile.countryCode)
+		createCountry(parsedCurrentMobile.countryCode),
 	);
 	const [showOtpBanner, setShowOtpBanner] = useState(false);
 
@@ -262,15 +261,17 @@ const UpdateMobile = () => {
 		<div className="w-full max-w-[480px] mx-auto flex-1 flex flex-col h-full">
 			<div className="shrink-0">
 				<Title
-					title="Update Mobile Number"
+					title="Update Mobile"
+					showBackButton={step === 2}
+					onBack={() => setStep(1)}
 					rightContent={
 						step !== 3 ? (
 							<Alert
 								trigger={<X />}
-								title="Exit Update Mobile Number?"
+								title="Exit Update Mobile?"
 								description={<p>Any information previously entered will be discarded.</p>}
 								actionText="Back To Form"
-								cancelText="Quit Anyways"
+								cancelText="Exit without Saving"
 								onCancel={() => router.push(INTERNAL_ROUTES.HOME)}
 							/>
 						) : null
@@ -280,34 +281,33 @@ const UpdateMobile = () => {
 
 			<div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
 				<div className="flex-1 overflow-y-auto pt-6">
-				{step === 1 && (
-					<MobileInputStep
-						phoneNumber={phoneNumber}
-						setPhoneNumber={setPhoneNumber}
-						error={error}
-						setError={setError}
-						selectedCountry={selectedCountry}
-						setSelectedCountry={setSelectedCountry}
-					/>
-				)}
+					{step === 1 && (
+						<MobileInputStep
+							phoneNumber={phoneNumber}
+							setPhoneNumber={setPhoneNumber}
+							error={error}
+							setError={setError}
+							selectedCountry={selectedCountry}
+							setSelectedCountry={setSelectedCountry}
+						/>
+					)}
 
-				{step === 2 && (
-					<OTPStep
-						dialCode={selectedCountry.dialCode}
-						phoneNumber={phoneNumber}
-						otp={otp}
-						setOtp={setOtp}
-						setStep={setStep}
-						error={error}
-						setError={setError}
-						onResend={handleResendOtp}
-						isSubmitting={isSubmitting}
-						countdown={countdown}
-						resetCountdown={resetCountdown}
-					/>
-				)}
+					{step === 2 && (
+						<OTPStep
+							dialCode={selectedCountry.dialCode}
+							phoneNumber={phoneNumber}
+							otp={otp}
+							setOtp={setOtp}
+							error={error}
+							setError={setError}
+							onResend={handleResendOtp}
+							isSubmitting={isSubmitting}
+							countdown={countdown}
+							resetCountdown={resetCountdown}
+						/>
+					)}
 
-				{step === 3 && <ConfirmStep />}
+					{step === 3 && <ConfirmStep />}
 				</div>
 
 				<div className="shrink-0">
@@ -318,11 +318,17 @@ const UpdateMobile = () => {
 					)}
 					<div className="pad-x py-4 border-t w-full relative">
 						<Button
-							className="w-full text-base font-normal"
+							className="w-full text-base font-medium"
 							onClick={handleContinue}
 							disabled={isSubmitting || (step === 2 && otp.length < 6)}
 						>
-							{isSubmitting ? <Loader2 className="animate-spin" /> : step === 3 ? "Back to Home" : "Continue"}
+							{isSubmitting ? (
+								<Loader2 className="animate-spin" />
+							) : step === 3 ? (
+								"Back to Home"
+							) : (
+								"Continue"
+							)}
 						</Button>
 					</div>
 				</div>

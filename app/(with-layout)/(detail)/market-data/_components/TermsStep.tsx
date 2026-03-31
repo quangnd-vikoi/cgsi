@@ -159,7 +159,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                 <div className="pad-x py-4">
                     <Button
                         onClick={handleTermConfirm}
-                        className="w-full rounded text-sm md:text-base"
+                        className="w-full rounded text-rsp-sm"
                         disabled={submitting}
                     >
                         {submitting ? <Loader2 className="animate-spin" /> : "Subscribe"}
@@ -171,7 +171,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
             <Dialog open={!!dialogAgreement} onOpenChange={(open) => !open && setDialogAgreement(null)}>
                 <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col p-0 gap-0">
                     <DialogHeader className="flex-shrink-0 p-4 md:p-6 pb-3 md:pb-3">
-                        <DialogTitle className="text-base md:text-lg font-semibold text-typo-primary pr-8">
+                        <DialogTitle className="text-rsp-base font-semibold text-typo-primary pr-8">
                             {dialogAgreement?.subject}
                         </DialogTitle>
                     </DialogHeader>

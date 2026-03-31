@@ -59,9 +59,9 @@ const ProfileInfo = () => {
 
 	return (
 		<div className="flex flex-col gap-1.5 text-white">
-			<p className="text-base md:text-lg font-semibold">{displayName}</p>
-			<p className="text-xs md:text-sm font-normal">{displayEmail}</p>
-			<p className="text-xs md:text-sm font-normal">{displayMobile}</p>
+			<p className="text-rsp-base font-semibold">{displayName}</p>
+			<p className="text-rsp-xs font-normal">{displayEmail}</p>
+			<p className="text-rsp-xs font-normal">{displayMobile}</p>
 		</div>
 	);
 };
@@ -118,7 +118,7 @@ const MenuItem = ({
 				<div className="w-5 h-5 flex items-center justify-center">
 					{isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : item.icon}
 				</div>
-				<div className="text-sm md:text-base font-normal">{item.name}</div>
+				<div className="text-rsp-sm font-normal">{item.name}</div>
 			</div>
 			<ChevronRight className="w-5 text-cgs-blue" strokeWidth={2} />
 		</>
@@ -292,7 +292,7 @@ const Profile = () => {
 				<div className="flex justify-center gap-2 cursor-pointer" onClick={handleLogout}>
 					{/* <LogOut className="text-status-error" size={18} md:size={20} /> */}
 					<Image src={"/icons/logout.svg"} alt="" height={20} width={20} className="md:h-5 md:w-5" />
-					<p className="text-sm md:text-base font-medium text-status-error">Log Out</p>
+					<p className="text-rsp-sm font-medium text-status-error">Log Out</p>
 				</div>
 			</div>
 		</div>

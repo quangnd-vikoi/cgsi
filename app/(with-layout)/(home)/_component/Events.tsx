@@ -41,12 +41,12 @@ const EventCard = ({ event, imageClassName, isPriority }: { event: IEventProps; 
 					/>
 				</div>
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 ">
-					<div className="h-12 text-base md:text-lg font-semibold line-clamp-2 leading-6">{event.title}</div>
+					<div className="h-12 text-rsp-base font-semibold line-clamp-2 leading-6">{event.title}</div>
 
-					<div className="text-sm md:text-base text-typo-secondary line-clamp-3 md:line-clamp-3 h-[72px] overflow-hidden">
+					<div className="text-rsp-sm text-typo-secondary line-clamp-3 md:line-clamp-3 h-[72px] overflow-hidden">
 						{event.description}
 					</div>
-					<div className="flex flex-col gap-3 text-sm md:text-base text-typo-secondary">
+					<div className="flex flex-col gap-3 text-rsp-sm text-typo-secondary">
 						<div className="flex items-center gap-4  ">
 							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.25} />
 							{event.date}

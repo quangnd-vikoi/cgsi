@@ -103,7 +103,7 @@ export function CashTransactionsTable({ transactions, loading }: CashTransaction
 						sorted.map((transaction) => (
 							<TableRow
 								key={transaction.transactionNo}
-								className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-xs [&>td]:md:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
+								className="border-b border-stroke-secondary last:border-0 hover:bg-background-section/50 [&>td]:text-rsp-xs [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
 							>
 								<TableCell>{transaction.transactionNo}</TableCell>
 								<TableCell>{formatDate(transaction.transactionDate)}</TableCell>

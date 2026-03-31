@@ -56,19 +56,18 @@ const SELECT_FIELDS = [
 	},
 ];
 
-const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChange: setRecurringDonations, onRefresh: fetchPlans }: RecurringFormProps) => {
+const RecurringForm = ({
+	plans: recurringDonations,
+	isLoadingPlans,
+	onPlansChange: setRecurringDonations,
+	onRefresh: fetchPlans,
+}: RecurringFormProps) => {
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
 	const [formValues, setFormValues] = useState({ duration: "", amount: "" });
 	const [agreed, setAgreed] = useState(false);
-	const {
-		hasError,
-		setError,
-		clearError,
-		clearAllErrors,
-		showValidationErrors,
-		setShowValidationErrors,
-	} = useFormErrors();
+	const { hasError, setError, clearError, clearAllErrors, showValidationErrors, setShowValidationErrors } =
+		useFormErrors();
 	const [open, setOpen] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -126,7 +125,7 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 				setOpen(false);
 				toast.success(
 					"Setup Success!",
-					"Your recurring donation is now active. Thank you for your continued support!"
+					"Your recurring donation is now active. Thank you for your continued support!",
 				);
 
 				// Reset form state
@@ -135,10 +134,16 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 				setShowValidationErrors(false);
 				clearAllErrors();
 			} else {
-				toast.error("Payment Unsuccessful", "We were unable to process your donation. Please try again later.");
+				toast.error(
+					"Payment Unsuccessful",
+					"We were unable to process your donation. Please try again later.",
+				);
 			}
 		} catch {
-			toast.error("Payment Unsuccessful", "We were unable to process your donation. Please try again later.");
+			toast.error(
+				"Payment Unsuccessful",
+				"We were unable to process your donation. Please try again later.",
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -152,7 +157,11 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 				setRecurringDonations(recurringDonations.filter((item) => item.id !== plan.id));
 				toast.success("Donation Cancelled", "Thank you for your generous support thus far!");
 			} else {
-				toast.error("Unable to Cancel", response.error || "We could not cancel your donation at this time. Please try again later.");
+				toast.error(
+					"Unable to Cancel",
+					response.error ||
+						"We could not cancel your donation at this time. Please try again later.",
+				);
 			}
 		} catch {
 			toast.error("Error Encountered", "Something went wrong. Please try again later.");
@@ -164,10 +173,13 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 			<div className="space-y-6 pad-x flex-shrink-0">
 				<div className="space-y-4 text-sm font-normal text-typo-secondary mt-6">
 					<p className="md:hidden">
-						Automatically donate a portion every time you execute a trade within your chosen time period.
+						Automatically donate a portion every time you execute a trade within your chosen time
+						period.
 					</p>
 					<p className="hidden md:inline-block">
-						Automatically donate a fixed amount every time you execute a trade within your chosen time period. You may view your donation transactions on your monthly account statements.
+						Automatically donate a fixed amount every time you execute a trade within your chosen
+						time period. You may view your donation transactions on your monthly account
+						statements.
 					</p>
 				</div>
 
@@ -178,17 +190,14 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 								<p className="text-base font-medium text-cgs-blue">
 									Setup Recurring Donation
 								</p>
-								<CirclePlusIcon
-									className="text-cgs-blue bg-background-section"
-									size={16}
-								/>
+								<CirclePlusIcon className="text-cgs-blue bg-background-section" size={16} />
 							</div>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-[530px] p-0 max-h-[730px] flex flex-col gap-0 ">
 							<DialogHeader className="pad-x pt-4">
 								<DialogTitle className="text-left">Setup Recurring Donation</DialogTitle>
 							</DialogHeader>
-							<div className="flex flex-col gap-4 pad-x text-sm md:text-sm font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto my-4 md:my-6">
+							<div className="flex flex-col gap-4 pad-x text-rsp-xs font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto my-4 md:my-6">
 								<p>
 									Your recurring donation will remain active for the selected duration.
 									During this period, each trade you make will automatically contribute the
@@ -216,7 +225,8 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 												id={field.id}
 												className={cn(
 													"w-full",
-													fieldHasError && "border-status-error bg-background-error"
+													fieldHasError &&
+														"border-status-error bg-background-error",
 												)}
 											>
 												<SelectValue placeholder={field.placeholder} />
@@ -224,9 +234,7 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 											<SelectContent className="max-h-80">
 												{field.options.map((option) => (
 													<SelectItem key={option.value} value={option.value}>
-														<p>
-															{option.label}
-														</p>
+														<p>{option.label}</p>
 													</SelectItem>
 												))}
 											</SelectContent>
@@ -305,7 +313,9 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 							return (
 								<div key={plan.id}>
 									<div className="flex justify-between items-center font-normal gap-3">
-										<div className="text-sm text-typo-primary">{plan.currency} {plan.amount.toFixed(2)}</div>
+										<div className="text-sm text-typo-primary">
+											{plan.currency} {plan.amount.toFixed(2)}
+										</div>
 										<Alert
 											trigger={
 												<div className="text-status-error text-xs cursor-pointer">
@@ -315,9 +325,9 @@ const RecurringForm = ({ plans: recurringDonations, isLoadingPlans, onPlansChang
 											title="Cancel Recurring Donation?"
 											description={
 												<p>
-													Are you sure you wish to Cancel your recurring donation? This action
-													will permanently stop all future contributions associated with this
-													donation.
+													Are you sure you wish to Cancel your recurring donation?
+													This action will permanently stop all future contributions
+													associated with this donation.
 												</p>
 											}
 											actionText="Cancel"
