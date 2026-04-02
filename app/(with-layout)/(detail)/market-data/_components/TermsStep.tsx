@@ -159,7 +159,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
                 <div className="pad-x py-4">
                     <Button
                         onClick={handleTermConfirm}
-                        className="w-full rounded text-rsp-sm"
+                        className="w-full rounded text-rsp-sm text-white"
                         disabled={submitting}
                     >
                         {submitting ? <Loader2 className="animate-spin" /> : "Subscribe"}
