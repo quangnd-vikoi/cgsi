@@ -113,19 +113,15 @@ export const AnnouncementBar = () => {
 					<TriangleAlert size={16} className="shrink-0" />
 					<p className="text-xs text-typo-primary truncate min-w-0 flex-1">
 						{announcement.Announcement_Title}
-						{announcement.Announcement_Title}
-						{announcement.Announcement_Title}
 					</p>
 					<div
-						className="text-xs font-semibold underline cursor-pointer"
+						className="text-xs font-semibold underline cursor-pointer shrink-0"
 						onClick={() => setOpenSheet("announcement", { announcement })}
 					>
 						Learn More
 					</div>
 				</div>
-				{/* <div className="flex gap-4 shrink-0"> */}
 				<X size={16} className="block cursor-pointer shrink-0 ml-4" onClick={handleClose} />
-				{/* </div> */}
 			</div>
 		</div>
 	);
