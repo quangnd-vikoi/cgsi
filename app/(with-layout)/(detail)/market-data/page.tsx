@@ -459,7 +459,7 @@ const MarketData = () => {
                         <Button
                             variant="link"
                             onClick={() => setOpenSheet("my_subscriptions")}
-                            className="flex-1 text-rsp-sm font-medium p-0"
+                            className="flex-1 text-rsp-sm font-medium p-0 text-cgs-blue"
                         >
                             View My Subscriptions
                         </Button>
