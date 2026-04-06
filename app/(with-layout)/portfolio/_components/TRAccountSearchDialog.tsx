@@ -14,7 +14,7 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
-import type { TradingAccount } from "@/types";
+import type { TradingAccount, PortfolioType } from "@/types";
 import { searchAccounts, type AccountSearchItem } from "@/lib/services/portfolioService";
 
 const SEARCH_TABS = [
@@ -78,7 +78,7 @@ const TRAccountSearchDialog = ({
 	const handleSelectAccount = (item: AccountSearchItem) => {
 		const account: TradingAccount = {
 			accountNo: item.accountNo,
-			accountType: item.accountSubType,
+			accountType: item.accountSubType as PortfolioType,
 		};
 		onSelectAccount(account);
 		setOpen(false);
