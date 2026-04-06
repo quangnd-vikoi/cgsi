@@ -1,6 +1,6 @@
 import { useUserStore } from "@/stores/userStore";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { BYPASS_ROLE_CHECK, ROUTE_ACCESS, type USER_TYPE } from "@/constants/accessControl";
+import { ROUTE_ACCESS, type USER_TYPE } from "@/constants/accessControl";
 
 interface PermissionResult {
 	isLoading: boolean;
@@ -17,10 +17,6 @@ export function usePermission(allowedTypes: readonly USER_TYPE[] | null): Permis
 	const profile = useUserStore((state) => state.profile);
 	const getUserType = useUserStore((state) => state.getUserType);
 	const isInitialized = useTradingAccountStore((state) => state.isInitialized);
-
-	if (BYPASS_ROLE_CHECK) {
-		return { isLoading: false, isAllowed: true, userType: null };
-	}
 
 	const isLoading = !profile || !isInitialized;
 
@@ -60,12 +56,6 @@ export function usePermissions<K extends string>(
 	const profile = useUserStore((state) => state.profile);
 	const getUserType = useUserStore((state) => state.getUserType);
 	const isInitialized = useTradingAccountStore((state) => state.isInitialized);
-
-	if (BYPASS_ROLE_CHECK) {
-		const all = {} as Record<K, boolean>;
-		for (const key in features) all[key] = true;
-		return { isLoading: false, permissions: all };
-	}
 
 	const isLoading = !profile || !isInitialized;
 	const userType = isLoading ? null : getUserType();

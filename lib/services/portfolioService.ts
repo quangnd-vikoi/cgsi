@@ -174,6 +174,27 @@ export const getCdpTransferStatus = async (): Promise<APIResponse<ICDPTransferSt
 	return await fetchAPI<ICDPTransferStatus[]>(ENDPOINTS.cdpTransferStatus(), { useAuth: true });
 };
 
+export interface AccountSearchItem {
+	name: string;
+	accountNo: string;
+	accountSubType: string;
+}
+
+export interface AccountSearchResponse {
+	total: number;
+	data: AccountSearchItem[];
+}
+
+export const searchAccounts = async (params: {
+	searchAcct?: string;
+	searchNric?: string;
+	searchName?: string;
+	pageSize?: number;
+	pageIndex?: number;
+}): Promise<APIResponse<AccountSearchResponse>> => {
+	return await fetchAPI<AccountSearchResponse>(ENDPOINTS.searchAccounts(params), { useAuth: true });
+};
+
 export const portfolioService = {
 	getAccountSummary,
 	getFxRates,
@@ -193,6 +214,7 @@ export const portfolioService = {
 	getCdpTransfer,
 	submitCdpTransfer,
 	getCdpTransferStatus,
+	searchAccounts,
 };
 
 export default portfolioService;

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import type { TradingAccount } from "@/types";
-import { Separator } from "@/components/ui/separator";
+import { searchAccounts, type AccountSearchItem } from "@/lib/services/portfolioService";
 
 const SEARCH_TABS = [
 	{ value: "account-no", label: "Account No.", placeholder: "Enter Account Number" },
@@ -24,210 +24,6 @@ const SEARCH_TABS = [
 ] as const;
 
 const PER_PAGE = 10;
-
-// Mock data for testing search
-const MOCK_ACCOUNTS: (TradingAccount & { clientName: string; nric: string })[] = [
-	{
-		accountNo: "001234",
-		accountType: "CTA",
-		clientName: "John Tan Wei Ming",
-		nric: "S1234567A",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "001235",
-		accountType: "CTA",
-		clientName: "Sarah Lim Mei Ling",
-		nric: "S2345678B",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "002001",
-		accountType: "MTA",
-		clientName: "David Wong Kah Hee",
-		nric: "S3456789C",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "002002",
-		accountType: "MTA",
-		clientName: "Emily Chen Xiu Wen",
-		nric: "S4567890D",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "003001",
-		accountType: "SBL",
-		clientName: "Michael Ng Jun Wei",
-		nric: "S5678901E",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "004001",
-		accountType: "CUT",
-		clientName: "Rachel Goh Siew Lan",
-		nric: "S6789012F",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "001236",
-		accountType: "CTA",
-		clientName: "Kevin Lee Chong Beng",
-		nric: "S7890123G",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "001237",
-		accountType: "CTA",
-		clientName: "Amanda Teo Pei Shan",
-		nric: "S8901234H",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "002003",
-		accountType: "MTA",
-		clientName: "Daniel Ong Wee Kiat",
-		nric: "S9012345I",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "001238",
-		accountType: "CTA",
-		clientName: "Jessica Koh Hui Min",
-		nric: "S0123456J",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "003002",
-		accountType: "SBL",
-		clientName: "Brandon Lim Kok Leong",
-		nric: "T1234567A",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "001239",
-		accountType: "CTA",
-		clientName: "Nicole Tan Su Lin",
-		nric: "T2345678B",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "002004",
-		accountType: "MTA",
-		clientName: "Ryan Chua Boon Huat",
-		nric: "T3456789C",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "004002",
-		accountType: "CUT",
-		clientName: "Grace Wong Pei Yi",
-		nric: "T4567890D",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "001240",
-		accountType: "CTA",
-		clientName: "Samuel Yeo Teck Seng",
-		nric: "T5678901E",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "002005",
-		accountType: "MTA",
-		clientName: "Linda Sim Bee Hoon",
-		nric: "T6789012F",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "001241",
-		accountType: "CTA",
-		clientName: "Marcus Foo Chee Keong",
-		nric: "T7890123G",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "003003",
-		accountType: "SBL",
-		clientName: "Cheryl Ang Shu Ting",
-		nric: "T8901234H",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "001242",
-		accountType: "CTA",
-		clientName: "Justin Tay Ming Hao",
-		nric: "T9012345I",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "002006",
-		accountType: "MTA",
-		clientName: "Vanessa Ho Yee Ling",
-		nric: "T0123456J",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "001243",
-		accountType: "CTA",
-		clientName: "Patrick Chng Wei Jie",
-		nric: "S1122334A",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "004003",
-		accountType: "CUT",
-		clientName: "Felicia Loh Mei Xin",
-		nric: "S2233445B",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-	{
-		accountNo: "002007",
-		accountType: "MTA",
-		clientName: "Andrew Poh Kok Wai",
-		nric: "S3344556C",
-		trName: "Alice Rep",
-		trCode: "TR001",
-	},
-	{
-		accountNo: "001244",
-		accountType: "CTA",
-		clientName: "Samantha Ng Li Hua",
-		nric: "S4455667D",
-		trName: "Bob Rep",
-		trCode: "TR002",
-	},
-	{
-		accountNo: "003004",
-		accountType: "SBL",
-		clientName: "Timothy Seah Zheng Yu",
-		nric: "S5566778E",
-		trName: "Charlie Rep",
-		trCode: "TR003",
-	},
-];
 
 interface TRAccountSearchDialogProps {
 	onSelectAccount: (account: TradingAccount) => void;
@@ -246,33 +42,44 @@ const TRAccountSearchDialog = ({
 	const [activeTab, setActiveTab] = useState("account-no");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isSearching, setIsSearching] = useState(false);
-	const [results, setResults] = useState<typeof MOCK_ACCOUNTS>([]);
+	const [results, setResults] = useState<AccountSearchItem[]>([]);
+	const [total, setTotal] = useState(0);
 	const [hasSearched, setHasSearched] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const handleSearch = () => {
-		if (!searchQuery.trim()) return;
+	const handleSearch = async (page = 1) => {
+		if (!searchQuery.trim() || searchQuery.trim().length < 3) return;
 
 		setIsSearching(true);
-		setCurrentPage(1);
+		setCurrentPage(page);
 
-		// Simulate API delay
-		setTimeout(() => {
-			const query = searchQuery.toLowerCase();
-			const filtered = MOCK_ACCOUNTS.filter((account) => {
-				if (activeTab === "account-no") return account.accountNo.toLowerCase().includes(query);
-				if (activeTab === "client-name") return account.clientName.toLowerCase().includes(query);
-				if (activeTab === "nric") return account.nric.toLowerCase().includes(query);
-				return false;
-			});
+		const params =
+			activeTab === "account-no" ? { searchAcct: searchQuery } :
+			activeTab === "client-name" ? { searchName: searchQuery } :
+			{ searchNric: searchQuery };
 
-			setResults(filtered);
-			setHasSearched(true);
-			setIsSearching(false);
-		}, 800);
+		const response = await searchAccounts({
+			...params,
+			pageSize: PER_PAGE,
+			pageIndex: page - 1,
+		});
+
+		if (response.success && response.data) {
+			setResults(response.data.data);
+			setTotal(response.data.total);
+		} else {
+			setResults([]);
+			setTotal(0);
+		}
+		setHasSearched(true);
+		setIsSearching(false);
 	};
 
-	const handleSelectAccount = (account: (typeof MOCK_ACCOUNTS)[number]) => {
+	const handleSelectAccount = (item: AccountSearchItem) => {
+		const account: TradingAccount = {
+			accountNo: item.accountNo,
+			accountType: item.accountSubType,
+		};
 		onSelectAccount(account);
 		setOpen(false);
 		resetState();
@@ -281,21 +88,20 @@ const TRAccountSearchDialog = ({
 	const resetState = () => {
 		setSearchQuery("");
 		setResults([]);
+		setTotal(0);
 		setHasSearched(false);
 		setCurrentPage(1);
 	};
 
-	const totalPages = Math.ceil(results.length / PER_PAGE);
-	const paginatedResults = useMemo(
-		() => results.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE),
-		[results, currentPage],
-	);
+	const totalPages = Math.ceil(total / PER_PAGE);
 
 	const pageNumbers = useMemo(() => {
 		const pages: number[] = [];
 		for (let i = 1; i <= totalPages; i++) pages.push(i);
 		return pages;
 	}, [totalPages]);
+
+	const isSearchDisabled = isSearching || searchQuery.trim().length < 3;
 
 	return (
 		<Dialog
@@ -363,8 +169,8 @@ const TRAccountSearchDialog = ({
 								</div>
 								<Button
 									className="shrink-0 px-6"
-									onClick={handleSearch}
-									disabled={isSearching || !searchQuery.trim()}
+									onClick={() => handleSearch()}
+									disabled={isSearchDisabled}
 								>
 									{isSearching && <Loader2 className="w-4 h-4 animate-spin" />}
 									Search
@@ -375,7 +181,7 @@ const TRAccountSearchDialog = ({
 							{!hasSearched ? (
 								<div className="min-h-[160px] flex items-center justify-center">
 									<p className="text-sm text-typo-tertiary">
-										Enter a search term to find accounts
+										Enter at least 3 characters to search
 									</p>
 								</div>
 							) : results.length === 0 ? (
@@ -391,21 +197,21 @@ const TRAccountSearchDialog = ({
 
 									{/* Result list */}
 									<div className="overflow-y-auto flex-1 py-2">
-										{paginatedResults.map((account) => (
+										{results.map((item) => (
 											<Button
-												key={account.accountNo}
-												onClick={() => handleSelectAccount(account)}
+												key={item.accountNo}
+												onClick={() => handleSelectAccount(item)}
 												className={cn(
 													"w-full h-fit cursor-pointer mt-1 justify-start transition-colors border hover:bg-background-selected bg-white py-3 px-4 text-rsp-sm text-typo-primary font-normal",
-													selectedAccount?.accountNo === account.accountNo &&
+													selectedAccount?.accountNo === item.accountNo &&
 														"bg-cgs-blue/5",
 												)}
 											>
 												<span className="w-1/4">
-													({account.accountType}) {account.accountNo}
+													({item.accountSubType}) {item.accountNo}
 												</span>
 												<div className="ml-2 h-full w-1 text-typo-tertiary">|</div>
-												<span className="">{account.clientName}</span>
+												<span className="">{item.name}</span>
 											</Button>
 										))}
 									</div>
@@ -416,9 +222,7 @@ const TRAccountSearchDialog = ({
 											<PaginationContent>
 												<PaginationItem>
 													<PaginationPrevious
-														onClick={() =>
-															setCurrentPage((p) => Math.max(1, p - 1))
-														}
+														onClick={() => handleSearch(Math.max(1, currentPage - 1))}
 														className={cn(
 															currentPage === 1 &&
 																"pointer-events-none opacity-50",
@@ -429,7 +233,7 @@ const TRAccountSearchDialog = ({
 													<PaginationItem key={page}>
 														<PaginationLink
 															isActive={page === currentPage}
-															onClick={() => setCurrentPage(page)}
+															onClick={() => handleSearch(page)}
 														>
 															{page}
 														</PaginationLink>
@@ -437,9 +241,7 @@ const TRAccountSearchDialog = ({
 												))}
 												<PaginationItem>
 													<PaginationNext
-														onClick={() =>
-															setCurrentPage((p) => Math.min(totalPages, p + 1))
-														}
+														onClick={() => handleSearch(Math.min(totalPages, currentPage + 1))}
 														className={cn(
 															currentPage === totalPages &&
 																"pointer-events-none opacity-50",
