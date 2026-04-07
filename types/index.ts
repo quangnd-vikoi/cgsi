@@ -479,18 +479,11 @@ export interface ITradingInfoSIP {
 	isPassed: boolean;
 	expireDate: string | null;
 	lastSubmissionID: string | null;
-}
-
-// SIP Submission Data (GET /profile/api/v1/tradingInfo/sip/submission/{id})
-export interface SIPSubmissionData {
-	twoFAData: string;
-	isCAR: boolean;
-	carProduct: number[];
-	isCKA: boolean;
-	ckaCFD: boolean;
-	ckaFX: boolean;
-	ckaSP: boolean;
-	ckaUT: boolean;
+	car: string | number | null;
+	ckaCfd: string | null;
+	ckaFx: string | null;
+	ckaUt: string | null;
+	ckaSp: string | null;
 }
 
 // W8-BEN Info

@@ -12,8 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { getEW8SSO, getECRSSSO, redirectToSSO, redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
 import { formatDate, handleEmail } from "@/lib/utils";
 import { CGSI } from "@/constants/routes";
-import { getTradingInfo, createBcanRequest, getSipSubmission } from "@/lib/services/profileService";
-import type { TradingInfoResponse, SIPSubmissionData } from "@/types";
+import { getTradingInfo, createBcanRequest } from "@/lib/services/profileService";
+import type { TradingInfoResponse } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
@@ -90,7 +90,6 @@ const TradingDeclartions = () => {
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [tradingInfo, setTradingInfo] = useState<TradingInfoResponse | null>(null);
-	const [sipSubmission, setSipSubmission] = useState<SIPSubmissionData | null>(null);
 	const [ew8Url, setEw8Url] = useState<string | null>(null);
 	const [ecrsUrl, setEcrsUrl] = useState<string | null>(null);
 	const [alertContent, setAlertContent] = useState({
@@ -114,13 +113,6 @@ const TradingDeclartions = () => {
 				const response = await getTradingInfo();
 				if (response.success && response.data) {
 					setTradingInfo(response.data);
-
-					// Fetch SIP submission data if available
-					if (response.data.sip.lastSubmissionID) {
-						getSipSubmission(response.data.sip.lastSubmissionID).then((res) => {
-							if (res.success && res.data) setSipSubmission(res.data);
-						});
-					}
 
 					// Prefetch EW8 and ECRS SSO URLs concurrently in the background
 					getEW8SSO().then((res) => {
@@ -266,8 +258,15 @@ const TradingDeclartions = () => {
 	const getSipExpDisplay = (): string => {
 		if (sipStatus === "inactive") return "-";
 		const dateStr = formatDate(tradingInfo?.sip.expireDate ?? null);
-		if (!sipSubmission) return dateStr;
-		const { isCKA, isCAR } = sipSubmission;
+
+		const isCAR = Boolean(tradingInfo?.sip.car);
+		const isCKA = Boolean(
+			tradingInfo?.sip.ckaCfd ||
+			tradingInfo?.sip.ckaFx ||
+			tradingInfo?.sip.ckaUt ||
+			tradingInfo?.sip.ckaSp
+		);
+
 		if (isCKA && isCAR) return `${dateStr} (CKA, CAR)`;
 		if (isCKA) return `${dateStr} (CKA Only)`;
 		if (isCAR) return `${dateStr} (CAR Only)`;

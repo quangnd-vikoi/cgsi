@@ -8,7 +8,6 @@ import type {
 	TradingInfoResponse,
 	CreateBcanRequest,
 	CreateBcanResponse,
-	SIPSubmissionData,
 	DonationPlanResponse,
 	DonationSubmissionRequest,
 	DonationSubmissionResponse,
@@ -84,14 +83,6 @@ export const createBcanRequest = async (
 		{ accountNo },
 		{ useAuth: true }
 	);
-};
-
-export const getSipSubmission = async (
-	submissionId: string
-): Promise<APIResponse<SIPSubmissionData>> => {
-	return await fetchAPI<SIPSubmissionData>(ENDPOINTS.sipSubmission(submissionId), {
-		useAuth: true,
-	});
 };
 
 export const getDonationPlans = async (): Promise<APIResponse<DonationPlanResponse[]>> => {
@@ -271,7 +262,6 @@ export const profileService = {
 	getTradingRepInfoByAccount,
 	getTradingInfo,
 	createBcanRequest,
-	getSipSubmission,
 	getDonationPlans,
 	submitDonation,
 	cancelDonation,
