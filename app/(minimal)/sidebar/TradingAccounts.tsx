@@ -73,7 +73,7 @@ const TradingAccounts = () => {
 					>
 						<div className="flex justify-between items-center">
 							<div>
-								<p className="text-rsp-xs font-normal">
+								<p className="text-xs md:text-sm font-normal text-typo-secondary">
 									{(acc.accountType ? ACCOUNT_TYPE_LABELS[acc.accountType] : null) ??
 										acc.accountType ??
 										"Trading Account"}

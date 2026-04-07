@@ -90,7 +90,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
 							<div className="flex md:flex-row flex-col items-start md:items-center gap-3 md:mb-2">
 								<h2 className="font-semibold text-sm md:text-[20px]">{title}</h2>
 								{available != null && (
-									<span className="text-rsp-xs text-typo-tertiary">
+									<span className="text-xs md:text-sm text-typo-tertiary">
 										{available} Available
 									</span>
 								)}

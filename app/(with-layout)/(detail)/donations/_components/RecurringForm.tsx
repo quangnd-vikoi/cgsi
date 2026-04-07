@@ -160,7 +160,7 @@ const RecurringForm = ({
 				toast.error(
 					"Unable to Cancel",
 					response.error ||
-						"We could not cancel your donation at this time. Please try again later.",
+					"We could not cancel your donation at this time. Please try again later.",
 				);
 			}
 		} catch {
@@ -190,14 +190,14 @@ const RecurringForm = ({
 								<p className="text-base font-medium text-cgs-blue">
 									Setup Recurring Donation
 								</p>
-								<CirclePlusIcon className="text-cgs-blue bg-background-section" size={16} />
+								<CirclePlusIcon className="text-cgs-blue bg-background-section" size={20} />
 							</div>
 						</DialogTrigger>
 						<DialogContent className="sm:max-w-[530px] p-0 max-h-[730px] flex flex-col gap-0 ">
-							<DialogHeader className="pad-x pt-4">
-								<DialogTitle className="text-left">Setup Recurring Donation</DialogTitle>
+							<DialogHeader className="pad-x pt-4 md:pt-6">
+								<DialogTitle className="text-left text-lg md:text-xl">Setup Recurring Donation</DialogTitle>
 							</DialogHeader>
-							<div className="flex flex-col gap-4 pad-x text-rsp-xs font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto my-4 md:my-6">
+							<div className="flex flex-col gap-4 pad-x text-xs md:text-sm font-normal text-typo-secondary max-h-[450px] md:max-h-none overflow-auto my-4 md:my-6">
 								<p>
 									Your recurring donation will remain active for the selected duration.
 									During this period, each trade you make will automatically contribute the
@@ -213,7 +213,7 @@ const RecurringForm = ({
 									<div key={field.id} className="pad-x mb-6">
 										<Label
 											htmlFor={field.id}
-											className="text-sm font-semibold text-typo-primary mb-1.5"
+											className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 										>
 											{field.label}
 										</Label>
@@ -226,7 +226,7 @@ const RecurringForm = ({
 												className={cn(
 													"w-full",
 													fieldHasError &&
-														"border-status-error bg-background-error",
+													"border-status-error bg-background-error",
 												)}
 											>
 												<SelectValue placeholder={field.placeholder} />
@@ -287,7 +287,7 @@ const RecurringForm = ({
 			{/* List Donate  */}
 			<div className="pad-x flex-shrink-0">
 				<Separator className="my-6" />
-				<p className="hidden md:inline-block text-base font-semibold text-typo-primary">
+				<p className="hidden md:inline-block text-base md:text-lg font-semibold text-typo-primary">
 					Recurring Donation List
 				</p>
 				<p className="md:hidden text-base font-semibold text-typo-primary">Recurring Donation List</p>

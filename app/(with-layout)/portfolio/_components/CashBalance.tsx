@@ -144,9 +144,9 @@ export const CashBalance = () => {
                         >
                             <div className="flex items-center gap-2">
                                 <CircleFlag countryCode={item.countryCode} className="w-4 md:w-5 h-4 md:h-5 shrink-0" />
-                                <p className="text-rsp-xs font-medium text-typo-primary">{item.name}</p>
+                                <p className="text-xs md:text-sm font-medium text-typo-primary">{item.name}</p>
                             </div>
-                            <p className="text-rsp-xs font-medium text-typo-primary text-right">
+                            <p className="text-xs md:text-sm font-medium text-typo-primary text-right">
                                 {(item.balance ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {item.currency}
                             </p>
                         </div>
@@ -159,9 +159,9 @@ export const CashBalance = () => {
                         >
                             <div className="flex items-center gap-2">
                                 <CircleFlag countryCode={item.countryCode} className="w-4 md:w-5 h-4 md:h-5 shrink-0" />
-                                <p className="text-rsp-xs font-medium text-typo-primary">{item.name}</p>
+                                <p className="text-xs md:text-sm font-medium text-typo-primary">{item.name}</p>
                             </div>
-                            <p className="text-rsp-xs font-medium text-typo-primary text-right">
+                            <p className="text-xs md:text-sm font-medium text-typo-primary text-right">
                                 {(item.balance ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {item.currency}
                             </p>
                         </div>

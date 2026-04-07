@@ -315,7 +315,7 @@ function SettlePageContent() {
 							<Button
 								variant="outline"
 								size="sm"
-								className="flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 text-rsp-xs py-1 px-2 md:py-1.5 md:px-3"
+								className="flex border border-cgs-blue text-cgs-blue rounded hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 text-xs md:text-sm py-1 px-2 md:py-1.5 md:px-3"
 								onClick={handleExport}
 								disabled={exporting}
 							>

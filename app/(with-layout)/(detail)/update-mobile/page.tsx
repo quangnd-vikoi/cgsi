@@ -59,7 +59,7 @@ const OTPStep = ({
 
 	return (
 		<div className="pad-x">
-			<h2 className="text-rsp-base font-semibold mb-2">Input OTP Code</h2>
+			<h2 className="text-base md:text-lg font-semibold mb-2">Input OTP Code</h2>
 			<p className="text-base text-typo-secondary mt-6">
 				You will receive a 6 digit code at
 				<span className="ml-1">
@@ -85,13 +85,13 @@ const OTPStep = ({
 			</InputOTP>
 
 			{error && (
-				<p className="text-status-error text-rsp-xs font-medium mt-1 flex items-center gap-1">
+				<p className="text-status-error text-xs md:text-sm font-medium mt-1 flex items-center gap-1">
 					<CustomCircleAlert size={15} />
 					{error}
 				</p>
 			)}
 
-			<div className="text-center w-full text-rsp-sm text-status-disable-primary font-medium mt-6">
+			<div className="text-center w-full text-sm md:text-base text-status-disable-primary font-medium mt-6">
 				{countdown > 0 ? (
 					<>Resend in : {formatTime(countdown)}</>
 				) : (
@@ -226,7 +226,7 @@ const UpdateMobile = () => {
 
 		if (response.success && response.data?.success !== false) {
 			setStep(3);
-			refreshUserProfile().catch(() => {}); // non-critical, fire-and-forget
+			refreshUserProfile().catch(() => { }); // non-critical, fire-and-forget
 		} else {
 			// Handle OTP validation failure
 			// When API returns success=true but data.success=false, it means OTP validation failed

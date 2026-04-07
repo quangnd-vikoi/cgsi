@@ -28,7 +28,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 
 					{/* Rep Info */}
 					<div className="space-y-2 mb-4">
-						<div className="flex justify-between text-rsp-xs">
+						<div className="flex justify-between text-xs md:text-sm">
 							<span className="text-typo-secondary">Rep. No.</span>
 							<span className="text-typo-primary font-medium">{rep.trCode}</span>
 						</div>
@@ -42,7 +42,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 							<div className="flex items-center justify-between px-1.5 py-2.5">
 								<div className="flex items-center gap-2 min-w-0 flex-1">
 									<Phone size={16} className="text-icon-light flex-shrink-0" />
-									<span className="text-rsp-sm text-typo-primary truncate">
+									<span className="text-sm md:text-base text-typo-primary truncate">
 										{rep.trContact}
 									</span>
 								</div>
@@ -72,7 +72,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 							<div className="flex items-center justify-between px-1.5 py-2.5">
 								<div className="flex items-center gap-2 min-w-0 flex-1">
 									<Mail size={16} className="text-icon-light flex-shrink-0" />
-									<span className="text-rsp-sm text-typo-primary truncate">
+									<span className="text-sm md:text-base text-typo-primary truncate">
 										{rep.trEmail}
 									</span>
 								</div>
@@ -159,11 +159,11 @@ const TradingRepresentative = () => {
 				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center">
 						<CircleQuestionMark size={16} className="text-icon-light" />
-						<p className="text-rsp-sm font-semibold text-typo-primary">Information</p>
+						<p className="text-sm md:text-base font-semibold text-typo-primary">Information</p>
 					</div>
 					<Separator className="my-3" />
 
-					<div className="text-typo-secondary text-rsp-xs">
+					<div className="text-typo-secondary text-xs md:text-sm">
 						Please reach out to your TR for support requests. They will respond to your enquiry as
 						soon as they can.
 					</div>

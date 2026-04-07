@@ -241,6 +241,29 @@ export const submitSignatureUpdate = async (
 	);
 };
 
+export interface AccountSearchItem {
+	name: string;
+	accountNo: string;
+	accountSubType: string;
+}
+
+export interface AccountSearchResponse {
+	total: number;
+	data: AccountSearchItem[];
+}
+
+
+export const searchAccounts = async (params: {
+	searchAcct?: string;
+	searchNric?: string;
+	searchName?: string;
+	pageSize?: number;
+	pageIndex?: number;
+}): Promise<APIResponse<AccountSearchResponse>> => {
+	return await fetchAPI<AccountSearchResponse>(ENDPOINTS.searchAccounts(params), { useAuth: true });
+};
+
+
 export const profileService = {
 	getUserProfile,
 	getUserAccounts,

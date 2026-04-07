@@ -41,7 +41,7 @@ const TermsAndConditionsCheckbox = ({
 				/>
 				<Label
 					htmlFor={id}
-					className="text-rsp-sm text-typo-primary cursor-pointer leading-5 font-normal select-text"
+					className="text-sm md:text-base text-typo-primary cursor-pointer leading-5 font-normal select-text"
 				>
 					<span>
 						{labelText}

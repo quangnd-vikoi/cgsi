@@ -48,7 +48,7 @@ const ProductInformation = () => {
 								<div className="flex-none">{item.icons}</div>
 
 								<p
-									className="text-rsp-sm font-medium text-typo-secondary group-hover:text-cgs-blue  truncate"
+									className="text-sm md:text-base font-medium text-typo-secondary group-hover:text-cgs-blue  truncate"
 								>
 									{item.label}
 								</p>

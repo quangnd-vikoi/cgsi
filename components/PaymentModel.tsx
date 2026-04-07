@@ -207,7 +207,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		<>
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent className="sm:max-w-[530px] p-0 gap-0">
-					<DialogHeader className="p-6">
+					<DialogHeader className="p-4 md:p-6">
 						<DialogTitle className="text-base font-semibold text-typo-primary text-left ">
 							Deposit Methods
 						</DialogTitle>

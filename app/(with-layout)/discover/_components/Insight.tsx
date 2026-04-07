@@ -38,13 +38,13 @@ const InsightCard = ({ article }: { article: IInsightProps }) => {
 					/>
 				</div>
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 flex-grow">
-					<div className="font-normal text-rsp-xs text-typo-tertiary">{article.tag}</div>
-					<div className="h-[2lh] font-semibold text-rsp-base line-clamp-2 leading-6">{article.title}</div>
-					<div className="h-[3lh] text-rsp-sm text-typo-secondary line-clamp-3 leading-5 md:leading-6 flex-grow">
+					<div className="font-normal text-xs md:text-sm text-typo-tertiary">{article.tag}</div>
+					<div className="h-[2lh] font-semibold text-base md:text-lg line-clamp-2 leading-6">{article.title}</div>
+					<div className="h-[3lh] text-sm md:text-base text-typo-secondary line-clamp-3 leading-5 md:leading-6 flex-grow">
 						{article.description}
 					</div>
 					<div className="flex flex-col gap-3 mt-auto">
-						<div className="flex gap-4 font-normal text-rsp-sm text-typo-secondary">
+						<div className="flex gap-4 font-normal text-sm md:text-base text-typo-secondary">
 							<Calendar className="w-4 h-4 md:w-5 md:h-5 text-cgs-blue" strokeWidth={1.5} />
 							{formatDate(article.date)}
 						</div>

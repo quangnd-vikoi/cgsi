@@ -261,7 +261,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
 			>
 				<DialogHeader className="pad flex-shrink-0">
-					<DialogTitle className="text-rsp-base font-semibold text-typo-primary leading-[26px]">
+					<DialogTitle className="text-base md:text-lg font-semibold text-typo-primary leading-[26px]">
 						{pathname === "alternatives"
 							? "Commercial Paper Application Form"
 							: "IOP Application Form"}
@@ -271,10 +271,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 				<div className="pad-x overflow-y-auto flex-1 min-h-0">
 					{/* Product Info */}
 					<div className="bg-background-section rounded p-4 mb-6">
-						<h3 className="font-semibold text-rsp-sm text-typo-primary mb-2 leading-6">
+						<h3 className="font-semibold text-sm md:text-base text-typo-primary mb-2 leading-6">
 							{FORM_CONFIG.productName}
 						</h3>
-						<p className="text-rsp-xs px-3 rounded-full border border-stroke-secondary inline-block py-1 text-typo-secondary leading-4">
+						<p className="text-xs md:text-sm px-3 rounded-full border border-stroke-secondary inline-block py-1 text-typo-secondary leading-4">
 							{FORM_CONFIG.productCode}
 						</p>
 					</div>
@@ -283,7 +283,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<div className="mb-6">
 						<Label
 							htmlFor="account"
-							className="text-rsp-sm font-semibold text-typo-primary mb-1.5"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 						>
 							Account
 						</Label>
@@ -296,10 +296,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								<SelectTrigger
 									id="account"
 									className={cn(
-										"w-full text-rsp-sm disabled:bg-status-disable-secondary disabled:border-stroke-secondary disabled:pointer-events-none disabled:text-typo-tertiary disabled:opacity-100",
+										"w-full text-sm md:text-base disabled:bg-status-disable-secondary disabled:border-stroke-secondary disabled:pointer-events-none disabled:text-typo-tertiary disabled:opacity-100",
 										showValidationErrors &&
-											!formValues.account &&
-											"border-status-error bg-background-error",
+										!formValues.account &&
+										"border-status-error bg-background-error",
 									)}
 								>
 									<SelectValue placeholder="Select an account" />
@@ -309,7 +309,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 										<SelectItem
 											key={account.accountNo}
 											value={account.accountNo}
-											className="text-rsp-sm font-normal"
+											className="text-sm md:text-base font-normal"
 										>
 											<p>(Cash) {account.accountNo}</p>
 										</SelectItem>
@@ -323,7 +323,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<div className="mb-6">
 						<Label
 							htmlFor={PAYMENT_FIELD.id}
-							className="text-rsp-sm font-semibold text-typo-primary mb-1.5"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 						>
 							{PAYMENT_FIELD.label}
 						</Label>
@@ -334,10 +334,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							<SelectTrigger
 								id={PAYMENT_FIELD.id}
 								className={cn(
-									"w-full text-rsp-sm",
+									"w-full text-sm md:text-base",
 									showValidationErrors &&
-										!formValues.payment &&
-										"border-status-error bg-background-error",
+									!formValues.payment &&
+									"border-status-error bg-background-error",
 								)}
 							>
 								<SelectValue placeholder={PAYMENT_FIELD.placeholder} />
@@ -351,7 +351,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 										<SelectItem
 											key={mode}
 											value={mode}
-											className="text-rsp-sm font-normal"
+											className="text-sm md:text-base font-normal"
 										>
 											<p>{mode}</p>
 										</SelectItem>
@@ -364,7 +364,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<div className="mb-6">
 						<Label
 							htmlFor="currency"
-							className="text-rsp-sm font-semibold text-typo-primary mb-1.5"
+							className="text-sm md:text-base font-semibold text-typo-primary mb-1.5"
 						>
 							Settlement Currency
 						</Label>
@@ -375,10 +375,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							<SelectTrigger
 								id="currency"
 								className={cn(
-									"w-full text-rsp-sm py-4",
+									"w-full text-sm md:text-base py-4",
 									showValidationErrors &&
-										!formValues.currency &&
-										"border-status-error bg-background-error",
+									!formValues.currency &&
+									"border-status-error bg-background-error",
 								)}
 							>
 								<SelectValue placeholder="Select a currency" />
@@ -388,7 +388,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									<SelectItem
 										key={currency.value}
 										value={currency.value}
-										className="px-3 py-2.5 text-rsp-sm font-normal"
+										className="px-3 py-2.5 text-sm md:text-base font-normal"
 									>
 										<div className="flex items-center gap-2">
 											<Image
@@ -411,7 +411,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 
 					{/* Quantity Requested */}
 					<div className="border rounded py-4 px-4 mb-6 border-stroke-secondary">
-						<Label className="text-rsp-sm font-semibold text-typo-primary mb-1.5">
+						<Label className="text-sm md:text-base font-semibold text-typo-primary mb-1.5">
 							Quantity Requested
 						</Label>
 
@@ -419,7 +419,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							className={cn(
 								"flex items-center justify-between mb-4 border-b border-stroke-secondary px-1.5 py-2.5",
 								(hasQuantityError || (isQuantityFilled && !isValid)) &&
-									"border-status-error bg-background-error",
+								"border-status-error bg-background-error",
 							)}
 						>
 							<Button
@@ -439,7 +439,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									onChange={handleInputChange}
 									placeholder={`Min. ${FORM_CONFIG.minQuantity} Unit(s)`}
 									min={FORM_CONFIG.minQuantity}
-									className="text-center border-0 text-rsp-sm font-normal text-typo-primary w-full focus:ring-0"
+									className="text-center border-0 text-sm md:text-base font-normal text-typo-primary w-full focus:ring-0"
 								/>
 							</div>
 							<Button
@@ -453,7 +453,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 							</Button>
 						</div>
 
-						<div className="space-y-3 text-rsp-xs">
+						<div className="space-y-3 text-xs md:text-sm">
 							{quantityDetails.map((detail) => (
 								<div key={detail.label} className="flex justify-between">
 									<span
@@ -473,7 +473,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 									</span>
 								</div>
 							))}
-							<div className="flex justify-between text-rsp-xs">
+							<div className="flex justify-between text-xs md:text-sm">
 								<span className="text-typo-secondary font-medium w-1/2">
 									Est. Net Application Value
 								</span>
@@ -503,7 +503,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}
-						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-medium text-rsp-sm disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Application"}
 					</Button>

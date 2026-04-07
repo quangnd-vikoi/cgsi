@@ -1,19 +1,22 @@
 "use client";
 
 import React from "react";
+import type { IS2BPayCloseStatus, IS2BPayNotifyStatus } from "@/types";
 
 const BUTTON_WAIT_TIMEOUT_MS = 5000;
 
 declare global {
 	interface Window {
-		s2bPayClose?: (status: { status: string; corpref: string }) => void;
+		s2bPayClose?: (status: IS2BPayCloseStatus) => void;
+		s2bPayNotify?: (status: IS2BPayNotifyStatus) => void;
 	}
 }
 
 interface S2BPayButtonProps {
 	submitFn: () => Promise<{ s2bPayUrl: string; corpId: string; encStr: string } | null>;
 	onReady?: () => void;
-	onClose?: () => void;
+	onNotify?: (status: IS2BPayNotifyStatus) => void;
+	onClose?: (status?: IS2BPayCloseStatus) => void;
 	onError?: () => void;
 }
 
@@ -22,14 +25,16 @@ function autoClick(el: HTMLElement) {
 	el.click();
 }
 
-export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButtonProps) {
+export function S2BPayButton({ submitFn, onReady, onNotify, onClose, onError }: S2BPayButtonProps) {
 	const containerRef = React.useRef<HTMLDivElement>(null);
 
 	// Stable refs so the effect doesn't re-run when callbacks change
 	const onReadyRef = React.useRef(onReady);
+	const onNotifyRef = React.useRef(onNotify);
 	const onCloseRef = React.useRef(onClose);
 	const onErrorRef = React.useRef(onError);
 	onReadyRef.current = onReady;
+	onNotifyRef.current = onNotify;
 	onCloseRef.current = onClose;
 	onErrorRef.current = onError;
 
@@ -39,13 +44,17 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 		// Official S2B callback — called when user closes lightbox without selecting payment method
 		// Used as primary close signal; MutationObserver below is the fallback
 		let closeFired = false;
-		const fireClose = () => {
+		const fireClose = (status?: IS2BPayCloseStatus) => {
 			if (closeFired || cancelled) return;
 			closeFired = true;
-			onCloseRef.current?.();
+			onCloseRef.current?.(status);
 		};
-		window.s2bPayClose = () => {
-			fireClose();
+		window.s2bPayClose = (status) => {
+			fireClose(status);
+		};
+		window.s2bPayNotify = (status) => {
+			if (cancelled) return;
+			onNotifyRef.current?.(status);
 		};
 
 		(async () => {
@@ -98,7 +107,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 					const forceCloseLightbox = () => {
 						document.querySelectorAll(S2B_LIGHTBOX_SELECTORS).forEach((el) => el.remove());
 						document.querySelectorAll(".s2bpay-container-center").forEach((el) => el.remove());
-						fireClose();
+						fireClose({ status: "closed", corpref: "" });
 					};
 
 					// Attach manual close handler to S2B's close button when it appears
@@ -133,12 +142,12 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 							// Debounce: v1 briefly removes lightbox between steps
 							if (!closeDebounce) {
 								closeDebounce = setTimeout(() => {
-									if (!hasS2BLightbox()) {
-										lightboxObserver.disconnect();
-										fireClose();
-									}
-									closeDebounce = null;
-								}, 500);
+										if (!hasS2BLightbox()) {
+											lightboxObserver.disconnect();
+											fireClose({ status: "closed", corpref: "" });
+										}
+										closeDebounce = null;
+									}, 500);
 							}
 						}
 					});
@@ -172,6 +181,7 @@ export function S2BPayButton({ submitFn, onReady, onClose, onError }: S2BPayButt
 		return () => {
 			cancelled = true;
 			delete window.s2bPayClose;
+			delete window.s2bPayNotify;
 		};
 	}, [submitFn]);
 

@@ -66,9 +66,9 @@ function filterByProfessional(
             subscriptions: group.subscriptions.filter((sub) =>
                 professional
                     ? sub.professionalFlag === "1" ||
-                      sub.professionalFlag == null
+                    sub.professionalFlag == null
                     : sub.professionalFlag !== "1" ||
-                      sub.professionalFlag == null,
+                    sub.professionalFlag == null,
             ),
         }))
         .filter((group) => group.subscriptions.length > 0);
@@ -260,11 +260,11 @@ const MarketData = () => {
                         currentStep === "select" || currentStep === "success"
                             ? "Market Data & Add-Ons"
                             : currentStep === "cart"
-                              ? "Cart"
-                              : currentStep === "declaration" ||
-                                  currentStep === "non-pro-declaration"
-                                ? "Declaration"
-                                : "Terms & Conditions"
+                                ? "Cart"
+                                : currentStep === "declaration" ||
+                                    currentStep === "non-pro-declaration"
+                                    ? "Declaration"
+                                    : "Terms & Conditions"
                     }
                     rightContent={
                         currentStep === "select" ? (
@@ -344,7 +344,7 @@ const MarketData = () => {
                             </p>
                         </div>
                         <Button
-                            className="text-rsp-sm font-normal px-3 rounded text-white"
+                            className="text-sm md:text-base font-normal px-3 rounded text-white"
                             onClick={handleGoToCart}
                             disabled={selectedItems.length === 0}
                         >
@@ -412,21 +412,21 @@ const MarketData = () => {
                             className="text-cgs-blue"
                         />
 
-                        <div className="mt-6 font-semibold text-typo-primary text-rsp-base text-center leading-normal">
+                        <div className="mt-6 font-semibold text-typo-primary text-base md:text-lg text-center leading-normal">
                             Subscription(s) Submitted
                         </div>
 
-                        <div className="mt-1 font-normal text-typo-secondary text-rsp-sm text-center leading-tight px-5">
+                        <div className="mt-1 font-normal text-typo-secondary text-sm md:text-base text-center leading-tight px-5">
                             Settle the total amount due to enjoy your
                             subscriptions!
                         </div>
 
                         <div className="mt-6 p-4 rounded border border-theme-blue-085 bg-background-section flex justify-between items-center w-[calc(100%-48px)]">
                             <div>
-                                <p className="text-rsp-sm font-semibold">
+                                <p className="text-sm md:text-base font-semibold">
                                     Total Amount Due
                                 </p>
-                                <p className="text-rsp-xs text-typo-secondary mt-1">
+                                <p className="text-xs md:text-sm text-typo-secondary mt-1">
                                     Inclusive of GST
                                 </p>
                             </div>
@@ -459,13 +459,13 @@ const MarketData = () => {
                         <Button
                             variant="link"
                             onClick={() => setOpenSheet("my_subscriptions")}
-                            className="flex-1 text-rsp-sm font-medium p-0 text-cgs-blue"
+                            className="flex-1 text-sm md:text-base font-medium p-0 text-cgs-blue"
                         >
                             View My Subscriptions
                         </Button>
                         <Button
                             onClick={handleBackToCatalog}
-                            className="flex-1 rounded text-rsp-sm font-normal text-white"
+                            className="flex-1 rounded text-sm md:text-base font-normal text-white"
                         >
                             Back to Catalog
                         </Button>

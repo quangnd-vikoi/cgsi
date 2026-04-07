@@ -384,4 +384,20 @@ export const profileEndpoints = {
 	 * );
 	 */
 	declarationInfo: () => `/profile/api/v1/accounts/declarationInfo`,
+	/** GET /portfolio/accounts/search?searchAcct=&searchNric=&searchName=&pageSize=&pageIndex= */
+	searchAccounts: (params: {
+		searchAcct?: string;
+		searchNric?: string;
+		searchName?: string;
+		pageSize?: number;
+		pageIndex?: number;
+	}) => {
+		const qs = new URLSearchParams();
+		if (params.searchAcct) qs.set("searchAcct", params.searchAcct);
+		if (params.searchNric) qs.set("searchNric", params.searchNric);
+		if (params.searchName) qs.set("searchName", params.searchName);
+		if (params.pageSize !== undefined) qs.set("pageSize", String(params.pageSize));
+		if (params.pageIndex !== undefined) qs.set("pageIndex", String(params.pageIndex));
+		return `/profile/api/v1/accounts/search?${qs.toString()}`;
+	},
 } as const;

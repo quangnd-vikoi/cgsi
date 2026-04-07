@@ -10,12 +10,36 @@ import { cn } from "@/lib/utils";
 import { useDonationForm } from "../_hooks/useDonationForm";
 import PaynowIcon from "@/public/icons/discover/Paynow.svg";
 import { Loader2, Wallet } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { depositPaynow } from "@/lib/services/portfolioService";
 import { submitDonation } from "@/lib/services/profileService";
 import { S2BPayButton } from "@/components/S2BPayButton";
+import type { IS2BPayNotifyStatus } from "@/types";
+
+const PAYNOW_SUCCESS_VALUES = new Set([
+	"success",
+	"successful",
+	"succeeded",
+	"paid",
+	"completed",
+	"complete",
+]);
+
+const getS2BNotifyStatusValues = (status: IS2BPayNotifyStatus): string[] =>
+	[
+		status.status,
+		status.txnstatus,
+		status.paymentStatus,
+		status.transactionStatus,
+		status.result,
+	]
+		.filter((value): value is string => typeof value === "string")
+		.map((value) => value.trim().toLowerCase());
+
+const isS2BPayNowSuccess = (status: IS2BPayNotifyStatus): boolean =>
+	getS2BNotifyStatusValues(status).some((value) => PAYNOW_SUCCESS_VALUES.has(value));
 
 const OneTimeForm = () => {
 	const [inputValue, setInputValue] = useState<string>("");
@@ -25,6 +49,7 @@ const OneTimeForm = () => {
 		corpId: string;
 		encStr: string;
 	} | null>) | null>(null);
+	const paynowSuccessHandledRef = useRef(false);
 
 	const getDefaultAccountNo = useTradingAccountStore((state) => state.getDefaultAccountNo);
 	const accountNo = getDefaultAccountNo();
@@ -59,6 +84,7 @@ const OneTimeForm = () => {
 
 		if (paymentMethod === "now") {
 			const donateAmount = amount!;
+			paynowSuccessHandledRef.current = false;
 			setPaynowSubmitFn(() => async () => {
 				const response = await depositPaynow({
 					accountNo,
@@ -112,7 +138,7 @@ const OneTimeForm = () => {
 					</div>
 
 					<div className="space-y-1.5">
-						<Label htmlFor="donationAmount" className="text-sm font-semibold text-typo-primary">
+						<Label htmlFor="donationAmount" className="font-semibold text-typo-primary">
 							Donation Amount (SGD)
 						</Label>
 						<Input
@@ -151,7 +177,7 @@ const OneTimeForm = () => {
 					</div>
 
 					<div className="w-full">
-						<Label className="text-sm font-semibold text-typo-primary ">Payment Method</Label>
+						<Label className="font-semibold text-typo-primary ">Payment Method</Label>
 
 						<RadioGroup
 							value={paymentMethod}
@@ -202,7 +228,7 @@ const OneTimeForm = () => {
 						</RadioGroup>
 
 						{!paymentMethod && errors.paymentMethod && (
-							<p className="text-status-error text-rsp-xs mt-1 flex items-center gap-1">
+							<p className="text-status-error text-xs md:text-sm mt-1 flex items-center gap-1">
 								<CustomCircleAlert />
 								Field cannot be empty
 							</p>
@@ -245,11 +271,21 @@ const OneTimeForm = () => {
 				<S2BPayButton
 					submitFn={paynowSubmitFn}
 					onReady={() => setIsSubmitting(false)}
+					onNotify={(status) => {
+						if (!isS2BPayNowSuccess(status) || paynowSuccessHandledRef.current) return;
+						paynowSuccessHandledRef.current = true;
+						setPaynowSubmitFn(null);
+						setIsSubmitting(false);
+						toast.success(
+							"Thank you!",
+							"Your donation will go a long way in uplifting lives. We truly appreciate it.",
+						);
+						setInputValue("");
+						reset();
+					}}
 					onClose={() => {
 						setPaynowSubmitFn(null);
 						setIsSubmitting(false);
-						setInputValue("");
-						reset();
 					}}
 					onError={() => {
 						setPaynowSubmitFn(null);

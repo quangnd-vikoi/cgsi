@@ -39,12 +39,12 @@ const Announcements = () => {
 			<CustomSheetTitle title="Announcement" />
 
 			<div className="mt-6 overflow-y-auto sidebar-scroll flex-1 pr-2 scrollbar-offset-laptop">
-				<p className="text-rsp-base font-semibold text-typo-primary">{announcement.Announcement_Title}</p>
+				<p className="text-base md:text-lg font-semibold text-typo-primary">{announcement.Announcement_Title}</p>
 				<p className="text-xs text-typo-secondary leading-4 mt-4">{formatDate(announcement.Announcement_Start_Date)}</p>
 
 				<div className="w-full h-[1px] border-t my-6"></div>
 				<div
-					className="text-rsp-xs text-typo-secondary leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_a]:text-cgs-blue [&_a]:underline"
+					className="text-xs md:text-sm text-typo-secondary leading-relaxed [&_p]:mb-4 [&_p:last-child]:mb-0 [&_a]:text-cgs-blue [&_a]:underline"
 					dangerouslySetInnerHTML={{ __html: announcement.Announcement_Content }}
 				/>
 			</div>

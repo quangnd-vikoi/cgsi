@@ -82,7 +82,7 @@ const CampaignCard = memo(
 				{/* Content */}
 				<div className="flex flex-col flex-1 p-4 gap-4 md:gap-[18px]">
 					{/* Category Tag */}
-					<span className="text-rsp-xs text-typo-tertiary mb-1">
+					<span className="text-xs md:text-sm text-typo-tertiary mb-1">
 						{campaign.Tagging_Timing || "Campaign"}
 					</span>
 
@@ -92,7 +92,7 @@ const CampaignCard = memo(
 					</h3>
 
 					{/* Description - always 3 lines */}
-					<p className=" text-rsp-sm text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 md:leading-6 font-normal pb-3">
+					<p className=" text-sm md:text-base text-typo-secondary line-clamp-3 min-h-[3lh] leading-5 md:leading-6 font-normal pb-3">
 						{campaign.MastheadBasic_Article_Short}
 					</p>
 				</div>
@@ -198,133 +198,133 @@ const Campaigns = () => {
 						description="Check back soon, new Promotions & Campaigns are on the way!"
 					/>
 				) : (
-				<div className="relative">
-					<Carousel
-						setApi={setApi}
-						opts={{
-							align: "start",
-							loop: false,
-							duration: 30,
-							skipSnaps: false,
-							inViewThreshold: 0.7,
-						}}
-						className="w-full"
-					>
-						<CarouselContent className="-ml-4 overflow-visible">
-							{campaigns.map((campaign, index) => {
-								// First item: regular card on mobile, featured banner on desktop
-								if (index === 0) {
-									// Mobile: render as regular card
-									if (isMobile) {
+					<div className="relative">
+						<Carousel
+							setApi={setApi}
+							opts={{
+								align: "start",
+								loop: false,
+								duration: 30,
+								skipSnaps: false,
+								inViewThreshold: 0.7,
+							}}
+							className="w-full"
+						>
+							<CarouselContent className="-ml-4 overflow-visible">
+								{campaigns.map((campaign, index) => {
+									// First item: regular card on mobile, featured banner on desktop
+									if (index === 0) {
+										// Mobile: render as regular card
+										if (isMobile) {
+											return (
+												<CarouselItem
+													key="featured-mobile"
+													className="pl-4 basis-[75%] overflow-visible py-1"
+												>
+													<CampaignCard
+														campaign={campaign}
+														isFeatured={false}
+													/>
+												</CarouselItem>
+											);
+										}
+										// Desktop: render featured banner with snap point
 										return (
-											<CarouselItem
-												key="featured-mobile"
-												className="pl-4 basis-[75%] overflow-visible py-1"
-											>
-												<CampaignCard
-													campaign={campaign}
-													isFeatured={false}
-												/>
-											</CarouselItem>
+											<React.Fragment key="featured">
+												<CarouselItem
+													key="featured-desktop"
+													className="pl-4 basis-[55%] lg:basis-[57%] overflow-visible py-1"
+												>
+													<CampaignCard
+														campaign={campaign}
+														isFeatured={true}
+													/>
+												</CarouselItem>
+												{/* Invisible snap point for peek effect */}
+												<CarouselItem
+													key="featured-snap"
+													className="pl-0 basis-[40%] lg:basis-[25%] -ml-[39%] lg:-ml-[24%] py-1"
+												>
+													<div className="w-full h-full pointer-events-none" />
+												</CarouselItem>
+											</React.Fragment>
 										);
 									}
-									// Desktop: render featured banner with snap point
+
 									return (
-										<React.Fragment key="featured">
-											<CarouselItem
-												key="featured-desktop"
-												className="pl-4 basis-[55%] lg:basis-[57%] overflow-visible py-1"
-											>
-												<CampaignCard
-													campaign={campaign}
-													isFeatured={true}
-												/>
-											</CarouselItem>
-											{/* Invisible snap point for peek effect */}
-											<CarouselItem
-												key="featured-snap"
-												className="pl-0 basis-[40%] lg:basis-[25%] -ml-[39%] lg:-ml-[24%] py-1"
-											>
-												<div className="w-full h-full pointer-events-none" />
-											</CarouselItem>
-										</React.Fragment>
+										<CarouselItem
+											key={index}
+											className={cn(
+												"pl-4 overflow-visible py-1",
+												isMobile ? "basis-[75%]" : "basis-[40%] lg:basis-[25%]"
+											)}
+										>
+											<CampaignCard
+												campaign={campaign}
+												isFeatured={false}
+											/>
+										</CarouselItem>
 									);
-								}
+								})}
+							</CarouselContent>
 
-								return (
-									<CarouselItem
+							{/* Navigation Arrows */}
+							<Button
+								size="icon"
+								onClick={scrollPrev}
+								className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
+								aria-label="Previous"
+							>
+								<ArrowLeft className="w-5 h-5 text-cgs-blue" />
+							</Button>
+
+							<Button
+								size="icon"
+								onClick={scrollNext}
+								className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
+								aria-label="Next"
+							>
+								<ArrowRight className="w-5 h-5 text-cgs-blue" />
+							</Button>
+							{/* Blur overlay - Left (when scrolled, showing partial of first item) - hidden on mobile */}
+							<div
+								className={cn(
+									"absolute left-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+									"bg-gradient-to-r from-white via-white/60 to-transparent",
+									current == 1 ? "opacity-100" : "opacity-0"
+								)}
+							/>
+
+							{/* Blur overlay - Right (at start, when peeked items visible) - hidden on mobile */}
+							<div
+								className={cn(
+									"absolute right-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
+									"bg-gradient-to-l from-white via-white/60 to-transparent",
+									current === 0 ? "opacity-100" : "opacity-0"
+								)}
+							/>
+						</Carousel>
+
+
+						{/* Dot Indicators - number based on scroll snaps */}
+						{api && api.scrollSnapList().length > 1 && (
+							<div className="flex justify-center gap-2 mt-4 md:mt-6">
+								{api.scrollSnapList().map((_, index) => (
+									<button
 										key={index}
+										onClick={() => scrollTo(index)}
 										className={cn(
-											"pl-4 overflow-visible py-1",
-											isMobile ? "basis-[75%]" : "basis-[40%] lg:basis-[25%]"
+											"w-2 h-2 rounded-full transition-colors duration-200",
+											index === current
+												? "bg-cgs-blue"
+												: "bg-gray-300 hover:bg-gray-400"
 										)}
-									>
-										<CampaignCard
-											campaign={campaign}
-											isFeatured={false}
-										/>
-									</CarouselItem>
-								);
-							})}
-						</CarouselContent>
-
-						{/* Navigation Arrows */}
-						<Button
-							size="icon"
-							onClick={scrollPrev}
-							className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
-							aria-label="Previous"
-						>
-							<ArrowLeft className="w-5 h-5 text-cgs-blue" />
-						</Button>
-
-						<Button
-							size="icon"
-							onClick={scrollNext}
-							className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-20 hidden md:flex items-center justify-center bg-white rounded-full w-10 h-10 shadow-md transition-all hover:bg-background-section hover:shadow-light-blue border border-cgs-blue"
-							aria-label="Next"
-						>
-							<ArrowRight className="w-5 h-5 text-cgs-blue" />
-						</Button>
-						{/* Blur overlay - Left (when scrolled, showing partial of first item) - hidden on mobile */}
-						<div
-							className={cn(
-								"absolute left-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
-								"bg-gradient-to-r from-white via-white/60 to-transparent",
-								current == 1 ? "opacity-100" : "opacity-0"
-							)}
-						/>
-
-						{/* Blur overlay - Right (at start, when peeked items visible) - hidden on mobile */}
-						<div
-							className={cn(
-								"absolute right-0 top-1 bottom-1 w-12 md:w-20 pointer-events-none transition-opacity duration-300 z-10 hidden md:block",
-								"bg-gradient-to-l from-white via-white/60 to-transparent",
-								current === 0 ? "opacity-100" : "opacity-0"
-							)}
-						/>
-					</Carousel>
-
-
-					{/* Dot Indicators - number based on scroll snaps */}
-					{api && api.scrollSnapList().length > 1 && (
-						<div className="flex justify-center gap-2 mt-4 md:mt-6">
-							{api.scrollSnapList().map((_, index) => (
-								<button
-									key={index}
-									onClick={() => scrollTo(index)}
-									className={cn(
-										"w-2 h-2 rounded-full transition-colors duration-200",
-										index === current
-											? "bg-cgs-blue"
-											: "bg-gray-300 hover:bg-gray-400"
-									)}
-									aria-label={`Go to slide ${index + 1}`}
-								/>
-							))}
-						</div>
-					)}
-				</div>
+										aria-label={`Go to slide ${index + 1}`}
+									/>
+								))}
+							</div>
+						)}
+					</div>
 				)}
 			</div>
 		</section>

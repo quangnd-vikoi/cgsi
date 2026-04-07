@@ -43,7 +43,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
             <div className="border-t pad-x py-4 justify-end flex gap-2">
                 <Alert
                     trigger={
-                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none !text-cgs-blue hover:text-cgs-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary text-rsp-sm">
+                        <Button disabled={selectedItems.length === 0} variant="outline" className="px-3 border-none !text-cgs-blue hover:text-cgs-blue/75 shadow-none hover:bg-transparent disabled:text-status-disable-primary text-sm md:text-base">
                             Remove All
                         </Button>
                     }
@@ -52,7 +52,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
                     actionText="Confirm"
                     onAction={handleRemoveAllItems}
                 />
-                <Button onClick={onCheckout} disabled={selectedItems.length === 0} className="px-3 rounded text-rsp-sm text-white">
+                <Button onClick={onCheckout} disabled={selectedItems.length === 0} className="px-3 rounded text-sm md:text-base text-white">
                     Checkout ({selectedItems.length})
                 </Button>
             </div>

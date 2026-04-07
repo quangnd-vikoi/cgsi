@@ -284,19 +284,6 @@
 	.pad-x {
 		@apply px-4 md:px-6;
 	}
-
-	/* Responsive text size utilities */
-	.text-rsp-xs {
-		@apply text-xs md:text-sm;
-	}
-
-	.text-rsp-sm {
-		@apply text-sm md:text-base;
-	}
-
-	.text-rsp-base {
-		@apply text-base md:text-lg;
-	}
 }
 
 @utility investment-card {
@@ -464,8 +451,15 @@
 
 /* Three-dot breathing loader */
 @keyframes dot-breathing {
-	0%, 100% { opacity: 0.2; transform: scale(0.8); }
-	50% { opacity: 1; transform: scale(1.2); }
+	0%,
+	100% {
+		opacity: 0.2;
+		transform: scale(0.8);
+	}
+	50% {
+		opacity: 1;
+		transform: scale(1.2);
+	}
 }
 
 /* S2B PayNow lightbox — force on top of all other layers */

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { PaginationFooter } from "@/components/PaginationFooter";
 import { INTERNAL_ROUTES } from "@/constants/routes";
-import { ASSET_CLASS_LABELS } from "@/constants/accounts";
+import { ASSET_CLASS_LABELS, CURRENCY_TO_MARKET } from "@/constants/accounts";
 import Link from "next/link";
 import { PortfolioType } from "@/types";
 import type { IPortfolioHolding } from "@/types";
@@ -38,12 +38,13 @@ type ColDef = { label: string; col: keyof IPortfolioHolding; right?: boolean };
 const BASE_COLS: ColDef[] = [
 	{ label: "Asset Class", col: "assetClass" },
 	{ label: "Market", col: "marketCode" },
-	{ label: "Code", col: "securityCode" },
-	{ label: "Name", col: "securityName" },
+
 ];
 
 const CTA_COLS: ColDef[] = [
 	...BASE_COLS,
+	{ label: "Code", col: "securityCode" },
+	{ label: "Name", col: "securityName" },
 	{ label: "Total Qty", col: "totalQty", right: true },
 	{ label: "Earmarked", col: "earmarkQty", right: true },
 	{ label: "Avail Qty", col: "availQty", right: true },
@@ -54,19 +55,24 @@ const CTA_COLS: ColDef[] = [
 
 const MTA_COLS: ColDef[] = [
 	...BASE_COLS,
-	{ label: "Total Qty", col: "totalQty", right: true },
+	{ label: "Security Code", col: "securityCode" },
+	{ label: "Name", col: "securityName" },
+	{ label: "Total Quantity", col: "totalQty", right: true },
 	{ label: "Currency", col: "currency", right: true },
 	{ label: "Closing Price", col: "closingPrice", right: true },
-	{ label: "Market Value", col: "marketValue", right: true },
+	{ label: "Market Value (SGD)", col: "marketValue", right: true },
 	{ label: "Cap Price", col: "capPrice", right: true },
-	{ label: "Cap Qty", col: "capQty", right: true },
-	{ label: "Marg. Qty", col: "marginableQty", right: true },
+	// { label: "Cap Qty", col: "capQty", right: true },
+	{ label: "Marginable Quantity", col: "marginableQty", right: true },
 	{ label: "Valuation %", col: "valuationPct", right: true },
-	{ label: "Collateral Val", col: "collateralValue", right: true },
+	{ label: "Collateral Value (SGD)", col: "collateralValue", right: true },
+	{ label: "Portfolio %", col: "portfolioPct", right: true },
 ];
 
 const CUT_COLS: ColDef[] = [
 	...BASE_COLS,
+	{ label: "Code", col: "securityCode" },
+	{ label: "Name", col: "securityName" },
 	{ label: "Total Qty", col: "totalQty", right: true },
 	{ label: "Currency", col: "currency", right: true },
 	{ label: "Closing Price", col: "closingPrice", right: true },
@@ -85,7 +91,7 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 	const [holdings, setHoldings] = useState<IPortfolioHolding[]>([]);
 	const [totalItems, setTotalItems] = useState(0);
 	const [loading, setLoading] = useState(true);
-	const { selectedAccount, isInitialized } = useTradingAccountStore();
+	const { selectedAccount, isInitialized, selectedAccountSummary } = useTradingAccountStore();
 	const { exporting, handleExport: runExport } = useExport();
 	const [sortColumn, setSortColumn] = useState<keyof IPortfolioHolding | null>(null);
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -125,13 +131,23 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 			const pageIndex = currentPage - 1;
 			const response = await getHoldings(selectedAccount.accountNo, itemsPerPage, pageIndex);
 			if (response.success && response.data) {
-				setHoldings(response.data.portfolio ?? []);
+				const totalCollateralValue = selectedAccountSummary?.collateralValue ?? 0;
+
+				const enriched = (response.data.portfolio ?? []).map((item) => ({
+					...item,
+					portfolioPct:
+						totalCollateralValue > 0
+							? (item.collateralValue ?? 0) / totalCollateralValue
+							: 0,
+				}));
+
+				setHoldings(enriched);
 				setTotalItems(response.data.total);
 			}
 			setLoading(false);
 		};
 		fetchHoldings();
-	}, [selectedAccount?.accountNo, currentPage, itemsPerPage]);
+	}, [selectedAccount?.accountNo, currentPage, itemsPerPage, selectedAccountSummary]);
 
 	const handleItemsPerPageChange = (value: number) => {
 		setItemsPerPage(value);
@@ -361,11 +377,13 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 											const value =
 												col === "assetClass"
 													? (ASSET_CLASS_LABELS[item.assetClass] ?? item.assetClass)
+													: col === "marketCode" && selectedAccount?.accountType === "MTA"
+														? (CURRENCY_TO_MARKET[item.currency] ?? raw ?? "—")
 													: isNum
 														? (raw as number).toLocaleString("en-US", {
-																minimumFractionDigits: 2,
-																maximumFractionDigits: 2,
-															})
+															minimumFractionDigits: (["totalQty", "marginableQty", "valuationPct"]).includes(col) ? 0 : 2,
+															maximumFractionDigits: (["totalQty", "marginableQty", "valuationPct"]).includes(col) ? 0 : 2,
+														})
 														: (raw ?? "—");
 											return (
 												<TableCell key={col} className={right ? "text-right" : ""}>

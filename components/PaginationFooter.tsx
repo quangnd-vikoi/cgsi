@@ -79,7 +79,7 @@ export const PaginationFooter = ({
         <div className={`flex flex-col gap-3 md:gap-4 ${className}`}>
             <div className="flex justify-between items-center">
                 {/* Items count */}
-                <div className="text-rsp-xs text-typo-secondary shrink-0 w-[200px]">
+                <div className="text-xs md:text-sm text-typo-secondary shrink-0 w-[200px]">
                     {loading ? (
                         <Skeleton className="h-4 w-36" />
                     ) : totalItems === 0 ? (
@@ -95,11 +95,10 @@ export const PaginationFooter = ({
                         <PaginationItem>
                             <PaginationPrevious
                                 onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                                className={`size-7 md:size-9 p-0 ${
-                                    loading || totalItems === 0 || currentPage === 1
+                                className={`size-7 md:size-9 p-0 ${loading || totalItems === 0 || currentPage === 1
                                         ? "pointer-events-none opacity-50"
                                         : "cursor-pointer"
-                                }`}
+                                    }`}
                             />
                         </PaginationItem>
 
@@ -122,11 +121,10 @@ export const PaginationFooter = ({
                         <PaginationItem>
                             <PaginationNext
                                 onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                                className={`size-7 md:size-9 p-0 ${
-                                    loading || totalItems === 0 || currentPage === totalPages
+                                className={`size-7 md:size-9 p-0 ${loading || totalItems === 0 || currentPage === totalPages
                                         ? "pointer-events-none opacity-50"
                                         : "cursor-pointer"
-                                }`}
+                                    }`}
                             />
                         </PaginationItem>
                     </PaginationContent>

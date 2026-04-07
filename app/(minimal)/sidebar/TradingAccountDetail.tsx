@@ -40,7 +40,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 	return (
 		<>
 			<div className="p-4">
-				<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-rsp-xs">
+				<div className="flex items-center gap-1.5 mb-2 text-typo-secondary text-xs md:text-sm">
 					{label}
 					<Tooltip>
 						<TooltipTrigger>
@@ -55,7 +55,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 				<div className="flex justify-between items-center gap-2">
 					{value ? (
 						<>
-							<p className="font-medium text-typo-primary text-rsp-sm truncate flex-1">
+							<p className="font-medium text-typo-primary text-sm md:text-base truncate flex-1">
 								{value}
 							</p>
 							{isLinked ? (
@@ -72,7 +72,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
 												e.preventDefault();
 												onUnlink();
 											}}
-											className="absolute text-status-error -top-7 right-0 text-rsp-xs hover:underline"
+											className="absolute text-status-error -top-7 right-0 text-xs md:text-sm hover:underline"
 										>
 											Unlink
 										</Link>
@@ -176,7 +176,7 @@ const TradingAccountDetail = () => {
 							actionContent={
 								!isSubCDP && (
 									<div
-										className="flex items-center gap-1 text-cgs-blue text-rsp-xs font-medium cursor-pointer shrink-0"
+										className="flex items-center gap-1 text-cgs-blue text-xs md:text-sm font-medium cursor-pointer shrink-0"
 										onClick={() => handleLink("sub-cdp")}
 									>
 										Update to SUB-CDP
@@ -284,16 +284,16 @@ const TradingAccountDetail = () => {
 							</div>
 						) : trInfo ? (
 							<div className="flex flex-col gap-4 p-4">
-								<div className="flex justify-between items-center text-rsp-sm gap-2">
+								<div className="flex justify-between items-center text-sm md:text-base gap-2">
 									<p className="text-typo-secondary shrink-0">TR Name</p>
-									<p className="font-medium text-typo-primary truncate">{trInfo.trName}</p>
+									<p className="font-medium text-typo-primary truncate">{trInfo.trCode} - {trInfo.trName}</p>
 								</div>
-								<div className="flex justify-between items-center text-rsp-sm">
+								<div className="flex justify-between items-center text-sm md:text-base">
 									<p className="text-typo-secondary">Rep. No.</p>
-									<p className="font-medium text-typo-primary truncate">{trInfo.trCode}</p>
+									<p className="font-medium text-typo-primary truncate"></p>
 								</div>
 								{trInfo.trContact && (
-									<div className="flex justify-between items-center text-rsp-sm">
+									<div className="flex justify-between items-center text-sm md:text-base">
 										<p className="text-typo-secondary">Phone Number</p>
 										<div className="flex items-center gap-2 min-w-0">
 											<p className="font-medium text-typo-primary truncate">
@@ -313,7 +313,7 @@ const TradingAccountDetail = () => {
 									</div>
 								)}
 								{trInfo.trEmail && (
-									<div className="flex justify-between items-center text-rsp-sm">
+									<div className="flex justify-between items-center text-sm md:text-base">
 										<p className="text-typo-secondary">Email Add.</p>
 										<div className="flex items-center gap-2 min-w-0">
 											<p className="font-medium text-typo-primary truncate">

@@ -75,8 +75,8 @@ const DashboardBlock = ({
 	return (
 		<div className="bg-background-selected p-3 md:p-4 rounded border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer flex justify-between items-center">
 			<div className="">
-				<p className="text-rsp-xs text-typo-secondary">{title}</p>
-				<div className="text-rsp-sm flex justify-between items-end mt-2 flex-wrap gap-2">
+				<p className="text-xs md:text-sm text-typo-secondary">{title}</p>
+				<div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
 					{isLoading ? (
 						<Skeleton className="h-5 w-28" />
 					) : (
@@ -145,7 +145,7 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false, isTR = false }: 
 
 	const totalAssetBlock = (
 		<div className="w-full">
-			<p className="text-rsp-xs text-typo-secondary">Total Asset Value</p>
+			<p className="text-xs md:text-sm text-typo-secondary">Total Asset Value</p>
 			{isLoading ? (
 				<Skeleton className="mt-2 h-8 w-40" />
 			) : (
@@ -162,7 +162,7 @@ const TypeSelect = ({ totalAsset, fullWidth, isLoading = false, isTR = false }: 
 
 	const trRepBlock = (
 		<div className="w-full">
-			<p className="text-rsp-xs text-typo-secondary">Trading Representative</p>
+			<p className="text-xs md:text-sm text-typo-secondary">Trading Representative</p>
 			<p className="mt-2 text-base leading-6 font-semibold">
 				{selectedAccount?.trName || "N/A"}
 			</p>
@@ -243,7 +243,7 @@ const DashboardSkeleton = () => (
 );
 
 const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
-	const { selectedAccount, accounts, isTRClientAccount } = useTradingAccountStore();
+	const { selectedAccount, accounts, isTRClientAccount, setSelectedAccountSummary  } = useTradingAccountStore();
 	const accountType = selectedAccount?.accountType as PortfolioType | undefined;
 	const type = propType || accountType;
 	const router = useRouter();
@@ -273,6 +273,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 			if (!cancelled) {
 				if (response.success && response.data) {
 					setAccountSummary(response.data);
+					setSelectedAccountSummary(response.data);
 				}
 				setIsLoading(false);
 			}
@@ -282,7 +283,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 		return () => {
 			cancelled = true;
 		};
-	}, [selectedAccount?.accountNo]);
+	}, [selectedAccount?.accountNo, setSelectedAccountSummary]);
 
 	const colorByValue = (value?: number): "success" | "error" | "normal" =>
 		value === undefined || value === null ? "normal" : value < 0 ? "error" : value > 0 ? "success" : "normal";
@@ -427,10 +428,10 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				)}
 			</div>
 			{!trNoClient && type === "CTA" && showContractsContra && (
-				<div className="flex w-full justify-end">
+				<div className="flex w-full justify-end md:hidden">
 					<Link
 						href={INTERNAL_ROUTES.SETTLE}
-						className="flex text-cgs-blue text-rsp-xs font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75"
+						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75"
 					>
 						<p>View Contracts & Contra</p>
 						<ChevronRight className="inline-block ml-0.5" size={16} />
@@ -438,14 +439,29 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
 				</div>
 			)}
 
+			{!trNoClient && type === "MTA" && (
+				<div className="flex w-full justify-end md:hidden">
+					<div
+						className="flex text-cgs-blue text-xs md:text-sm font-medium items-center mt-4 cursor-pointer hover:text-cgs-blue/75"
+						onClick={() => setShowPaymentModel(true)}
+					>
+						<p>Fund Account</p>
+						<ChevronRight className="inline-block ml-0.5" size={16} />
+					</div>
+				</div>
+			)
+			}
+
 			<PaymentModel open={showPaymentModel} onOpenChange={setShowPaymentModel} />
 
-			{!trNoClient && (
-				<div className="mt-6">
-					<ChartPie type={type} assetList={accountSummary?.assetList} isLoading={isLoading} />
-				</div>
-			)}
-		</div>
+			{
+				!trNoClient && (
+					<div className="mt-6">
+						<ChartPie type={type} assetList={accountSummary?.assetList} isLoading={isLoading} />
+					</div>
+				)
+			}
+		</div >
 	);
 };
 

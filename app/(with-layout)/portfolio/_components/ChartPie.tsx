@@ -202,7 +202,7 @@ export function ChartPie({ type = "CTA", assetList, isLoading = false }: ChartPi
                     return (
                         <div
                             key={item.asset}
-                            className={`grid gap-2 md:gap-4 py-3 md:py-4 text-rsp-xs border-b border-stroke-secondary last:border-0 md:last:border-b cursor-pointer transition-colors ${isActive ? 'bg-background-section' : 'hover:bg-background-section'}`}
+                            className={`grid gap-2 md:gap-4 py-3 md:py-4 text-xs md:text-sm border-b border-stroke-secondary last:border-0 md:last:border-b cursor-pointer transition-colors ${isActive ? 'bg-background-section' : 'hover:bg-background-section'}`}
                             style={{ gridTemplateColumns: '2.1fr 1fr 1.5fr' }}
                             onMouseEnter={() => setActiveIndex(index)}
                             onMouseLeave={() => setActiveIndex(null)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
 	Pagination,
 	PaginationContent,
+	PaginationEllipsis,
 	PaginationItem,
 	PaginationLink,
 	PaginationNext,
@@ -15,7 +16,7 @@ import {
 } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import type { TradingAccount, PortfolioType } from "@/types";
-import { searchAccounts, type AccountSearchItem } from "@/lib/services/portfolioService";
+import { searchAccounts, type AccountSearchItem } from "@/lib/services/profileService";
 
 const SEARCH_TABS = [
 	{ value: "account-no", label: "Account No.", placeholder: "Enter Account Number" },
@@ -31,6 +32,22 @@ interface TRAccountSearchDialogProps {
 	isTRClientAccount: boolean;
 	fullWidth?: boolean;
 }
+
+const getPageNumbers = (currentPage: number, totalPages: number): (number | "...")[] => {
+	if (totalPages <= 7) {
+		return Array.from({ length: totalPages }, (_, i) => i + 1);
+	}
+
+	if (currentPage <= 4) {
+		return [1, 2, 3, 4, 5, "...", totalPages];
+	}
+
+	if (currentPage >= totalPages - 3) {
+		return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+	}
+
+	return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+};
 
 const TRAccountSearchDialog = ({
 	onSelectAccount,
@@ -55,8 +72,8 @@ const TRAccountSearchDialog = ({
 
 		const params =
 			activeTab === "account-no" ? { searchAcct: searchQuery } :
-			activeTab === "client-name" ? { searchName: searchQuery } :
-			{ searchNric: searchQuery };
+				activeTab === "client-name" ? { searchName: searchQuery } :
+					{ searchNric: searchQuery };
 
 		const response = await searchAccounts({
 			...params,
@@ -94,12 +111,6 @@ const TRAccountSearchDialog = ({
 	};
 
 	const totalPages = Math.ceil(total / PER_PAGE);
-
-	const pageNumbers = useMemo(() => {
-		const pages: number[] = [];
-		for (let i = 1; i <= totalPages; i++) pages.push(i);
-		return pages;
-	}, [totalPages]);
 
 	const isSearchDisabled = isSearching || searchQuery.trim().length < 3;
 
@@ -197,23 +208,30 @@ const TRAccountSearchDialog = ({
 
 									{/* Result list */}
 									<div className="overflow-y-auto flex-1 py-2">
-										{results.map((item) => (
-											<Button
-												key={item.accountNo}
-												onClick={() => handleSelectAccount(item)}
-												className={cn(
-													"w-full h-fit cursor-pointer mt-1 justify-start transition-colors border hover:bg-background-selected bg-white py-3 px-4 text-rsp-sm text-typo-primary font-normal",
-													selectedAccount?.accountNo === item.accountNo &&
-														"bg-cgs-blue/5",
-												)}
-											>
-												<span className="w-1/4">
-													({item.accountSubType}) {item.accountNo}
-												</span>
-												<div className="ml-2 h-full w-1 text-typo-tertiary">|</div>
-												<span className="">{item.name}</span>
-											</Button>
-										))}
+										{
+											isSearching ? <div className="w-full flex items-center justify-center min-h-[160px]">
+												<Loader2 className="size-8 text-cgs-blue animate-spin text-center" />
+											</div> :
+												results.length === 0 ? <p className="text-sm text-typo-tertiary">No results found</p> :
+													results.map((item) => (
+														<Button
+															key={item.accountNo}
+															onClick={() => handleSelectAccount(item)}
+															className={cn(
+																"w-full h-fit cursor-pointer mt-1 justify-start transition-colors border hover:bg-background-selected bg-white py-3 px-4 text-sm md:text-base text-typo-primary font-normal",
+																selectedAccount?.accountNo === item.accountNo &&
+																"bg-cgs-blue/5",
+															)}
+														>
+															<span className="">
+																({item.accountSubType}) {item.accountNo}
+															</span>
+															<div className="ml-1 h-full w-1 text-typo-tertiary">|</div>
+															<span className="flex-1 min-w-0 truncate text-left">{item.name}</span>
+
+														</Button>
+													))
+										}
 									</div>
 
 									{/* Pagination */}
@@ -223,29 +241,31 @@ const TRAccountSearchDialog = ({
 												<PaginationItem>
 													<PaginationPrevious
 														onClick={() => handleSearch(Math.max(1, currentPage - 1))}
-														className={cn(
-															currentPage === 1 &&
-																"pointer-events-none opacity-50",
-														)}
+														className={cn(currentPage === 1 && "pointer-events-none opacity-50")}
 													/>
 												</PaginationItem>
-												{pageNumbers.map((page) => (
-													<PaginationItem key={page}>
-														<PaginationLink
-															isActive={page === currentPage}
-															onClick={() => handleSearch(page)}
-														>
-															{page}
-														</PaginationLink>
-													</PaginationItem>
-												))}
+
+												{getPageNumbers(currentPage, totalPages).map((page, index) =>
+													page === "..." ? (
+														<PaginationItem key={`ellipsis-${index}`}>
+															<PaginationEllipsis />
+														</PaginationItem>
+													) : (
+														<PaginationItem key={page}>
+															<PaginationLink
+																isActive={page === currentPage}
+																onClick={() => handleSearch(page)}
+															>
+																{page}
+															</PaginationLink>
+														</PaginationItem>
+													)
+												)}
+
 												<PaginationItem>
 													<PaginationNext
 														onClick={() => handleSearch(Math.min(totalPages, currentPage + 1))}
-														className={cn(
-															currentPage === totalPages &&
-																"pointer-events-none opacity-50",
-														)}
+														className={cn(currentPage === totalPages && "pointer-events-none opacity-50")}
 													/>
 												</PaginationItem>
 											</PaginationContent>

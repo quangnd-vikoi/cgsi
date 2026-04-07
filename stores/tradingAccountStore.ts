@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { TradingAccount } from "@/types";
+import type { IAccountSummary, TradingAccount } from "@/types";
 import { ACCOUNT_TYPE_PRIORITY } from "@/constants/accounts";
 
 interface TradingAccountStore {
@@ -18,11 +18,15 @@ interface TradingAccountStore {
 	isSubCDP: () => boolean;
 	setInitialized: (value: boolean) => void;
 	resetStore: () => void;
+	selectedAccountSummary?: IAccountSummary;
+	setSelectedAccountSummary: (summary: IAccountSummary) => void;
 }
 
 export const useTradingAccountStore = create<TradingAccountStore>((set, get) => ({
 	accounts: [],
 	selectedAccount: null,
+	selectedAccountSummary: undefined,
+	setSelectedAccountSummary: (summary) => set({ selectedAccountSummary: summary }),
 	isInitialized: false,
 	isTRClientAccount: false,
 	setAccounts: (accounts) => set({ accounts, isInitialized: true }),
@@ -83,6 +87,7 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 		set({
 			accounts: [],
 			selectedAccount: null,
+			selectedAccountSummary: undefined,
 			isInitialized: false,
 			isTRClientAccount: false,
 		}),

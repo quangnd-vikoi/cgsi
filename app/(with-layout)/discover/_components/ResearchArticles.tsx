@@ -18,21 +18,21 @@ const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) =>
 		<Link href={article.url} target="_blank">
 			<div className="bg-white rounded hover:shadow transition-shadow border border-stroke-secondary">
 				<div className="flex flex-col gap-4 md:gap-6 p-4 md:p-6">
-					<div className="text-rsp-xs font-medium text-typo-tertiary">{article.tag}</div>
-					<div className="font-semibold text-rsp-base leading-7 line-clamp-2 min-h-[2lh]">
+					<div className="text-xs md:text-sm font-medium text-typo-tertiary">{article.tag}</div>
+					<div className="font-semibold text-base md:text-lg leading-7 line-clamp-2 min-h-[2lh]">
 						{article.title}
 					</div>
 
-					<div className="justify-start text-rsp-sm text-typo-secondary line-clamp-3 leading-6 font-normal min-h-[3lh]">
+					<div className="justify-start text-sm md:text-base text-typo-secondary line-clamp-3 leading-6 font-normal min-h-[3lh]">
 						{article.description}
 						<br />
 					</div>
 					<div className="flex flex-col gap-3">
-						<div className="flex items-center gap-2 md:gap-4 text-rsp-sm text-typo-secondary leading-4">
+						<div className="flex items-center gap-2 md:gap-4 text-sm md:text-base text-typo-secondary leading-4">
 							<Calendar className="w-5 h-5 text-cgs-blue" strokeWidth={1.5} />
 							{article.date}
 						</div>
-						<div className="flex items-center gap-2 md:gap-4 text-rsp-sm text-typo-secondary leading-4">
+						<div className="flex items-center gap-2 md:gap-4 text-sm md:text-base text-typo-secondary leading-4">
 							<UserRoundPen className="w-5 h-5 text-cgs-blue" strokeWidth={1.5} />
 							{article.author}
 						</div>

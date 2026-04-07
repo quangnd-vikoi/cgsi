@@ -183,8 +183,8 @@ const OverviewTab = () => {
 				{
 					key: "Brokerage",
 					value: `${productDetails.brokerageFee}%${productDetails.minBrokerageFee
-							? ` (min. ${productDetails.minBrokerageFee} ${productDetails.baseCurrency || ""})`
-							: ""
+						? ` (min. ${productDetails.minBrokerageFee} ${productDetails.baseCurrency || ""})`
+						: ""
 						}`,
 				},
 			]
@@ -226,8 +226,8 @@ const OverviewTab = () => {
 		{
 			key: "Minimum Subscription",
 			value: `${productDetails.minQty.toLocaleString()} Unit(s)${productDetails.incrementQty
-					? ` (increments of ${productDetails.incrementQty.toLocaleString()} Unit(s))`
-					: ""
+				? ` (increments of ${productDetails.incrementQty.toLocaleString()} Unit(s))`
+				: ""
 				}`,
 		},
 		...(productDetails.excludedInvestment
@@ -254,7 +254,7 @@ const OverviewTab = () => {
 				</div>
 			)}
 			<div className="mb-4 md:mb-6">
-				<h4 className="text-rsp-base font-semibold text-typo-primary mb-2 md:mb-3">
+				<h4 className="text-base md:text-lg font-semibold text-typo-primary mb-2 md:mb-3">
 					{productDetails.productName}
 				</h4>
 				{productDetails.content1 && (

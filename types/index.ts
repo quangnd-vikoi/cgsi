@@ -665,6 +665,7 @@ export interface IPortfolioHolding {
 	pendingBuy?: number;
 	pendingSell?: number;
 	lastUpdatedOn: string;
+	portfolioPct?: number;
 }
 
 export interface IContract {
@@ -751,6 +752,23 @@ export interface IPaynowTopUpResponse {
 	s2bPayUrl: string;
 	corpId: string;
 	encStr: string;
+}
+
+export interface IS2BPayCloseStatus {
+	status: string;
+	corpref: string;
+	[key: string]: unknown;
+}
+
+export interface IS2BPayNotifyStatus {
+	status?: string;
+	corpref?: string;
+	txnstatus?: string;
+	paymentStatus?: string;
+	transactionStatus?: string;
+	result?: string;
+	message?: string;
+	[key: string]: unknown;
 }
 
 export interface ICDPTransferAccount {

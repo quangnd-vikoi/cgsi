@@ -29,7 +29,7 @@ function Input({ className, type, error = false, ...props }: InputProps) {
 			/>
 
 			{hasError && (
-				<p className="text-status-error text-rsp-xs mt-1 flex items-center gap-1">
+				<p className="text-status-error text-xs md:text-sm mt-1 flex items-center gap-1">
 					<CustomCircleAlert size={15} />
 					{errorMessage}
 				</p>
