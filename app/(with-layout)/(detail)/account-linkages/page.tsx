@@ -51,22 +51,6 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ step, title, description, i
 	);
 };
 
-const tabData = {
-	subcdp: subcdp,
-	cpf: cpf,
-	srs: srs,
-	eps: eps,
-	giro: giro,
-};
-
-const tabDataUnlink = {
-	subcdp: subcdpUnlink,
-	cpf: cpfUnlink,
-	srs: srsUnlink,
-	eps: epsUnlink,
-	giro: giroUnlink,
-};
-
 const AccountLinkages = () => {
 	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 	const searchParams = useSearchParams();
@@ -75,6 +59,22 @@ const AccountLinkages = () => {
 	const tabParam = searchParams.get("tab") || "subcdp";
 	const isUnlink = searchParams.get("action") === "unlink";
 	const [activeTab, setActiveTab] = useState(tabParam);
+
+	const tabData = {
+		subcdp: subcdp,
+		cpf: cpf,
+		srs: srs,
+		eps: eps,
+		giro: giro,
+	};
+
+	const tabDataUnlink = {
+		subcdp: subcdpUnlink,
+		cpf: cpfUnlink,
+		srs: srsUnlink,
+		eps: epsUnlink,
+		giro: giroUnlink,
+	};
 
 	useEffect(() => {
 		const validTabs = ["subcdp", "cpf", "srs", "eps", "giro"];
