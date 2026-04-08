@@ -379,6 +379,11 @@ export const HoldingPosition = ({ type }: { type: PortfolioType }) => {
 													? (ASSET_CLASS_LABELS[item.assetClass] ?? item.assetClass)
 													: col === "marketCode" && selectedAccount?.accountType === "MTA"
 														? (CURRENCY_TO_MARKET[item.currency] ?? raw ?? "—")
+													: col === "portfolioPct" && isNum
+														? `${((raw as number) * 100).toLocaleString("en-US", {
+															minimumFractionDigits: 2,
+															maximumFractionDigits: 2,
+														})}%`
 													: isNum
 														? (raw as number).toLocaleString("en-US", {
 															minimumFractionDigits: (["totalQty", "marginableQty", "valuationPct"]).includes(col) ? 0 : 2,
