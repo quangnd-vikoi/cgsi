@@ -3,7 +3,8 @@ import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Image from "@/components/Image";
 import { useSheetStore } from "@/stores/sheetStore";
 import { INotification } from "@/types";
-import { notificationService } from "@/lib/services/notificationService";
+import { isUnreadNotification, notificationService } from "@/lib/services/notificationService";
+import { formatNotificationHtml } from "@/lib/utils";
 
 /**
  * Format ISO 8601 date to display format
@@ -33,7 +34,7 @@ const DetailNotification = () => {
 	const { notification } = useSheetStore((state) => state.payload) as { notification: INotification };
 
 	useEffect(() => {
-		if (notification?.status === "U") {
+		if (notification && isUnreadNotification(notification)) {
 			notificationService.markNotificationAsRead(notification.id).catch(console.error);
 		}
 	}, [notification?.id, notification?.status]);
@@ -70,7 +71,10 @@ const DetailNotification = () => {
 
 
 					<div className="w-full h-[1px] border-t my-4"></div>
-					<p className="text-sm text-typo-secondary whitespace-pre-wrap">{notification.description}</p>
+					<div
+						className="text-sm text-typo-secondary whitespace-pre-wrap [&_a]:text-cgs-blue [&_a]:underline [&_b]:font-semibold [&_br]:leading-8"
+						dangerouslySetInnerHTML={{ __html: formatNotificationHtml(notification.description) }}
+					/>
 				</div>
 			</div>
 		</div>

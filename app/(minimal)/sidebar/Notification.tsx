@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn, formatNotificationHtml } from "@/lib/utils";
 import { Dot, MailOpen } from "lucide-react";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Alert from "@/components/Alert";
@@ -10,7 +10,7 @@ import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useNotificationStore } from "@/stores/notificationStore";
 import { ErrorState } from "@/components/ErrorState";
-import { notificationService } from "@/lib/services/notificationService";
+import { isUnreadNotification, notificationService } from "@/lib/services/notificationService";
 import { Skeleton } from "@/components/ui/skeleton";
 
 function formatDate(isoDate: string): string {
@@ -39,26 +39,27 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 		setOpenSheet("detail_notification", { notification });
 	};
 
-	const isUnread = notification.status === "U";
+	const isUnread = isUnreadNotification(notification);
 
 	return (
 		<div
 			className={cn(
-				"p-4 border-b border-stroke-secondary cursor-pointer",
+				"p-4 border-b border-stroke-secondary cursor-pointer relative",
 				isUnread && "bg-status-selected"
 			)}
 			onClick={handleNotiClick}
 		>
-			<div className="flex gap-1">
+			<div className="flex gap-0 md:gap-1 relative right-2 md:right-0">
 				{isUnread && (
-					<Dot className="text-status-error relative right-1 -mr-1.5 shrink-0" strokeWidth="5" color="#D92B2B" />
+					<Dot className="text-status-error md:absolute md:-left-4.5 shrink-0" strokeWidth="3" color="#D92B2B" />
 				)}
-				<span className="text-base font-semibold leading-5 line-clamp-2 flex-1 min-w-0">{notification.title}</span>
+				<span className="text-sm md:text-base font-semibold leading-5 line-clamp-2 flex-1 min-w-0 relative right-1 md:right-0">{notification.title}</span>
 			</div>
 
-			<p className="line-clamp-3 text-typo-secondary text-sm mt-1.5 leading-4">
-				{notification.description}
-			</p>
+			<div
+				className="line-clamp-3 text-typo-secondary text-sm mt-1 md:mt-2 leading-4 [&_a]:text-cgs-blue [&_a]:underline [&_b]:font-semibold"
+				dangerouslySetInnerHTML={{ __html: formatNotificationHtml(notification.description) }}
+			/>
 
 			<p className="text-typo-secondary mt-4 text-xs">{formatDate(notification.createdOn)}</p>
 		</div>
@@ -79,12 +80,12 @@ const Notification = () => {
 	const hasMore = (pageIndex + 1) * pageSize < total;
 
 	// Calculate unread count
-	const unreadCount = listNoti.filter((noti) => noti.status === "U").length;
+	const unreadCount = listNoti.filter(isUnreadNotification).length;
 	const hasUnread = unreadCount > 0;
 
 	// Update global unread count whenever listNoti changes
 	useEffect(() => {
-		const count = listNoti.filter((noti) => noti.status === "U").length;
+		const count = listNoti.filter(isUnreadNotification).length;
 		setUnreadCount(count);
 	}, [listNoti, setUnreadCount]);
 
@@ -177,7 +178,7 @@ const Notification = () => {
 	// Mark all unread notifications as read
 	const handleMarkAllRead = async () => {
 		// Get all unread notification IDs
-		const unreadIds = listNoti.filter((noti) => noti.status === "U").map((noti) => noti.id);
+		const unreadIds = listNoti.filter(isUnreadNotification).map((noti) => noti.id);
 
 		if (unreadIds.length === 0) {
 			toast.info("No Unread Notifications", "All messages are already marked as read.");
@@ -186,12 +187,12 @@ const Notification = () => {
 
 		const response = await notificationService.markNotificationsAsRead(unreadIds);
 
-		if (response.success && response.data?.isSuccess) {
-			// Update local state - change status from "U" to "R"
+		if (response.success && response.data?.success) {
+			// Update local state - change new/unread notifications to read
 			setListNoti((prev) =>
 				prev.map((noti) => ({
 					...noti,
-					status: noti.status === "U" ? "R" : noti.status,
+					status: isUnreadNotification(noti) ? "R" : noti.status,
 				}))
 			);
 			toast.success("All Caught Up", "All messages have been marked as read.");

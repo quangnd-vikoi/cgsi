@@ -3,7 +3,7 @@
 
 import { useEffect } from "react";
 import { useNotificationStore } from "@/stores/notificationStore";
-import { notificationService } from "@/lib/services/notificationService";
+import { isUnreadNotification, notificationService } from "@/lib/services/notificationService";
 import { toast } from "@/components/ui/toaster";
 
 export function NotificationPolling() {
@@ -14,7 +14,7 @@ export function NotificationPolling() {
 			const response = await notificationService.getNotifications(50, 0);
 
 			if (response.success && response.data) {
-				const unreadCount = response.data.notifications.filter((n) => n.status === "U").length;
+				const unreadCount = response.data.notifications.filter(isUnreadNotification).length;
 				setUnreadCount(unreadCount);
 			} else {
 				console.error("Failed to fetch initial notifications:", response.error);
@@ -29,7 +29,7 @@ export function NotificationPolling() {
 			const response = await notificationService.getLatestNotifications(5);
 
 			if (response.success && response.data) {
-				const unreadNotifications = response.data.filter((n) => n.status === "U");
+				const unreadNotifications = response.data.filter(isUnreadNotification);
 				if (unreadNotifications.length > 0) {
 					setUnreadCount((prev) => prev + unreadNotifications.length);
 

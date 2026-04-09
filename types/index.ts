@@ -3,7 +3,7 @@ export interface INotification {
 	title: string;
 	description: string;
 	category: string; // Notification category for filtering/grouping
-	status: "R" | "U"; // "R" = Read, "U" = Unread
+	status: "R" | "U" | "N"; // "R" = Read, "N" = New, "U" kept for backward compatibility
 	createdOn: string; // ISO 8601 date-time format
 	imageUrl?: string; // Optional image URL for notification
 }
@@ -19,7 +19,7 @@ export interface NotificationMarkAsReadRequest {
 }
 
 export interface NotificationMarkAsReadResponse {
-	isSuccess: boolean;
+	success: boolean;
 }
 
 export interface IEventProps {

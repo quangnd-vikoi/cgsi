@@ -9,6 +9,9 @@ import type {
 	IResearchArticle,
 } from "@/types";
 
+export const isUnreadNotification = (notification: Pick<INotification, "status">): boolean =>
+	notification.status === "U" || notification.status === "N";
+
 export const getNotifications = async (
 	pageSize = 10,
 	pageIndex = 0
@@ -49,7 +52,7 @@ export const getUnreadCount = async (): Promise<number> => {
 	const response = await getNotifications(1000, 0);
 
 	if (response.success && response.data) {
-		return response.data.notifications.filter((n) => n.status === "U").length;
+		return response.data.notifications.filter(isUnreadNotification).length;
 	}
 
 	return 0;
@@ -68,13 +71,13 @@ export const markAllAsRead = async (): Promise<APIResponse<NotificationMarkAsRea
 	}
 
 	const unreadIds = listResponse.data.notifications
-		.filter((n) => n.status === "U")
+		.filter(isUnreadNotification)
 		.map((n) => n.id);
 
 	if (unreadIds.length === 0) {
 		return {
 			success: true,
-			data: { isSuccess: true },
+			data: { success: true },
 			error: null,
 			statusCode: 200,
 		};

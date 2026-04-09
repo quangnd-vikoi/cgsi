@@ -8,6 +8,7 @@ import {
     ChevronRight,
     CircleCheck,
     Copy,
+    Globe,
 } from "lucide-react";
 import WaringIcon from "@/public/icons/Warning.svg";
 import {
@@ -20,7 +21,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { handleCopy, handleCall, handleEmail } from "@/lib/utils";
+import { cn, handleCopy, handleCall, handleEmail } from "@/lib/utils";
 import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +33,48 @@ import { getTradingRepInfoByAccount } from "@/lib/services/profileService";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ITrInfo } from "@/types";
 import { INTERNAL_ROUTES } from "@/constants/routes";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const CPF_EMAIL = "clientservices.sg@cgsi.com";
+type PaymentInstructionType = "eps" | "giro" | "giroUnlink";
+
+interface TimelineItemProps {
+    step: number;
+    title: React.ReactNode;
+    description: React.ReactNode;
+    isLast?: boolean;
+}
+
+const TimelineItem: React.FC<TimelineItemProps> = ({
+    step,
+    title,
+    description,
+    isLast = false,
+}) => {
+    return (
+        <div className="flex gap-4">
+            <div className="flex flex-col items-center">
+                <div className="w-5 h-5 rounded-full border border-cgs-blue bg-white flex items-center justify-center font-semibold text-[10px] text-cgs-blue shrink-0">
+                    {step}
+                </div>
+                {!isLast && (
+                    <div className="w-[1px] h-full relative bg-status-disable-primary"></div>
+                )}
+            </div>
+
+            <div className="bg-background-section p-3 rounded mb-6 flex-1 min-w-0">
+                <div className={cn("text-typo-primary font-normal text-sm break-words")}>
+                    {title}
+                </div>
+                {description && (
+                    <div className="mt-2 bg-white rounded p-3 border border-stroke-secondary break-words">
+                        {description}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
 
 interface LinkageItemProps {
     label: string;
@@ -126,6 +167,8 @@ const TradingAccountDetail = () => {
     const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
     const [trInfo, setTrInfo] = useState<ITrInfo | null>(null);
     const [isTrLoading, setIsTrLoading] = useState(false);
+    const [paymentInstructionType, setPaymentInstructionType] =
+        useState<PaymentInstructionType | null>(null);
     const fetchedAccountNo = React.useRef<string | null>(null);
 
     useEffect(() => {
@@ -150,16 +193,6 @@ const TradingAccountDetail = () => {
         fetchTrInfo();
     }, [selectedAccount?.accountNo]);
 
-    const handleUnlink = (accountType: "giro" | "eps") => {
-        setOpenSheet(null);
-        router.push(`/account-linkages?tab=${accountType}&action=unlink`);
-    };
-
-    const handleLink = (accountType: "giro" | "eps") => {
-        setOpenSheet(null);
-        router.push(`/account-linkages?tab=${accountType}`);
-    };
-
     const isSubCDP = useTradingAccountStore((s) => s.isSubCDP());
 
     if (!selectedAccount) return null;
@@ -176,6 +209,170 @@ const TradingAccountDetail = () => {
     const handleUpdateToSubCDP = () => {
         setOpenSheet(null);
         router.push(INTERNAL_ROUTES.SHARE_TRANSFER);
+    };
+
+    const paymentInstructionData = {
+        eps: {
+            mainTitle: (
+                <div className="text-base font-semibold my-6">
+                    Follow the instructions below to manage your EPS linkage
+                </div>
+            ),
+            items: [
+                {
+                    title: (
+                        <p>
+                            For Linkage of EPS, please visit the website below to download the{" "}
+                            <span className="font-bold">EPS Application Form</span>.
+                        </p>
+                    ),
+                    description: (
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-2 items-center min-w-0">
+                                <Globe size={20} className="text-icon-light shrink-0" />
+                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                            </div>
+                            <ChevronRight
+                                size={20}
+                                className="text-cgs-blue cursor-pointer shrink-0"
+                                onClick={() =>
+                                    window.open(
+                                        "https://www.cgsi.com.sg/info/itrade_application_forms?lang=EN",
+                                        "_blank",
+                                    )
+                                }
+                            />
+                        </div>
+                    ),
+                },
+                {
+                    title: "Complete the EPS Application Form",
+                },
+                {
+                    title: (
+                        <p>
+                            Email the completed form to our Client Services team. You will receive an email
+                            notification once your request has been processed.
+                        </p>
+                    ),
+                    description: (
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <span className="truncate text-typo-primary">clientservices.sg@cgsi.com</span>
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                                <Copy
+                                    onClick={() => handleCopy(CPF_EMAIL)}
+                                    size={20}
+                                    className="text-cgs-blue cursor-pointer"
+                                />
+                                <ArrowRightCircle
+                                    onClick={() => handleEmail(CPF_EMAIL)}
+                                    size={20}
+                                    className="text-cgs-blue cursor-pointer"
+                                />
+                            </div>
+                        </div>
+                    ),
+                },
+            ],
+        },
+        giro: {
+            mainTitle: (
+                <div className="text-base font-semibold my-6">
+                    Follow the instructions below to manage your GIRO linkage
+                </div>
+            ),
+            items: [
+                {
+                    title: (
+                        <p>
+                            For Linkage of GIRO, please visit the website below to download the{" "}
+                            <span className="font-bold">GIRO Application Form</span>. You can also find
+                            the Business Reply Envelope in the link below.
+                        </p>
+                    ),
+                    description: (
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-2 items-center min-w-0">
+                                <Globe size={20} className="text-icon-light shrink-0" />
+                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                            </div>
+                            <ChevronRight
+                                size={20}
+                                className="text-cgs-blue cursor-pointer shrink-0"
+                                onClick={() =>
+                                    window.open(
+                                        "https://www.cgsi.com.sg/info/itrade_application_forms?lang=EN",
+                                        "_blank",
+                                    )
+                                }
+                            />
+                        </div>
+                    ),
+                },
+                {
+                    title: "Print out the GIRO Application Form and complete it with a wet ink signature",
+                },
+                {
+                    title: (
+                        <p>
+                            Mail the completed physical form along with the Business Reply Envelope to our
+                            office. You will receive an email notification once your request has been
+                            processed.
+                        </p>
+                    ),
+                },
+            ],
+        },
+        giroUnlink: {
+            mainTitle: (
+                <div className="text-base font-semibold my-6">
+                    Follow the instructions below to manage your GIRO linkage
+                </div>
+            ),
+            items: [
+                {
+                    title: (
+                        <p>
+                            For Revoking of GIRO Linkage, please obtain the relevant GIRO Termination Form
+                            from your relevant bank. You can also find the CGSI Business Reply Envelope in
+                            the link below.
+                        </p>
+                    ),
+                    description: (
+                        <div className="flex justify-between items-center">
+                            <div className="flex gap-2 items-center min-w-0">
+                                <Globe size={20} className="text-icon-light shrink-0" />
+                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                            </div>
+                            <ChevronRight
+                                size={20}
+                                className="text-cgs-blue cursor-pointer shrink-0"
+                                onClick={() =>
+                                    window.open(
+                                        "https://www.cgsi.com.sg/info/itrade_application_forms?lang=EN",
+                                        "_blank",
+                                    )
+                                }
+                            />
+                        </div>
+                    ),
+                },
+                {
+                    title: "Print out the GIRO Termination Form and complete it with a wet ink signature",
+                },
+                {
+                    title: (
+                        <p>
+                            Mail the completed physical form along with the Business Reply Envelope to our
+                            office. You will receive an email notification once your request has been
+                            processed.
+                        </p>
+                    ),
+                },
+            ],
+        },
     };
 
     const getCpfEmailBody = () =>
@@ -228,6 +425,25 @@ const TradingAccountDetail = () => {
             "Request to Revoke SRS Linkage",
             getSrsEmailBody(),
         );
+    };
+
+    const handleEpsUnlink = () => {
+        setOpenSheet(null);
+        handleEmail(
+            CPF_EMAIL,
+            "Request to Revoke EPS Linkage",
+            [
+                `Trading Account Number: ${selectedAccount.accountNo}`,
+                "",
+                "Name of Bank:",
+                "Account Number:",
+            ].join("\n"),
+        );
+    };
+
+    const openPaymentInstructions = (type: PaymentInstructionType) => {
+        setOpenSheet(null);
+        setPaymentInstructionType(type);
     };
 
     return (
@@ -342,11 +558,9 @@ const TradingAccountDetail = () => {
                                             )
                                         }
                                         onUnlink={() =>
-                                            handleUnlink(
-                                                selectedAccount.giro
-                                                    ? "giro"
-                                                    : "eps",
-                                            )
+                                            selectedAccount.giro
+                                                ? openPaymentInstructions("giroUnlink")
+                                                : handleEpsUnlink()
                                         }
                                         actionContent={
                                             <DropdownMenu>
@@ -363,17 +577,13 @@ const TradingAccountDetail = () => {
                                                     align="end"
                                                 >
                                                     <DropdownMenuItem
-                                                        onClick={() =>
-                                                            handleLink("eps")
-                                                        }
+                                                        onClick={() => openPaymentInstructions("eps")}
                                                         className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
                                                     >
                                                         EPS
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        onClick={() =>
-                                                            handleLink("giro")
-                                                        }
+                                                        onClick={() => openPaymentInstructions("giro")}
                                                         className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
                                                     >
                                                         GIRO
@@ -480,6 +690,37 @@ const TradingAccountDetail = () => {
                     </Group>
                 </div>
             </div>
+
+            <Dialog
+                open={!!paymentInstructionType}
+                onOpenChange={(open) => !open && setPaymentInstructionType(null)}
+            >
+                <DialogContent className="max-w-[480px] max-h-[85vh] p-0 gap-0 overflow-hidden">
+                    {paymentInstructionType && (
+                        <div className="bg-white flex flex-col min-h-0">
+                            <div className="px-6 pt-10 pb-4 overflow-y-auto">
+                                <div className="text-base font-semibold my-6 break-words">
+                                    {paymentInstructionData[paymentInstructionType].mainTitle}
+                                </div>
+                                {paymentInstructionData[paymentInstructionType].items.map(
+                                    (item, index) => (
+                                        <TimelineItem
+                                            key={`${paymentInstructionType}-${index}`}
+                                            step={index + 1}
+                                            title={item.title}
+                                            description={item.description}
+                                            isLast={
+                                                index ===
+                                                paymentInstructionData[paymentInstructionType].items.length - 1
+                                            }
+                                        />
+                                    ),
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

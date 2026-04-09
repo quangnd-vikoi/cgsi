@@ -94,3 +94,26 @@ export const formatDate = (dateString: string | null | undefined, fallback = "-"
 
 	return `${day}-${month}-${year}`;
 }
+
+export const formatNotificationHtml = (html: string): string => {
+	if (!html) return "";
+
+	return html
+		.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
+		.replace(/\son\w+=(["']).*?\1/gi, "")
+		.replace(/\son\w+=([^\s>]+)/gi, "")
+		.replace(/javascript:/gi, "")
+		.replace(/<a\b([^>]*)>/gi, (_match, attrs: string) => {
+			const hasTarget = /\btarget=/i.test(attrs);
+			const hasRel = /\brel=/i.test(attrs);
+			const nextAttrs = [
+				attrs.trim(),
+				hasTarget ? "" : 'target="_blank"',
+				hasRel ? "" : 'rel="noopener noreferrer"',
+			]
+				.filter(Boolean)
+				.join(" ");
+
+			return `<a ${nextAttrs}>`;
+		});
+};

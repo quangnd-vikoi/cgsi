@@ -25,7 +25,7 @@ export const notificationEndpoints = {
 	/**
 	 * Mark User Notifications as Read
 	 * POST request with body: { ids: string[] }
-	 * Updates notification status from "U" (unread) to "R" (read)
+	 * Updates notification status from "N" (new) to "R" (read)
 	 * @returns { isSuccess: boolean }
 	 * Requires: Authentication (Bearer token)
 	 */
