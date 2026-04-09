@@ -51,14 +51,14 @@ const CustomToast = ({ title, description, type = "info", duration = 10, onCance
 			progressColor: "bg-red-500",
 		},
 		warning: {
-			icon: <TriangleAlertIcon className="size-5" />,
+			icon: <TriangleAlertIcon className="size-5 text-white" fill="#FFB400" />,
 			iconColor: "text-yellow-500",
 			progressColor: "bg-yellow-500",
 		},
 		info: {
-			icon: <InfoIcon className="size-5" />,
-			iconColor: "text-blue-500",
-			progressColor: "bg-blue-500",
+			icon: <InfoIcon className="size-5 text-white" fill="#003a8c" />,
+			iconColor: "text-cgs-blue",
+			progressColor: "bg-cgs-blue",
 		},
 		loading: {
 			icon: <Loader2Icon className="size-5 animate-spin" />,

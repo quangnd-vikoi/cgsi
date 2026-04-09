@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { cn } from "@/lib/utils";
@@ -117,9 +118,10 @@ export default function MyApplication() {
 	const filteredApplications =
 		activeTab === "all" ? applications : applications.filter((app) => app.type === activeTab);
 
-	const handleViewClick = (application: Application) => {
-		router.push(`${INTERNAL_ROUTES.APPLICATION_NOTE}?subscriptionId=${application.subscriptionId}`);
-	};
+	const getApplicationNoteHref = (application: Application) => ({
+		pathname: INTERNAL_ROUTES.APPLICATION_NOTE,
+		query: { subscriptionId: application.subscriptionId },
+	});
 
 	const handleProductNameClick = (application: Application) => {
 		// Set the selected item in the store
@@ -261,11 +263,18 @@ export default function MyApplication() {
 
 									{/* View Application Note Button */}
 									<Button
+										asChild
 										className="w-full mt-4 bg-cgs-blue hover:bg-cgs-blue/90 text-white"
-										onClick={() => handleViewClick(app)}
 									>
-										<FileText className="w-4 h-4 mr-2" />
-										View Application Note
+										<Link
+											href={getApplicationNoteHref(app)}
+											target="_blank"
+											rel="noopener noreferrer"
+											prefetch={false}
+										>
+											<FileText className="w-4 h-4 mr-2" />
+											View Application Note
+										</Link>
 									</Button>
 								</div>
 							))}
@@ -318,12 +327,19 @@ export default function MyApplication() {
 											<TableCell className="px-3">{app.closingDate}</TableCell>
 											<TableCell className="px-3 text-center">
 												<Button
+													asChild
 													size="sm"
 													className="bg-cgs-blue rounded-sm font-normal hover:bg-cgs-blue/90 text-white px-3"
-													onClick={() => handleViewClick(app)}
 												>
-													<FileText />
-													View
+													<Link
+														href={getApplicationNoteHref(app)}
+														target="_blank"
+														rel="noopener noreferrer"
+														prefetch={false}
+													>
+														<FileText />
+														View
+													</Link>
 												</Button>
 											</TableCell>
 										</TableRow>

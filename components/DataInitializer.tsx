@@ -47,18 +47,11 @@ export function DataInitializer() {
 				const response = await getUserAccounts();
 
 				if (response.success && response.data) {
-					const ACCOUNT_TYPE_MAP: Record<string, string> = { ICASH: "iCash" };
-					const normalized = response.data.map((acc) => ({
-						...acc,
-						accountType: acc.accountType
-							? (ACCOUNT_TYPE_MAP[acc.accountType] ?? acc.accountType)
-							: acc.accountType,
-					}));
-					setAccounts(normalized as typeof response.data);
+					setAccounts(response.data);
 
 					// Auto-select first account as default
-					if (normalized.length > 0) {
-						setSelectedAccount(normalized[0] as (typeof response.data)[0]);
+					if (response.data.length > 0) {
+						setSelectedAccount(response.data[0] as (typeof response.data)[0]);
 					}
 				} else {
 					console.error("Failed to fetch trading accounts:", response.error);

@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { TradingAccount, PortfolioType } from "@/types";
 import { searchAccounts, type AccountSearchItem } from "@/lib/services/profileService";
+import { getAccountTypeTag, normalizeAccountType } from "@/constants/accounts";
 
 const SEARCH_TABS = [
 	{ value: "account-no", label: "Account No.", placeholder: "Enter Account Number" },
@@ -95,7 +96,7 @@ const TRAccountSearchDialog = ({
 	const handleSelectAccount = (item: AccountSearchItem) => {
 		const account: TradingAccount = {
 			accountNo: item.accountNo,
-			accountType: item.accountSubType as PortfolioType,
+			accountType: normalizeAccountType(item.accountSubType) as PortfolioType | undefined,
 		};
 		onSelectAccount(account);
 		setOpen(false);
@@ -224,7 +225,10 @@ const TRAccountSearchDialog = ({
 															)}
 														>
 															<span className="">
-																({item.accountSubType}) {item.accountNo}
+																{getAccountTypeTag(item.accountSubType)
+																	? `(${getAccountTypeTag(item.accountSubType)}) `
+																	: ""}
+																{item.accountNo}
 															</span>
 															<div className="ml-1 h-full w-1 text-typo-tertiary">|</div>
 															<span className="flex-1 min-w-0 truncate text-left">{item.name}</span>

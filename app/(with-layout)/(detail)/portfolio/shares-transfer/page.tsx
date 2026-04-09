@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
+import { getAccountTypeTag } from "@/constants/accounts";
 import {
     Dialog,
     DialogContent,
@@ -136,7 +137,7 @@ const SharesTransfer = () => {
         <>
             <div className="max-w-[480px] w-full mx-auto flex-1 flex flex-col h-full">
                 <div className="shrink-0">
-                    <Title title="Shares Transfer" showBackButton={step === 1} />
+                    <Title title="Update to CDP Sub-Acount" showBackButton={step === 1} />
                 </div>
 
                 <div className="bg-white rounded-xl flex-1 flex flex-col overflow-hidden min-h-0">
@@ -186,7 +187,9 @@ const SharesTransfer = () => {
                                                     <SelectItem key={account.acctNo} value={account.acctNo}>
                                                         <div className="flex flex-col items-start">
                                                             <span className="text-sm md:text-base font-medium text-typo-primary">
-                                                                {account.acctType ? `(${account.acctType}) ` : ""}{account.acctNo}
+                                                                {getAccountTypeTag(account.acctType)
+                                                                    ? `(${getAccountTypeTag(account.acctType)}) `
+                                                                    : ""}{account.acctNo}
                                                             </span>
                                                         </div>
                                                     </SelectItem>

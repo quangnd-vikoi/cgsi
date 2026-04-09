@@ -20,7 +20,6 @@ import Image from "@/components/Image";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
 import TermsAndConditionsCheckbox from "@/components/TermsAndConditionsCheckbox";
-import { authService } from "@/lib/services/authService";
 
 type RouteProps = {
 	pathname: "alternatives" | "securities";
@@ -61,8 +60,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const { productDetails, refetch } = useProductDetails();
 	const accounts = useTradingAccountStore((state) => state.accounts);
 
-	// Filter cash accounts (CTA = Cash Trading Account)
+	// Filter CTA accounts
 	const cashAccounts = accounts.filter((acc) => acc.accountType === "CTA");
+	const hasCTAAccount = cashAccounts.length > 0;
 	const hasOnlySingleCashAccount = cashAccounts.length === 1;
 	const defaultAccountNo = cashAccounts[0]?.accountNo ?? "";
 
@@ -77,12 +77,27 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	const [showValidationErrors, setShowValidationErrors] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
-	// Handle click on disabled account field
-	const handleDisabledAccountClick = () => {
-		toast.info("Account currently only has 1 Cash Account");
+
+	const handleDialogOpenChange = (open: boolean) => {
+		if (isSubmitting) return;
+
+		if (open && !hasCTAAccount) {
+			toast.warning(
+				"Warning",
+				"You will need at least 1 CTA Account to proceed with the application",
+			);
+			return;
+		}
+
+		setDialogOpen(open);
 	};
 
-	// Auto-fill account when there's only one cash account
+	// Handle click on disabled account field
+	const handleDisabledAccountClick = () => {
+		toast.info("Notice", "You only have 1 CTA");
+	};
+
+	// Auto-fill account when there's only one CTA
 	useEffect(() => {
 		if (hasOnlySingleCashAccount && formValues.account !== cashAccounts[0].accountNo) {
 			setFormValues((prev) => ({ ...prev, account: cashAccounts[0].accountNo }));
@@ -175,9 +190,6 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					payment: "",
 					currency: productDetails.baseCurrency?.toLowerCase() ?? "sgd",
 				});
-
-				// Logout user after successful submission
-				authService.logout();
 			} else {
 				// Error from API
 				toast.error(
@@ -251,7 +263,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 	];
 
 	return (
-		<Dialog open={dialogOpen} onOpenChange={(open) => !isSubmitting && setDialogOpen(open)}>
+		<Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
 			<DialogTrigger asChild>
 				<Button className="bg-cgs-blue hover:bg-cgs-blue/80 text-white px-6 py-2">Apply</Button>
 			</DialogTrigger>
@@ -311,7 +323,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 											value={account.accountNo}
 											className="text-sm md:text-base font-normal"
 										>
-											<p>(Cash) {account.accountNo}</p>
+											<p>(CTA) {account.accountNo}</p>
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -495,6 +507,7 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 						showError={showError}
 						errorMessage="Please confirm the declaration to submit application"
 						labelText="By checking this box, you acknowledge that you have read and agree to abide by the underlying"
+						termsUrl={productDetails.tncUrl}
 						className="mb-4"
 					/>
 				</div>
@@ -503,9 +516,10 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					<Button
 						onClick={handleSubmit}
 						disabled={isSubmitting}
-						className="bg-cgs-blue hover:bg-cgs-blue text-white px-3 py-2 rounded-sm font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+						className="bg-cgs-blue hover:bg-cgs-blue px-3 py-2 rounded-sm text-white font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
 					>
-						{isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Application"}
+						{isSubmitting && <Loader2 className="animate-spin" />}
+						Submit Application
 					</Button>
 				</DialogFooter>
 			</DialogContent>

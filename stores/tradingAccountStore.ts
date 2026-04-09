@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { IAccountSummary, TradingAccount } from "@/types";
-import { ACCOUNT_TYPE_PRIORITY } from "@/constants/accounts";
+import { ACCOUNT_TYPE_PRIORITY, normalizeAccountType } from "@/constants/accounts";
 
 interface TradingAccountStore {
 	accounts: TradingAccount[];
@@ -29,9 +29,32 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 	setSelectedAccountSummary: (summary) => set({ selectedAccountSummary: summary }),
 	isInitialized: false,
 	isTRClientAccount: false,
-	setAccounts: (accounts) => set({ accounts, isInitialized: true }),
-	setSelectedAccount: (account) => set({ selectedAccount: account, isTRClientAccount: false }),
-	setTRClientAccount: (account) => set({ selectedAccount: account, isTRClientAccount: true }),
+	setAccounts: (accounts) =>
+		set({
+			accounts: accounts.map((account) => ({
+				...account,
+				accountType: normalizeAccountType(account.accountType),
+			})),
+			isInitialized: true,
+		}),
+	setSelectedAccount: (account) =>
+		set({
+			selectedAccount: account
+				? {
+						...account,
+						accountType: normalizeAccountType(account.accountType),
+					}
+				: null,
+			isTRClientAccount: false,
+		}),
+	setTRClientAccount: (account) =>
+		set({
+			selectedAccount: {
+				...account,
+				accountType: normalizeAccountType(account.accountType),
+			},
+			isTRClientAccount: true,
+		}),
 	clearTRClientAccount: () => {
 		const defaultNo = get().getDefaultAccountNo();
 		const defaultAccount = defaultNo ? get().getAccountById(defaultNo) : null;
@@ -40,7 +63,14 @@ export const useTradingAccountStore = create<TradingAccountStore>((set, get) => 
 	updateSelectedAccount: (updates) => {
 		const { selectedAccount } = get();
 		if (selectedAccount) {
-			const updatedAccount = { ...selectedAccount, ...updates };
+			const updatedAccount = {
+				...selectedAccount,
+				...updates,
+				accountType:
+					updates.accountType !== undefined
+						? normalizeAccountType(updates.accountType)
+						: selectedAccount.accountType,
+			};
 			set({ selectedAccount: updatedAccount });
 
 			// Update in accounts list as well

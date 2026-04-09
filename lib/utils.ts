@@ -2,7 +2,7 @@ import { toast } from "@/components/ui/toaster";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { PortfolioType } from "@/types";
-import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
+import { normalizeAccountType } from "@/constants/accounts";
 export const getBasePath = () => process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export function cn(...inputs: ClassValue[]) {
@@ -49,8 +49,7 @@ export const getBgImageClass = (imagePath: string): string => {
 
 
 export const getAccountTypeCode = (type: string): PortfolioType => {
-	const entry = (Object.entries(ACCOUNT_TYPE_LABELS) as [PortfolioType, string][]).find(([, label]) => label === type);
-	return entry ? entry[0] : "CTA";
+	return normalizeAccountType(type) ?? "CTA";
 }
 
 /**
@@ -64,6 +63,25 @@ export const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
 }
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const SINGAPORE_TIME_ZONE = "Asia/Singapore";
+
+const parseDateValue = (dateString: string | null | undefined): Date | null => {
+	if (!dateString) return null;
+
+	if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+		const [day, month, year] = dateString.split("/");
+		const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+		return Number.isNaN(date.getTime()) ? null : date;
+	}
+
+	if (/^\d{8}$/.test(dateString)) {
+		const date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
+		return Number.isNaN(date.getTime()) ? null : date;
+	}
+
+	const date = new Date(dateString);
+	return Number.isNaN(date.getTime()) ? null : date;
+};
 
 /**
  * Format date string to DD-MMM-YYYY format (e.g. "13-Jun-2025").
@@ -72,21 +90,8 @@ const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Se
  * @param fallback   - Returned when input is missing or unparseable (default: "-")
  */
 export const formatDate = (dateString: string | null | undefined, fallback = "-"): string => {
-	if (!dateString) return fallback;
-
-	let date: Date;
-	if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
-		// DD/MM/YYYY
-		const [day, month, year] = dateString.split("/");
-		date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-	} else if (/^\d{8}$/.test(dateString)) {
-		// YYYYMMDD
-		date = new Date(`${dateString.slice(0, 4)}-${dateString.slice(4, 6)}-${dateString.slice(6, 8)}`);
-	} else {
-		date = new Date(dateString);
-	}
-
-	if (isNaN(date.getTime())) return fallback;
+	const date = parseDateValue(dateString);
+	if (!date) return fallback;
 
 	const day = date.getDate().toString().padStart(2, "0");
 	const month = MONTH_NAMES[date.getMonth()];
@@ -94,6 +99,51 @@ export const formatDate = (dateString: string | null | undefined, fallback = "-"
 
 	return `${day}-${month}-${year}`;
 }
+
+export const formatSingaporeDate = (
+	dateString: string | null | undefined,
+	fallback = "N/A",
+): string => {
+	const date = parseDateValue(dateString);
+	if (!date) return fallback;
+
+	const parts = new Intl.DateTimeFormat("en-GB", {
+		day: "2-digit",
+		month: "short",
+		year: "numeric",
+		timeZone: SINGAPORE_TIME_ZONE,
+	}).formatToParts(date);
+
+	const day = parts.find((part) => part.type === "day")?.value;
+	const month = parts.find((part) => part.type === "month")?.value;
+	const year = parts.find((part) => part.type === "year")?.value;
+
+	if (!day || !month || !year) return fallback;
+
+	return `${day}-${month}-${year}`;
+};
+
+export const formatSingaporeTime = (
+	dateString: string | null | undefined,
+	fallback = "",
+): string => {
+	const date = parseDateValue(dateString);
+	if (!date) return fallback;
+
+	const parts = new Intl.DateTimeFormat("en-GB", {
+		hour: "2-digit",
+		minute: "2-digit",
+		hour12: false,
+		timeZone: SINGAPORE_TIME_ZONE,
+	}).formatToParts(date);
+
+	const hour = parts.find((part) => part.type === "hour")?.value;
+	const minute = parts.find((part) => part.type === "minute")?.value;
+
+	if (!hour || !minute) return fallback;
+
+	return `${hour}:${minute} SGT`;
+};
 
 export const formatNotificationHtml = (html: string): string => {
 	if (!html) return "";

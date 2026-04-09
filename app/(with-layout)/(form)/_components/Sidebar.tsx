@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatSingaporeDate, formatSingaporeTime } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useSelectionStore } from "@/stores/selectionStore";
 import { INTERNAL_ROUTES } from "@/constants/routes";
@@ -49,16 +49,9 @@ export default function Sidebar() {
 
 	// Format date string to display format
 	const formatDateTime = (isoString: string): string => {
-		const date = new Date(isoString);
-		return date.toLocaleDateString("en-GB", {
-			day: "2-digit",
-			month: "short",
-			year: "numeric",
-		}) + ", " + date.toLocaleTimeString("en-GB", {
-			hour: "2-digit",
-			minute: "2-digit",
-			timeZoneName: "short",
-		});
+		const date = formatSingaporeDate(isoString, "N/A");
+		const time = formatSingaporeTime(isoString);
+		return time ? `${date}, ${time}` : date;
 	};
 
 	// Check if closing date has passed
@@ -78,7 +71,7 @@ export default function Sidebar() {
 		openingDate: formatDateTime(sub.startTime),
 		closingDate: formatDateTime(sub.endTime),
 		hasDetails: true,
-		subscribed: sub.isSubscribed,
+		subscribed: sub.subscribed ?? sub.isSubscribed ?? false,
 		isCompact: isClosingDatePassed(sub.endTime),
 	}));
 

@@ -1,19 +1,20 @@
 "use client";
-import { Check, Dot } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+import { cn, formatSingaporeDate, formatSingaporeTime } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import Image from "@/components/Image";
 import { useProductDetails } from "./ProductDetailsContext";
 import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 
+type TimelineStatus = "completed" | "active" | "upcoming";
+
 interface TimelineDate {
 	id: string;
 	label: string;
 	date: string;
 	time: string;
-	status: "completed" | "active" | "upcoming";
-	daysRemaining?: number;
+	status: TimelineStatus;
 }
 
 interface FundamentalItem {
@@ -28,31 +29,25 @@ const OverviewTab = () => {
 
 	// Format date-time to display format
 	const formatDateTime = (isoString?: string): { date: string; time: string } => {
-		if (!isoString) return { date: "N/A", time: "" };
-		const date = new Date(isoString);
 		return {
-			date: date.toLocaleDateString("en-GB", {
-				day: "2-digit",
-				month: "short",
-				year: "numeric",
-			}),
-			time: date.toLocaleTimeString("en-GB", {
-				hour: "2-digit",
-				minute: "2-digit",
-				timeZoneName: "short",
-			}),
+			date: formatSingaporeDate(isoString, "N/A"),
+			time: formatSingaporeTime(isoString),
 		};
 	};
 
-	// Determine timeline status based on current date
-	const getTimelineStatus = (dateStr?: string): "completed" | "active" | "upcoming" => {
-		if (!dateStr) return "upcoming";
-		const date = new Date(dateStr);
-		const now = new Date();
-		if (date < now) return "completed";
-		const daysDiff = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-		if (daysDiff <= 7) return "active";
-		return "upcoming";
+	const getTimelineConnectorClass = (
+		currentStatus: TimelineStatus,
+		nextStatus?: TimelineStatus,
+	): string => {
+		if (currentStatus === "completed" && nextStatus === "completed") {
+			return "border-l-2 border-cgs-blue";
+		}
+
+		if (currentStatus === "completed" && nextStatus === "active") {
+			return "border-l-2 border-dotted border-cgs-blue";
+		}
+
+		return "border-l-2 border-dotted border-status-disable-primary";
 	};
 
 	// Loading state
@@ -87,29 +82,29 @@ const OverviewTab = () => {
 	const listingDateTime = formatDateTime(productDetails.listingDate);
 	const allocationDateTime = formatDateTime(productDetails.allocationDate);
 	const acknowledgementDateTime = formatDateTime(productDetails.acknowledgementDate);
-	const dates: TimelineDate[] = [
+	const milestoneDates = [
 		{
 			id: "1",
 			label: "Opening Date",
+			rawDate: productDetails.startTime,
 			date: openingDateTime.date,
 			time: openingDateTime.time,
-			status: getTimelineStatus(productDetails.startTime),
 		},
 		{
 			id: "2",
 			label: "Closing Date",
+			rawDate: productDetails.endTime,
 			date: closingDateTime.date,
 			time: closingDateTime.time,
-			status: getTimelineStatus(productDetails.endTime),
 		},
 		...(productDetails.paymentDate
 			? [
 				{
 					id: "3",
 					label: "Payment Due Date",
+					rawDate: productDetails.paymentDate,
 					date: paymentDateTime.date,
 					time: paymentDateTime.time,
-					status: getTimelineStatus(productDetails.paymentDate),
 				},
 			]
 			: []),
@@ -118,9 +113,9 @@ const OverviewTab = () => {
 				{
 					id: "4",
 					label: "Allocation Date",
+					rawDate: productDetails.allocationDate,
 					date: allocationDateTime.date,
 					time: allocationDateTime.time,
-					status: getTimelineStatus(productDetails.allocationDate),
 				},
 			]
 			: []),
@@ -129,9 +124,9 @@ const OverviewTab = () => {
 				{
 					id: "5",
 					label: "Acknowledgement Date",
+					rawDate: productDetails.acknowledgementDate,
 					date: acknowledgementDateTime.date,
 					time: acknowledgementDateTime.time,
-					status: getTimelineStatus(productDetails.acknowledgementDate),
 				},
 			]
 			: []),
@@ -140,13 +135,32 @@ const OverviewTab = () => {
 				{
 					id: "6",
 					label: "Listing Date",
+					rawDate: productDetails.listingDate,
 					date: listingDateTime.date,
 					time: listingDateTime.time,
-					status: getTimelineStatus(productDetails.listingDate),
 				},
 			]
 			: []),
 	];
+	const now = Date.now();
+	const currentMilestoneIndex = milestoneDates.findIndex((milestone) => {
+		const milestoneDate = new Date(milestone.rawDate);
+		return !Number.isNaN(milestoneDate.getTime()) && milestoneDate.getTime() >= now;
+	});
+	const dates: TimelineDate[] = milestoneDates.map((milestone, index) => ({
+		id: milestone.id,
+		label: milestone.label,
+		date: milestone.date,
+		time: milestone.time,
+		status:
+			currentMilestoneIndex === -1
+				? "completed"
+				: index < currentMilestoneIndex
+					? "completed"
+					: index === currentMilestoneIndex
+						? "active"
+						: "upcoming",
+	}));
 
 	const fundamentals: FundamentalItem[] = [
 		...(productDetails.baseCurrency
@@ -271,17 +285,16 @@ const OverviewTab = () => {
 						{dates.map((item, index) => {
 							const isLast = index === dates.length - 1;
 							const nextItem = dates[index + 1];
-							const isNextComing = nextItem?.status === "upcoming";
 
 							return (
 								<div key={item.id} className="relative flex items-start">
 									{/* Vertical line for each item */}
 									{!isLast && (
 										<div
-											className={`absolute left-[9px] top-5 w-0.5 ${isNextComing
-												? "border-l-2 border-dashed border-status-disable-primary bg-transparent"
-												: "bg-cgs-blue"
-												}`}
+											className={cn(
+												"absolute left-[9px] top-5 w-0.5",
+												getTimelineConnectorClass(item.status, nextItem?.status),
+											)}
 											style={{ height: "calc(100% + 20px)" }}
 										></div>
 									)}
@@ -289,22 +302,23 @@ const OverviewTab = () => {
 									<div className="flex-1 flex items-start justify-between">
 										<div className="flex items-center gap-2">
 											<div
-												className={`relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2 ${item.status === "completed"
-													? "bg-cgs-blue border-cgs-blue"
-													: item.status === "active"
-														? "bg-white border-cgs-blue"
-														: "bg-white border-status-disable-primary"
-													}`}
+												className={cn(
+													"relative z-10 flex items-center justify-center w-5 h-5 rounded-full border-2",
+													item.status === "completed" && "bg-cgs-blue border-cgs-blue",
+													item.status === "active" && "bg-white border-cgs-blue",
+													item.status === "upcoming" &&
+														"bg-white border-status-disable-primary",
+												)}
 											>
 												{item.status === "completed" ? (
 													<Check className="w-3 h-3 text-white" strokeWidth={4} />
 												) : item.status === "active" ? (
-													<Dot
-														strokeWidth={10}
-														className="w-5 h-5 text-cgs-blue"
-													/>
+													<div className="h-2.5 w-2.5 rounded-full bg-cgs-blue" />
 												) : (
-													<Check className="w-3 h-3 text-status-disable-primary" strokeWidth={4} />
+													<Check
+														className="w-3 h-3 text-status-disable-primary"
+														strokeWidth={4}
+													/>
 												)}
 											</div>
 											<span className="text-typo-primary text-sm font-medium">
