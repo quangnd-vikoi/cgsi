@@ -207,6 +207,7 @@ const Profile = () => {
 				icon: <Box strokeWidth={ICON_STROKE_WIDTH} />,
 				name: "Market Data & Add-Ons",
 				onClick: handleNavigateToMarketData,
+				feature: "sidebar_market_data",
 			},
 			{
 				icon: <Boxes strokeWidth={ICON_STROKE_WIDTH} />,

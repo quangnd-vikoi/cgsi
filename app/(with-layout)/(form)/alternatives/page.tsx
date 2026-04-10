@@ -1,5 +1,6 @@
 "use client";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import OverviewTab from "../_components/OverviewTab";
 import AnalysisTab from "../_components/AnalysisTab";
 import DocumentsTab from "../_components/DocumentsTab";
@@ -16,17 +17,27 @@ import { INTERNAL_ROUTES } from "@/constants/routes";
 
 function ApplyFooter() {
 	const { selectedItem } = useSelectionStore();
-	if (!selectedItem?.isCompact && !selectedItem?.subscribed) {
-		return (
-			<div className="flex-shrink-0 pt-6">
-				<Separator className="mb-4" />
-				<div className="flex justify-end">
+	if (!selectedItem) return null;
+
+	const actionLabel = selectedItem.subscribed ? "Applied" : selectedItem.isCompact ? "Closed" : null;
+
+	return (
+		<div className="flex-shrink-0 pt-6">
+			<Separator className="mb-4" />
+			<div className="flex justify-end">
+				{actionLabel ? (
+					<Button
+						disabled
+						className="bg-theme-neutral-09 text-typo-tertiary hover:bg-theme-neutral-09 px-6 py-2"
+					>
+						{actionLabel}
+					</Button>
+				) : (
 					<ApplicationForm pathname="alternatives" />
-				</div>
+				)}
 			</div>
-		);
-	}
-	return null;
+		</div>
+	);
 }
 
 const Alternatives = () => {

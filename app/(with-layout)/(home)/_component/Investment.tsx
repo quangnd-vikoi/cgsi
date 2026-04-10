@@ -10,6 +10,8 @@ import { useSheetStore } from "@/stores/sheetStore";
 import { cn } from "@/lib/utils";
 import { getProductSubscriptionsByType } from "@/lib/services/subscriptionService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { USER_TYPE } from "@/constants/accessControl";
+import { usePermission } from "@/hooks/usePermission";
 
 type InvestmentCardProps = {
 	title: string;
@@ -129,10 +131,13 @@ const Investment = () => {
 	const [alternativesCount, setAlternativesCount] = useState<number | null>(null);
 	const selectedAccount = useTradingAccountStore((s) => s.selectedAccount);
 	const isInitialized = useTradingAccountStore((s) => s.isInitialized);
+	const { isLoading: isPermissionLoading, userType } = usePermission(null);
 	const isAI = isInitialized && selectedAccount?.accreditedInvestor === "Yes";
+	const shouldHideInvestmentProducts =
+		userType === USER_TYPE.DEMO || userType === USER_TYPE.TR;
 
 	useEffect(() => {
-		if (!isInitialized) return;
+		if (!isInitialized || isPermissionLoading || shouldHideInvestmentProducts) return;
 
 		const isClosingDatePassed = (endTime: string): boolean => {
 			const closingDate = new Date(endTime);
@@ -170,7 +175,11 @@ const Investment = () => {
 		};
 
 		fetchProductCounts();
-	}, [isInitialized, isAI]);
+	}, [isInitialized, isAI, isPermissionLoading, shouldHideInvestmentProducts]);
+
+	if (isPermissionLoading || shouldHideInvestmentProducts) {
+		return null;
+	}
 
 	return (
 		<div className="bg-white container-default">

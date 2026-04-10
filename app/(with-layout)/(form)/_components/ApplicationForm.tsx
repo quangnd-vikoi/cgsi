@@ -16,6 +16,7 @@ import { Minus, Plus, Loader2 } from "lucide-react";
 import { cn, convertTo2DigitsNumber } from "@/lib/utils";
 import { toast } from "@/components/ui/toaster";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
+import { useSelectionStore } from "@/stores/selectionStore";
 import Image from "@/components/Image";
 import { useProductDetails } from "./ProductDetailsContext";
 import { subscriptionService } from "@/lib/services/subscriptionService";
@@ -59,6 +60,9 @@ const CURRENCY_OPTIONS = [
 export default function ApplicationForm({ pathname }: RouteProps) {
 	const { productDetails, refetch } = useProductDetails();
 	const accounts = useTradingAccountStore((state) => state.accounts);
+	const selectedItem = useSelectionStore((state) => state.selectedItem);
+	const setSelectedItem = useSelectionStore((state) => state.setSelectedItem);
+	const markProductSubscribed = useSelectionStore((state) => state.markProductSubscribed);
 
 	// Filter CTA accounts
 	const cashAccounts = accounts.filter((acc) => acc.accountType === "CTA");
@@ -176,11 +180,16 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					`Your ${productDetails.productType} Application for ${FORM_CONFIG.productName} has been submitted successfully.`,
 				);
 
-				// Refetch product details to update subscription status
-				await refetch();
-
 				// Close dialog
 				setDialogOpen(false);
+				markProductSubscribed(productDetails.productCode);
+
+				if (selectedItem) {
+					setSelectedItem({
+						...selectedItem,
+						subscribed: true,
+					});
+				}
 
 				// Reset form
 				setQuantity("");
@@ -190,6 +199,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 					payment: "",
 					currency: productDetails.baseCurrency?.toLowerCase() ?? "sgd",
 				});
+
+				// Refresh details in background after optimistic UI update
+				void refetch();
 			} else {
 				// Error from API
 				toast.error(
@@ -440,9 +452,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								disabled={quantity === "" || currentQuantity <= 0}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="h-6 w-6 rounded-full border-2 border-cgs-blue p-0 text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed"
 							>
-								<Minus className="w-4 h-4" />
+								<Minus className="h-3.5 w-3.5" />
 							</Button>
 							<div className="flex-1 mx-4">
 								<Input
@@ -459,9 +471,9 @@ export default function ApplicationForm({ pathname }: RouteProps) {
 								onClick={() => handleQuantityChange(1)}
 								variant="outline"
 								size="icon"
-								className="rounded-full border-2 border-cgs-blue text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed h-5 w-5"
+								className="h-6 w-6 rounded-full border-2 border-cgs-blue p-0 text-cgs-blue hover:bg-transparent hover:border-cgs-blue/75 hover:text-cgs-blue/75 disabled:opacity-30 disabled:cursor-not-allowed"
 							>
-								<Plus className="w-5 h-5" />
+								<Plus className="h-3.5 w-3.5" />
 							</Button>
 						</div>
 

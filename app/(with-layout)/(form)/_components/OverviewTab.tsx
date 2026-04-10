@@ -313,7 +313,7 @@ const OverviewTab = () => {
 												{item.status === "completed" ? (
 													<Check className="w-3 h-3 text-white" strokeWidth={4} />
 												) : item.status === "active" ? (
-													<div className="h-2.5 w-2.5 rounded-full bg-cgs-blue" />
+													<div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cgs-blue" />
 												) : (
 													<Check
 														className="w-3 h-3 text-status-disable-primary"

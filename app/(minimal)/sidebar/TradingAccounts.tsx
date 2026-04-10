@@ -1,6 +1,6 @@
 import React from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { useSheetStore } from "@/stores/sheetStore";
 import { ErrorState } from "@/components/ErrorState";
@@ -9,94 +9,116 @@ import { Separator } from "@radix-ui/react-separator";
 import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 
 const TradingAccounts = () => {
-	const accounts = useTradingAccountStore((state) => state.accounts);
-	const isInitialized = useTradingAccountStore((state) => state.isInitialized);
-	const setSelectedAccount = useTradingAccountStore((state) => state.setSelectedAccount);
-	const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
+    const accounts = useTradingAccountStore((state) => state.accounts);
+    const isInitialized = useTradingAccountStore(
+        (state) => state.isInitialized,
+    );
+    const setSelectedAccount = useTradingAccountStore(
+        (state) => state.setSelectedAccount,
+    );
+    const setOpenSheet = useSheetStore((state) => state.setOpenSheet);
 
-	// Note: Data is fetched by DataInitializer on app mount
-	// This component just reads from the store
+    // Note: Data is fetched by DataInitializer on app mount
+    // This component just reads from the store
 
-	const handleDetailsClick = (accountNo: string) => {
-		const account = accounts.find((acc) => acc.accountNo === accountNo);
-		if (account) {
-			setSelectedAccount(account);
-		}
+    const handleDetailsClick = (accountNo: string) => {
+        const account = accounts.find((acc) => acc.accountNo === accountNo);
+        if (account) {
+            setSelectedAccount(account);
+        }
 
-		setOpenSheet("trading_account_details");
-	};
+        setOpenSheet("trading_account_details");
+    };
 
-	// Show loading state while data is being initialized
-	if (!isInitialized) {
-		return (
-			<div className="flex flex-col h-full">
-				<CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
-				<div className="flex-1 flex items-center justify-center">
-					<div className="space-y-4 w-full p-4">
-						{[...Array(3)].map((_, i) => (
-							<div key={i} className="p-4 border border-stroke-secondary rounded space-y-2">
-								<Skeleton className="h-4 w-1/3" />
-								<Skeleton className="h-6 w-1/2" />
-							</div>
-						))}
-					</div>
-				</div>
-			</div>
-		);
-	}
+    // Show loading state while data is being initialized
+    if (!isInitialized) {
+        return (
+            <div className="flex flex-col h-full">
+                <CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="space-y-4 w-full p-4">
+                        {[...Array(3)].map((_, i) => (
+                            <div
+                                key={i}
+                                className="p-4 border border-stroke-secondary rounded space-y-2"
+                            >
+                                <Skeleton className="h-4 w-1/3" />
+                                <Skeleton className="h-6 w-1/2" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
-	if (accounts.length === 0) {
-		return (
-			<div className="flex flex-col h-full">
-				<CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
-				<div className="flex-1 flex flex-col items-center justify-center">
-					<ErrorState
-						type="empty"
-						title="No Trading Accounts"
-						description="No trading accounts found for this profile."
-					/>
-				</div>
-			</div>
-		);
-	}
+    if (accounts.length === 0) {
+        return (
+            <div className="flex flex-col h-full">
+                <CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
+                <div className="flex-1 flex flex-col items-center justify-center">
+                    <ErrorState
+                        type="empty"
+                        title="No Trading Accounts"
+                        description="No trading accounts found for this profile."
+                    />
+                </div>
+            </div>
+        );
+    }
 
-	return (
-		<div className="flex flex-col h-full">
-			<CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
+    return (
+        <div className="flex flex-col h-full">
+            <CustomSheetTitle title="Trading Accounts" backTo={"profile"} />
 
-			<div className="flex-1 overflow-y-auto pb-4 scrollbar-offset-laptop">
-				{accounts.map((acc) => (
-					<div
-						key={acc.accountNo}
-						className="p-4 border border-stroke-secondary rounded mt-6 cursor-pointer hover:border-cgs-blue hover:bg-theme-blue-100/50 transition-colors group"
-						onClick={() => handleDetailsClick(acc.accountNo)}
-					>
-						<div className="flex justify-between items-center">
-							<div>
-								<p className="text-xs md:text-sm font-normal text-typo-secondary">
-									{(acc.accountType ? ACCOUNT_TYPE_LABELS[acc.accountType] : null) ??
-										acc.accountType ??
-										"Trading Account"}
-								</p>
-								<div className="flex gap-2 items-center mt-2">
-									<p className="text-lg font-semibold">{acc.accountNo}</p>
-								</div>
-							</div>
-							<ChevronRight
-								className="text-cgs-blue"
-								size={20}
-							/>
-						</div>
-						<Separator className="h-[1px] bg-stroke-secondary my-4" />
-						<div className="flex justify-between text-xs sm:text-sm">
-							<p className="text-typo-secondary font-normal">TR Name:</p>
-							<p className="text-typo-primary font-semibold">{acc.trName || "-"}</p>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	);
+            <div className="flex-1 overflow-y-auto pb-4 scrollbar-offset-laptop">
+                {accounts.map((acc) => (
+                    <div
+                        key={acc.accountNo}
+                        className="p-4 border border-stroke-secondary rounded mt-6 cursor-pointer hover:border-cgs-blue hover:bg-theme-blue-100/50 transition-colors group"
+                        onClick={() => handleDetailsClick(acc.accountNo)}
+                    >
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <div className="flex gap-2 items-center">
+                                    <p className="text-xs md:text-sm font-normal text-typo-secondary">
+                                        {(acc.accountType
+                                            ? ACCOUNT_TYPE_LABELS[
+                                                  acc.accountType
+                                              ]
+                                            : null) ??
+                                            acc.accountType ??
+                                            "Trading Account"}
+                                    </p>
+                                    {acc.accountTypeCodeNova === "JOINT" && (
+                                        <div className="border flex gap-1 border-tone-green-04 text-tone-green-04 rounded-xs px-1.5 py-[3px] text-xs">
+                                            <Users size={14} />
+                                            JOINT
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex gap-2 items-center mt-2">
+                                    <p className="text-lg font-semibold">
+                                        {acc.accountNo}
+                                    </p>
+                                </div>
+                            </div>
+                            <ChevronRight className="text-cgs-blue" size={20} />
+                        </div>
+                        <Separator className="h-[1px] bg-stroke-secondary my-4" />
+                        <div className="flex justify-between text-xs sm:text-sm">
+                            <p className="text-typo-secondary font-normal">
+                                TR Name:
+                            </p>
+                            <p className="text-typo-primary font-semibold">
+                                {acc.trName || "-"}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default TradingAccounts;

@@ -309,9 +309,7 @@ export interface IProductSubscription {
 	minQty: number;
 	startTime: string; // ISO 8601 date-time
 	endTime: string; // ISO 8601 date-time
-	// Backend payloads have used both `subscribed` and `isSubscribed`.
-	subscribed?: boolean;
-	isSubscribed?: boolean;
+	subscribed: boolean;
 }
 
 export type ProductSubscriptionDto = IProductSubscription;

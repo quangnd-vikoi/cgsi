@@ -9,6 +9,7 @@ import {
     CircleCheck,
     Copy,
     Globe,
+    Users,
 } from "lucide-react";
 import WaringIcon from "@/public/icons/Warning.svg";
 import {
@@ -63,7 +64,11 @@ const TimelineItem: React.FC<TimelineItemProps> = ({
             </div>
 
             <div className="bg-background-section p-3 rounded mb-6 flex-1 min-w-0">
-                <div className={cn("text-typo-primary font-normal text-sm break-words")}>
+                <div
+                    className={cn(
+                        "text-typo-primary font-normal text-sm break-words",
+                    )}
+                >
                     {title}
                 </div>
                 {description && (
@@ -222,15 +227,24 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            For Linkage of EPS, please visit the website below to download the{" "}
-                            <span className="font-bold">EPS Application Form</span>.
+                            For Linkage of EPS, please visit the website below
+                            to download the{" "}
+                            <span className="font-bold">
+                                EPS Application Form
+                            </span>
+                            .
                         </p>
                     ),
                     description: (
                         <div className="flex justify-between items-center">
                             <div className="flex gap-2 items-center min-w-0">
-                                <Globe size={20} className="text-icon-light shrink-0" />
-                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                                <Globe
+                                    size={20}
+                                    className="text-icon-light shrink-0"
+                                />
+                                <p className="text-sm font-normal truncate">
+                                    iTrade Application Forms
+                                </p>
                             </div>
                             <ChevronRight
                                 size={20}
@@ -251,14 +265,17 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            Email the completed form to our Client Services team. You will receive an email
-                            notification once your request has been processed.
+                            Email the completed form to our Client Services
+                            team. You will receive an email notification once
+                            your request has been processed.
                         </p>
                     ),
                     description: (
                         <div className="flex justify-between items-center">
                             <div className="flex items-center gap-2 min-w-0 flex-1">
-                                <span className="truncate text-typo-primary">clientservices.sg@cgsi.com</span>
+                                <span className="truncate text-typo-primary">
+                                    clientservices.sg@cgsi.com
+                                </span>
                             </div>
                             <div className="flex gap-2 shrink-0">
                                 <Copy
@@ -287,16 +304,25 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            For Linkage of GIRO, please visit the website below to download the{" "}
-                            <span className="font-bold">GIRO Application Form</span>. You can also find
-                            the Business Reply Envelope in the link below.
+                            For Linkage of GIRO, please visit the website below
+                            to download the{" "}
+                            <span className="font-bold">
+                                GIRO Application Form
+                            </span>
+                            . You can also find the Business Reply Envelope in
+                            the link below.
                         </p>
                     ),
                     description: (
                         <div className="flex justify-between items-center">
                             <div className="flex gap-2 items-center min-w-0">
-                                <Globe size={20} className="text-icon-light shrink-0" />
-                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                                <Globe
+                                    size={20}
+                                    className="text-icon-light shrink-0"
+                                />
+                                <p className="text-sm font-normal truncate">
+                                    iTrade Application Forms
+                                </p>
                             </div>
                             <ChevronRight
                                 size={20}
@@ -317,9 +343,10 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            Mail the completed physical form along with the Business Reply Envelope to our
-                            office. You will receive an email notification once your request has been
-                            processed.
+                            Mail the completed physical form along with the
+                            Business Reply Envelope to our office. You will
+                            receive an email notification once your request has
+                            been processed.
                         </p>
                     ),
                 },
@@ -335,16 +362,22 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            For Revoking of GIRO Linkage, please obtain the relevant GIRO Termination Form
-                            from your relevant bank. You can also find the CGSI Business Reply Envelope in
-                            the link below.
+                            For Revoking of GIRO Linkage, please obtain the
+                            relevant GIRO Termination Form from your relevant
+                            bank. You can also find the CGSI Business Reply
+                            Envelope in the link below.
                         </p>
                     ),
                     description: (
                         <div className="flex justify-between items-center">
                             <div className="flex gap-2 items-center min-w-0">
-                                <Globe size={20} className="text-icon-light shrink-0" />
-                                <p className="text-sm font-normal truncate">iTrade Application Forms</p>
+                                <Globe
+                                    size={20}
+                                    className="text-icon-light shrink-0"
+                                />
+                                <p className="text-sm font-normal truncate">
+                                    iTrade Application Forms
+                                </p>
                             </div>
                             <ChevronRight
                                 size={20}
@@ -365,9 +398,10 @@ const TradingAccountDetail = () => {
                 {
                     title: (
                         <p>
-                            Mail the completed physical form along with the Business Reply Envelope to our
-                            office. You will receive an email notification once your request has been
-                            processed.
+                            Mail the completed physical form along with the
+                            Business Reply Envelope to our office. You will
+                            receive an email notification once your request has
+                            been processed.
                         </p>
                     ),
                 },
@@ -393,11 +427,7 @@ const TradingAccountDetail = () => {
 
     const handleCpfLink = () => {
         setOpenSheet(null);
-        handleEmail(
-            CPF_EMAIL,
-            "Request to Link CPFIS",
-            getCpfEmailBody(),
-        );
+        handleEmail(CPF_EMAIL, "Request to Link CPFIS", getCpfEmailBody());
     };
 
     const handleCpfUnlink = () => {
@@ -411,11 +441,7 @@ const TradingAccountDetail = () => {
 
     const handleSrsLink = () => {
         setOpenSheet(null);
-        handleEmail(
-            CPF_EMAIL,
-            "Request to Link SRS",
-            getSrsEmailBody(),
-        );
+        handleEmail(CPF_EMAIL, "Request to Link SRS", getSrsEmailBody());
     };
 
     const handleSrsUnlink = () => {
@@ -454,11 +480,19 @@ const TradingAccountDetail = () => {
             />
 
             <div className="flex-1 mt-6 pb-4 overflow-y-auto scrollbar-offset-laptop">
-                <div className="mb-9">
-                    <p className="text-typo-secondary text-xs">
-                        {accountTypeLabel}
-                    </p>
-                    <div className="flex items-center gap-2">
+                <div className="mb-6">
+                    <div className=" flex gap-2 items-center">
+                        <p className="text-typo-secondary text-sm">
+                            {accountTypeLabel}
+                        </p>
+                        {selectedAccount.accountTypeCodeNova === "JOINT" && (
+                            <div className="border flex gap-1 border-tone-green-04 text-tone-green-04 rounded-xs px-1.5 py-[3px]">
+                                <Users size={14} />
+                                <span className="text-xs">JOINT</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
                         <p className="font-semibold text-typo-primary text-lg">
                             {selectedAccount.accountNo}
                         </p>
@@ -542,8 +576,8 @@ const TradingAccountDetail = () => {
                                             selectedAccount.giro
                                                 ? "Payment Method (GIRO)"
                                                 : selectedAccount.eps
-                                                    ? "Payment Method (EPS)"
-                                                    : "Payment Method"
+                                                  ? "Payment Method (EPS)"
+                                                  : "Payment Method"
                                         }
                                         tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
                                         value={
@@ -559,7 +593,9 @@ const TradingAccountDetail = () => {
                                         }
                                         onUnlink={() =>
                                             selectedAccount.giro
-                                                ? openPaymentInstructions("giroUnlink")
+                                                ? openPaymentInstructions(
+                                                      "giroUnlink",
+                                                  )
                                                 : handleEpsUnlink()
                                         }
                                         actionContent={
@@ -577,13 +613,21 @@ const TradingAccountDetail = () => {
                                                     align="end"
                                                 >
                                                     <DropdownMenuItem
-                                                        onClick={() => openPaymentInstructions("eps")}
+                                                        onClick={() =>
+                                                            openPaymentInstructions(
+                                                                "eps",
+                                                            )
+                                                        }
                                                         className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
                                                     >
                                                         EPS
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        onClick={() => openPaymentInstructions("giro")}
+                                                        onClick={() =>
+                                                            openPaymentInstructions(
+                                                                "giro",
+                                                            )
+                                                        }
                                                         className="cursor-pointer px-3 py-[10px] rounded-none hover:bg-background-focus"
                                                     >
                                                         GIRO
@@ -693,29 +737,38 @@ const TradingAccountDetail = () => {
 
             <Dialog
                 open={!!paymentInstructionType}
-                onOpenChange={(open) => !open && setPaymentInstructionType(null)}
+                onOpenChange={(open) =>
+                    !open && setPaymentInstructionType(null)
+                }
             >
                 <DialogContent className="max-w-[480px] max-h-[85vh] p-0 gap-0 overflow-hidden">
                     {paymentInstructionType && (
                         <div className="bg-white flex flex-col min-h-0">
                             <div className="px-6 pt-10 pb-4 overflow-y-auto">
                                 <div className="text-base font-semibold my-6 break-words">
-                                    {paymentInstructionData[paymentInstructionType].mainTitle}
+                                    {
+                                        paymentInstructionData[
+                                            paymentInstructionType
+                                        ].mainTitle
+                                    }
                                 </div>
-                                {paymentInstructionData[paymentInstructionType].items.map(
-                                    (item, index) => (
-                                        <TimelineItem
-                                            key={`${paymentInstructionType}-${index}`}
-                                            step={index + 1}
-                                            title={item.title}
-                                            description={item.description}
-                                            isLast={
-                                                index ===
-                                                paymentInstructionData[paymentInstructionType].items.length - 1
-                                            }
-                                        />
-                                    ),
-                                )}
+                                {paymentInstructionData[
+                                    paymentInstructionType
+                                ].items.map((item, index) => (
+                                    <TimelineItem
+                                        key={`${paymentInstructionType}-${index}`}
+                                        step={index + 1}
+                                        title={item.title}
+                                        description={item.description}
+                                        isLast={
+                                            index ===
+                                            paymentInstructionData[
+                                                paymentInstructionType
+                                            ].items.length -
+                                                1
+                                        }
+                                    />
+                                ))}
                             </div>
                         </div>
                     )}

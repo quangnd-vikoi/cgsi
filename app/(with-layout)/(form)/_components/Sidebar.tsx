@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Sidebar() {
 	const pathname = usePathname();
-	const { selectedId, setSelectedItem } = useSelectionStore();
+	const { selectedId, subscribedProductIds, setSelectedItem } = useSelectionStore();
 	const [productSubs, setProductSubs] = useState<ProductSubscriptionDto[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -71,7 +71,10 @@ export default function Sidebar() {
 		openingDate: formatDateTime(sub.startTime),
 		closingDate: formatDateTime(sub.endTime),
 		hasDetails: true,
-		subscribed: sub.subscribed ?? sub.isSubscribed ?? false,
+		subscribed:
+			subscribedProductIds.includes(sub.productCode) ||
+			sub.subscribed ||
+			false,
 		isCompact: isClosingDatePassed(sub.endTime),
 	}));
 
