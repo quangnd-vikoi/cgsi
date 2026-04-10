@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import React from "react";
 import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatTradingRepresentative } from "@/lib/utils";
 import { PortfolioType, IAccountSummary } from "@/types";
 import { ChartPie } from "./ChartPie";
 import { PaymentModel } from "@/components/PaymentModel";
@@ -69,6 +69,8 @@ type DashboardBlockProps = {
     type?: "normal" | "success" | "error";
     showPayButton?: boolean;
     onPay?: () => void;
+    showViewLink?: boolean;
+    onView?: () => void;
 };
 
 const DashboardBlock = ({
@@ -77,6 +79,8 @@ const DashboardBlock = ({
     type = "normal",
     showPayButton = false,
     onPay,
+    showViewLink = false,
+    onView,
     isLoading = false,
 }: DashboardBlockProps & { isLoading?: boolean }) => {
     const getTextColor = () => {
@@ -93,17 +97,17 @@ const DashboardBlock = ({
     return (
         <div
             className={cn(
-                "bg-background-selected p-3 md:p-4 rounded border transition-colors cursor-pointer flex justify-between items-center",
+                "bg-background-selected p-3 md:p-4 rounded border transition-colors flex justify-between items-center",
                 showPayButton
                     ? "border-cgs-blue"
                     : "border-background-selected hover:border-cgs-blue",
             )}
         >
-            <div className="">
+            <div className="flex-1 min-w-0">
                 <p className="text-xs md:text-sm text-typo-secondary">
                     {title}
                 </p>
-                <div className="text-sm md:text-base flex justify-between items-end mt-2 flex-wrap gap-2">
+                <div className="text-sm md:text-base mt-2">
                     {isLoading ? (
                         <Skeleton className="h-5 w-28" />
                     ) : (
@@ -122,6 +126,16 @@ const DashboardBlock = ({
                 >
                     Settle
                 </Button>
+            )}
+
+            {!showPayButton && !isLoading && showViewLink && onView && (
+                <button
+                    type="button"
+                    className="hidden md:inline-flex shrink-0 items-center text-sm font-medium text-cgs-blue underline underline-offset-2 hover:text-cgs-blue/75"
+                    onClick={onView}
+                >
+                    View
+                </button>
             )}
         </div>
     );
@@ -220,9 +234,17 @@ const TypeSelect = ({
             <p className="text-xs md:text-sm text-typo-secondary">
                 Trading Representative
             </p>
-            <p className="mt-2 text-base leading-6 font-semibold text-truncate line-clamp-1">
-                {selectedAccount?.trCode + " - " + selectedAccount?.trName ||
-                    "N/A"}
+            <p
+                className="mt-2 text-lg md:text-2xl font-semibold leading-tight text-typo-primary truncate"
+                title={formatTradingRepresentative(
+                    selectedAccount?.trCode,
+                    selectedAccount?.trName,
+                )}
+            >
+                {formatTradingRepresentative(
+                    selectedAccount?.trCode,
+                    selectedAccount?.trName,
+                )}
             </p>
         </div>
     );
@@ -377,6 +399,15 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
                         amount={formatCurrency(accountSummary?.contractsSell)}
                         type={colorByValue(accountSummary?.contractsSell)}
                         isLoading={isLoading}
+                        showViewLink={
+                            showContractsContra &&
+                            (accountSummary?.contractsSell ?? 0) > 0
+                        }
+                        onView={() =>
+                            router.push(
+                                `${INTERNAL_ROUTES.SETTLE}?tab=contracts`,
+                            )
+                        }
                     />
                 ),
             },
@@ -411,6 +442,13 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
                         amount={formatCurrency(accountSummary?.contraGain)}
                         type={colorByValue(accountSummary?.contraGain)}
                         isLoading={isLoading}
+                        showViewLink={
+                            showContractsContra &&
+                            (accountSummary?.contraGain ?? 0) > 0
+                        }
+                        onView={() =>
+                            router.push(`${INTERNAL_ROUTES.SETTLE}?tab=contra`)
+                        }
                     />
                 ),
             },
@@ -441,7 +479,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
                 gridArea: "1 / 1 / 2 / 2",
                 component: (
                     <DashboardBlock
-                        title="Avail Trade Limit"
+                        title="Available Trading Limit"
                         amount={formatCurrency(
                             accountSummary?.tradeLimit,
                             "SGD",
@@ -458,7 +496,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
                 component: (
                     <DashboardBlock
                         title="Margin Ratio"
-                        amount={`${toMarginPercent(accountSummary?.marginRatio)}%`}
+                        amount={`${toMarginPercent(accountSummary?.marginRatio).toFixed(2)}%`}
                         type={marginRatioColor(accountSummary?.marginRatio)}
                         isLoading={isLoading}
                     />
@@ -485,7 +523,7 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
                 gridArea: "2 / 2 / 3 / 3",
                 component: (
                     <DashboardBlock
-                        title="Cash Call"
+                        title="Margin Call"
                         amount={formatCurrency(
                             accountSummary?.cashCall,
                             "SGD",

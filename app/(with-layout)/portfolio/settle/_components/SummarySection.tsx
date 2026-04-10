@@ -1,5 +1,6 @@
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatTradingRepresentative } from "@/lib/utils";
 import type { IAccountSummary } from "@/types";
 
 interface SummarySectionProps {
@@ -72,7 +73,7 @@ export function SummarySection({ accountSummary, activeTab, loading = false }: S
 
 					<SummaryCard
 						label={loading ? skeletonLabel : "Trading Representative"}
-						value={loading ? skeletonVal : (selectedAccount?.trName || "—")}
+						value={loading ? skeletonVal : formatTradingRepresentative(selectedAccount?.trCode, selectedAccount?.trName, "—")}
 					/>
 				</div>
 			</div>
@@ -105,7 +106,7 @@ export function SummarySection({ accountSummary, activeTab, loading = false }: S
 
 				<SummaryCard
 					label={loading ? skeletonLabel : "Trading Representative"}
-					value={loading ? skeletonVal : (selectedAccount?.trName || "—")}
+					value={loading ? skeletonVal : formatTradingRepresentative(selectedAccount?.trCode, selectedAccount?.trName, "—")}
 				/>
 			</div>
 		</div>

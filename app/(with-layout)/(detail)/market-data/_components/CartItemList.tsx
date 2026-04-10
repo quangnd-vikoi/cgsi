@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { ErrorState } from "@/components/ErrorState";
 import Alert from "@/components/Alert";
 import { toast } from "@/components/ui/toaster";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { IMarketDataItem } from "../page";
 
 interface CartItemsListProps {
@@ -52,9 +53,9 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                         <div className="flex gap-4 py-3">
                             <SubscriptionThumbnail src={item.image} alt={item.title} />
 
-                            <div className="flex-1 space-y-1">
+                            <div className="flex-1 space-y-1 min-w-0">
                                 <div className="flex justify-between items-start">
-                                    <p className="text-typo-primary text-sm font-medium flex-1">
+                                    <p className="text-typo-primary text-sm md:text-base font-medium flex-1">
                                         {item.title}
                                     </p>
 
@@ -91,17 +92,37 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
             </div>
 
             {/* TOTAL SUMMARY */}
-            <div className="mt-6 rounded p-4 bg-background-section text-sm text-typo-secondary">
+            <div className="mt-4 rounded p-4 bg-background-section text-sm text-typo-secondary">
                 <div className="flex justify-between">
                     <p>Sub-Total</p>
                     <p className="font-semibold text-typo-primary">{subTotal} SGD</p>
                 </div>
 
                 <div className="flex justify-between mt-2">
-                    <div className="flex gap-1 items-center">
-                        <p>GST</p>
-                        <Image src="/icons/Warning.svg" alt="Warning" width={14} height={14} />
-                    </div>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                type="button"
+                                className="flex items-center gap-1 cursor-help"
+                                aria-label="GST information"
+                            >
+                                <span>GST</span>
+                                <Image
+                                    src="/icons/Warning.svg"
+                                    alt="GST information"
+                                    width={14}
+                                    height={14}
+                                />
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                            side="top"
+                            className="w-64 translate-x-0"
+                            arrowClassName="translate-x-0"
+                        >
+                            <p>The current Goods and Services Tax (GST) rate in Singapore is at 9%</p>
+                        </TooltipContent>
+                    </Tooltip>
                     <p className="font-semibold text-typo-primary">{gst} SGD</p>
                 </div>
 
@@ -109,11 +130,11 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
 
                 <div className="mt-4 flex justify-between items-center">
                     <div>
-                        <p className="font-semibold text-typo-primary">Total price</p>
-                        <p className="text-xs">Inclusive of GST</p>
+                        <p className="text-sm md:text-base font-semibold text-typo-primary">Total price</p>
+                        <p className="text-xs md:text-sm">Inclusive of GST</p>
                     </div>
 
-                    <p className="text-base text-typo-primary font-semibold">
+                    <p className="text-base md:text-lg text-typo-primary font-semibold">
                         {(Number(subTotal) + Number(gst)).toFixed(2)} SGD
                     </p>
                 </div>

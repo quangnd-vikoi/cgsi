@@ -140,7 +140,7 @@ const Professional = ({
             {researchGroups.length > 0 && (
                 <>
                     <div className="flex items-center gap-2 mt-7">
-                        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Research Articles</p>
+                        <p className="shrink-0 text-xs md:text-sm font-medium !text-typo-teritary">Research Articles</p>
                         <Separator className="flex-1 border border-stroke-secondary" />
                     </div>
                     <div className="mt-2 space-y-3">
@@ -183,7 +183,7 @@ const Professional = ({
             {marketDataGroups.length > 0 && (
                 <>
                     <div className="flex items-center gap-2 mt-7">
-                        <p className="shrink-0 text-xs font-semibold text-typo-teritary">Market Data</p>
+                        <p className="shrink-0 text-xs md:text-sm font-medium !text-typo-tertiary">Market Data</p>
                         <Separator className="flex-1 border border-stroke-secondary" />
                     </div>
                     <div className="mt-2 space-y-3">

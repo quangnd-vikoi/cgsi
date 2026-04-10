@@ -6,7 +6,7 @@ import Image from "@/components/Image";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { CircleCheck, Grip } from "lucide-react";
+import { CircleCheck, Grip, Loader2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
 	DropdownMenu,
@@ -206,13 +206,17 @@ const Header = () => {
 							isTradeLoading && "cursor-wait opacity-70",
 						)}
 					>
-						<Image
-							src="/icons/Charts.svg"
-							alt="Trade Now"
-							width={20}
-							height={20}
-							className="hidden md:block"
-						/>
+						{isTradeLoading ? (
+							<Loader2 className="hidden md:block size-5 animate-spin" />
+						) : (
+							<Image
+								src="/icons/Charts.svg"
+								alt="Trade Now"
+								width={20}
+								height={20}
+								className="hidden md:block"
+							/>
+						)}
 						<span>Trade Now</span>
 					</Button>
 					<div className="md:hidden">

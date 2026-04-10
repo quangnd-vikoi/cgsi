@@ -31,6 +31,20 @@ export const handleEmail = (email: string, subject?: string, body?: string) => {
 	window.location.href = `mailto:${email}?subject=${encodedSubject}${encodedBody}`;
 };
 
+export const formatTradingRepresentative = (
+	trCode?: string | null,
+	trName?: string | null,
+	fallback = "N/A",
+): string => {
+	const code = trCode?.trim();
+	const name = trName?.trim();
+
+	if (code && name) return `[${code}] ${name}`;
+	if (code) return `[${code}]`;
+	if (name) return name;
+	return fallback;
+};
+
 export const handleOpenMap = (address: string) => {
 	const encodedAddress = encodeURIComponent(address);
 	window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, "_blank");

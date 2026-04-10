@@ -30,12 +30,18 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
     const [submitting, setSubmitting] = useState(false);
     const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
 
-    // Flatten all agreements from all subscriptions
-    const allAgreements = agreements.flatMap((s) =>
-        s.agreements.map((a) => ({
-            ...a,
-            subscriptionId: s.subscriptionId,
-        }))
+    const allAgreements = Array.from(
+        new Map(
+            agreements.flatMap((s) =>
+                s.agreements.map((a) => [
+                    a.agreementId,
+                    {
+                        ...a,
+                        subscriptionId: s.subscriptionId,
+                    },
+                ] as const)
+            )
+        ).values()
     );
 
     const handleTermConfirm = async () => {

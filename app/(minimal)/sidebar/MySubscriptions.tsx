@@ -8,13 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { AlarmClock, CircleCheck, CircleX, EllipsisVertical, Hourglass, Loader2 } from 'lucide-react';
 import { cn, formatDate } from '@/lib/utils';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Alert from '@/components/Alert';
-import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
@@ -24,18 +23,18 @@ import type { /* UserProductSubscriptionDto, */ IUserMarketSubscription } from '
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
 type SubcriptionItem = {
-    title: string;
-    description: string;
-    endDate: string;
-    image: string;
-    status: SubscriptionStatus;
-    subscriptionId?: string;
-    type?: "product" | "marketData";
+	title: string;
+	description: string;
+	endDate: string;
+	image: string;
+	status: SubscriptionStatus;
+	subscriptionId?: string;
+	type?: "product" | "marketData";
 };
 
 type SubscriptionGroup = {
-    category: string;
-    items: SubcriptionItem[];
+	category: string;
+	items: SubcriptionItem[];
 };
 
 // Helper function to get subscription image based on category
@@ -150,32 +149,18 @@ const MySubscriptions = () => {
 				})),
 			}]
 			: []),
-		// ...(productSubs.length > 0
-		// 	? [{
-		// 		category: "Product Subscriptions",
-		// 		items: productSubs.map((sub) => ({
-		// 			title: sub.productName,
-		// 			description: sub.productType || "",
-		// 			endDate: formatDate(sub.endTime, "N/A"),
-		// 			image: getSubscriptionImage(sub.productType || ""),
-		// 			status: determineProductStatus(sub),
-		// 			subscriptionId: sub.subscriptionId,
-		// 			type: "product" as const,
-		// 		})),
-		// 	}]
-		// 	: []),
 	];
 
 	function statusClass(status: SubscriptionStatus): {
 		badgeType:
-			| "default"
-			| "secondary"
-			| "destructive"
-			| "outline"
-			| "success"
-			| "expiring"
-			| null
-			| undefined;
+		| "default"
+		| "secondary"
+		| "destructive"
+		| "outline"
+		| "success"
+		| "expiring"
+		| null
+		| undefined;
 		icons: React.ReactNode;
 	} {
 		switch (status) {
@@ -282,120 +267,120 @@ const MySubscriptions = () => {
 		);
 	}
 
-    return (
-        <div className="h-full flex flex-col relative">
-            {unsubscribing && (
-                <div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
-                </div>
-            )}
-            <CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
-            <div className="flex-1 overflow-y-auto">
-                {subscriptions.map((group) => (
-                    <div key={group.category} className="mt-6 text-center text-typo-secondary">
-                        {/* Category Title */}
-                        <div className="flex items-center gap-2 mt-7">
-                            <p className="shrink-0 text-xs font-semibold text-typo-teritary">
-                                {group.category}
-                            </p>
-                            <Separator className="flex-1 border border-stroke-secondary" />
-                        </div>
+	return (
+		<div className="h-full flex flex-col relative">
+			{unsubscribing && (
+				<div className="absolute inset-0 bg-white/60 z-50 flex items-center justify-center">
+					<Loader2 className="h-8 w-8 animate-spin text-cgs-blue" />
+				</div>
+			)}
+			<CustomSheetTitle title="My Subscriptions" backTo={"profile"} />
+			<div className="flex-1 overflow-y-auto">
+				{subscriptions.map((group) => (
+					<div key={group.category} className="mt-6 text-center text-typo-secondary">
+						{/* Category Title */}
+						<div className="flex items-center gap-2 mt-7">
+							<p className="shrink-0 text-xs md:text-sm font-semibold md:font-medium text-typo-teritary">
+								{group.category}
+							</p>
+							<Separator className="flex-1 border border-stroke-secondary" />
+						</div>
 
-                        {/* Items */}
-                        <div className="mt-4">
-                            {group.items.map((item, index) => (
-                                <div
-                                    key={index}
-                                    className="flex gap-3 py-4"
-                                >
-                                    <SubscriptionThumbnail src={item.image} alt={item.title} />
+						{/* Items */}
+						<div className="mt-4">
+							{group.items.map((item, index) => (
+								<div
+									key={index}
+									className="flex gap-3 py-4"
+								>
+									<SubscriptionThumbnail src={item.image} alt={item.title} />
 
-                                    <div className="flex-1 text-left">
-                                        <div className="flex justify-between items-start">
-                                            <p className="text-sm font-medium text-typo-primary line-clamp-1 flex-1">
-                                                {item.title}
-                                            </p>
+									<div className="flex-1 text-left">
+										<div className="flex justify-between items-start">
+											<p className="text-sm md:text-base font-medium text-typo-primary line-clamp-1 flex-1">
+												{item.title}
+											</p>
 
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <button className="text-icon-light hover:text-icon-light/75 data-[state=open]:text-cgs-blue shrink-0">
-                                                        <EllipsisVertical size={20} />
-                                                    </button>
-                                                </DropdownMenuTrigger>
+											<DropdownMenu>
+												<DropdownMenuTrigger asChild>
+													<button className="text-icon-light hover:text-icon-light/75 data-[state=open]:text-cgs-blue shrink-0">
+														<EllipsisVertical size={20} />
+													</button>
+												</DropdownMenuTrigger>
 
-                                                <DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200] px-0 py-1'>
-                                                    {
-                                                        item.status === "Expired" &&
-                                                        <DropdownMenuItem
-                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
-                                                            onSelect={handleNavigateToMarketData}
-                                                        >
-                                                            Resubscribe
-                                                        </DropdownMenuItem>
-                                                    }
-                                                    {
-                                                        item.status === "Expiring Soon" &&
-                                                        <DropdownMenuItem
-                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
-                                                            onSelect={handleNavigateToMarketData}
-                                                        >
-                                                            Extend Subscription
-                                                        </DropdownMenuItem>
-                                                    }
-                                                    {
-                                                        (item.status === "Pending Payment" || item.status === "Active" || item.status === "Expiring Soon") &&
-                                                        <DropdownMenuItem
-                                                            className="cursor-pointer px-3 py-[10px] rounded-none"
-                                                            onSelect={() => setUnsubAlert({ open: true, item })}
-                                                        >
-                                                            Unsubscribe
-                                                        </DropdownMenuItem>
-                                                    }
-                                                </DropdownMenuContent>
+												<DropdownMenuContent align="end" className='shadow-light-blue min-w-3xs z-[200] px-0 py-1'>
+													{
+														item.status === "Expired" &&
+														<DropdownMenuItem
+															className="cursor-pointer px-3 py-[10px] rounded-none"
+															onSelect={handleNavigateToMarketData}
+														>
+															Resubscribe
+														</DropdownMenuItem>
+													}
+													{
+														item.status === "Expiring Soon" &&
+														<DropdownMenuItem
+															className="cursor-pointer px-3 py-[10px] rounded-none"
+															onSelect={handleNavigateToMarketData}
+														>
+															Extend Subscription
+														</DropdownMenuItem>
+													}
+													{
+														(item.status === "Pending Payment" || item.status === "Active" || item.status === "Expiring Soon") &&
+														<DropdownMenuItem
+															className="cursor-pointer px-3 py-[10px] rounded-none"
+															onSelect={() => setUnsubAlert({ open: true, item })}
+														>
+															Unsubscribe
+														</DropdownMenuItem>
+													}
+												</DropdownMenuContent>
 
-                                            </DropdownMenu>
-                                        </div>
-                                        <p className="text-sm text-typo-primary mt-1">
-                                            {item.description}
-                                        </p>
+											</DropdownMenu>
+										</div>
+										<p className="mt-1 text-sm text-typo-secondary">
+											{item.description}
+										</p>
 
-                                        <div className="flex justify-between mt-2 flex-wrap">
-                                            <Badge variant={statusClass(item.status).badgeType}>
-                                                {statusClass(item.status).icons}
-                                                {item.status}
-                                            </Badge>
+										<div className="flex justify-between mt-2 flex-wrap">
+											<Badge variant={statusClass(item.status).badgeType}>
+												{statusClass(item.status).icons}
+												{item.status}
+											</Badge>
 
-                                            <p className={cn("text-xs mt-1", item.status === "Expired" ? "text-tone-red-05" : "text-typo-teritary")}>
-                                                End: {item.endDate}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
+											<p className={cn("mt-1 text-xs md:text-sm md:font-medium", item.status === "Expired" ? "text-tone-red-05" : "text-typo-teritary")}>
+												Expiry Date: {item.endDate}
+											</p>
+										</div>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
 
-            <Alert
-                open={unsubAlert.open}
-                onOpenChange={(open) => setUnsubAlert((prev) => ({ ...prev, open }))}
-                title="Unsubscribe?"
-                description={
-                    <p>
-                        Are you sure you want to unsubscribe from &quot;{unsubAlert.item?.title} - {unsubAlert.item?.description}&quot;?
-                    </p>
-                }
-                actionText="Confirm"
-                cancelText="Cancel"
-                onAction={() => {
-                    if (unsubAlert.item) handleUnsubcribe(unsubAlert.item);
-                    setUnsubAlert({ open: false, item: null });
-                }}
-                onCancel={() => setUnsubAlert({ open: false, item: null })}
-            />
-        </div>
-    )
+			<Alert
+				open={unsubAlert.open}
+				onOpenChange={(open) => setUnsubAlert((prev) => ({ ...prev, open }))}
+				title="Unsubscribe?"
+				description={
+					<p>
+						Are you sure you want to unsubscribe from &quot;{unsubAlert.item?.title} - {unsubAlert.item?.description}&quot;?
+					</p>
+				}
+				actionText="Confirm"
+				cancelText="Cancel"
+				onAction={() => {
+					if (unsubAlert.item) handleUnsubcribe(unsubAlert.item);
+					setUnsubAlert({ open: false, item: null });
+				}}
+				onCancel={() => setUnsubAlert({ open: false, item: null })}
+			/>
+		</div>
+	)
 }
 
 export default MySubscriptions

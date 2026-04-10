@@ -22,7 +22,7 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn, handleCopy, handleCall, handleEmail } from "@/lib/utils";
+import { cn, formatTradingRepresentative, handleCopy, handleCall, handleEmail } from "@/lib/utils";
 import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
 import { DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -671,7 +671,7 @@ const TradingAccountDetail = () => {
                                         TR Name
                                     </p>
                                     <p className="font-medium text-typo-primary truncate">
-                                        {trInfo.trCode} - {trInfo.trName}
+                                        {formatTradingRepresentative(trInfo.trCode, trInfo.trName)}
                                     </p>
                                 </div>
                                 <div className="flex justify-between items-center text-sm md:text-base">

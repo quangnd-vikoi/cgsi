@@ -28,7 +28,7 @@ const CartStep = ({ selectedItems, setSelectedItems, onCheckout }: CartStepProps
         <div className="bg-white rounded flex-1 flex flex-col overflow-hidden min-h-0">
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto sidebar-scroll sidebar-offset-2 pad-x py-6">
-                <p className="text-typo-primary text-base font-semibold">Subscription Items</p>
+                <p className="text-typo-primary text-base md:text-lg font-semibold">Subscription Items</p>
                 {
                     selectedItems.length === 0 ? (
                         <div className="h-[calc(100%-100px)]">

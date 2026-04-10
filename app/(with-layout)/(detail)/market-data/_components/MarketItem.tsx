@@ -64,7 +64,7 @@ const MarketItem = ({ title, image, description, dropDownItems, defaultSelected,
                 <div className="flex gap-4 w-full overflow-hidden">
                     <SubscriptionThumbnail src={image} alt={title} />
                     <div className="text-left min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-typo-primary truncate">{title}</p>
+                        <p className="text-sm md:text-base font-semibold text-typo-primary truncate">{title}</p>
                         <p className={cn('text-xs mt-1', isSelected ? 'text-cgs-blue' : 'text-status-success')}>
                             {isSelected ? description : 'Free'}
                         </p>
@@ -115,8 +115,8 @@ const MarketItem = ({ title, image, description, dropDownItems, defaultSelected,
                     <SubscriptionThumbnail src={image} alt={title} />
 
                     <div className="text-left min-w-0 flex-1">
-                        <p className="text-sm font-semibold text-typo-primary truncate">{title}</p>
-                        <p className={cn('text-xs mt-1 text-typo-secondary', selectedItem ? 'text-cgs-blue' : description === 'Free' ? 'text-status-success' : '')}>
+                        <p className="text-sm md:text-base font-semibold text-typo-primary truncate">{title}</p>
+                        <p className={cn('text-xs md:text-sm mt-1 text-typo-secondary', selectedItem ? 'text-cgs-blue' : description === 'Free' ? 'text-status-success' : '')}>
                             {selectedItem ? `${selectedItem.label}` : description}
                         </p>
                     </div>

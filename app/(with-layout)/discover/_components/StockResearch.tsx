@@ -2,6 +2,7 @@
 import Image from "@/components/Image";
 import React, { useState } from "react";
 import { redirectToIScreener, redirectToStockFilter } from "@/lib/services/ssoService";
+import { Loader2 } from "lucide-react";
 
 type StockResearchCardProps = {
 	title: string;
@@ -12,6 +13,7 @@ type StockResearchCardProps = {
 	imageWidth?: number;
 	imageHeight?: number;
 	onClick?: () => void | Promise<void>;
+	isDisabled?: boolean;
 };
 
 const StockResearchCard: React.FC<StockResearchCardProps & { isLoading?: boolean }> = ({
@@ -23,17 +25,21 @@ const StockResearchCard: React.FC<StockResearchCardProps & { isLoading?: boolean
 	imageHeight = 125,
 	onClick,
 	isLoading,
+	isDisabled = false,
 }) => {
 	return (
-		<div
-			onClick={!isLoading ? onClick : undefined}
-			className={`relative bg-white rounded border border-stroke-secondary hover:border-background-selected hover:shadow w-full overflow-visible ${isLoading ? "cursor-wait opacity-75" : "cursor-pointer"}`}
+		<button
+			type="button"
+			onClick={onClick}
+			disabled={isDisabled}
+			className={`relative bg-white rounded border border-stroke-secondary w-full overflow-visible text-left transition-colors ${isDisabled ? "cursor-not-allowed opacity-75" : "cursor-pointer hover:border-background-selected hover:shadow"}`}
 		>
-			<div className="p-4 md:pl-6 md:pt-5 md:pb-4 w-2/3">
-				<div className="flex items-center gap-4 md:mb-2">
-					<h2 className="text-lg font-semibold text-typo-primary">{title}</h2>
+			<div className="p-4 md:pl-6 md:pt-5 md:pb-4 w-3/4 md:w-2/3">
+				<div className="flex items-center gap-2 md:mb-2">
+					<h2 className="text-[20px] font-semibold leading-7 text-typo-primary">{title}</h2>
+					{isLoading && <Loader2 className="size-5 shrink-0 animate-spin text-cgs-blue" />}
 				</div>
-				<p className="text-typo-tertiary text-sm max-w-[95%] line-clamp-2">
+				<p className="max-w-[95%] line-clamp-2 text-base font-normal text-[#4B5563]">
 					{subtext}
 				</p>
 			</div>
@@ -45,7 +51,7 @@ const StockResearchCard: React.FC<StockResearchCardProps & { isLoading?: boolean
 				width={imageWidth}
 				height={imageHeight}
 			/>
-		</div>
+		</button>
 	);
 };
 
@@ -53,6 +59,7 @@ const StockResearch = () => {
 	const [loadingCard, setLoadingCard] = useState<string | null>(null);
 
 	const handleClick = async (id: string, fn: () => Promise<void>) => {
+		if (loadingCard) return;
 		setLoadingCard(id);
 		try { await fn(); } finally { setLoadingCard(null); }
 	};
@@ -70,6 +77,7 @@ const StockResearch = () => {
 					<StockResearchCard
 						onClick={() => handleClick("iscreener", redirectToIScreener)}
 						isLoading={loadingCard === "iscreener"}
+						isDisabled={loadingCard !== null}
 						title="iScreener"
 						available={1}
 						imageSrc="/icons/discover/Stock-Research-L.svg"
@@ -79,6 +87,7 @@ const StockResearch = () => {
 					<StockResearchCard
 						onClick={() => handleClick("stockfilter", redirectToStockFilter)}
 						isLoading={loadingCard === "stockfilter"}
+						isDisabled={loadingCard !== null}
 						title="Stock Filter"
 						available={0}
 						imageSrc="/icons/discover/Stock-Research-R.svg"

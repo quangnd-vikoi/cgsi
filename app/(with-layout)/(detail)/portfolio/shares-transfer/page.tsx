@@ -17,6 +17,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { getAccountTypeTag } from "@/constants/accounts";
+import { formatTradingRepresentative } from "@/lib/utils";
 import {
     Dialog,
     DialogContent,
@@ -213,7 +214,7 @@ const SharesTransfer = () => {
                                             </SelectContent>
                                         </Select>
                                         <p className="text-xs md:text-sm text-typo-secondary mt-2">
-                                            Trading Representative: {selectedAccountInfo?.trName ?? ""}
+                                            Trading Representative: {formatTradingRepresentative(selectedAccountInfo?.trCode, selectedAccountInfo?.trName, "")}
                                         </p>
                                     </div>
                                 </div>

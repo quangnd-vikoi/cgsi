@@ -339,7 +339,7 @@ const MarketData = () => {
                             <p className="text-base font-semibold">
                                 {calculateAmount().toFixed(2)} SGD
                             </p>
-                            <p className="text-xs text-typo-tertiary">
+                            <p className="text-xs md:text-sm text-typo-tertiary">
                                 Excluding GST
                             </p>
                         </div>
@@ -430,7 +430,7 @@ const MarketData = () => {
                                     Inclusive of GST
                                 </p>
                             </div>
-                            <p className="text-base font-semibold">
+                            <p className="text-base md:text-lg font-semibold">
                                 {(() => {
                                     const subTotal = calculateAmount();
                                     const gst = selectedItems.reduce(

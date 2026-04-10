@@ -45,7 +45,7 @@ const NotiItem = ({ notification }: { notification: INotification }) => {
 		<div
 			className={cn(
 				"p-4 border-b border-stroke-secondary cursor-pointer relative",
-				isUnread && "bg-status-selected"
+				isUnread && "bg-background-section hover:bg-background-selected"
 			)}
 			onClick={handleNotiClick}
 		>

@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@radix-ui/react-separator";
 import { ACCOUNT_TYPE_LABELS } from "@/constants/accounts";
+import { formatTradingRepresentative } from "@/lib/utils";
 
 const TradingAccounts = () => {
     const accounts = useTradingAccountStore((state) => state.accounts);
@@ -84,8 +85,8 @@ const TradingAccounts = () => {
                                     <p className="text-xs md:text-sm font-normal text-typo-secondary">
                                         {(acc.accountType
                                             ? ACCOUNT_TYPE_LABELS[
-                                                  acc.accountType
-                                              ]
+                                            acc.accountType
+                                            ]
                                             : null) ??
                                             acc.accountType ??
                                             "Trading Account"}
@@ -106,12 +107,12 @@ const TradingAccounts = () => {
                             <ChevronRight className="text-cgs-blue" size={20} />
                         </div>
                         <Separator className="h-[1px] bg-stroke-secondary my-4" />
-                        <div className="flex justify-between text-xs sm:text-sm">
-                            <p className="text-typo-secondary font-normal">
+                        <div className="flex justify-between text-xs sm:text-sm gap-4">
+                            <p className="text-typo-secondary font-normal shrink-0">
                                 TR Name:
                             </p>
-                            <p className="text-typo-primary font-semibold">
-                                {acc.trName || "-"}
+                            <p className="text-typo-primary font-medium text-truncate line-clamp-1">
+                                {formatTradingRepresentative(acc.trCode, acc.trName, "-")}
                             </p>
                         </div>
                     </div>

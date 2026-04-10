@@ -195,10 +195,10 @@ const TradingDeclartions = () => {
 						Complete and email the form to our Client Services team at{" "}
 						<button
 							type="button"
-							onClick={() => handleEmail("sg.clientservices@cgsi.com", "Accredited Investor Declaration")}
+							onClick={() => handleEmail("clientservices.sg@cgsi.com", "Accredited Investor Declaration")}
 							className="text-cgs-blue font-medium underline underline-offset-2"
 						>
-							sg.clientservices@cgsi.com
+							clientservices.sg@cgsi.com
 						</button>
 						. You will receive an email notification once your request has been processed.
 					</span>
@@ -420,13 +420,13 @@ const TradingDeclartions = () => {
 
 			<div className="w-full max-w-md space-y-4 mt-6">
 				{items.filter((item) => !item.feature || declPerms[item.feature as keyof typeof declPerms]).map((item, index, filtered) => (
-					<div key={item.id}>
-						<div className="flex items-center justify-between mb-2">
-							<div className="flex items-center gap-2 font-normal text-sm">
-								{item.title}
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<span className="cursor-help">
+						<div key={item.id}>
+							<div className="flex items-center justify-between mb-2">
+								<div className="flex items-center gap-2 text-sm md:text-base font-semibold text-typo-primary">
+									{item.title}
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<span className="cursor-help">
 											<WaringIcon />
 										</span>
 									</TooltipTrigger>
@@ -457,7 +457,7 @@ const TradingDeclartions = () => {
 								<StatusIcon status={item.status} />
 								{STATUS_LABEL[item.status]}
 							</Badge>
-							<span className="text-xs text-gray-400">
+							<span className="text-sm font-medium text-[#8492A2]">
 								{item.id === "bcan" && item.status === "processing" ? item.exp : `Exp: ${item.exp}`}
 							</span>
 						</div>
