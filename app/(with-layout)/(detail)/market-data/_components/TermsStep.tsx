@@ -13,6 +13,7 @@ import { submitMarketDataSubscription } from "@/lib/services/subscriptionService
 import type { ISubscriptionAgreement, ISubscriptionAgreementContent, IMarketSubscriptionExtendedData } from "@/types";
 import { CGSI } from "@/constants/routes";
 import { injectAgreementFormValues } from "@/lib/injectAgreementFormValues";
+import { useMarketDataCatalogStore } from "@/stores/marketDataCatalogStore";
 
 interface TermsStepProps {
     setCurrenStep: Dispatch<React.SetStateAction<Step>>;
@@ -29,6 +30,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
     const [showTermsError, setShowTermsError] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [dialogAgreement, setDialogAgreement] = useState<{ agreementId: string; subject: string } | null>(null);
+    const loadCatalog = useMarketDataCatalogStore((state) => state.loadCatalog);
 
     const allAgreements = Array.from(
         new Map(
@@ -86,6 +88,7 @@ const TermsStep = ({ setCurrenStep, selectedItems, agreements, agreementContents
             });
 
             if (res.success) {
+                void loadCatalog({ force: true });
                 setCurrenStep("success");
                 toast.success("Subscription Submitted",
                     "Your market data subscription has been submitted successfully.",

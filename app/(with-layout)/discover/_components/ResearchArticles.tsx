@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Calendar, UserRoundPen } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ErrorState } from "@/components/ErrorState";
 import { IResearchArticleProps } from "@/types";
 import type { IResearchArticle } from "@/types";
 import CustomizeCarousel from "@/components/CustomizeCarousel";
@@ -11,6 +12,8 @@ import { getResearchSSO, redirectToSSO } from "@/lib/services/externalSSOService
 import { getResearchArticles } from "@/lib/services/notificationService";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/toaster";
+import { useMarketDataCatalogStore } from "@/stores/marketDataCatalogStore";
 
 // Research Article Card Component
 const ResearchArticleCard = ({ article }: { article: IResearchArticleProps }) => {
@@ -55,40 +58,96 @@ const mapArticle = (item: IResearchArticle): IResearchArticleProps => ({
 
 const ResearchArticles = () => {
 	const [articles, setArticles] = useState<IResearchArticle[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [subscribed, setSubscribed] = useState(false);
-	const [ssoRedirectUrl, setSsoRedirectUrl] = useState<string | null>(null);
+	const [articlesError, setArticlesError] = useState<string | null>(null);
+	const [articlesStatus, setArticlesStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+	const [ssoLoading, setSsoLoading] = useState(false);
+	const catalog = useMarketDataCatalogStore((state) => state.catalog);
+	const catalogError = useMarketDataCatalogStore((state) => state.error);
+	const catalogHasLoaded = useMarketDataCatalogStore((state) => state.hasLoaded);
+	const catalogLoading = useMarketDataCatalogStore((state) => state.loading);
+	const loadCatalog = useMarketDataCatalogStore((state) => state.loadCatalog);
+	const researchCount = catalog?.research.length ?? null;
+	const hasResearchAccess = researchCount === 0;
+	const shouldSuggestSubscribe = researchCount !== null && researchCount > 0;
 
 	useEffect(() => {
-		const init = async () => {
-			try {
-				const ssoResponse = await getResearchSSO();
-				if (ssoResponse.success && ssoResponse.data) {
-					setSubscribed(true);
-					setSsoRedirectUrl(ssoResponse.data.redirectUrl);
+		void loadCatalog();
+	}, [loadCatalog]);
 
-					const articlesResponse = await getResearchArticles();
-					if (articlesResponse.success && articlesResponse.data) {
-						setArticles(articlesResponse.data);
-					}
+	useEffect(() => {
+		if (researchCount === null) return;
+
+		if (!hasResearchAccess) {
+			setArticles([]);
+			setArticlesError(null);
+			setArticlesStatus("idle");
+			return;
+		}
+
+		let isCancelled = false;
+
+		const loadArticles = async () => {
+			setArticlesStatus("loading");
+			setArticlesError(null);
+
+			try {
+				const articlesResponse = await getResearchArticles();
+				if (isCancelled) return;
+
+				if (articlesResponse.success && articlesResponse.data) {
+					setArticles(articlesResponse.data);
+					setArticlesStatus("success");
+					return;
 				}
+
+				setArticles([]);
+				setArticlesError(
+					articlesResponse.error || "We are unable to display the content, please try again later.",
+				);
+				setArticlesStatus("error");
 			} catch (error) {
-				console.error("Failed to initialize research section:", error);
-			} finally {
-				setLoading(false);
+				if (isCancelled) return;
+				console.error("Failed to load research articles:", error);
+				setArticles([]);
+				setArticlesError("We are unable to display the content, please try again later.");
+				setArticlesStatus("error");
 			}
 		};
 
-		init();
-	}, []);
+		void loadArticles();
 
-	const handleViewAll = () => {
-		if (ssoRedirectUrl) {
-			redirectToSSO(ssoRedirectUrl);
+		return () => {
+			isCancelled = true;
+		};
+	}, [hasResearchAccess, researchCount]);
+
+	const handleViewAll = async () => {
+		if (!hasResearchAccess || ssoLoading) return;
+
+		setSsoLoading(true);
+		try {
+			const ssoResponse = await getResearchSSO();
+			if (ssoResponse.success && ssoResponse.data) {
+				redirectToSSO(ssoResponse.data.redirectUrl);
+				return;
+			}
+
+			toast.error(
+				"Unable to Open Research",
+				ssoResponse.error || "We could not open Research Articles at this time. Please try again later.",
+			);
+		} catch (error) {
+			console.error("Failed to fetch research SSO:", error);
+			toast.error(
+				"Unable to Open Research",
+				"We could not open Research Articles at this time. Please try again later.",
+			);
+		} finally {
+			setSsoLoading(false);
 		}
 	};
 
-	if (loading) {
+	if (!catalogHasLoaded || catalogLoading || (hasResearchAccess && articlesStatus !== "success" && articlesStatus !== "error")) {
 		return (
 			<div className="bg-white py-6 md:py-12">
 				<div className="md:mx-6 xl:mx-auto mx-4 xl:max-w-[1320px]">
@@ -136,12 +195,22 @@ const ResearchArticles = () => {
 					<div className="flex items-center gap-2">
 						<span className="font-semibold text-2xl">Research Articles</span>
 					</div>
-					<ViewAll onClick={handleViewAll} isLoading={!subscribed} className={!subscribed ? "!text-status-disable-primary" : ""} />
+					<ViewAll
+						onClick={handleViewAll}
+						disabled={!hasResearchAccess || ssoLoading}
+						isLoading={ssoLoading}
+						className={!hasResearchAccess ? "!text-status-disable-primary" : ""}
+					/>
 				</div>
 
 				{/* Research Articles Carousel */}
 				<div className="mt-4 md:mt-8">
-					{!subscribed ? (
+					{catalogError || articlesStatus === "error" ? (
+						<ErrorState
+							title="Unable to Load Research Articles"
+							description={articlesError || catalogError || "We are unable to display the content, please try again later."}
+						/>
+					) : shouldSuggestSubscribe ? (
 						<div className="flex flex-col justify-center items-center py-5 md:py-7 h-full">
 							<ResearchStateIcon width={100} height={100} className="text-status-disable-primary" />
 							<div className="mt-6 font-semibold text-typo-primary text-base text-center leading-normal">

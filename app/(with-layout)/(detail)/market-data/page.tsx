@@ -13,12 +13,10 @@ import NonProDeclarationStep from "./_components/NonProDeclarationStep";
 import TermsStep from "./_components/TermsStep";
 import SuccessState from "@/public/icons/success-state.svg";
 import {
-    getMarketDataCatalog,
     getMarketDataAgreements,
     getMarketDataAgreementContent,
 } from "@/lib/services/subscriptionService";
 import type {
-    IMarketSubscriptionCatalog,
     IMarketSubscriptionGroup,
     ISubscriptionAgreement,
     ISubscriptionAgreementContent,
@@ -27,6 +25,7 @@ import type {
 } from "@/types";
 import { useSheetStore } from "@/stores/sheetStore";
 import { useUserStore } from "@/stores/userStore";
+import { useMarketDataCatalogStore } from "@/stores/marketDataCatalogStore";
 import { fetchAPI } from "@/lib/api/client";
 import { ENDPOINTS } from "@/lib/api/endpoints";
 
@@ -77,32 +76,14 @@ function filterByProfessional(
 const MarketData = () => {
     const [currentStep, setCurrentStep] = useState<Step>("select");
     const [selectedItems, setSelectedItems] = useState<IMarketDataItem[]>([]);
-
-    const [catalog, setCatalog] = useState<IMarketSubscriptionCatalog | null>(
-        null,
-    );
-    const [catalogLoading, setCatalogLoading] = useState(true);
-    const [catalogError, setCatalogError] = useState<string | null>(null);
-
-    const loadCatalog = useCallback(async () => {
-        try {
-            setCatalogLoading(true);
-            setCatalogError(null);
-            const res = await getMarketDataCatalog();
-            if (res.success && res.data) {
-                setCatalog(res.data);
-            } else {
-                setCatalogError(res.error || "Failed to load subscriptions");
-            }
-        } catch {
-            setCatalogError("Failed to load subscriptions");
-        } finally {
-            setCatalogLoading(false);
-        }
-    }, []);
+    const catalog = useMarketDataCatalogStore((state) => state.catalog);
+    const catalogLoading = useMarketDataCatalogStore((state) => state.loading);
+    const catalogError = useMarketDataCatalogStore((state) => state.error);
+    const catalogHasLoaded = useMarketDataCatalogStore((state) => state.hasLoaded);
+    const loadCatalog = useMarketDataCatalogStore((state) => state.loadCatalog);
 
     useEffect(() => {
-        loadCatalog();
+        void loadCatalog();
     }, [loadCatalog]);
 
     // Reset to catalog when triggered from MySubscriptions sheet
@@ -110,7 +91,7 @@ const MarketData = () => {
         const handleReset = () => {
             setCurrentStep("select");
             setSelectedItems([]);
-            loadCatalog();
+            void loadCatalog({ force: true });
         };
         window.addEventListener("market-data:reset", handleReset);
         return () =>
@@ -242,7 +223,7 @@ const MarketData = () => {
     const handleBackToCatalog = () => {
         setSelectedItems([]);
         setCurrentStep("select");
-        loadCatalog();
+        void loadCatalog({ force: true });
     };
 
     const calculateAmount = () => {
@@ -316,7 +297,7 @@ const MarketData = () => {
                                 setSelectedItems={setSelectedItems}
                                 researchGroups={nonProResearch}
                                 marketDataGroups={nonProMarketData}
-                                loading={catalogLoading}
+                                loading={catalogLoading || !catalogHasLoaded}
                                 error={catalogError}
                             />
                         </TabsContent>
@@ -329,7 +310,7 @@ const MarketData = () => {
                                 setSelectedItems={setSelectedItems}
                                 researchGroups={proResearch}
                                 marketDataGroups={proMarketData}
-                                loading={catalogLoading}
+                                loading={catalogLoading || !catalogHasLoaded}
                                 error={catalogError}
                             />
                         </TabsContent>

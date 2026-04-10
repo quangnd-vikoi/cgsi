@@ -19,6 +19,7 @@ import { INTERNAL_ROUTES } from '@/constants/routes';
 import { toast } from '@/components/ui/toaster';
 import { subscriptionService } from '@/lib/services/subscriptionService';
 import { useSheetStore } from '@/stores/sheetStore';
+import { useMarketDataCatalogStore } from '@/stores/marketDataCatalogStore';
 import type { /* UserProductSubscriptionDto, */ IUserMarketSubscription } from '@/types';
 type SubscriptionStatus = 'Pending Payment' | 'Expiring Soon' | 'Expired' | 'Active';
 
@@ -66,6 +67,7 @@ const MySubscriptions = () => {
 	const { closeSheet } = useSheetStore();
 	const router = useRouter();
 	const pathname = usePathname();
+	const loadCatalog = useMarketDataCatalogStore((state) => state.loadCatalog);
 
 	const handleNavigateToMarketData = () => {
 		closeSheet();
@@ -196,6 +198,7 @@ const MySubscriptions = () => {
 			if (item.type === "marketData" && item.subscriptionId) {
 				const res = await subscriptionService.unsubscribeMarketData(item.subscriptionId);
 				if (res.success) {
+					void loadCatalog({ force: true });
 					setMarketDataSubs((prev) => prev.filter((s) => s.subscriptionId !== item.subscriptionId));
 					toast.success(
 						"Unsubscribed",

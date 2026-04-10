@@ -106,16 +106,16 @@ export const AnnouncementBar = () => {
 	if (!announcement || !isVisible) return null;
 
 	return (
-		<div className="bg-status-warning w-full px-4 py-2 relative">
+		<div className="bg-theme-blue-085 w-full px-4 py-2 relative">
 			<div className="flex justify-between items-center gap-0 max-w-[1320px] mx-auto">
 				<div></div>
 				<div className="flex gap-4 min-w-0">
-					<TriangleAlert size={16} className="shrink-0" />
+					<TriangleAlert size={16} className="shrink-0" fill="#ffc414" />
 					<p className="text-xs text-typo-primary truncate min-w-0 flex-1">
 						{announcement.Announcement_Title}
 					</p>
 					<div
-						className="text-xs font-semibold underline cursor-pointer shrink-0"
+						className="text-xs font-semibold underline cursor-pointer shrink-0 text-cgs-blue"
 						onClick={() => setOpenSheet("announcement", { announcement })}
 					>
 						Learn More
