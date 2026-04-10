@@ -34,7 +34,12 @@ import { getTradingRepInfoByAccount } from "@/lib/services/profileService";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { ITrInfo } from "@/types";
 import { INTERNAL_ROUTES } from "@/constants/routes";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 const CPF_EMAIL = "clientservices.sg@cgsi.com";
 type PaymentInstructionType = "eps" | "giro" | "giroUnlink";
@@ -219,7 +224,7 @@ const TradingAccountDetail = () => {
     const paymentInstructionData = {
         eps: {
             mainTitle: (
-                <div className="text-base font-semibold my-6">
+                <div className="text-base font-semibold mb-6">
                     Follow the instructions below to manage your EPS linkage
                 </div>
             ),
@@ -296,7 +301,7 @@ const TradingAccountDetail = () => {
         },
         giro: {
             mainTitle: (
-                <div className="text-base font-semibold my-6">
+                <div className="text-base font-semibold mb-6">
                     Follow the instructions below to manage your GIRO linkage
                 </div>
             ),
@@ -354,7 +359,7 @@ const TradingAccountDetail = () => {
         },
         giroUnlink: {
             mainTitle: (
-                <div className="text-base font-semibold my-6">
+                <div className="text-base font-semibold mb-6">
                     Follow the instructions below to manage your GIRO linkage
                 </div>
             ),
@@ -409,6 +414,12 @@ const TradingAccountDetail = () => {
         },
     };
 
+    const paymentInstructionTitle: Record<PaymentInstructionType, string> = {
+        eps: "EPS Linkage",
+        giro: "GIRO Linkage",
+        giroUnlink: "Revoke GIRO Linkage",
+    };
+
     const getCpfEmailBody = () =>
         [
             `Trading Account Number: ${selectedAccount.accountNo}`,
@@ -431,7 +442,6 @@ const TradingAccountDetail = () => {
     };
 
     const handleCpfUnlink = () => {
-        setOpenSheet(null);
         handleEmail(
             CPF_EMAIL,
             "Request to Revoke CPFIS Linkage",
@@ -445,7 +455,6 @@ const TradingAccountDetail = () => {
     };
 
     const handleSrsUnlink = () => {
-        setOpenSheet(null);
         handleEmail(
             CPF_EMAIL,
             "Request to Revoke SRS Linkage",
@@ -454,7 +463,6 @@ const TradingAccountDetail = () => {
     };
 
     const handleEpsUnlink = () => {
-        setOpenSheet(null);
         handleEmail(
             CPF_EMAIL,
             "Request to Revoke EPS Linkage",
@@ -468,7 +476,6 @@ const TradingAccountDetail = () => {
     };
 
     const openPaymentInstructions = (type: PaymentInstructionType) => {
-        setOpenSheet(null);
         setPaymentInstructionType(type);
     };
 
@@ -744,14 +751,21 @@ const TradingAccountDetail = () => {
                 <DialogContent className="max-w-[480px] max-h-[85vh] p-0 gap-0 overflow-hidden">
                     {paymentInstructionType && (
                         <div className="bg-white flex flex-col min-h-0">
-                            <div className="px-6 pt-10 pb-4 overflow-y-auto">
-                                <div className="text-base font-semibold my-6 break-words">
+                            <DialogHeader className="px-6 pt-6 pb-0 text-left">
+                                <DialogTitle className="text-base font-semibold text-typo-primary">
                                     {
-                                        paymentInstructionData[
+                                        paymentInstructionTitle[
                                             paymentInstructionType
-                                        ].mainTitle
+                                        ]
                                     }
-                                </div>
+                                </DialogTitle>
+                            </DialogHeader>
+                            <div className="px-6 pt-4 pb-4 overflow-y-auto">
+                                {
+                                    paymentInstructionData[
+                                        paymentInstructionType
+                                    ].mainTitle
+                                }
                                 {paymentInstructionData[
                                     paymentInstructionType
                                 ].items.map((item, index) => (
