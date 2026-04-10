@@ -91,7 +91,14 @@ const DashboardBlock = ({
     };
 
     return (
-        <div className="bg-background-selected p-3 md:p-4 rounded border border-background-selected hover:border-cgs-blue transition-colors cursor-pointer flex justify-between items-center">
+        <div
+            className={cn(
+                "bg-background-selected p-3 md:p-4 rounded border transition-colors cursor-pointer flex justify-between items-center",
+                showPayButton
+                    ? "border-cgs-blue"
+                    : "border-background-selected hover:border-cgs-blue",
+            )}
+        >
             <div className="">
                 <p className="text-xs md:text-sm text-typo-secondary">
                     {title}

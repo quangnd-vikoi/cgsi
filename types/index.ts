@@ -765,8 +765,8 @@ export interface IS2BPayNotifyStatus {
 }
 
 export interface ICDPTransferAccount {
-	acctType: string;
-	acctNo: string;
+	accountType: string;
+	accountNo: string;
 	trCode: string;
 	trName: string;
 }

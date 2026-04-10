@@ -4,7 +4,7 @@ import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { INTERNAL_ROUTES } from "@/constants/routes";
 import {
@@ -26,6 +26,7 @@ import {
 import CustomCircleAlert from "@/components/CircleAlertIcon";
 import { ErrorState } from "@/components/ErrorState";
 import { getCdpTransfer, submitCdpTransfer } from "@/lib/services/portfolioService";
+import { toast } from "@/components/ui/toaster";
 import type { ICDPTransfer } from "@/types";
 
 interface InfoRowProps {
@@ -77,6 +78,7 @@ const SuccessStep = () => {
 const SharesTransfer = () => {
     const router = useRouter();
     const accounts = useTradingAccountStore(s => s.accounts);
+    const isAccountsInitialized = useTradingAccountStore(s => s.isInitialized);
     const [step, setStep] = useState<1 | 2>(1);
     const [transferAccount, setTransferAccount] = useState<string>("");
     const [agreed, setAgreed] = useState(false);
@@ -85,22 +87,42 @@ const SharesTransfer = () => {
     const [submitting, setSubmitting] = useState(false);
     const [cdpData, setCdpData] = useState<ICDPTransfer | null>(null);
     const [loading, setLoading] = useState(true);
+    const hasWarnedNoCTA = useRef(false);
+    const accountList = accounts.filter((account) => account.accountType === "CTA");
+    const hasCTAAccount = accountList.length > 0;
 
     useEffect(() => {
         const init = async () => {
             const res = await getCdpTransfer();
             if (res.success && res.data) {
                 setCdpData(res.data);
-                const firstAccount = res.data.accountList[0]?.acctNo;
-                if (firstAccount) setTransferAccount(firstAccount);
-            } else {
-                const fallback = useTradingAccountStore.getState().accounts;
-                if (fallback.length > 0) setTransferAccount(fallback[0].accountNo);
             }
             setLoading(false);
         };
-        init();
+        void init();
     }, []);
+
+    useEffect(() => {
+        setTransferAccount((currentAccount) => {
+            if (currentAccount && accountList.some((account) => account.accountNo === currentAccount)) {
+                return currentAccount;
+            }
+
+            return accountList[0]?.accountNo ?? "";
+        });
+    }, [accountList]);
+
+    useEffect(() => {
+        if (!isAccountsInitialized || hasCTAAccount || hasWarnedNoCTA.current) {
+            return;
+        }
+
+        hasWarnedNoCTA.current = true;
+        toast.warning(
+            "Warning",
+            "You will need at least 1 CTA Account to proceed with the transfer",
+        );
+    }, [hasCTAAccount, isAccountsInitialized]);
 
     const handleConfirm = async () => {
         if (!agreed) {
@@ -125,13 +147,7 @@ const SharesTransfer = () => {
         }
     };
 
-    const accountList = cdpData?.accountList ?? accounts.map(a => ({
-        acctNo: a.accountNo,
-        acctType: a.accountType ?? "",
-        trCode: "",
-        trName: a.trName ?? "",
-    }));
-    const selectedAccountInfo = accountList.find(a => a.acctNo === transferAccount);
+    const selectedAccountInfo = accountList.find(a => a.accountNo === transferAccount);
 
     return (
         <>
@@ -184,12 +200,12 @@ const SharesTransfer = () => {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {accountList.map((account) => (
-                                                    <SelectItem key={account.acctNo} value={account.acctNo}>
+                                                    <SelectItem key={account.accountNo} value={account.accountNo}>
                                                         <div className="flex flex-col items-start">
                                                             <span className="text-sm md:text-base font-medium text-typo-primary">
-                                                                {getAccountTypeTag(account.acctType)
-                                                                    ? `(${getAccountTypeTag(account.acctType)}) `
-                                                                    : ""}{account.acctNo}
+                                                                {getAccountTypeTag(account.accountType)
+                                                                    ? `(${getAccountTypeTag(account.accountType)}) `
+                                                                    : ""}{account.accountNo}
                                                             </span>
                                                         </div>
                                                     </SelectItem>
@@ -258,7 +274,7 @@ const SharesTransfer = () => {
                                     <Button
                                         className="flex-1"
                                         onClick={handleConfirm}
-                                        disabled={submitting}
+                                        disabled={submitting || !transferAccount}
                                     >
                                         {submitting ? <Loader2 className="animate-spin" /> : "Confirm"}
                                     </Button>
