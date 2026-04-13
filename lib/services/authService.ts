@@ -36,7 +36,27 @@ export const redirectToLogin = (): void => {
 	window.location.href = LOGIN_URL;
 };
 
+const notifyLogout = (): void => {
+	if (!isBrowser()) return;
+
+	const accessToken = useAuthStore.getState().getAccessToken();
+	const headers: Record<string, string> = {
+		"Content-Type": "application/json",
+	};
+
+	if (accessToken) {
+		headers["Authorization"] = `Bearer ${accessToken}`;
+	}
+
+	void fetch(authEndpoints.logout(), {
+		method: "POST",
+		headers,
+		keepalive: true,
+	}).catch(() => undefined);
+};
+
 export const logout = (): void => {
+	notifyLogout();
 	clearTokens();
 	if (isBrowser()) {
 		localStorage.removeItem("announcement-dismissed");

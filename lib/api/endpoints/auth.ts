@@ -13,4 +13,9 @@ export const authEndpoints = {
 	 * Refresh access token using refresh token
 	 */
 	refresh: () => `/sso/api/v1/token/refresh`,
+
+	/**
+	 * Notify portal SSO logout before redirecting to iTrade logout
+	 */
+	logout: () => `/sso/api/v1/logout`,
 } as const;

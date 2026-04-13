@@ -4,12 +4,12 @@ import React, { ReactNode, useState, useEffect, useRef } from "react";
 import CustomSheetTitle from "./_components/CustomSheetTitle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AlarmClock, ChevronRight, CircleCheck, Clock, EyeOff, XCircle } from "lucide-react";
+import { AlarmClock, ChevronRight, CircleCheck, Clock, EyeOff, Loader2, XCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import WaringIcon from "@/public/icons/Warning.svg";
 import Alert from "@/components/Alert";
 import { Separator } from "@/components/ui/separator";
-import { getEW8SSO, getECRSSSO, redirectToSSO, redirectToEW8, redirectToECRS } from "@/lib/services/ssoService";
+import { getEW8SSO, getECRSSSO, redirectToSSO } from "@/lib/services/ssoService";
 import { formatDate, handleEmail } from "@/lib/utils";
 import { CGSI } from "@/constants/routes";
 import { getTradingInfo, createBcanRequest } from "@/lib/services/profileService";
@@ -26,6 +26,7 @@ interface DeclarationButton {
 	label: string;
 	onClick?: () => void;
 	disabled?: boolean;
+	loading?: boolean;
 }
 
 interface DeclarationItem {
@@ -90,8 +91,7 @@ const TradingDeclartions = () => {
 	const [alertOpen, setAlertOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [tradingInfo, setTradingInfo] = useState<TradingInfoResponse | null>(null);
-	const [ew8Url, setEw8Url] = useState<string | null>(null);
-	const [ecrsUrl, setEcrsUrl] = useState<string | null>(null);
+	const [loadingDeclarationId, setLoadingDeclarationId] = useState<DeclarationItem["id"] | null>(null);
 	const [alertContent, setAlertContent] = useState({
 		title: "",
 		description: <></> as React.ReactNode,
@@ -113,14 +113,6 @@ const TradingDeclartions = () => {
 				const response = await getTradingInfo();
 				if (response.success && response.data) {
 					setTradingInfo(response.data);
-
-					// Prefetch EW8 and ECRS SSO URLs concurrently in the background
-					getEW8SSO().then((res) => {
-						if (res.success && res.data) setEw8Url(res.data.redirectUrl);
-					});
-					getECRSSSO().then((res) => {
-						if (res.success && res.data) setEcrsUrl(res.data.redirectUrl);
-					});
 				}
 			} catch (error) {
 				console.error("Failed to fetch trading info:", error);
@@ -273,30 +265,42 @@ const TradingDeclartions = () => {
 		return dateStr;
 	};
 
-	const handleEW8Click = () => {
-		if (ew8Url) {
-			redirectToSSO(ew8Url);
-			setEw8Url(null);
-		} else {
-			redirectToEW8();
+	const handleEW8Click = async () => {
+		if (loadingDeclarationId) return;
+
+		setLoadingDeclarationId("w8ben");
+		try {
+			const response = await getEW8SSO();
+			if (response.success && response.data?.redirectUrl) {
+				redirectToSSO(response.data.redirectUrl);
+				return;
+			}
+
+			toast.error(response.error || "Unable to open W8-BEN. Please try again later.");
+		} catch {
+			toast.error("Unable to open W8-BEN. Please try again later.");
+		} finally {
+			setLoadingDeclarationId(null);
 		}
-		// Prefetch fresh URL for next click
-		getEW8SSO().then((res) => {
-			if (res.success && res.data) setEw8Url(res.data.redirectUrl);
-		});
 	};
 
-	const handleECRSClick = () => {
-		if (ecrsUrl) {
-			redirectToSSO(ecrsUrl);
-			setEcrsUrl(null);
-		} else {
-			redirectToECRS();
+	const handleECRSClick = async () => {
+		if (loadingDeclarationId) return;
+
+		setLoadingDeclarationId("crs");
+		try {
+			const response = await getECRSSSO();
+			if (response.success && response.data?.redirectUrl) {
+				redirectToSSO(response.data.redirectUrl);
+				return;
+			}
+
+			toast.error(response.error || "Unable to open CRS. Please try again later.");
+		} catch {
+			toast.error("Unable to open CRS. Please try again later.");
+		} finally {
+			setLoadingDeclarationId(null);
 		}
-		// Prefetch fresh URL for next click
-		getECRSSSO().then((res) => {
-			if (res.success && res.data) setEcrsUrl(res.data.redirectUrl);
-		});
 	};
 
 	const items: DeclarationItem[] = [
@@ -335,8 +339,8 @@ const TradingDeclartions = () => {
 				</p>
 			),
 			button: w8benStatus === "success" || w8benStatus === "expiring"
-				? { label: "Renew", onClick: handleEW8Click }
-				: { label: "Declare Now", onClick: handleEW8Click },
+				? { label: "Renew", onClick: handleEW8Click, loading: loadingDeclarationId === "w8ben" }
+				: { label: "Declare Now", onClick: handleEW8Click, loading: loadingDeclarationId === "w8ben" },
 		},
 		{
 			id: "bcan",
@@ -364,7 +368,7 @@ const TradingDeclartions = () => {
 			exp: formatDate(tradingInfo?.crs.validationDate ?? null),
 			tooltipContent:
 				"Required for Financial institutions to collect and report account information between countries to prevent tax evasion by foreign residents.",
-			button: { label: "Declare Now", onClick: handleECRSClick },
+			button: { label: "Declare Now", onClick: handleECRSClick, loading: loadingDeclarationId === "crs" },
 		},
 		{
 			id: "accredited",
@@ -436,12 +440,14 @@ const TradingDeclartions = () => {
 							{item.button ? (
 								<Button
 									onClick={item.button.onClick}
-									disabled={item.button.disabled}
+									disabled={item.button.disabled || item.button.loading}
+									aria-busy={item.button.loading}
 									variant={"outline"}
 									className="text-cgs-blue !border-cgs-blue text-sm h-8 px-3 hover:bg-white hover:text-cgs-blue/75 hover:!border-cgs-blue/75 disabled:cursor-not-allowed disabled:opacity-50"
 								>
+									{item.button.loading && <Loader2 className="size-4 animate-spin" />}
 									{item.button.label}
-									<ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />
+									{!item.button.loading && <ChevronRight className="size-4 -ml-0.5 text-cgs-blue" />}
 								</Button>
 							) : item.id === "bcan" && !item.button ? (
 								<span className="flex items-center gap-1 text-sm text-gray-400">
