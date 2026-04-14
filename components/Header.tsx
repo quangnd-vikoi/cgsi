@@ -160,7 +160,7 @@ const Header = () => {
 			<div className="flex justify-between h-full">
 				<div className="flex items-center my-auto gap-12">
 					<Link href={"/"}>
-						<Image src="/images/iTrade_Logo.png" alt="Logo" width={75} height={23} />
+						<Image src="/icons/iTrade-header.svg" alt="Itrade Logo" width={75} height={23} />
 					</Link>
 
 					<div className="hidden md:flex gap-6">
