@@ -104,10 +104,10 @@ function PayNowDialog({ open, onOpenChange, onProceed, onBackToMethods, isProces
 
 				<div className="pad-x pb-6 space-y-5">
 					<div className="space-y-1.5">
-						<p className="text-sm font-medium text-typo-primary">Account</p>
+						<p className="text-base font-medium text-typo-primary">Account</p>
 						<Select value={selectedAccount} onValueChange={setSelectedAccount} disabled={isProcessing}>
-							<SelectTrigger className="w-full text-base">
-								<SelectValue className="text-base" placeholder="Select account">
+							<SelectTrigger className="w-full !text-base md:!text-base">
+								<SelectValue className="!text-base md:!text-base" placeholder="Select account">
 									{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
 								</SelectValue>
 							</SelectTrigger>
@@ -124,10 +124,10 @@ function PayNowDialog({ open, onOpenChange, onProceed, onBackToMethods, isProces
 					</div>
 
 					<div className="space-y-1.5">
-						<p className="text-sm font-medium text-typo-primary">Deposit Amount (SGD)</p>
+						<p className="text-base font-medium text-typo-primary">Deposit Amount (SGD)</p>
 						<Input
 							type="number"
-							className="text-base"
+							className="!text-base md:!text-base"
 							placeholder="Enter an amount"
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
@@ -140,7 +140,7 @@ function PayNowDialog({ open, onOpenChange, onProceed, onBackToMethods, isProces
 							id="paynow-confirm"
 							checked={confirmed}
 							onCheckedChange={(v) => setConfirmed(!!v)}
-							className="mt-0.5"
+							className="mt-1.5"
 							disabled={isProcessing}
 						/>
 						<label
