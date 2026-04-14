@@ -3,7 +3,7 @@ import CustomSheetTitle from "./_components/CustomSheetTitle";
 import Image from "@/components/Image";
 import { useSheetStore } from "@/stores/sheetStore";
 import { INotification } from "@/types";
-import { isUnreadNotification, notificationService } from "@/lib/services/notificationService";
+import { notificationService } from "@/lib/services/notificationService";
 import { formatNotificationHtml } from "@/lib/utils";
 
 /**
@@ -32,12 +32,14 @@ function formatDate(isoDate: string): string {
 
 const DetailNotification = () => {
 	const { notification } = useSheetStore((state) => state.payload) as { notification: INotification };
+	const notificationId = notification?.id;
+	const notificationStatus = notification?.status;
 
 	useEffect(() => {
-		if (notification && isUnreadNotification(notification)) {
-			notificationService.markNotificationAsRead(notification.id).catch(console.error);
+		if (notificationId && (notificationStatus === "U" || notificationStatus === "N")) {
+			notificationService.markNotificationAsRead(notificationId).catch(console.error);
 		}
-	}, [notification?.id, notification?.status]);
+	}, [notificationId, notificationStatus]);
 
 	// Check if payload doesn't exist or is empty
 	if (!notification) {

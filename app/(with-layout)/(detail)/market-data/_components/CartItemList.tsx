@@ -32,6 +32,14 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
         return total + (isNaN(value) ? 0 : value * 0.09);
     }, 0).toFixed(2);
 
+    const getDurationLabel = (item: IMarketDataItem) => {
+        if (item.selectedOption.label === "Free" && item.selectedOption.value === "Free") {
+            return "-";
+        }
+
+        return item.selectedOption.label;
+    };
+
     if (selectedItems.length === 0) {
         return (
             <div className="h-[calc(100%-100px)]">
@@ -55,7 +63,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
 
                             <div className="flex-1 space-y-1 min-w-0">
                                 <div className="flex justify-between items-start">
-                                    <p className="text-typo-primary text-sm md:text-base font-medium flex-1">
+                                    <p className="text-typo-primary text-sm md:text-base font-medium flex-1 line-clamp-2 leading-tight break-words">
                                         {item.title}
                                     </p>
 
@@ -80,7 +88,7 @@ const CartItemsList = ({ selectedItems, onRemoveItem, showRemove = true }: CartI
                                 </div>
 
                                 <div className="flex justify-between text-sm">
-                                    <p className="text-typo-secondary">{item.selectedOption.label}</p>
+                                    <p className="text-typo-secondary">{getDurationLabel(item)}</p>
                                     <p className="text-typo-primary font-semibold">{item.selectedOption.value}</p>
                                 </div>
                             </div>

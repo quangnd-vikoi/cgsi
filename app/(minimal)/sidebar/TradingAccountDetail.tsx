@@ -90,6 +90,7 @@ interface LinkageItemProps {
     label: string;
     tooltipContent: string;
     value?: string;
+    valuePrefix?: string;
     isLinked?: boolean;
     onUnlink?: () => void;
     actionContent?: React.ReactNode;
@@ -100,6 +101,7 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
     label,
     tooltipContent,
     value,
+    valuePrefix,
     isLinked = false,
     onUnlink,
     actionContent,
@@ -123,9 +125,18 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
                 <div className="flex justify-between items-center gap-2">
                     {value ? (
                         <>
-                            <p className="font-medium text-typo-primary text-sm md:text-base truncate flex-1">
-                                {value}
-                            </p>
+                            <div className="flex items-baseline min-w-0 flex-1">
+                                {valuePrefix && (
+                                    <span
+                                        className="text-sm md:text-base shrink-0 mr-1"
+                                    >
+                                        {valuePrefix}
+                                    </span>
+                                )}
+                                <p className="font-medium text-typo-primary text-sm md:text-base truncate min-w-0">
+                                    {value}
+                                </p>
+                            </div>
                             {isLinked ? (
                                 <Badge
                                     variant="success"
@@ -167,6 +178,19 @@ const LinkageItem: React.FC<LinkageItemProps> = ({
             </div>
         </>
     );
+};
+
+const formatLinkedBankValue = (
+    value?: string,
+    bankCode?: string | null,
+) => {
+    if (!value) return undefined;
+
+    const normalizedBankCode = bankCode?.trim();
+    return {
+        value,
+        prefix: normalizedBankCode ? `[${normalizedBankCode}]` : undefined,
+    };
 };
 
 const TradingAccountDetail = () => {
@@ -215,6 +239,14 @@ const TradingAccountDetail = () => {
     const accountTypeLabel = accountType
         ? (ACCOUNT_TYPE_LABELS[accountType] ?? accountType)
         : "";
+    const cpfDisplay = formatLinkedBankValue(
+        selectedAccount.cpf,
+        selectedAccount.cpfBankCode,
+    );
+    const srsDisplay = formatLinkedBankValue(
+        selectedAccount.srs,
+        selectedAccount.srsBankCode,
+    );
 
     const handleUpdateToSubCDP = () => {
         setOpenSheet(null);
@@ -546,7 +578,8 @@ const TradingAccountDetail = () => {
                                 <LinkageItem
                                     label="CPF"
                                     tooltipContent="Link your CPF Investment Account to start investing in eligible assets under the CPF Investment Scheme (CPFIS)."
-                                    value={selectedAccount.cpf || undefined}
+                                    value={cpfDisplay?.value}
+                                    valuePrefix={cpfDisplay?.prefix}
                                     isLinked={selectedAccount.cpf != null}
                                     onUnlink={handleCpfUnlink}
                                     actionContent={
@@ -563,7 +596,8 @@ const TradingAccountDetail = () => {
                                 <LinkageItem
                                     label="SRS"
                                     tooltipContent="Link your SRS account to your trading account to invest in approved products and enjoy potential tax savings under the Supplementary Retirement Scheme."
-                                    value={selectedAccount.srs || undefined}
+                                    value={srsDisplay?.value}
+                                    valuePrefix={srsDisplay?.prefix}
                                     isLinked={selectedAccount.srs != null}
                                     onUnlink={handleSrsUnlink}
                                     actionContent={
@@ -583,8 +617,8 @@ const TradingAccountDetail = () => {
                                             selectedAccount.giro
                                                 ? "Payment Method (GIRO)"
                                                 : selectedAccount.eps
-                                                  ? "Payment Method (EPS)"
-                                                  : "Payment Method"
+                                                    ? "Payment Method (EPS)"
+                                                    : "Payment Method"
                                         }
                                         tooltipContent="Set up electronic fund transfers via EPS or GIRO to seamlessly pay for share purchases and receive sale proceeds directly from your bank account to CGSI"
                                         value={
@@ -601,8 +635,8 @@ const TradingAccountDetail = () => {
                                         onUnlink={() =>
                                             selectedAccount.giro
                                                 ? openPaymentInstructions(
-                                                      "giroUnlink",
-                                                  )
+                                                    "giroUnlink",
+                                                )
                                                 : handleEpsUnlink()
                                         }
                                         actionContent={
@@ -755,7 +789,7 @@ const TradingAccountDetail = () => {
                                 <DialogTitle className="text-base font-semibold text-typo-primary">
                                     {
                                         paymentInstructionTitle[
-                                            paymentInstructionType
+                                        paymentInstructionType
                                         ]
                                     }
                                 </DialogTitle>
@@ -779,7 +813,7 @@ const TradingAccountDetail = () => {
                                             paymentInstructionData[
                                                 paymentInstructionType
                                             ].items.length -
-                                                1
+                                            1
                                         }
                                     />
                                 ))}

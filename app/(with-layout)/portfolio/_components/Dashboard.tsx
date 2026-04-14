@@ -651,7 +651,6 @@ const Dashboard = ({ type: propType, onTypeChange }: DashboardProps) => {
             {!trNoClient && (
                 <div className="mt-6">
                     <ChartPie
-                        type={type}
                         assetList={accountSummary?.assetList}
                         isLoading={isLoading}
                     />

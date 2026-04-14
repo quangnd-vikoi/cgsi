@@ -8,7 +8,7 @@ import {
     ChartConfig,
     ChartContainer,
 } from "@/components/ui/chart"
-import { IAssetSummary, PortfolioType } from "@/types"
+import { IAssetSummary } from "@/types"
 import { ASSET_CLASS_LABELS } from "@/constants/accounts"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -23,12 +23,11 @@ const ASSET_CLASS_COLORS: Record<string, string> = {
 }
 
 type ChartPieProps = {
-    type?: PortfolioType
     assetList?: IAssetSummary[]
     isLoading?: boolean
 }
 
-export function ChartPie({ type = "CTA", assetList, isLoading = false }: ChartPieProps) {
+export function ChartPie({ assetList, isLoading = false }: ChartPieProps) {
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null)
 
     const chartData = React.useMemo(() => {

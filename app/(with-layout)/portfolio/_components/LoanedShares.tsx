@@ -30,11 +30,11 @@ const ITEMS_PER_PAGE_OPTIONS = [10, 20, 50];
 export const LoanedShares = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
-    const [loanedShares, setLoanedShares] = useState<ILoanedShare[]>([]);
-    const [totalItems, setTotalItems] = useState(0);
+    const [loanedShares] = useState<ILoanedShare[]>([]);
+    const [totalItems] = useState(0);
     const [loading, setLoading] = useState(true);
     const { selectedAccount } = useTradingAccountStore();
-    const [exporting, setExporting] = useState(false);
+    const [exporting] = useState(false);
     const [sortColumn, setSortColumn] = useState<keyof ILoanedShare | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 

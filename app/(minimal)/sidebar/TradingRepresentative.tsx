@@ -29,7 +29,7 @@ const TradingList = ({ representatives }: TradingListProps) => {
 					{/* Rep Info */}
 					<div className="space-y-2 mb-4">
 						<div className="flex justify-between text-xs md:text-sm">
-							<span className="text-typo-secondary">Rep. No.</span>
+							<span className="text-typo-secondary">TR Code</span>
 							<span className="text-typo-primary font-medium">{rep.trCode}</span>
 						</div>
 					</div>

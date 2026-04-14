@@ -2,6 +2,7 @@ import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTradingRepresentative } from "@/lib/utils";
 import type { IAccountSummary } from "@/types";
+import { getAmountDisplay } from "./amountDisplay";
 
 interface SummarySectionProps {
 	accountSummary: IAccountSummary | null;
@@ -25,15 +26,6 @@ export function SummaryCard({ label, value, valueClassName }: SummaryCardProps) 
 	);
 }
 
-function formatSignedAmount(value: number | undefined | null): { text: string; className: string } {
-	if (value === undefined || value === null) return { text: "—", className: "text-typo-primary" };
-	const abs = Math.abs(value).toLocaleString("en-US", { minimumFractionDigits: 2 });
-	if (value < 0) {
-		return { text: `-${abs} SGD`, className: "text-status-error" };
-	}
-	return { text: `+${abs} SGD`, className: "text-status-success" };
-}
-
 function getPaymentMethod(account: { giro?: string; eps?: string } | null | undefined): { label: string; value: string } {
 	if (account?.giro) return { label: "Linked Payment Method - GIRO", value: account.giro };
 	if (account?.eps) return { label: "Linked Payment Method - EPS", value: account.eps };
@@ -48,8 +40,8 @@ export function SummarySection({ accountSummary, activeTab, loading = false }: S
 	const paymentMethod = getPaymentMethod(selectedAccount);
 
 	if (activeTab === "contra") {
-		const gain = formatSignedAmount(accountSummary?.contraGain);
-		const loss = formatSignedAmount(accountSummary?.contraLoss);
+		const gain = getAmountDisplay(accountSummary?.contraGain, { currency: "SGD" });
+		const loss = getAmountDisplay(accountSummary?.contraLoss, { currency: "SGD" });
 
 		return (
 			<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">
@@ -81,8 +73,8 @@ export function SummarySection({ accountSummary, activeTab, loading = false }: S
 	}
 
 	// Contracts tab
-	const sell = formatSignedAmount(accountSummary?.contractsSell);
-	const buy = formatSignedAmount(accountSummary?.contractsBuy);
+	const sell = getAmountDisplay(accountSummary?.contractsSell, { currency: "SGD" });
+	const buy = getAmountDisplay(accountSummary?.contractsBuy, { currency: "SGD" });
 
 	return (
 		<div className="bg-background-section p-4 rounded border border-stroke-secondary mb-6">

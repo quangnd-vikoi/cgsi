@@ -132,8 +132,10 @@ export interface TradingAccount {
 	giro?: string;
 	cdp?: string;
 	cpf?: string;
+	cpfBankCode?: string | null;
 	cpfStatus?: "processing";
 	srs?: string;
+	srsBankCode?: string | null;
 	srsStatus?: "processing";
 	accreditedInvestor?: string;
 }

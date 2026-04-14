@@ -64,10 +64,10 @@ const CentralDealingDesk = () => {
 				<div className="mt-6 p-4 rounded bg-background-section">
 					<div className="flex gap-2 items-center mb-3">
 						<Clock size={16} className="text-icon-light" />
-						<p className="text-sm font-semibold text-typo-primary">Business Hours</p>
+						<p className="text-sm md:text-base  font-semibold text-typo-primary">Business Hours</p>
 					</div>
 					<Separator className="my-3" />
-					<div className="text-xs text-typo-secondary font-medium mb-3">
+					<div className="text-xs md:text-sm text-typo-secondary font-medium mb-3">
 						Available: <span className="font-normal">{businessInfo.operatingHours.replace("Available", "")}</span>
 					</div>
 				</div>
@@ -78,7 +78,7 @@ const CentralDealingDesk = () => {
 					<div className="flex items-center justify-between px-1.5 py-2.5">
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<Phone size={16} className="text-icon-light flex-shrink-0" />
-							<span className="text-sm text-typo-primary truncate">{businessInfo.centralDealingNumber}</span>
+							<span className="text-sm md:text-base text-typo-primary truncate">{businessInfo.centralDealingNumber}</span>
 						</div>
 						<div className="flex gap-5 flex-shrink-0 ml-2">
 							<Button
@@ -104,7 +104,7 @@ const CentralDealingDesk = () => {
 					<div className="flex items-center justify-between px-1.5 py-2.5">
 						<div className="flex items-center gap-2 min-w-0 flex-1">
 							<MapPin size={16} className="text-icon-light flex-shrink-0 mt-0.5" />
-							<span className="text-sm text-typo-primary">{businessInfo.companyAddress}</span>
+							<span className="text-sm md:text-base text-typo-primary">{businessInfo.companyAddress}</span>
 						</div>
 						<div className="flex gap-5 flex-shrink-0 ml-2">
 							<Button

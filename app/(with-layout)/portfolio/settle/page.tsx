@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, useEffect, useCallback, useRef } from "react";
+import React, { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { FileDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

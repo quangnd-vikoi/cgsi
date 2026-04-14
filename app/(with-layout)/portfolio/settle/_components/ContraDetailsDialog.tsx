@@ -14,6 +14,7 @@ import {
 import { getContraDetails } from "@/lib/services/portfolioService";
 import { useTradingAccountStore } from "@/stores/tradingAccountStore";
 import type { IContraDetail } from "@/types";
+import { getAmountDisplay } from "./amountDisplay";
 
 interface ContraDetailsDialogProps {
 	open: boolean;
@@ -39,6 +40,7 @@ export function ContraDetailsDialog({
 	const [details, setDetails] = useState<IContraDetail[]>([]);
 	const [loading, setLoading] = useState(false);
 	const { selectedAccount } = useTradingAccountStore();
+	const netGainLossDisplay = getAmountDisplay(netGainLoss, { currency });
 
 	useEffect(() => {
 		if (!open || !selectedAccount?.accountNo || !statementNo) return;
@@ -90,15 +92,8 @@ export function ContraDetailsDialog({
 						{/* Net Gain/Loss */}
 						<div className="grid grid-cols-2 md:flex md:flex-col items-center md:items-start">
 							<p className="text-sm text-typo-secondary md:mb-1">Net Gain/ Loss</p>
-							<p
-								className={`text-sm md:text-base font-medium text-right md:text-left ${netGainLoss >= 0 ? "text-status-success" : "text-status-error"
-									}`}
-							>
-								{netGainLoss >= 0 ? "+" : "-"}{" "}
-								{Math.abs(netGainLoss).toLocaleString("en-US", {
-									minimumFractionDigits: 2,
-								})}{" "}
-								{currency}
+							<p className={`text-sm md:text-base font-medium text-right md:text-left ${netGainLossDisplay.className}`}>
+								{netGainLossDisplay.text}
 							</p>
 						</div>
 					</div>
@@ -129,28 +124,26 @@ export function ContraDetailsDialog({
 										</TableCell>
 									</TableRow>
 								) : (
-									details.map((detail, index) => (
-										<TableRow
-											key={index}
-											className="border-b border-stroke-secondary last:border-0 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
-										>
-											<TableCell>{detail.tradeDate}</TableCell>
-											<TableCell>{detail.contractNo}</TableCell>
-											<TableCell>{detail.securityName}</TableCell>
-											<TableCell>{LEGACY_CURRENCY_TO_ISO[detail.settlementCurrency] ?? detail.settlementCurrency}</TableCell>
-											<TableCell
-												className={`text-right ${detail.settlementNetAmount >= 0
-													? "!text-status-success"
-													: "!text-status-error"
-													}`}
+									details.map((detail, index) => {
+										const settlementNetAmountDisplay = getAmountDisplay(detail.settlementNetAmount, {
+											important: true,
+										});
+
+										return (
+											<TableRow
+												key={index}
+												className="border-b border-stroke-secondary last:border-0 [&>td]:text-sm [&>td]:text-typo-primary [&>td]:whitespace-nowrap [&>td]:px-4 [&>td]:py-3"
 											>
-												{detail.settlementNetAmount >= 0 ? "+" : "-"}{" "}
-												{Math.abs(detail.settlementNetAmount).toLocaleString("en-US", {
-													minimumFractionDigits: 2,
-												})}
-											</TableCell>
-										</TableRow>
-									))
+												<TableCell>{detail.tradeDate}</TableCell>
+												<TableCell>{detail.contractNo}</TableCell>
+												<TableCell>{detail.securityName}</TableCell>
+												<TableCell>{LEGACY_CURRENCY_TO_ISO[detail.settlementCurrency] ?? detail.settlementCurrency}</TableCell>
+												<TableCell className={`text-right ${settlementNetAmountDisplay.className}`}>
+													{settlementNetAmountDisplay.text}
+												</TableCell>
+											</TableRow>
+										);
+									})
 								)}
 							</TableBody>
 						</Table>

@@ -5,7 +5,7 @@ import Alert from "@/components/Alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserStore } from "@/stores/userStore";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useOTPCountdown } from "@/hooks/auth/useOTPCountdown";
 import { INTERNAL_ROUTES } from "@/constants/routes";

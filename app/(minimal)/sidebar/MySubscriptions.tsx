@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import CustomSheetTitle from './_components/CustomSheetTitle'
 import { ErrorState } from '@/components/ErrorState'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import SubscriptionThumbnail from '@/components/SubscriptionThumbnail';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +36,13 @@ type SubscriptionGroup = {
 	category: string;
 	items: SubcriptionItem[];
 };
+
+const SUBSCRIPTION_CATEGORY_BY_GROUP_TYPE = {
+	R: "Research Articles",
+	M: "Market Data",
+} as const;
+
+const SUBSCRIPTION_GROUP_ORDER = ["R", "M"] as const;
 
 // Helper function to get subscription image based on category
 const getSubscriptionImage = (category: string): string => {
@@ -136,22 +142,28 @@ const MySubscriptions = () => {
 	};
 
 	// Map API data to UI structure
-	const subscriptions: SubscriptionGroup[] = [
-		...(marketDataSubs.length > 0
-			? [{
-				category: "Market Data Subscriptions",
-				items: marketDataSubs.map((sub) => ({
-					title: sub.groupTitle,
-					description: sub.description || sub.groupType || "",
-					endDate: formatDate(sub.end, "N/A"),
-					image: sub.groupImageUrl || getSubscriptionImage(sub.groupTitle || ""),
-					status: determineMarketDataStatus(sub),
-					subscriptionId: sub.subscriptionId,
-					type: "marketData" as const,
-				})),
-			}]
-			: []),
-	];
+	const subscriptions: SubscriptionGroup[] = SUBSCRIPTION_GROUP_ORDER.flatMap((groupType) => {
+		const items = marketDataSubs
+			.filter((sub) => sub.groupType === groupType)
+			.map((sub) => ({
+				title: sub.groupTitle,
+				description: sub.description || sub.groupType || "",
+				endDate: formatDate(sub.end, "N/A"),
+				image: sub.groupImageUrl || getSubscriptionImage(sub.groupTitle || ""),
+				status: determineMarketDataStatus(sub),
+				subscriptionId: sub.subscriptionId,
+				type: "marketData" as const,
+			}));
+
+		if (items.length === 0) {
+			return [];
+		}
+
+		return [{
+			category: SUBSCRIPTION_CATEGORY_BY_GROUP_TYPE[groupType],
+			items,
+		}];
+	});
 
 	function statusClass(status: SubscriptionStatus): {
 		badgeType:
@@ -282,11 +294,10 @@ const MySubscriptions = () => {
 				{subscriptions.map((group) => (
 					<div key={group.category} className="mt-6 text-center text-typo-secondary">
 						{/* Category Title */}
-						<div className="flex items-center gap-2 mt-7">
-							<p className="shrink-0 text-xs md:text-sm font-semibold md:font-medium text-typo-teritary">
+						<div className="mt-7 text-left">
+							<p className="shrink-0 text-xs md:text-sm font-medium md:font-medium !text-typo-tertiary">
 								{group.category}
 							</p>
-							<Separator className="flex-1 border border-stroke-secondary" />
 						</div>
 
 						{/* Items */}
@@ -353,7 +364,7 @@ const MySubscriptions = () => {
 												{item.status}
 											</Badge>
 
-											<p className={cn("mt-1 text-xs md:text-sm md:font-medium", item.status === "Expired" ? "text-tone-red-05" : "text-typo-teritary")}>
+											<p className={cn("mt-1 text-xs md:text-sm md:font-medium text-typo-tertiary", item.status === "Expired" && "text-tone-red-05")}>
 												Expiry Date: {item.endDate}
 											</p>
 										</div>

@@ -13,7 +13,6 @@ import {
 	Headphones,
 	HeartHandshake,
 	Loader2,
-	Settings,
 	ShieldCheck,
 	X,
 } from "lucide-react";
@@ -241,11 +240,6 @@ const Profile = () => {
 				name: "Help Centre",
 				href: CGSI.HELP_CENTRE,
 				target: "_blank" as IProfileMenuItem["target"],
-			},
-			{
-				icon: <Settings strokeWidth={ICON_STROKE_WIDTH} />,
-				name: "Settings",
-				href: "/settings",
 			},
 		],
 	};

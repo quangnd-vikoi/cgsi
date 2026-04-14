@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -53,10 +53,11 @@ interface PayNowDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	onProceed: (accountNo: string, amount: number, accountType: string) => void;
+	onBackToMethods: () => void;
 	isProcessing: boolean;
 }
 
-function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDialogProps) {
+function PayNowDialog({ open, onOpenChange, onProceed, onBackToMethods, isProcessing }: PayNowDialogProps) {
 	const accounts = useTradingAccountStore((s) => s.accounts);
 	const storeSelectedAccount = useTradingAccountStore((s) => s.selectedAccount);
 	const userName = useUserStore((s) => s.profile?.name ?? "");
@@ -84,11 +85,19 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 		onProceed(selectedAccount, parseFloat(amount), acc?.accountType ?? "");
 	};
 
+	const handleBackToDepositMethods = () => {
+		setSelectedAccount("");
+		setAmount("");
+		setConfirmed(false);
+		onBackToMethods();
+	};
+
 	return (
 		<Dialog open={open} onOpenChange={(v) => { if (!isProcessing) onOpenChange(v); }}>
 			<DialogContent className="sm:max-w-[530px] p-0 gap-0" showCloseButton={!isProcessing}>
-				<DialogHeader className="p-6 pb-4">
-					<DialogTitle className="text-base font-semibold text-typo-primary text-left">
+				<DialogHeader className="p-4 md:p-6 pb-4 gap-3">
+					<DialogTitle className="text-[20px] leading-tight font-semibold text-typo-primary text-left flex gap-2 items-center">
+						<ChevronLeft className="size-6 hover:cursor-pointer hover:text-typo-primary/80" onClick={handleBackToDepositMethods} />
 						Deposit via PayNow
 					</DialogTitle>
 				</DialogHeader>
@@ -97,8 +106,8 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 					<div className="space-y-1.5">
 						<p className="text-sm font-medium text-typo-primary">Account</p>
 						<Select value={selectedAccount} onValueChange={setSelectedAccount} disabled={isProcessing}>
-							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Select account">
+							<SelectTrigger className="w-full text-base">
+								<SelectValue className="text-base" placeholder="Select account">
 									{selectedAccount ? accountLabel(selectedAccount) : "Select account"}
 								</SelectValue>
 							</SelectTrigger>
@@ -118,6 +127,7 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 						<p className="text-sm font-medium text-typo-primary">Deposit Amount (SGD)</p>
 						<Input
 							type="number"
+							className="text-base"
 							placeholder="Enter an amount"
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
@@ -135,7 +145,7 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 						/>
 						<label
 							htmlFor="paynow-confirm"
-							className="text-xs text-typo-secondary leading-relaxed cursor-pointer"
+							className="text-base text-typo-primary leading-relaxed cursor-pointer"
 						>
 							By checking this box, you confirm that your trading account is funded in your name
 							{userName ? ` - ${userName}` : ""}
@@ -148,7 +158,7 @@ function PayNowDialog({ open, onOpenChange, onProceed, isProcessing }: PayNowDia
 						<Button
 							onClick={handleProceed}
 							disabled={!selectedAccount || !amount || !confirmed || isProcessing}
-							className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2"
+							className="bg-cgs-blue hover:bg-cgs-blue/90 text-white px-3 py-2 text-sm md:text-base"
 						>
 							{isProcessing ? <Loader2 className="animate-spin" /> : "Proceed"}
 						</Button>
@@ -203,12 +213,17 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 		toast.error("PayNow Unavailable", "We were unable to initiate your PayNow deposit. Please try again later.");
 	};
 
+	const handleBackToMethodSelection = () => {
+		setShowPayNow(false);
+		onOpenChange(true);
+	};
+
 	return (
 		<>
 			<Dialog open={open} onOpenChange={onOpenChange}>
 				<DialogContent className="sm:max-w-[530px] p-0 gap-0">
 					<DialogHeader className="p-4 md:p-6">
-						<DialogTitle className="text-base font-semibold text-typo-primary text-left ">
+						<DialogTitle className="text-base md:text-xl font-semibold text-typo-primary text-left">
 							Deposit Methods
 						</DialogTitle>
 					</DialogHeader>
@@ -224,10 +239,10 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 								<div className="flex-shrink-0">{method.icon}</div>
 
 								<div className="flex-1 text-left">
-									<h3 className="text-sm font-semibold text-typo-primary mb-1">
+									<h3 className="text-sm md:text-base font-semibold text-typo-primary mb-1">
 										{method.name}
 									</h3>
-									<p className="text-xs text-typo-secondary">{method.description}</p>
+									<p className="text-xs md:text-sm text-typo-secondary">{method.description}</p>
 								</div>
 
 								<ChevronRight
@@ -244,6 +259,7 @@ export function PaymentModel({ open, onOpenChange }: PaymentModelProps) {
 				open={showPayNow}
 				onOpenChange={setShowPayNow}
 				onProceed={handleProceed}
+				onBackToMethods={handleBackToMethodSelection}
 				isProcessing={!!submitFn}
 			/>
 
